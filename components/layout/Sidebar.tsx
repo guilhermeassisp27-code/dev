@@ -10,11 +10,13 @@ import {
   BarChart3,
   Settings,
   TrendingUp,
+  Sparkles,
 } from 'lucide-react'
 
 const navItems = [
   { href: '/pipeline', label: 'Pipeline', icon: LayoutDashboard },
   { href: '/briefing', label: 'Briefing', icon: FileText },
+  { href: '/proposta', label: 'Gerar Proposta', icon: Sparkles },
   { href: '/mensagens', label: 'Mensagens', icon: MessageSquare },
   { href: '/semana', label: 'Minha Semana', icon: Calendar },
   { href: '/relatorios', label: 'Relatórios', icon: BarChart3 },
