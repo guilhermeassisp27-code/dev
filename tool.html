@@ -11,6 +11,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
 <style>
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
 :root{
@@ -275,6 +276,11 @@ input[type=color]{opacity:0;width:0;height:0;position:absolute}
 </head>
 <body>
 
+<div id="auth-loading" style="position:fixed;inset:0;background:#040D1C;z-index:9999;display:flex;align-items:center;justify-content:center;flex-direction:column;gap:12px">
+  <div style="font-size:19px;font-weight:800;letter-spacing:-.5px;color:#EEF2FF">Corretor<span style="color:#4D7EFF">PRO</span></div>
+  <div style="font-size:12px;color:#3D5470;letter-spacing:.05em">Verificando acesso...</div>
+</div>
+
 <div class="overlay" id="overlay" onclick="closeSidebar()"></div>
 
 <div class="mob-bar" role="banner">
@@ -310,8 +316,12 @@ input[type=color]{opacity:0;width:0;height:0;position:absolute}
       <div class="u-av" id="sb-av" style="background:var(--p)">C</div>
       <div style="min-width:0">
         <div class="u-name" id="sb-nome">Configure seu perfil</div>
-        <div class="u-plan">CorretorPRO</div>
+        <div class="u-plan" id="sb-plan">CorretorPRO</div>
       </div>
+    </button>
+    <button class="sb-item" onclick="sair()" style="margin-top:2px" title="Sair da conta">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 21H5a2 2 0 01-2-2V5a2 2 0 012-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
+      Sair
     </button>
   </div>
 </aside>
@@ -698,6 +708,48 @@ input[type=color]{opacity:0;width:0;height:0;position:absolute}
 </div>
 
 <script>
+/* ── AUTH CONFIG ─────────────────────────────────────────────────────────
+   Preencha após criar seu projeto no Supabase e fazer deploy no Vercel.
+   Estas são chaves públicas (anon key) — seguro expor no cliente.
+──────────────────────────────────────────────────────────────────────── */
+const _SUPA_URL   = 'https://YOUR_PROJECT_ID.supabase.co'   // TODO
+const _SUPA_KEY   = 'YOUR_SUPABASE_ANON_KEY'                // TODO
+const _LOGIN_URL  = 'https://YOUR_APP.vercel.app/acesso'    // TODO
+
+/* ── AUTH GATE ── */
+;(async function authGate() {
+  // Se placeholder não foi preenchido, pula auth (modo dev local)
+  if (_SUPA_URL.includes('YOUR_PROJECT')) {
+    document.getElementById('auth-loading').remove()
+    initApp()
+    return
+  }
+  try {
+    const _sb = supabase.createClient(_SUPA_URL, _SUPA_KEY)
+    window._sb = _sb
+
+    // getSession trata automaticamente hash fragment de magic link / invite
+    const { data: { session } } = await _sb.auth.getSession()
+
+    if (!session) {
+      location.replace(_LOGIN_URL + '?redirect_to=' + encodeURIComponent(location.href))
+      return
+    }
+
+    // Mostra email do usuário no rodapé da sidebar
+    const sp = document.getElementById('sb-plan')
+    if (sp) sp.textContent = session.user.email
+
+    document.getElementById('auth-loading').remove()
+    if (location.hash) history.replaceState(null, '', location.pathname + location.search)
+    initApp()
+  } catch(err) {
+    console.error('Auth error:', err)
+    document.getElementById('auth-loading').remove()
+    initApp()
+  }
+})()
+
 /* ── ESC HTML ── */
 const escH = s => String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;')
 
@@ -708,7 +760,7 @@ let snapProposta = null
 let _toastT = null
 
 /* ── INIT ── */
-;(function init() {
+function initApp() {
   aplicarPerfil()
   renderSidebarUser()
   atualizarBadgeHist()
@@ -717,9 +769,13 @@ let _toastT = null
   }
   carregarFormConfig()
   atualizarPreview()
-  // init cor
   atualizarCor(perfil.cor || '#4D7EFF')
-})()
+}
+
+async function sair() {
+  if (window._sb) await window._sb.auth.signOut()
+  location.replace(_LOGIN_URL)
+}
 
 /* ── VIEWS ── */
 function showView(name) {

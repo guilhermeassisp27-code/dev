@@ -6,14 +6,32 @@ export async function middleware(req: NextRequest) {
   const res = NextResponse.next()
   const supabase = createMiddlewareClient({ req, res })
   const { data: { session } } = await supabase.auth.getSession()
-  const isAuthPage = req.nextUrl.pathname.startsWith('/login') || req.nextUrl.pathname.startsWith('/callback')
-  const isPublic = req.nextUrl.pathname.startsWith('/proposta')
-  if (!session && !isAuthPage && !isPublic) {
+
+  const { pathname } = req.nextUrl
+
+  // Auth pages — accessible without session
+  const isAppAuth = pathname.startsWith('/login') || pathname.startsWith('/callback')
+  const isCprAuth = pathname.startsWith('/acesso')
+  const isAuthPage = isAppAuth || isCprAuth
+
+  // Public routes
+  const isPublic = pathname.startsWith('/proposta')
+
+  if (!session) {
+    if (isAuthPage || isPublic) return res
     return NextResponse.redirect(new URL('/login', req.url))
   }
-  if (session && isAuthPage) {
-    return NextResponse.redirect(new URL('/pipeline', req.url))
+
+  // Authenticated users on auth pages
+  if (session && isAppAuth) return NextResponse.redirect(new URL('/pipeline', req.url))
+  if (session && isCprAuth) {
+    const toolUrl = process.env.NEXT_PUBLIC_TOOL_URL || '/pipeline'
+    // Only redirect if same origin, otherwise just let them see the login page
+    if (!toolUrl.startsWith('http')) {
+      return NextResponse.redirect(new URL(toolUrl, req.url))
+    }
   }
+
   return res
 }
 
