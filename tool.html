@@ -3,771 +3,1229 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>PropBot — Nova Proposta</title>
+<title>CorretorPRO — Gerador de Propostas Imobiliárias</title>
+<meta name="description" content="Gere propostas imobiliárias profissionais em segundos. Personalizado com sua marca, CRECI e condições do imóvel. Para corretores que fecham mais.">
+<meta property="og:title" content="CorretorPRO — Propostas Imobiliárias Profissionais">
+<meta property="og:description" content="Propostas personalizadas com sua marca em menos de 60 segundos.">
+<meta property="og:type" content="website">
 <link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 <style>
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
-
 :root{
-  --bg:         #040D1C;
-  --sidebar-bg: #050E1B;
-  --surface:    #081526;
-  --surface-2:  #0E1E34;
-  --surface-3:  #132540;
-  --border:     rgba(255,255,255,.07);
-  --border-md:  rgba(255,255,255,.13);
-  --primary:    #4D7EFF;
-  --primary-h:  #3567E8;
-  --primary-s:  rgba(77,126,255,.12);
-  --text:       #EEF2FF;
-  --text-2:     #7B93B8;
-  --text-3:     #3D5470;
-  --green:      #22C55E;
-  --red:        #EF4444;
-  --sidebar-w:  240px;
-  --topbar-h:   60px;
-  --r:          8px;
-  --r-lg:       12px;
-  --font:       'Inter',sans-serif;
+  --bg:#040D1C; --sb:#050E1B; --s1:#081526; --s2:#0E1E34; --s3:#132540;
+  --b:rgba(255,255,255,.07); --bm:rgba(255,255,255,.13);
+  --p:#4D7EFF; --ph:#3567E8; --ps:rgba(77,126,255,.12);
+  --t:#EEF2FF; --t2:#7B93B8; --t3:#3D5470;
+  --g:#22C55E; --gs:rgba(34,197,94,.12); --r:#EF4444;
+  --sw:240px; --th:60px; --rad:8px; --radl:12px;
+  --font:'Inter',sans-serif;
 }
-
-/* ── BODY: page scrolls naturally, sidebar is fixed ── */
 html{scroll-behavior:smooth}
-body{
-  font-family:var(--font);
-  background:var(--bg);
-  color:var(--text);
-  -webkit-font-smoothing:antialiased;
-  min-height:100vh;
-}
+body{font-family:var(--font);background:var(--bg);color:var(--t);-webkit-font-smoothing:antialiased;min-height:100vh}
 
 /* ── SIDEBAR ── */
-.sidebar{
-  position:fixed;left:0;top:0;
-  width:var(--sidebar-w);height:100vh;
-  background:var(--sidebar-bg);
-  border-right:1px solid var(--border);
-  display:flex;flex-direction:column;
-  z-index:100;
-  transition:transform .25s ease;
-}
-.sb-header{
-  height:var(--topbar-h);
-  padding:0 20px;
-  display:flex;align-items:center;
-  border-bottom:1px solid var(--border);
-  flex-shrink:0;
-}
-.sb-logo{
-  font-size:18px;font-weight:800;letter-spacing:-.5px;
-  color:var(--text);text-decoration:none;
-}
-.sb-logo em{color:var(--primary);font-style:normal}
+.sidebar{position:fixed;left:0;top:0;width:var(--sw);height:100vh;background:var(--sb);border-right:1px solid var(--b);display:flex;flex-direction:column;z-index:100;transition:transform .25s ease}
+.sb-head{height:var(--th);padding:0 20px;display:flex;align-items:center;border-bottom:1px solid var(--b);flex-shrink:0}
+.sb-logo{font-size:17px;font-weight:800;letter-spacing:-.5px;color:var(--t);text-decoration:none}
+.sb-logo em{color:var(--p);font-style:normal}
+.sb-nav{flex:1;padding:10px 8px;overflow-y:auto;display:flex;flex-direction:column;gap:1px}
+.sb-sec{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.1em;color:var(--t3);padding:10px 10px 5px}
+.sb-item{display:flex;align-items:center;gap:10px;padding:9px 12px;border-radius:var(--rad);font-size:13px;font-weight:500;color:var(--t2);cursor:pointer;transition:background .15s,color .15s;border:none;background:none;width:100%;text-align:left;font-family:var(--font)}
+.sb-item:hover{background:rgba(255,255,255,.04);color:var(--t)}
+.sb-item.active{background:var(--ps);color:var(--p)}
+.sb-item.active svg{color:var(--p)}
+.sb-item svg{flex-shrink:0;color:var(--t3)}
+.sb-foot{padding:10px;border-top:1px solid var(--b);flex-shrink:0}
+.sb-user{display:flex;align-items:center;gap:10px;padding:8px 10px;border-radius:var(--rad);cursor:pointer;transition:background .15s;background:none;border:none;width:100%;text-align:left}
+.sb-user:hover{background:rgba(255,255,255,.04)}
+.u-av{width:32px;height:32px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:700;color:#fff;flex-shrink:0;overflow:hidden}
+.u-av img{width:100%;height:100%;object-fit:cover;border-radius:50%}
+.u-name{font-size:13px;font-weight:600;color:var(--t);line-height:1.2;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:140px}
+.u-plan{font-size:11px;color:var(--t3)}
 
-.sb-nav{
-  flex:1;padding:12px 8px;
-  overflow-y:auto;
-  display:flex;flex-direction:column;gap:2px;
-}
-.sb-section{
-  font-size:10px;font-weight:700;text-transform:uppercase;
-  letter-spacing:.1em;color:var(--text-3);
-  padding:10px 10px 6px;
-}
-.sb-item{
-  display:flex;align-items:center;gap:10px;
-  padding:9px 12px;border-radius:var(--r);
-  font-size:13px;font-weight:500;color:var(--text-2);
-  text-decoration:none;cursor:pointer;
-  transition:background .15s,color .15s;
-  border:none;background:none;
-  width:100%;text-align:left;font-family:var(--font);
-}
-.sb-item:hover{background:rgba(255,255,255,.04);color:var(--text)}
-.sb-item.active{background:var(--primary-s);color:var(--primary)}
-.sb-item.active svg,.sb-item.active .sb-item-icon{color:var(--primary)}
-.sb-item-icon{flex-shrink:0;color:var(--text-3)}
+/* ── MAIN ── */
+.main{margin-left:var(--sw);min-height:100vh;display:flex;flex-direction:column}
+.topbar{position:sticky;top:0;z-index:50;background:rgba(4,13,28,.93);backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px);border-bottom:1px solid var(--b);height:var(--th);display:flex;align-items:center;padding:0 32px;gap:12px;flex-shrink:0}
+.crumb{display:flex;align-items:center;gap:6px;font-size:13px;color:var(--t3)}
+.crumb b{color:var(--t2);font-weight:500}
+.crumb svg{color:var(--t3)}
+.topbar-right{margin-left:auto;display:flex;gap:8px}
 
-.sb-footer{
-  padding:12px;border-top:1px solid var(--border);flex-shrink:0;
-}
-.user-btn{
-  display:flex;align-items:center;gap:10px;
-  padding:10px 12px;border-radius:var(--r);
-  cursor:pointer;transition:background .15s;
-  background:none;border:none;width:100%;text-align:left;
-}
-.user-btn:hover{background:rgba(255,255,255,.04)}
-.user-av{
-  width:32px;height:32px;border-radius:50%;
-  background:var(--primary);
-  display:flex;align-items:center;justify-content:center;
-  font-size:12px;font-weight:700;color:#fff;flex-shrink:0;
-}
-.user-name{font-size:13px;font-weight:600;color:var(--text);line-height:1.2}
-.user-plan{font-size:11px;color:var(--text-3)}
+/* ── PAGE ── */
+.page{padding:32px 40px;max-width:880px;width:100%}
+.ph{margin-bottom:28px}
+.ph h1{font-size:22px;font-weight:800;letter-spacing:-.6px;margin-bottom:6px}
+.ph p{font-size:14px;color:var(--t2)}
 
-/* ── MAIN WRAPPER ── */
-.main{
-  margin-left:var(--sidebar-w);
-  min-height:100vh;
-  display:flex;flex-direction:column;
-}
+/* ── VIEWS ── */
+.view{display:none}
+.view.active{display:block}
 
-/* ── TOPBAR ── */
-.topbar{
-  position:sticky;top:0;z-index:50;
-  background:rgba(4,13,28,.92);
-  backdrop-filter:blur(16px);
-  -webkit-backdrop-filter:blur(16px);
-  border-bottom:1px solid var(--border);
-  height:var(--topbar-h);
-  display:flex;align-items:center;
-  padding:0 32px;gap:16px;
+/* ── BANNER ONBOARDING ── */
+.banner{
+  background:linear-gradient(135deg,rgba(77,126,255,.12),rgba(77,126,255,.05));
+  border:1px solid rgba(77,126,255,.25);
+  border-radius:var(--radl);padding:18px 22px;margin-bottom:20px;
+  display:flex;align-items:center;gap:14px;
 }
-.topbar-crumb{
-  display:flex;align-items:center;gap:6px;
-  font-size:13px;color:var(--text-3);
-}
-.topbar-crumb b{color:var(--text-2);font-weight:500}
-.topbar-crumb svg{color:var(--text-3)}
-.topbar-right{margin-left:auto}
-
-/* ── PAGE CONTENT ── */
-.page{padding:36px 40px;max-width:860px;width:100%}
-
-.page-head{margin-bottom:32px}
-.page-h1{font-size:22px;font-weight:800;letter-spacing:-.6px;margin-bottom:6px}
-.page-sub{font-size:14px;color:var(--text-2)}
+.banner svg{flex-shrink:0;color:var(--p)}
+.banner p{font-size:13px;color:var(--t2);line-height:1.5}
+.banner b{color:var(--t)}
+.banner a{color:var(--p);cursor:pointer;font-weight:600;text-decoration:none}
+.banner a:hover{text-decoration:underline}
+#banner-profile{display:none}
+#banner-profile.show{display:flex}
 
 /* ── CARD ── */
-.card{
-  background:var(--surface);
-  border:1px solid var(--border);
-  border-radius:var(--r-lg);
-  padding:24px;
-  margin-bottom:16px;
-}
-.card-title{
-  font-size:11px;font-weight:700;text-transform:uppercase;
-  letter-spacing:.09em;color:var(--text-3);
-  margin-bottom:18px;
-  display:flex;align-items:center;gap:8px;
-}
-.card-title::after{content:'';flex:1;height:1px;background:var(--border)}
+.card{background:var(--s1);border:1px solid var(--b);border-radius:var(--radl);padding:22px;margin-bottom:14px}
+.card-t{font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.09em;color:var(--t3);margin-bottom:16px;display:flex;align-items:center;gap:8px}
+.card-t::after{content:'';flex:1;height:1px;background:var(--b)}
 
 /* ── FORM GRID ── */
-.fg{display:grid;grid-template-columns:1fr 1fr;gap:14px}
-.fg-1{grid-template-columns:1fr}
-@media(max-width:560px){.fg{grid-template-columns:1fr}}
+.fg{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.fg1{grid-template-columns:1fr}
+.fg3{grid-template-columns:1fr 1fr 1fr}
+@media(max-width:600px){.fg,.fg3{grid-template-columns:1fr}}
 .f2{grid-column:span 2}
-@media(max-width:560px){.f2{grid-column:span 1}}
-
+.f3{grid-column:span 3}
+@media(max-width:600px){.f2,.f3{grid-column:span 1}}
 .field{display:flex;flex-direction:column;gap:5px}
-.label{
-  font-size:11px;font-weight:700;text-transform:uppercase;
-  letter-spacing:.07em;color:var(--text-2);
-}
-.req{color:var(--red);margin-left:1px}
+.lbl{font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.07em;color:var(--t2)}
+.req{color:var(--r);margin-left:2px}
+.hint{font-size:11px;color:var(--t3);margin-top:2px}
 
-.inp,.sel,.txa{
-  width:100%;
-  background:var(--surface-2);
-  border:1px solid rgba(255,255,255,.09);
-  border-radius:var(--r);
-  padding:10px 14px;
-  font-size:14px;color:var(--text);
-  font-family:var(--font);
-  outline:none;
-  transition:border-color .15s,box-shadow .15s;
-  -webkit-appearance:none;
-}
-.inp:focus,.sel:focus,.txa:focus{
-  border-color:rgba(77,126,255,.5);
-  box-shadow:0 0 0 3px rgba(77,126,255,.08);
-}
-.inp::placeholder,.txa::placeholder{color:var(--text-3)}
-.sel{
-  background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%233D5470' stroke-width='2'%3E%3Cpolyline points='6 9 12 15 18 9'/%3E%3C/svg%3E");
-  background-repeat:no-repeat;
-  background-position:right 12px center;
-  padding-right:36px;cursor:pointer;
-}
-.sel option{background:var(--surface-2);color:var(--text)}
-.txa{resize:vertical;min-height:88px;line-height:1.6}
-
-/* prefix wrapper */
+.inp,.sel,.txa{width:100%;background:var(--s2);border:1px solid rgba(255,255,255,.09);border-radius:var(--rad);padding:9px 13px;font-size:14px;color:var(--t);font-family:var(--font);outline:none;transition:border-color .15s,box-shadow .15s;-webkit-appearance:none}
+.inp:focus,.sel:focus,.txa:focus{border-color:rgba(77,126,255,.5);box-shadow:0 0 0 3px rgba(77,126,255,.08)}
+.inp::placeholder,.txa::placeholder{color:var(--t3)}
+.sel{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='11' height='11' viewBox='0 0 24 24' fill='none' stroke='%233D5470' stroke-width='2'%3E%3Cpolyline points='6 9 12 15 18 9'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 11px center;padding-right:32px;cursor:pointer}
+.sel option{background:var(--s2);color:var(--t)}
+.txa{resize:vertical;min-height:80px;line-height:1.6}
 .pfx{position:relative}
-.pfx-label{
-  position:absolute;left:12px;top:50%;transform:translateY(-50%);
-  font-size:13px;color:var(--text-3);pointer-events:none;font-weight:500;
-}
-.pfx .inp{padding-left:32px}
+.pfx-l{position:absolute;left:11px;top:50%;transform:translateY(-50%);font-size:13px;color:var(--t3);pointer-events:none;font-weight:500}
+.pfx .inp{padding-left:28px}
 
-/* ── GENERATE BUTTON ── */
-.gen-btn{
-  width:100%;padding:15px;
-  background:linear-gradient(135deg,var(--primary) 0%,#7C5CFC 100%);
-  color:#fff;border:none;border-radius:var(--r);
-  font-size:15px;font-weight:700;font-family:var(--font);
-  cursor:pointer;
-  display:flex;align-items:center;justify-content:center;gap:10px;
-  transition:opacity .2s,transform .15s;
-  margin-top:4px;
-}
+/* type-specific blocks */
+.type-block{display:none;margin-top:12px;padding-top:12px;border-top:1px solid var(--b)}
+.type-block.show{display:block}
+
+/* color picker */
+.color-row{display:flex;align-items:center;gap:10px}
+.color-swatch{width:36px;height:36px;border-radius:var(--rad);border:2px solid var(--bm);cursor:pointer;flex-shrink:0;transition:border-color .15s}
+.color-swatch:hover{border-color:var(--p)}
+input[type=color]{opacity:0;width:0;height:0;position:absolute}
+.color-presets{display:flex;gap:6px;flex-wrap:wrap}
+.preset{width:24px;height:24px;border-radius:50%;cursor:pointer;border:2px solid transparent;transition:border-color .15s,transform .15s}
+.preset:hover{transform:scale(1.15)}
+.preset.sel-p{border-color:var(--t)}
+
+/* logo upload */
+.logo-upload{display:flex;align-items:center;gap:12px}
+.logo-preview{width:52px;height:52px;border-radius:var(--rad);background:var(--s2);border:1px solid var(--b);display:flex;align-items:center;justify-content:center;overflow:hidden;flex-shrink:0}
+.logo-preview img{width:100%;height:100%;object-fit:contain}
+.logo-preview svg{color:var(--t3)}
+.logo-actions{display:flex;flex-direction:column;gap:6px}
+
+/* ── BUTTONS ── */
+.btn{display:inline-flex;align-items:center;gap:7px;padding:9px 16px;border-radius:var(--rad);font-size:13px;font-weight:600;font-family:var(--font);border:none;cursor:pointer;text-decoration:none;transition:all .15s;white-space:nowrap}
+.btn-primary{background:var(--p);color:#fff}
+.btn-primary:hover{background:var(--ph);box-shadow:0 4px 14px rgba(77,126,255,.3)}
+.btn-green{background:var(--g);color:#fff}
+.btn-green:hover{background:#16a34a;box-shadow:0 4px 14px rgba(34,197,94,.3)}
+.btn-ghost{background:rgba(255,255,255,.06);color:var(--t2)}
+.btn-ghost:hover{background:rgba(255,255,255,.1);color:var(--t)}
+.btn-danger{background:rgba(239,68,68,.12);color:var(--r);border:1px solid rgba(239,68,68,.2)}
+.btn-danger:hover{background:rgba(239,68,68,.2)}
+.btn-sm{padding:6px 12px;font-size:12px}
+.btn-full{width:100%;justify-content:center}
+.btn:disabled{opacity:.4;cursor:not-allowed;pointer-events:none}
+
+.gen-btn{width:100%;padding:14px;background:linear-gradient(135deg,var(--p) 0%,#7C5CFC 100%);color:#fff;border:none;border-radius:var(--rad);font-size:15px;font-weight:700;font-family:var(--font);cursor:pointer;display:flex;align-items:center;justify-content:center;gap:10px;transition:opacity .2s,transform .15s;margin-top:4px}
 .gen-btn:hover{opacity:.88;transform:translateY(-1px)}
 .gen-btn:active{transform:translateY(0)}
 .gen-btn:disabled{opacity:.45;cursor:not-allowed;transform:none}
 
+/* ── DEMO HINT ── */
+.demo-row{display:flex;justify-content:flex-end;margin-bottom:8px}
+
 /* ── SKELETON ── */
-.skel{
-  background:var(--surface);
-  border:1px solid var(--border);
-  border-radius:var(--r-lg);
-  padding:28px;
-  margin-top:24px;
-  display:none;
-}
+.skel{background:var(--s1);border:1px solid var(--b);border-radius:var(--radl);padding:24px;margin-top:20px;display:none}
 .skel.show{display:block}
-.skel-tag{
-  font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.1em;
-  color:var(--primary);
-  display:flex;align-items:center;gap:8px;margin-bottom:20px;
-}
-.skel-dot{
-  width:6px;height:6px;border-radius:50%;
-  background:var(--primary);
-  animation:blink 1s infinite;
-}
+.skel-tag{font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.1em;color:var(--p);display:flex;align-items:center;gap:8px;margin-bottom:18px}
+.skel-dot{width:6px;height:6px;border-radius:50%;background:var(--p);animation:blink 1s infinite}
 @keyframes blink{0%,100%{opacity:1}50%{opacity:.2}}
-.skel-row{display:flex;gap:12px;margin-bottom:14px;align-items:center}
-.skel-av{
-  width:44px;height:44px;border-radius:var(--r);flex-shrink:0;
-}
-.skel-lines{flex:1;display:flex;flex-direction:column;gap:8px}
-.skel-bar{
-  height:11px;border-radius:5px;
-  background:linear-gradient(90deg,var(--surface-2) 25%,var(--surface-3) 50%,var(--surface-2) 75%);
-  background-size:200% 100%;
-  animation:shimmer 1.4s linear infinite;
-}
-.skel-av{
-  background:linear-gradient(90deg,var(--surface-2) 25%,var(--surface-3) 50%,var(--surface-2) 75%);
-  background-size:200% 100%;
-  animation:shimmer 1.4s linear infinite;
-}
+.skel-bar{height:11px;border-radius:5px;background:linear-gradient(90deg,var(--s2) 25%,var(--s3) 50%,var(--s2) 75%);background-size:200% 100%;animation:shimmer 1.4s linear infinite}
 @keyframes shimmer{0%{background-position:200% 0}100%{background-position:-200% 0}}
-.skel-block{display:flex;flex-direction:column;gap:8px}
+.skel-group{display:flex;flex-direction:column;gap:8px;margin-bottom:14px}
 
 /* ── PROPOSTA OUTPUT ── */
-.proposta{
-  background:var(--surface);
-  border:1px solid var(--border);
-  border-radius:var(--r-lg);
-  overflow:hidden;
-  margin-top:24px;
-  display:none;
-}
+.proposta{background:var(--s1);border:1px solid var(--b);border-radius:var(--radl);overflow:hidden;margin-top:20px;display:none}
 .proposta.show{display:block}
 
-.prop-header{
-  background:linear-gradient(135deg,rgba(77,126,255,.14) 0%,rgba(124,92,252,.07) 100%);
-  border-bottom:1px solid rgba(77,126,255,.14);
-  padding:22px 28px;
-  display:flex;align-items:flex-start;justify-content:space-between;gap:16px;
+.prop-corretor{
+  display:flex;align-items:center;gap:16px;
+  padding:18px 24px;
+  background:var(--s2);
+  border-bottom:1px solid var(--b);
 }
-.prop-badge{
-  display:inline-flex;align-items:center;gap:5px;
-  font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.12em;
-  color:var(--primary);background:var(--primary-s);
-  padding:4px 10px;border-radius:100px;margin-bottom:10px;
-}
-.prop-badge-dot{width:5px;height:5px;border-radius:50%;background:var(--primary)}
-.prop-h2{font-size:19px;font-weight:800;letter-spacing:-.4px;margin-bottom:4px}
-.prop-sub{font-size:13px;color:var(--text-2)}
-.prop-tags{display:flex;gap:6px;flex-wrap:wrap}
-.prop-tag{
-  background:rgba(255,255,255,.06);
-  border:1px solid var(--border);
-  border-radius:6px;padding:4px 10px;
-  font-size:11px;font-weight:600;color:var(--text-2);white-space:nowrap;
-}
+.prop-corretor-logo{width:48px;height:48px;border-radius:var(--rad);background:var(--s3);display:flex;align-items:center;justify-content:center;overflow:hidden;flex-shrink:0}
+.prop-corretor-logo img{width:100%;height:100%;object-fit:contain}
+.prop-corretor-info{flex:1}
+.prop-corretor-nome{font-size:14px;font-weight:700;margin-bottom:2px}
+.prop-corretor-creci{font-size:12px;color:var(--t2)}
+.prop-corretor-contato{font-size:12px;color:var(--t3);margin-top:2px}
 
-.prop-body{padding:24px 28px;display:flex;flex-direction:column;gap:20px}
+.prop-head{background:linear-gradient(135deg,rgba(77,126,255,.13),rgba(124,92,252,.06));border-bottom:1px solid rgba(77,126,255,.13);padding:20px 24px;display:flex;align-items:flex-start;justify-content:space-between;gap:12px}
+.prop-badge{display:inline-flex;align-items:center;gap:5px;font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.12em;color:var(--p);background:var(--ps);padding:3px 9px;border-radius:100px;margin-bottom:8px}
+.prop-badge-dot{width:5px;height:5px;border-radius:50%;background:var(--p)}
+.prop-h2{font-size:18px;font-weight:800;letter-spacing:-.4px;margin-bottom:3px}
+.prop-sub{font-size:12px;color:var(--t2)}
+.prop-tags{display:flex;gap:5px;flex-wrap:wrap;align-items:flex-start}
+.prop-tag{background:rgba(255,255,255,.06);border:1px solid var(--b);border-radius:5px;padding:3px 9px;font-size:11px;font-weight:600;color:var(--t2);white-space:nowrap}
 
-.prop-sec-title{
-  font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.1em;
-  color:var(--text-3);margin-bottom:10px;
-  display:flex;align-items:center;gap:8px;
-}
-.prop-sec-title::after{content:'';flex:1;height:1px;background:var(--border)}
+.prop-imovel{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;padding:16px 24px;border-bottom:1px solid var(--b);background:rgba(255,255,255,.01)}
+@media(max-width:560px){.prop-imovel{grid-template-columns:1fr 1fr}}
+.prop-imovel-item{display:flex;flex-direction:column;gap:2px}
+.pii-label{font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:.09em;color:var(--t3)}
+.pii-val{font-size:13px;font-weight:600;color:var(--t2)}
 
-.prop-text{font-size:14px;color:var(--text-2);line-height:1.8}
+.prop-body{padding:20px 24px;display:flex;flex-direction:column;gap:18px}
+.prop-sec-title{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.1em;color:var(--t3);margin-bottom:8px;display:flex;align-items:center;gap:8px}
+.prop-sec-title::after{content:'';flex:1;height:1px;background:var(--b)}
+.prop-text{font-size:14px;color:var(--t2);line-height:1.8}
 
-/* modalidades grid */
-.mods{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}
+.mods{display:grid;grid-template-columns:repeat(3,1fr);gap:9px}
 @media(max-width:560px){.mods{grid-template-columns:1fr}}
-.mod{
-  background:var(--surface-2);
-  border:1px solid var(--border);
-  border-radius:var(--r);
-  padding:14px;
-}
-.mod.hl{
-  border-color:rgba(77,126,255,.3);
-  background:linear-gradient(135deg,rgba(77,126,255,.08),rgba(77,126,255,.02));
-}
-.mod-label{
-  font-size:9px;font-weight:700;text-transform:uppercase;
-  letter-spacing:.09em;color:var(--text-3);margin-bottom:6px;
-}
-.mod-val{
-  font-size:16px;font-weight:800;letter-spacing:-.4px;
-  color:var(--text);margin-bottom:3px;
-}
-.mod-note{font-size:11px;color:var(--text-3);line-height:1.4}
+.mod{background:var(--s2);border:1px solid var(--b);border-radius:var(--rad);padding:13px}
+.mod.hl{border-color:rgba(77,126,255,.3);background:linear-gradient(135deg,rgba(77,126,255,.08),rgba(77,126,255,.02))}
+.mod-label{font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:.09em;color:var(--t3);margin-bottom:5px}
+.mod-val{font-size:15px;font-weight:800;letter-spacing:-.4px;color:var(--t);margin-bottom:2px}
+.mod-note{font-size:11px;color:var(--t3);line-height:1.4}
+.mod-parcela{font-size:12px;font-weight:700;color:var(--p);margin-top:4px}
 
-.prop-footer{
-  padding:16px 28px;
-  border-top:1px solid var(--border);
-  display:flex;flex-wrap:wrap;gap:8px;align-items:center;
-}
+.prop-foot{padding:14px 24px;border-top:1px solid var(--b);display:flex;flex-wrap:wrap;gap:7px;align-items:center}
 
-/* ── BUTTONS ── */
-.btn{
-  display:inline-flex;align-items:center;gap:7px;
-  padding:9px 16px;border-radius:var(--r);
-  font-size:13px;font-weight:600;font-family:var(--font);
-  border:none;cursor:pointer;text-decoration:none;
-  transition:all .15s;
-}
-.btn-ghost{background:rgba(255,255,255,.06);color:var(--text-2)}
-.btn-ghost:hover{background:rgba(255,255,255,.1);color:var(--text)}
-.btn-primary{background:var(--primary);color:#fff}
-.btn-primary:hover{background:var(--primary-h);box-shadow:0 4px 14px rgba(77,126,255,.3)}
-.btn-sm{padding:7px 14px;font-size:12px}
+/* ── HISTORY VIEW ── */
+.hist-empty{text-align:center;padding:60px 20px}
+.hist-empty svg{color:var(--t3);margin-bottom:16px}
+.hist-empty h3{font-size:17px;font-weight:700;margin-bottom:8px;color:var(--t2)}
+.hist-empty p{font-size:14px;color:var(--t3)}
+.hist-list{display:flex;flex-direction:column;gap:10px}
+.hist-card{background:var(--s1);border:1px solid var(--b);border-radius:var(--radl);padding:16px 20px;display:flex;align-items:center;gap:14px;transition:border-color .15s}
+.hist-card:hover{border-color:var(--bm)}
+.hist-tipo{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:var(--p);background:var(--ps);padding:3px 8px;border-radius:5px;flex-shrink:0}
+.hist-info{flex:1;min-width:0}
+.hist-cliente{font-size:14px;font-weight:700;margin-bottom:2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.hist-imovel{font-size:12px;color:var(--t2);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.hist-meta{font-size:11px;color:var(--t3);margin-top:3px}
+.hist-valor{font-size:14px;font-weight:700;color:var(--t);flex-shrink:0;text-align:right}
+.hist-actions{display:flex;gap:6px;flex-shrink:0}
+
+/* ── CONFIG VIEW ── */
+.cfg-preview{background:var(--s2);border:1px solid var(--b);border-radius:var(--radl);padding:14px 18px;margin-bottom:14px;display:flex;align-items:center;gap:12px}
+.cfg-preview-logo{width:40px;height:40px;border-radius:var(--rad);background:var(--s3);display:flex;align-items:center;justify-content:center;overflow:hidden;flex-shrink:0}
+.cfg-preview-logo img{width:100%;height:100%;object-fit:contain}
+.cfg-preview-name{font-size:14px;font-weight:700}
+.cfg-preview-creci{font-size:11px;color:var(--t2)}
 
 /* ── MOBILE ── */
-.mobile-bar{
-  display:none;position:fixed;top:0;left:0;right:0;z-index:110;
-  height:56px;
-  background:var(--sidebar-bg);
-  border-bottom:1px solid var(--border);
-  padding:0 16px;
-  align-items:center;gap:12px;
-}
+.mob-bar{display:none;position:fixed;top:0;left:0;right:0;z-index:110;height:56px;background:var(--sb);border-bottom:1px solid var(--b);padding:0 14px;align-items:center;gap:10px}
 .mob-logo{font-size:16px;font-weight:800;letter-spacing:-.4px}
-.mob-logo em{color:var(--primary);font-style:normal}
-.ham{
-  background:none;border:none;cursor:pointer;
-  color:var(--text-2);padding:6px;
-  display:flex;align-items:center;border-radius:var(--r);
-}
+.mob-logo em{color:var(--p);font-style:normal}
+.ham{background:none;border:none;cursor:pointer;color:var(--t2);padding:6px;display:flex;align-items:center;border-radius:var(--rad)}
 .ham:hover{background:rgba(255,255,255,.06)}
-.overlay{
-  display:none;position:fixed;inset:0;
-  background:rgba(0,0,0,.65);z-index:95;
-  backdrop-filter:blur(4px);
-}
+.overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.65);z-index:95;backdrop-filter:blur(4px)}
 .overlay.on{display:block}
 
 @media(max-width:900px){
   .sidebar{transform:translateX(-100%)}
-  .sidebar.open{transform:translateX(0);z-index:100}
+  .sidebar.open{transform:translateX(0)}
   .main{margin-left:0;padding-top:56px}
   .topbar{display:none}
-  .mobile-bar{display:flex}
-  .page{padding:20px 16px}
+  .mob-bar{display:flex}
+  .page{padding:18px 14px}
+  .prop-corretor{padding:14px}
+  .prop-head,.prop-body,.prop-foot,.prop-imovel{padding-left:14px;padding-right:14px}
 }
 
 /* ── TOAST ── */
-.toast{
-  position:fixed;bottom:20px;right:20px;z-index:200;
-  background:var(--surface-3);
-  border:1px solid var(--border-md);
-  border-radius:var(--r);
-  padding:10px 16px;
-  font-size:13px;font-weight:500;color:var(--text);
-  box-shadow:0 4px 20px rgba(0,0,0,.4);
-  display:flex;align-items:center;gap:8px;
-  opacity:0;transform:translateY(6px);
-  transition:all .22s ease;
-  pointer-events:none;
-}
+.toast{position:fixed;bottom:18px;right:18px;z-index:200;background:var(--s3);border:1px solid var(--bm);border-radius:var(--rad);padding:10px 16px;font-size:13px;font-weight:500;color:var(--t);box-shadow:0 4px 20px rgba(0,0,0,.4);display:flex;align-items:center;gap:8px;opacity:0;transform:translateY(6px);transition:all .22s ease;pointer-events:none}
 .toast.on{opacity:1;transform:translateY(0)}
-.toast-ok{color:var(--green)}
+.tok{color:var(--g)}
 
-/* ── PRINT ── */
+/* ── PRINT: proposal only ── */
 @media print{
-  .sidebar,.topbar,.mobile-bar,.gen-btn,.prop-footer,.toast{display:none!important}
+  .sidebar,.mob-bar,.topbar,.card,.gen-btn,.skel,.prop-foot,.toast,.demo-row,.banner,#view-history,#view-config,.view:not(.active){display:none!important}
+  body,html{background:#fff!important;color:#000!important}
   .main{margin-left:0!important;padding-top:0!important}
   .page{padding:0!important;max-width:100%!important}
-  .card,.proposta,.prop-header,.prop-body,.mods,.mod{background:#fff!important;color:#000!important;border-color:#ddd!important}
-  .prop-text,.mod-note,.mod-label{color:#444!important}
-  .mod-val,.prop-h2,.prop-sub{color:#000!important}
+  .proposta{display:block!important;border:none!important;box-shadow:none!important}
+  .prop-corretor,.prop-head,.prop-body,.prop-imovel{background:#fff!important;border-color:#e5e7eb!important}
+  .prop-corretor-nome,.prop-h2,.pii-val,.mod-val,.prop-h2{color:#000!important}
+  .prop-corretor-creci,.prop-corretor-contato,.pii-label,.mod-label,.prop-sec-title,.prop-sub,.prop-tag{color:#666!important}
+  .prop-text,.mod-note{color:#333!important}
+  .mod{background:#f9fafb!important;border-color:#e5e7eb!important}
+  .mod.hl{border-color:#3b82f6!important;background:#eff6ff!important}
+  .mod-val{color:#1d40ae!important}
+  .prop-badge{background:#eff6ff!important;color:#1d40ae!important}
+  .prop-head{background:linear-gradient(135deg,#eff6ff,#f0fdf4)!important;border-bottom-color:#bfdbfe!important}
 }
 </style>
 </head>
 <body>
 
-<!-- overlay for mobile sidebar -->
 <div class="overlay" id="overlay" onclick="closeSidebar()"></div>
 
-<!-- mobile topbar -->
-<div class="mobile-bar" role="banner">
+<div class="mob-bar" role="banner">
   <button class="ham" onclick="openSidebar()" aria-label="Abrir menu">
-    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
+    <svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
   </button>
-  <div class="mob-logo">Prop<em>Bot</em></div>
+  <div class="mob-logo">Corretor<em>PRO</em></div>
 </div>
 
-<!-- sidebar -->
 <aside class="sidebar" id="sidebar" aria-label="Menu lateral">
-  <div class="sb-header">
-    <a href="#" class="sb-logo">Prop<em>Bot</em></a>
+  <div class="sb-head">
+    <a href="#" class="sb-logo" onclick="showView('form');return false">Corretor<em>PRO</em></a>
   </div>
-  <nav class="sb-nav" aria-label="Navegação principal">
-    <div class="sb-section">Propostas</div>
-    <a href="#" class="sb-item active" aria-current="page">
-      <svg class="sb-item-icon" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+  <nav class="sb-nav" aria-label="Navegação">
+    <div class="sb-sec">Propostas</div>
+    <button class="sb-item active" data-view="form" onclick="showView('form')">
+      <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
       Nova Proposta
-    </a>
-    <a href="#" class="sb-item">
-      <svg class="sb-item-icon" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
+    </button>
+    <button class="sb-item" data-view="history" onclick="showView('history')">
+      <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
       Minhas Propostas
-    </a>
-    <div class="sb-section">Conta</div>
-    <a href="#" class="sb-item">
-      <svg class="sb-item-icon" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="8" r="4"/><path d="M4 20c0-4 3.6-7 8-7s8 3 8 7"/></svg>
-      Perfil
-    </a>
-    <a href="#" class="sb-item">
-      <svg class="sb-item-icon" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 00.33 1.82l.06.06a2 2 0 010 2.83 2 2 0 01-2.83 0l-.06-.06a1.65 1.65 0 00-1.82-.33 1.65 1.65 0 00-1 1.51V21a2 2 0 01-2 2 2 2 0 01-2-2v-.09A1.65 1.65 0 009 19.4a1.65 1.65 0 00-1.82.33l-.06.06a2 2 0 01-2.83 0 2 2 0 010-2.83l.06-.06A1.65 1.65 0 004.68 15a1.65 1.65 0 00-1.51-1H3a2 2 0 01-2-2 2 2 0 012-2h.09A1.65 1.65 0 004.6 9a1.65 1.65 0 00-.33-1.82l-.06-.06a2 2 0 010-2.83 2 2 0 012.83 0l.06.06A1.65 1.65 0 009 4.68a1.65 1.65 0 001-1.51V3a2 2 0 012-2 2 2 0 012 2v.09a1.65 1.65 0 001 1.51 1.65 1.65 0 001.82-.33l.06-.06a2 2 0 012.83 0 2 2 0 010 2.83l-.06.06A1.65 1.65 0 0019.4 9a1.65 1.65 0 001.51 1H21a2 2 0 012 2 2 2 0 01-2 2h-.09a1.65 1.65 0 00-1.51 1z"/></svg>
+      <span class="sb-badge" id="sb-count" style="margin-left:auto;background:var(--ps);color:var(--p);font-size:10px;font-weight:700;padding:2px 7px;border-radius:100px;display:none"></span>
+    </button>
+    <div class="sb-sec">Conta</div>
+    <button class="sb-item" data-view="config" onclick="showView('config')">
+      <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 00.33 1.82l.06.06a2 2 0 010 2.83 2 2 0 01-2.83 0l-.06-.06a1.65 1.65 0 00-1.82-.33 1.65 1.65 0 00-1 1.51V21a2 2 0 01-2 2 2 2 0 01-2-2v-.09A1.65 1.65 0 009 19.4a1.65 1.65 0 00-1.82.33l-.06.06a2 2 0 01-2.83 0 2 2 0 010-2.83l.06-.06A1.65 1.65 0 004.68 15a1.65 1.65 0 00-1.51-1H3a2 2 0 01-2-2 2 2 0 012-2h.09A1.65 1.65 0 004.6 9a1.65 1.65 0 00-.33-1.82l-.06-.06a2 2 0 010-2.83 2 2 0 012.83 0l.06.06A1.65 1.65 0 009 4.68a1.65 1.65 0 001-1.51V3a2 2 0 012-2 2 2 0 012 2v.09a1.65 1.65 0 001 1.51 1.65 1.65 0 001.82-.33l.06-.06a2 2 0 012.83 0 2 2 0 010 2.83l-.06.06A1.65 1.65 0 0019.4 9a1.65 1.65 0 001.51 1H21a2 2 0 012 2 2 2 0 01-2 2h-.09a1.65 1.65 0 00-1.51 1z"/></svg>
       Configurações
-    </a>
+    </button>
   </nav>
-  <div class="sb-footer">
-    <button class="user-btn" aria-label="Menu do usuário">
-      <div class="user-av" aria-hidden="true">M</div>
-      <div>
-        <div class="user-name">Marcos Oliveira</div>
-        <div class="user-plan">Plano Profissional</div>
+  <div class="sb-foot">
+    <button class="sb-user" onclick="showView('config')" aria-label="Ir para configurações">
+      <div class="u-av" id="sb-av" style="background:var(--p)">C</div>
+      <div style="min-width:0">
+        <div class="u-name" id="sb-nome">Configure seu perfil</div>
+        <div class="u-plan">CorretorPRO</div>
       </div>
     </button>
   </div>
 </aside>
 
-<!-- main -->
 <div class="main">
-
-  <!-- topbar (desktop) -->
   <div class="topbar">
-    <div class="topbar-crumb">
-      <span>Propostas</span>
+    <div class="crumb">
+      <span id="crumb-root">Propostas</span>
       <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 18 15 12 9 6"/></svg>
-      <b>Nova Proposta</b>
+      <b id="crumb-page">Nova Proposta</b>
     </div>
     <div class="topbar-right">
-      <button class="btn btn-ghost btn-sm" onclick="resetAll()">
-        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="1 4 1 10 7 10"/><path d="M3.51 15a9 9 0 102.13-9.36L1 10"/></svg>
-        Limpar tudo
+      <button class="btn btn-ghost btn-sm" onclick="carregarExemplo()" id="btn-exemplo" title="Preencher com dados de exemplo">
+        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="5 3 19 12 5 21 5 3"/></svg>
+        Carregar exemplo
+      </button>
+      <button class="btn btn-ghost btn-sm" onclick="resetForm()">
+        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="1 4 1 10 7 10"/><path d="M3.51 15a9 9 0 102.13-9.36L1 10"/></svg>
+        Limpar
       </button>
     </div>
   </div>
 
-  <!-- page -->
-  <main class="page" id="page-top">
+  <main class="page">
 
-    <div class="page-head">
-      <h1 class="page-h1">Nova Proposta Comercial</h1>
-      <p class="page-sub">Preencha os dados do imóvel e do cliente — a proposta fica pronta em segundos.</p>
+    <!-- ── BANNER PROFILE ── -->
+    <div class="banner" id="banner-profile">
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+      <p><b>Seu perfil ainda não está configurado.</b> Configure seu nome, CRECI e logo para que a proposta saia com a sua marca. <a onclick="showView('config')">Configurar agora</a></p>
     </div>
 
-    <!-- FORM -->
-    <form id="form" onsubmit="gerarProposta(event)" novalidate>
-
-      <div class="card">
-        <div class="card-title">Dados do Cliente</div>
-        <div class="fg fg-1">
-          <div class="field">
-            <label class="label" for="cliente">Nome do Cliente <span class="req">*</span></label>
-            <input id="cliente" type="text" class="inp" placeholder="Ex: João Silva" required autocomplete="name">
-          </div>
-        </div>
+    <!-- ══════════════════ VIEW: NOVA PROPOSTA ══════════════════ -->
+    <div class="view active" id="view-form">
+      <div class="ph">
+        <h1>Nova Proposta Comercial</h1>
+        <p>Preencha os dados do cliente e do imóvel para gerar a proposta com sua marca.</p>
       </div>
 
-      <div class="card">
-        <div class="card-title">Dados do Imóvel</div>
-        <div class="fg">
-          <div class="field f2">
-            <label class="label" for="imovel">Endereço / Descrição <span class="req">*</span></label>
-            <input id="imovel" type="text" class="inp" placeholder="Ex: Apartamento 78m² — Av. Paulista, 1000, Bela Vista, SP" required>
-          </div>
-          <div class="field">
-            <label class="label" for="valor">Valor do Imóvel <span class="req">*</span></label>
-            <div class="pfx">
-              <span class="pfx-label">R$</span>
-              <input id="valor" type="text" class="inp" placeholder="450.000" required inputmode="numeric">
+      <div class="demo-row">
+        <button class="btn btn-ghost btn-sm" onclick="carregarExemplo()">
+          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="5 3 19 12 5 21 5 3"/></svg>
+          Ver exemplo preenchido
+        </button>
+      </div>
+
+      <form id="form" onsubmit="gerarProposta(event)" novalidate>
+
+        <div class="card">
+          <div class="card-t">Cliente</div>
+          <div class="fg fg1">
+            <div class="field">
+              <label class="lbl" for="f-cliente">Nome do cliente <span class="req">*</span></label>
+              <input id="f-cliente" type="text" class="inp" placeholder="Ex: João Silva" required autocomplete="name">
             </div>
           </div>
-          <div class="field">
-            <label class="label" for="tipo">Tipo de Negociação <span class="req">*</span></label>
-            <select id="tipo" class="sel inp" required>
-              <option value="" disabled selected>Selecione</option>
-              <option>Compra</option>
-              <option>Locação</option>
-              <option>Permuta</option>
-            </select>
+        </div>
+
+        <div class="card">
+          <div class="card-t">Imóvel</div>
+          <div class="fg">
+            <div class="field">
+              <label class="lbl" for="f-tipo-imovel">Tipo do imóvel <span class="req">*</span></label>
+              <select id="f-tipo-imovel" class="sel" required>
+                <option value="" disabled selected>Selecione</option>
+                <option>Apartamento</option>
+                <option>Casa</option>
+                <option>Terreno</option>
+                <option>Sala Comercial</option>
+                <option>Galpão</option>
+                <option>Cobertura</option>
+                <option>Flat / Studio</option>
+              </select>
+            </div>
+            <div class="field">
+              <label class="lbl" for="f-tipo-neg">Tipo de negociação <span class="req">*</span></label>
+              <select id="f-tipo-neg" class="sel" required onchange="atualizarTipoNeg()">
+                <option value="" disabled selected>Selecione</option>
+                <option>Compra</option>
+                <option>Locação</option>
+                <option>Permuta</option>
+              </select>
+            </div>
+            <div class="field f2">
+              <label class="lbl" for="f-end">Endereço <span class="req">*</span></label>
+              <input id="f-end" type="text" class="inp" placeholder="Ex: Av. Paulista, 1000 — Bela Vista, São Paulo, SP" required>
+            </div>
+            <div class="field">
+              <label class="lbl" for="f-area">Área (m²)</label>
+              <input id="f-area" type="number" class="inp" placeholder="78" min="1" step="0.5">
+            </div>
+            <div class="field">
+              <label class="lbl" for="f-dorms">Dormitórios</label>
+              <select id="f-dorms" class="sel">
+                <option value="">—</option>
+                <option>Studio</option>
+                <option>1</option><option>2</option><option>3</option>
+                <option>4</option><option>5+</option>
+              </select>
+            </div>
+            <div class="field">
+              <label class="lbl" for="f-vagas">Vagas de garagem</label>
+              <select id="f-vagas" class="sel">
+                <option value="">—</option>
+                <option>0</option><option>1</option><option>2</option>
+                <option>3</option><option>4+</option>
+              </select>
+            </div>
+            <div class="field">
+              <label class="lbl" for="f-valor">Valor <span class="req">*</span></label>
+              <div class="pfx">
+                <span class="pfx-l">R$</span>
+                <input id="f-valor" type="text" class="inp" placeholder="450.000" required inputmode="numeric">
+              </div>
+            </div>
+          </div>
+
+          <!-- COMPRA específico -->
+          <div class="type-block" id="blk-compra">
+            <div class="fg">
+              <div class="field">
+                <label class="lbl" for="f-prazo">Prazo financiamento</label>
+                <select id="f-prazo" class="sel">
+                  <option value="120">10 anos (120 meses)</option>
+                  <option value="180">15 anos (180 meses)</option>
+                  <option value="240">20 anos (240 meses)</option>
+                  <option value="300" selected>25 anos (300 meses)</option>
+                  <option value="360">30 anos (360 meses)</option>
+                </select>
+              </div>
+              <div class="field">
+                <label class="lbl" for="f-taxa">Taxa de juros (% a.a.)</label>
+                <input id="f-taxa" type="number" class="inp" placeholder="10.5" value="10.5" min="1" max="30" step="0.1">
+                <span class="hint">Ref: Caixa ~10,5% a.a. (SBPE/2025)</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- LOCAÇÃO específico -->
+          <div class="type-block" id="blk-locacao">
+            <div class="fg">
+              <div class="field">
+                <label class="lbl" for="f-garantia">Tipo de garantia</label>
+                <select id="f-garantia" class="sel">
+                  <option value="Fiador">Fiador</option>
+                  <option value="Depósito caução (3 meses)">Depósito caução (3 meses)</option>
+                  <option value="Seguro fiança">Seguro fiança</option>
+                  <option value="Título de capitalização">Título de capitalização</option>
+                </select>
+              </div>
+            </div>
+          </div>
+
+          <!-- PERMUTA específico -->
+          <div class="type-block" id="blk-permuta">
+            <div class="fg">
+              <div class="field">
+                <label class="lbl" for="f-complem">Complemento em dinheiro (opcional)</label>
+                <div class="pfx">
+                  <span class="pfx-l">R$</span>
+                  <input id="f-complem" type="text" class="inp" placeholder="50.000" inputmode="numeric">
+                </div>
+                <span class="hint">Deixe vazio para permuta total</span>
+              </div>
+            </div>
           </div>
         </div>
-      </div>
 
-      <div class="card">
-        <div class="card-title">Condições e Observações</div>
-        <div class="fg fg-1">
-          <div class="field">
-            <label class="label" for="cond">Condições especiais</label>
-            <textarea id="cond" class="txa inp" placeholder="Ex: cliente tem FGTS disponível, aceita financiamento de até 30 anos, busca documentação rápida, prefere entrada de 20%..."></textarea>
+        <div class="card">
+          <div class="card-t">Condições e Observações</div>
+          <div class="fg fg1">
+            <div class="field">
+              <label class="lbl" for="f-cond">Condições especiais (opcional)</label>
+              <textarea id="f-cond" class="txa inp" placeholder="Ex: cliente tem FGTS disponível, aceita financiamento, documentação em dia, disponível para visita nos finais de semana..."></textarea>
+            </div>
           </div>
         </div>
-      </div>
 
-      <button type="submit" class="gen-btn" id="gen-btn">
-        <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>
-        Gerar Proposta com IA
-      </button>
+        <button type="submit" class="gen-btn" id="gen-btn">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>
+          Gerar Proposta
+        </button>
+      </form>
 
-    </form>
-
-    <!-- SKELETON -->
-    <div class="skel" id="skel">
-      <div class="skel-tag">
-        <div class="skel-dot"></div>
-        Gerando sua proposta...
-      </div>
-      <div class="skel-row">
-        <div class="skel-av"></div>
-        <div class="skel-lines">
-          <div class="skel-bar" style="width:55%"></div>
-          <div class="skel-bar" style="width:35%"></div>
+      <!-- SKELETON -->
+      <div class="skel" id="skel">
+        <div class="skel-tag"><div class="skel-dot"></div>Gerando proposta personalizada...</div>
+        <div class="skel-group">
+          <div class="skel-bar" style="width:40%"></div>
+          <div class="skel-bar" style="width:65%"></div>
+        </div>
+        <div class="skel-group">
+          <div class="skel-bar" style="width:100%"></div>
+          <div class="skel-bar" style="width:88%"></div>
+          <div class="skel-bar" style="width:75%"></div>
+        </div>
+        <div class="skel-group">
+          <div class="skel-bar" style="width:100%"></div>
+          <div class="skel-bar" style="width:60%"></div>
         </div>
       </div>
-      <div class="skel-block">
-        <div class="skel-bar" style="width:100%"></div>
-        <div class="skel-bar" style="width:90%"></div>
-        <div class="skel-bar" style="width:75%"></div>
-        <div class="skel-bar" style="width:82%"></div>
-        <div class="skel-bar" style="width:60%"></div>
-        <div class="skel-bar" style="width:45%;margin-top:4px"></div>
+
+      <!-- PROPOSTA GERADA -->
+      <div class="proposta" id="proposta">
+
+        <!-- Cabeçalho do corretor -->
+        <div class="prop-corretor" id="pc-corretor">
+          <div class="prop-corretor-logo" id="pc-logo">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>
+          </div>
+          <div class="prop-corretor-info">
+            <div class="prop-corretor-nome" id="pc-nome">—</div>
+            <div class="prop-corretor-creci" id="pc-creci"></div>
+            <div class="prop-corretor-contato" id="pc-contato"></div>
+          </div>
+        </div>
+
+        <!-- Header da proposta -->
+        <div class="prop-head">
+          <div>
+            <div class="prop-badge"><div class="prop-badge-dot"></div>Proposta Comercial</div>
+            <h2 class="prop-h2" id="p-titulo"></h2>
+            <p class="prop-sub" id="p-sub"></p>
+          </div>
+          <div class="prop-tags">
+            <span class="prop-tag" id="p-tag-tipo"></span>
+            <span class="prop-tag" id="p-tag-data"></span>
+          </div>
+        </div>
+
+        <!-- Grid do imóvel -->
+        <div class="prop-imovel" id="p-imovel-grid"></div>
+
+        <!-- Corpo -->
+        <div class="prop-body">
+          <div>
+            <div class="prop-sec-title">Apresentação</div>
+            <p class="prop-text" id="p-intro"></p>
+          </div>
+          <div>
+            <div class="prop-sec-title" id="p-mods-title">Condições de Pagamento</div>
+            <div class="mods" id="p-mods"></div>
+          </div>
+          <div>
+            <div class="prop-sec-title">Sobre o Imóvel</div>
+            <p class="prop-text" id="p-sobre"></p>
+          </div>
+          <div>
+            <div class="prop-sec-title">Próximos Passos</div>
+            <p class="prop-text" id="p-proximos"></p>
+          </div>
+        </div>
+
+        <!-- Ações -->
+        <div class="prop-foot">
+          <button class="btn btn-ghost" onclick="copiar()">
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1"/></svg>
+            Copiar texto
+          </button>
+          <button class="btn btn-ghost" onclick="baixarPDF()">
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+            Baixar PDF
+          </button>
+          <button class="btn btn-ghost" onclick="compartilharWA()">
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 11.5a8.38 8.38 0 01-.9 3.8 8.5 8.5 0 01-7.6 4.7 8.38 8.38 0 01-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 01-.9-3.8 8.5 8.5 0 014.7-7.6 8.38 8.38 0 013.8-.9h.5a8.48 8.48 0 018 8v.5z"/></svg>
+            WhatsApp
+          </button>
+          <button class="btn btn-green" onclick="salvarProposta()">
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 21H5a2 2 0 01-2-2V5a2 2 0 012-2h11l5 5v11a2 2 0 01-2 2z"/><polyline points="17 21 17 13 7 13 7 21"/><polyline points="7 3 7 8 15 8"/></svg>
+            Salvar
+          </button>
+          <button class="btn btn-primary" onclick="novaProposta()">
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+            Nova proposta
+          </button>
+        </div>
       </div>
+    </div><!-- /view-form -->
+
+    <!-- ══════════════════ VIEW: MINHAS PROPOSTAS ══════════════════ -->
+    <div class="view" id="view-history">
+      <div class="ph">
+        <h1>Minhas Propostas</h1>
+        <p>Histórico das suas últimas propostas geradas.</p>
+      </div>
+      <div id="history-content"></div>
     </div>
 
-    <!-- PROPOSTA GERADA -->
-    <div class="proposta" id="proposta">
-      <div class="prop-header">
+    <!-- ══════════════════ VIEW: CONFIGURAÇÕES ══════════════════ -->
+    <div class="view" id="view-config">
+      <div class="ph">
+        <h1>Configurações do Perfil</h1>
+        <p>Sua marca aparecerá em todas as propostas geradas.</p>
+      </div>
+
+      <!-- Preview -->
+      <div class="cfg-preview" id="cfg-preview">
+        <div class="cfg-preview-logo" id="cfg-prev-logo">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>
+        </div>
         <div>
-          <div class="prop-badge">
-            <div class="prop-badge-dot"></div>
-            Proposta gerada
+          <div class="cfg-preview-name" id="cfg-prev-nome">Seu Nome Aqui</div>
+          <div class="cfg-preview-creci" id="cfg-prev-creci">CRECI 00000-SP</div>
+        </div>
+      </div>
+
+      <form id="form-config" onsubmit="salvarConfig(event)" novalidate>
+        <div class="card">
+          <div class="card-t">Identidade Profissional</div>
+          <div class="fg">
+            <div class="field">
+              <label class="lbl" for="c-nome">Seu nome completo <span class="req">*</span></label>
+              <input id="c-nome" type="text" class="inp" placeholder="Ex: Marcos Oliveira" required oninput="atualizarPreview()">
+            </div>
+            <div class="field">
+              <label class="lbl" for="c-creci">CRECI</label>
+              <input id="c-creci" type="text" class="inp" placeholder="Ex: 87432-SP" oninput="atualizarPreview()">
+            </div>
+            <div class="field">
+              <label class="lbl" for="c-tel">Telefone / WhatsApp</label>
+              <input id="c-tel" type="tel" class="inp" placeholder="(11) 99999-9999">
+            </div>
+            <div class="field">
+              <label class="lbl" for="c-email">E-mail</label>
+              <input id="c-email" type="email" class="inp" placeholder="marcos@imobiliaria.com.br">
+            </div>
           </div>
-          <h2 class="prop-h2" id="p-titulo"></h2>
-          <p class="prop-sub" id="p-sub"></p>
-        </div>
-        <div class="prop-tags">
-          <span class="prop-tag" id="p-tipo-tag"></span>
-          <span class="prop-tag" id="p-data-tag"></span>
-        </div>
-      </div>
-
-      <div class="prop-body">
-
-        <div>
-          <div class="prop-sec-title">Apresentação</div>
-          <p class="prop-text" id="p-intro"></p>
         </div>
 
-        <div>
-          <div class="prop-sec-title">Condições de Pagamento</div>
-          <div class="mods" id="p-mods"></div>
+        <div class="card">
+          <div class="card-t">Identidade Visual</div>
+          <div class="fg">
+            <div class="field f2">
+              <label class="lbl">Logo</label>
+              <div class="logo-upload">
+                <div class="logo-preview" id="logo-prev">
+                  <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>
+                </div>
+                <div class="logo-actions">
+                  <label class="btn btn-ghost btn-sm" style="cursor:pointer">
+                    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
+                    Enviar logo
+                    <input type="file" id="c-logo" accept="image/*" style="display:none" onchange="carregarLogo(event)">
+                  </label>
+                  <button type="button" class="btn btn-ghost btn-sm" onclick="removerLogo()">Remover</button>
+                </div>
+              </div>
+              <span class="hint">PNG ou JPG recomendado. Máx 1MB.</span>
+            </div>
+            <div class="field f2">
+              <label class="lbl">Cor da marca</label>
+              <div class="color-row">
+                <div class="color-swatch" id="color-swatch" onclick="document.getElementById('c-cor').click()" style="background:var(--p)"></div>
+                <input type="color" id="c-cor" value="#4D7EFF" oninput="atualizarCor(this.value)">
+                <div class="color-presets">
+                  <div class="preset" style="background:#4D7EFF" onclick="atualizarCor('#4D7EFF')" title="Azul"></div>
+                  <div class="preset" style="background:#7C5CFC" onclick="atualizarCor('#7C5CFC')" title="Roxo"></div>
+                  <div class="preset" style="background:#22C55E" onclick="atualizarCor('#22C55E')" title="Verde"></div>
+                  <div class="preset" style="background:#F59E0B" onclick="atualizarCor('#F59E0B')" title="Âmbar"></div>
+                  <div class="preset" style="background:#EF4444" onclick="atualizarCor('#EF4444')" title="Vermelho"></div>
+                  <div class="preset" style="background:#0EA5E9" onclick="atualizarCor('#0EA5E9')" title="Celeste"></div>
+                  <div class="preset" style="background:#6B7280" onclick="atualizarCor('#6B7280')" title="Cinza"></div>
+                </div>
+              </div>
+            </div>
+          </div>
         </div>
 
-        <div>
-          <div class="prop-sec-title">Por que este imóvel?</div>
-          <p class="prop-text" id="p-diferenciais"></p>
+        <div style="display:flex;gap:10px;align-items:center">
+          <button type="submit" class="btn btn-primary">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 21H5a2 2 0 01-2-2V5a2 2 0 012-2h11l5 5v11a2 2 0 01-2 2z"/><polyline points="17 21 17 13 7 13 7 21"/><polyline points="7 3 7 8 15 8"/></svg>
+            Salvar configurações
+          </button>
+          <button type="button" class="btn btn-ghost" onclick="showView('form')">Cancelar</button>
         </div>
-
-        <div>
-          <div class="prop-sec-title">Próximos Passos</div>
-          <p class="prop-text" id="p-proximos"></p>
-        </div>
-
-      </div>
-
-      <div class="prop-footer">
-        <button class="btn btn-ghost" onclick="copiar()">
-          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1"/></svg>
-          Copiar texto
-        </button>
-        <button class="btn btn-ghost" onclick="baixarPDF()">
-          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
-          Baixar PDF
-        </button>
-        <button class="btn btn-ghost" onclick="whatsapp()">
-          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 11.5a8.38 8.38 0 01-.9 3.8 8.5 8.5 0 01-7.6 4.7 8.38 8.38 0 01-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 01-.9-3.8 8.5 8.5 0 014.7-7.6 8.38 8.38 0 013.8-.9h.5a8.48 8.48 0 018 8v.5z"/></svg>
-          WhatsApp
-        </button>
-        <button class="btn btn-primary" onclick="novaProposta()">
-          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
-          Nova proposta
-        </button>
-      </div>
-    </div>
+      </form>
+    </div><!-- /view-config -->
 
   </main>
 </div>
 
-<!-- toast -->
 <div class="toast" id="toast">
-  <svg class="toast-ok" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>
+  <svg class="tok" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>
   <span id="toast-txt"></span>
 </div>
 
 <script>
-/* ── state ── */
-let _snap = {}
+/* ── ESC HTML ── */
+const escH = s => String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;')
+
+/* ── STATE ── */
+let perfil = JSON.parse(localStorage.getItem('cpr_perfil') || 'null') || { nome:'',creci:'',tel:'',email:'',cor:'#4D7EFF',logo:null }
+let historico = JSON.parse(localStorage.getItem('cpr_hist') || '[]')
+let snapProposta = null
 let _toastT = null
 
-/* ── valor formatter ── */
-document.getElementById('valor').addEventListener('input', e => {
-  const raw = e.target.value.replace(/\D/g, '')
-  e.target.value = raw ? parseInt(raw, 10).toLocaleString('pt-BR') : ''
-})
+/* ── INIT ── */
+;(function init() {
+  aplicarPerfil()
+  renderSidebarUser()
+  atualizarBadgeHist()
+  if (!perfil.nome) {
+    document.getElementById('banner-profile').classList.add('show')
+  }
+  carregarFormConfig()
+  atualizarPreview()
+  // init cor
+  atualizarCor(perfil.cor || '#4D7EFF')
+})()
 
-/* ── gerar proposta ── */
+/* ── VIEWS ── */
+function showView(name) {
+  document.querySelectorAll('.view').forEach(v => v.classList.remove('active'))
+  document.getElementById('view-' + name).classList.add('active')
+  document.querySelectorAll('.sb-item[data-view]').forEach(i => i.classList.toggle('active', i.dataset.view === name))
+  const labels = { form:'Nova Proposta', history:'Minhas Propostas', config:'Configurações' }
+  const roots  = { form:'Propostas', history:'Propostas', config:'Conta' }
+  document.getElementById('crumb-page').textContent = labels[name] || name
+  document.getElementById('crumb-root').textContent = roots[name] || name
+  // topbar buttons only for form
+  const btnEx = document.getElementById('btn-exemplo')
+  if (btnEx) btnEx.style.display = name === 'form' ? '' : 'none'
+  if (name === 'history') renderHistory()
+  closeSidebar()
+  window.scrollTo({ top: 0, behavior: 'smooth' })
+}
+
+/* ── VALOR FORMATTER ── */
+const fmtInput = id => {
+  const el = document.getElementById(id)
+  if (!el) return
+  el.addEventListener('input', e => {
+    const raw = e.target.value.replace(/\D/g,'')
+    e.target.value = raw ? parseInt(raw,10).toLocaleString('pt-BR') : ''
+  })
+}
+fmtInput('f-valor')
+fmtInput('f-complem')
+
+/* ── TIPO NEGOCIAÇÃO → mostrar bloco específico ── */
+function atualizarTipoNeg() {
+  const tipo = document.getElementById('f-tipo-neg').value
+  document.getElementById('blk-compra').classList.toggle('show', tipo === 'Compra')
+  document.getElementById('blk-locacao').classList.toggle('show', tipo === 'Locação')
+  document.getElementById('blk-permuta').classList.toggle('show', tipo === 'Permuta')
+}
+
+/* ── EXEMPLO ── */
+function carregarExemplo() {
+  document.getElementById('f-cliente').value   = 'João Silva'
+  document.getElementById('f-tipo-imovel').value = 'Apartamento'
+  document.getElementById('f-tipo-neg').value  = 'Compra'
+  document.getElementById('f-end').value       = 'Av. Paulista, 1000, Bela Vista — São Paulo, SP'
+  document.getElementById('f-area').value      = '78'
+  document.getElementById('f-dorms').value     = '3'
+  document.getElementById('f-vagas').value     = '2'
+  document.getElementById('f-valor').value     = '450.000'
+  document.getElementById('f-prazo').value     = '300'
+  document.getElementById('f-taxa').value      = '10.5'
+  document.getElementById('f-cond').value      = 'Cliente tem FGTS disponível e busca financiamento de longo prazo'
+  atualizarTipoNeg()
+  showView('form')
+  toast('Exemplo carregado — clique em Gerar Proposta')
+}
+
+/* ── CALCULAR PARCELA (Tabela Price) ── */
+function calcParcela(pv, taxaAnual, meses) {
+  const i = Math.pow(1 + taxaAnual/100, 1/12) - 1
+  if (i === 0) return pv / meses
+  return pv * (i * Math.pow(1+i,meses)) / (Math.pow(1+i,meses) - 1)
+}
+
+/* ── GERAR PROPOSTA ── */
 function gerarProposta(ev) {
   ev.preventDefault()
   const form = document.getElementById('form')
   if (!form.checkValidity()) { form.reportValidity(); return }
 
-  const cliente = document.getElementById('cliente').value.trim()
-  const imovel  = document.getElementById('imovel').value.trim()
-  const valor   = document.getElementById('valor').value.trim()
-  const tipo    = document.getElementById('tipo').value
-  const cond    = document.getElementById('cond').value.trim()
+  const d = {
+    cliente:    document.getElementById('f-cliente').value.trim(),
+    tipoImovel: document.getElementById('f-tipo-imovel').value,
+    tipoNeg:    document.getElementById('f-tipo-neg').value,
+    end:        document.getElementById('f-end').value.trim(),
+    area:       document.getElementById('f-area').value,
+    dorms:      document.getElementById('f-dorms').value,
+    vagas:      document.getElementById('f-vagas').value,
+    valor:      document.getElementById('f-valor').value.trim(),
+    prazo:      parseInt(document.getElementById('f-prazo')?.value || '300'),
+    taxa:       parseFloat(document.getElementById('f-taxa')?.value || '10.5'),
+    garantia:   document.getElementById('f-garantia')?.value || 'Fiador',
+    complem:    document.getElementById('f-complem')?.value.trim() || '',
+    cond:       document.getElementById('f-cond').value.trim(),
+  }
+  snapProposta = d
 
-  _snap = { cliente, imovel, valor, tipo, cond }
-
-  /* disable button + loading state */
   const btn = document.getElementById('gen-btn')
   btn.disabled = true
-  btn.innerHTML = `<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="animation:spin .8s linear infinite"><path d="M21 12a9 9 0 11-18 0 9 9 0 0118 0z" stroke-opacity=".3"/><path d="M21 12a9 9 0 00-9-9"/></svg> Gerando...`
+  btn.innerHTML = '<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="animation:spin .8s linear infinite"><path d="M21 12a9 9 0 11-18 0 9 9 0 0118 0z" stroke-opacity=".3"/><path d="M21 12a9 9 0 00-9-9"/></svg> Gerando...'
 
-  /* hide old result, show skeleton */
-  const skel     = document.getElementById('skel')
-  const proposta = document.getElementById('proposta')
-  proposta.classList.remove('show')
+  const skel = document.getElementById('skel')
+  const prop = document.getElementById('proposta')
+  prop.classList.remove('show')
   skel.classList.add('show')
+  setTimeout(() => skel.scrollIntoView({ behavior:'smooth', block:'start' }), 60)
 
-  /* scroll to skeleton */
-  setTimeout(() => skel.scrollIntoView({ behavior: 'smooth', block: 'start' }), 50)
-
-  /* after delay: build + show result */
   setTimeout(() => {
-    construirProposta(cliente, imovel, valor, tipo, cond)
+    construirProposta(d)
     skel.classList.remove('show')
-    proposta.classList.add('show')
+    prop.classList.add('show')
     btn.disabled = false
-    btn.innerHTML = `<svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg> Gerar Proposta com IA`
-    setTimeout(() => proposta.scrollIntoView({ behavior: 'smooth', block: 'start' }), 50)
-  }, 1800)
+    btn.innerHTML = '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg> Gerar Proposta'
+    setTimeout(() => prop.scrollIntoView({ behavior:'smooth', block:'start' }), 60)
+  }, 1700)
 }
 
-/* ── construir conteúdo da proposta ── */
-function construirProposta(cliente, imovel, valor, tipo, cond) {
-  const hoje = new Date().toLocaleDateString('pt-BR', { day:'2-digit', month:'long', year:'numeric' })
-  const nomeImovel = imovel.split('—')[0].split(',')[0].trim()
-  const valorFmt = valor ? `R$ ${valor}` : 'Valor a confirmar'
+/* ── CONSTRUIR PROPOSTA ── */
+function construirProposta(d) {
+  const hoje = new Date().toLocaleDateString('pt-BR',{day:'2-digit',month:'long',year:'numeric'})
+  const valNum = parseFloat(d.valor.replace(/\./g,'').replace(',','.')) || 0
+  const valorFmt = valNum ? 'R$ ' + valNum.toLocaleString('pt-BR') : 'A confirmar'
+  const nomeCorretor = perfil.nome || 'Corretor(a)'
 
-  /* header */
-  document.getElementById('p-titulo').textContent = `Proposta de ${tipo} — ${nomeImovel}`
-  document.getElementById('p-sub').textContent    = `Cliente: ${cliente} · ${hoje}`
-  document.getElementById('p-tipo-tag').textContent = tipo
-  document.getElementById('p-data-tag').textContent = hoje
+  /* ── Cabeçalho corretor ── */
+  document.getElementById('pc-nome').textContent = perfil.nome || '—'
+  document.getElementById('pc-creci').textContent = perfil.creci ? 'CRECI ' + perfil.creci : ''
+  const contatos = [perfil.tel, perfil.email].filter(Boolean).join(' · ')
+  document.getElementById('pc-contato').textContent = contatos
 
-  /* intro */
-  document.getElementById('p-intro').innerHTML =
-    `Prezado(a) <strong>${cliente}</strong>, apresentamos esta proposta comercial para o imóvel <strong>${imovel}</strong>. Elaboramos as melhores condições de negociação para que você possa tomar uma decisão segura e com total clareza sobre o investimento.`
+  const logoEl = document.getElementById('pc-logo')
+  logoEl.innerHTML = ''
+  if (perfil.logo) {
+    const img = document.createElement('img')
+    img.src = perfil.logo
+    img.alt = 'Logo ' + escH(perfil.nome)
+    logoEl.appendChild(img)
+  } else {
+    const cor = perfil.cor || '#4D7EFF'
+    logoEl.style.background = cor + '22'
+    const letra = document.createElement('span')
+    letra.style.cssText = `font-size:20px;font-weight:800;color:${cor}`
+    letra.textContent = (perfil.nome || 'C')[0].toUpperCase()
+    logoEl.appendChild(letra)
+  }
 
-  /* modalidades */
-  const valNum = parseFloat(valor.replace(/\./g,'').replace(',','.')) || 0
-  const vAvista = valNum ? `R$ ${Math.round(valNum * 0.97).toLocaleString('pt-BR')}` : valorFmt
-  const vFgts   = valNum ? `R$ ${Math.round(valNum * 0.10).toLocaleString('pt-BR')} entrada` : 'A calcular'
+  /* ── Header ── */
+  document.getElementById('p-titulo').textContent = `${d.tipoNeg} — ${d.tipoImovel} · ${d.end.split(',')[0].trim()}`
+  document.getElementById('p-sub').textContent = `Para ${d.cliente} · ${hoje}`
+  document.getElementById('p-tag-tipo').textContent = d.tipoNeg
+  document.getElementById('p-tag-data').textContent = hoje
 
-  const mods = [
-    { label:'À Vista',       val: vAvista,  note:'Desconto de 3% para pagamento imediato', hl:false },
-    { label:'Financiamento', val: valorFmt, note:'Entrada + parcelas mensais · FGTS aceito', hl:true  },
-    { label:'FGTS',          val: vFgts,    note:'Uso do saldo FGTS como composição de entrada', hl:false },
-  ]
-  const modsEl = document.getElementById('p-mods')
-  modsEl.innerHTML = ''
-  mods.forEach(m => {
-    const d = document.createElement('div')
-    d.className = `mod${m.hl ? ' hl' : ''}`
-    d.innerHTML = `<div class="mod-label">${m.label}</div><div class="mod-val">${m.val}</div><div class="mod-note">${m.note}</div>`
-    modsEl.appendChild(d)
+  /* ── Grid do imóvel ── */
+  const gridItems = [
+    { label:'Tipo', val: d.tipoImovel },
+    { label:'Valor', val: valorFmt },
+    d.area ? { label:'Área', val: d.area + ' m²' } : null,
+    d.dorms && d.dorms !== '—' ? { label:'Dormitórios', val: d.dorms } : null,
+    d.vagas && d.vagas !== '—' ? { label:'Vagas', val: d.vagas } : null,
+    { label:'Negociação', val: d.tipoNeg },
+  ].filter(Boolean)
+
+  const grid = document.getElementById('p-imovel-grid')
+  grid.innerHTML = ''
+  gridItems.forEach(item => {
+    const div = document.createElement('div')
+    div.className = 'prop-imovel-item'
+    div.innerHTML = `<div class="pii-label">${escH(item.label)}</div><div class="pii-val">${escH(item.val)}</div>`
+    grid.appendChild(div)
   })
 
-  /* diferenciais */
-  const extra = cond
-    ? `Considerando as condições informadas — <em>${cond}</em> — há flexibilidade para ajustar as condições e encontrar o melhor caminho para fechar o negócio.`
-    : 'O imóvel apresenta documentação regularizada e disponibilidade imediata, o que agiliza muito o processo de aquisição.'
-  document.getElementById('p-diferenciais').innerHTML =
-    `${extra} Imóveis com esse perfil têm alta liquidez no mercado atual, o que torna esta uma oportunidade com potencial de valorização consistente.`
+  /* ── Intro ── */
+  const detalhes = [
+    d.area ? `${escH(d.area)} m²` : null,
+    d.dorms && d.dorms !== '—' ? `${escH(d.dorms)} dormitório${d.dorms === '1' ? '' : 's'}` : null,
+    d.vagas && d.vagas !== '—' ? `${escH(d.vagas)} vaga${d.vagas === '1' ? '' : 's'}` : null,
+  ].filter(Boolean).join(', ')
 
-  /* próximos passos */
-  document.getElementById('p-proximos').innerHTML =
-    `<strong>1.</strong> Confirme interesse em até 48h para reservarmos o imóvel. <strong>2.</strong> Agende uma visita presencial para análise detalhada. <strong>3.</strong> Nossa equipe realiza simulação de financiamento sem compromisso. Estou à disposição para qualquer dúvida — entre em contato agora mesmo.`
+  document.getElementById('p-intro').innerHTML =
+    `Prezado(a) <strong>${escH(d.cliente)}</strong>, é com prazer que apresento esta proposta para o <strong>${escH(d.tipoImovel)}</strong> localizado em <strong>${escH(d.end)}</strong>${detalhes ? ` (${detalhes})` : ''}. Elaborei as melhores condições disponíveis para que você tome uma decisão com segurança e clareza.`
+
+  /* ── Modalidades por tipo ── */
+  const modsEl = document.getElementById('p-mods')
+  modsEl.innerHTML = ''
+
+  if (d.tipoNeg === 'Compra') {
+    document.getElementById('p-mods-title').textContent = 'Condições de Pagamento'
+    const vAvista = valNum ? Math.round(valNum * 0.97) : 0
+    const vFgts20 = valNum ? Math.round(valNum * 0.20) : 0
+    const vFinanc = valNum ? Math.round(valNum * 0.80) : 0
+    let parcela = ''
+    if (valNum && d.prazo && d.taxa) {
+      const p = calcParcela(vFinanc, d.taxa, d.prazo)
+      parcela = 'R$ ' + Math.round(p).toLocaleString('pt-BR') + '/mês'
+    }
+    const prazoAnos = Math.round(d.prazo / 12)
+
+    const mods = [
+      { label:'À Vista', val: vAvista ? 'R$ ' + vAvista.toLocaleString('pt-BR') : valorFmt, note:`Desconto de 3% no valor anunciado`, parcela:'', hl:false },
+      { label:'Financiamento', val: valorFmt, note:`Entrada de 20% + saldo em ${prazoAnos} anos · taxa ${d.taxa}% a.a.`, parcela: parcela ? `Parcela estimada: ${parcela}` : '', hl:true },
+      { label:'FGTS', val: vFgts20 ? 'R$ ' + vFgts20.toLocaleString('pt-BR') : 'Consultar', note:'Entrada mínima de 20% via FGTS + financiamento do saldo', parcela: vFinanc ? `Saldo financiado: R$ ${vFinanc.toLocaleString('pt-BR')}` : '', hl:false },
+    ]
+    mods.forEach(m => {
+      const d2 = document.createElement('div')
+      d2.className = `mod${m.hl ? ' hl' : ''}`
+      d2.innerHTML = `<div class="mod-label">${escH(m.label)}</div><div class="mod-val">${escH(m.val)}</div><div class="mod-note">${escH(m.note)}</div>${m.parcela ? `<div class="mod-parcela">${escH(m.parcela)}</div>` : ''}`
+      modsEl.appendChild(d2)
+    })
+
+  } else if (d.tipoNeg === 'Locação') {
+    document.getElementById('p-mods-title').textContent = 'Condições de Locação'
+    const aluguel = valNum
+    const caucao  = aluguel ? Math.round(aluguel * 3) : 0
+    const mods = [
+      { label:'Aluguel mensal', val: valorFmt, note:'Valor mensal conforme anúncio', hl:true },
+      { label:'Caução', val: caucao ? 'R$ ' + caucao.toLocaleString('pt-BR') : '3x o aluguel', note:'3 meses de aluguel — devolvido ao fim do contrato', hl:false },
+      { label:'Garantia', val: d.garantia, note:'Modalidade de garantia exigida pelo proprietário', hl:false },
+    ]
+    mods.forEach(m => {
+      const d2 = document.createElement('div')
+      d2.className = `mod${m.hl ? ' hl' : ''}`
+      d2.innerHTML = `<div class="mod-label">${escH(m.label)}</div><div class="mod-val">${escH(m.val)}</div><div class="mod-note">${escH(m.note)}</div>`
+      modsEl.appendChild(d2)
+    })
+
+  } else if (d.tipoNeg === 'Permuta') {
+    document.getElementById('p-mods-title').textContent = 'Condições de Permuta'
+    const complemNum = parseFloat((d.complem||'').replace(/\./g,'').replace(',','.')) || 0
+    const mods = [
+      { label:'Permuta', val: complemNum ? 'Parcial' : 'Total', note: complemNum ? `Troca do imóvel + R$ ${complemNum.toLocaleString('pt-BR')} de complemento` : 'Troca integral de imóveis sem torna financeira', hl:true },
+      { label:'Avaliação', val: valorFmt, note:'Valor de referência do imóvel ofertado', hl:false },
+      { label:'Documentação', val: 'Verificação', note:'Análise jurídica de ambos os imóveis como condição', hl:false },
+    ]
+    mods.forEach(m => {
+      const d2 = document.createElement('div')
+      d2.className = `mod${m.hl ? ' hl' : ''}`
+      d2.innerHTML = `<div class="mod-label">${escH(m.label)}</div><div class="mod-val">${escH(m.val)}</div><div class="mod-note">${escH(m.note)}</div>`
+      modsEl.appendChild(d2)
+    })
+  }
+
+  /* ── Sobre o imóvel ── */
+  const extras = d.cond
+    ? `Considerando as observações: <em>${escH(d.cond)}</em>. `
+    : ''
+  const tipoTexto = d.tipoNeg === 'Locação'
+    ? 'A localização e as condições de conservação fazem desta uma oportunidade de destaque no mercado de locação atual.'
+    : d.tipoNeg === 'Permuta'
+    ? 'O imóvel possui documentação em dia e apresenta excelente potencial para viabilizar uma permuta vantajosa para ambas as partes.'
+    : 'O imóvel apresenta documentação regularizada e disponibilidade imediata — fatores que agilizam todo o processo de aquisição.'
+  document.getElementById('p-sobre').innerHTML = extras + tipoTexto
+
+  /* ── Próximos passos ── */
+  const ps = d.tipoNeg === 'Locação'
+    ? `<strong>1.</strong> Confirme interesse e apresente a documentação para análise de cadastro. <strong>2.</strong> Agendamos a visita e assinatura do contrato. Estou disponível para esclarecer qualquer dúvida — fique à vontade para me ligar ou chamar no WhatsApp.`
+    : d.tipoNeg === 'Permuta'
+    ? `<strong>1.</strong> Apresente documentação do seu imóvel para análise jurídica. <strong>2.</strong> Realizamos vistoria dos dois imóveis para confirmar valores. <strong>3.</strong> Fechamos o contrato de permuta. Estou à disposição para conduzir todo o processo.`
+    : `<strong>1.</strong> Confirme interesse em até 48h para reservarmos o imóvel. <strong>2.</strong> Agende uma visita presencial para análise detalhada. <strong>3.</strong> Faço uma simulação de financiamento personalizada sem compromisso. Estou à disposição — entre em contato quando quiser.`
+  document.getElementById('p-proximos').innerHTML = ps
 }
 
-/* ── ações ── */
+/* ── COPIAR TEXTO (inclui todas as seções) ── */
 function copiar() {
   if (!document.getElementById('proposta').classList.contains('show')) return
+  const nome   = document.getElementById('pc-nome').textContent
+  const creci  = document.getElementById('pc-creci').textContent
   const titulo = document.getElementById('p-titulo').textContent
+  const sub    = document.getElementById('p-sub').textContent
   const intro  = document.getElementById('p-intro').innerText
-  const dif    = document.getElementById('p-diferenciais').innerText
-  const prox   = document.getElementById('p-proximos').innerText
-  const txt = `${titulo}\n\n${intro}\n\n${dif}\n\n${prox}`
+
+  // Modalidades (DOM → texto)
+  const modsEl = document.getElementById('p-mods')
+  const modsTexto = Array.from(modsEl.children).map(m => {
+    const label = m.querySelector('.mod-label')?.textContent || ''
+    const val   = m.querySelector('.mod-val')?.textContent || ''
+    const note  = m.querySelector('.mod-note')?.textContent || ''
+    const parc  = m.querySelector('.mod-parcela')?.textContent || ''
+    return `${label}: ${val} — ${note}${parc ? ' · ' + parc : ''}`
+  }).join('\n')
+
+  const sobre   = document.getElementById('p-sobre').innerText
+  const proximos= document.getElementById('p-proximos').innerText
+
+  const linhasCabecalho = [nome, creci ? 'CRECI ' + creci : null].filter(Boolean).join(' | ')
+  const txt = [
+    linhasCabecalho,
+    '━━━━━━━━━━━━━━━━━━━━━',
+    titulo,
+    sub,
+    '',
+    intro,
+    '',
+    '── Condições ──',
+    modsTexto,
+    '',
+    sobre,
+    '',
+    proximos,
+  ].join('\n')
+
   navigator.clipboard.writeText(txt)
-    .then(() => toast('Proposta copiada!'))
+    .then(() => toast('Proposta copiada com todas as seções!'))
     .catch(() => toast('Selecione o texto e use Ctrl+C'))
 }
 
+/* ── BAIXAR PDF (print CSS isola a proposta) ── */
 function baixarPDF() {
   if (!document.getElementById('proposta').classList.contains('show')) return
-  toast('Abrindo para salvar como PDF...')
+  toast('Abrindo impressão — salve como PDF...')
   setTimeout(() => window.print(), 400)
 }
 
-function whatsapp() {
-  if (!_snap.cliente) return
-  const msg = `Olá ${_snap.cliente}! Segue proposta para ${_snap.imovel} (${_snap.tipo}), valor ${_snap.valor ? 'R$ ' + _snap.valor : 'a confirmar'}. Preparei as melhores condições para você. Quando podemos conversar?`
+/* ── WHATSAPP (mensagem completa) ── */
+function compartilharWA() {
+  if (!snapProposta) return
+  const d = snapProposta
+  const corretor = perfil.nome || 'seu corretor'
+  const valFmt = d.valor ? 'R$ ' + d.valor : 'valor a confirmar'
+  let cond = ''
+  if (d.tipoNeg === 'Compra') {
+    const valNum = parseFloat(d.valor.replace(/\./g,'').replace(',','.')) || 0
+    const vAvista = valNum ? Math.round(valNum * 0.97).toLocaleString('pt-BR') : '—'
+    cond = `• À Vista: R$ ${vAvista} (desc. 3%)\n• Financiamento: ${valFmt} + parcelas\n• FGTS: entrada de 20% + financiamento`
+  } else if (d.tipoNeg === 'Locação') {
+    cond = `• Aluguel: ${valFmt}/mês\n• Garantia: ${d.garantia}`
+  } else {
+    cond = `• Permuta ${d.complem ? 'parcial (+ R$ ' + d.complem + ')' : 'total'}`
+  }
+  const msg =
+    `Olá ${d.cliente}! Aqui é ${corretor}${perfil.creci ? ' (CRECI ' + perfil.creci + ')' : ''}.\n\n` +
+    `Segue a proposta para o *${d.tipoImovel}* — ${d.end}:\n\n` +
+    `*Tipo:* ${d.tipoNeg}\n*Valor:* ${valFmt}\n\n` +
+    `*Condições:*\n${cond}\n\n` +
+    (d.cond ? `*Obs:* ${d.cond}\n\n` : '') +
+    `Estou à disposição para qualquer dúvida. Quando podemos conversar?`
   window.open(`https://wa.me/?text=${encodeURIComponent(msg)}`, '_blank', 'noopener')
 }
 
+/* ── SALVAR PROPOSTA ── */
+function salvarProposta() {
+  if (!snapProposta) return
+  const item = {
+    id: Date.now(),
+    data: new Date().toLocaleDateString('pt-BR'),
+    ...snapProposta,
+    tituloGerado: document.getElementById('p-titulo').textContent,
+  }
+  historico.unshift(item)
+  if (historico.length > 20) historico = historico.slice(0, 20)
+  localStorage.setItem('cpr_hist', JSON.stringify(historico))
+  atualizarBadgeHist()
+  toast('Proposta salva em Minhas Propostas!')
+}
+
+/* ── NOVA PROPOSTA ── */
 function novaProposta() {
   document.getElementById('proposta').classList.remove('show')
   document.getElementById('skel').classList.remove('show')
   document.getElementById('form').reset()
-  window.scrollTo({ top: 0, behavior: 'smooth' })
-  setTimeout(() => document.getElementById('cliente').focus(), 400)
+  atualizarTipoNeg()
+  snapProposta = null
+  window.scrollTo({ top:0, behavior:'smooth' })
+  setTimeout(() => document.getElementById('f-cliente').focus(), 350)
+}
+function resetForm() { novaProposta() }
+
+/* ── HISTORY ── */
+function atualizarBadgeHist() {
+  const badge = document.getElementById('sb-count')
+  if (historico.length > 0) {
+    badge.textContent = historico.length
+    badge.style.display = 'inline'
+  } else {
+    badge.style.display = 'none'
+  }
 }
 
-function resetAll() {
-  novaProposta()
+function renderHistory() {
+  const el = document.getElementById('history-content')
+  if (historico.length === 0) {
+    el.innerHTML = `<div class="hist-empty">
+      <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
+      <h3>Nenhuma proposta salva</h3>
+      <p>Gere sua primeira proposta e clique em "Salvar" para vê-la aqui.</p>
+    </div>`
+    return
+  }
+  el.innerHTML = `<div class="hist-list">${historico.map((h,i) => `
+    <div class="hist-card">
+      <span class="hist-tipo">${escH(h.tipoNeg||'—')}</span>
+      <div class="hist-info">
+        <div class="hist-cliente">${escH(h.cliente||'—')}</div>
+        <div class="hist-imovel">${escH(h.tipoImovel||'')} · ${escH((h.end||'').split(',')[0])}</div>
+        <div class="hist-meta">${escH(h.data||'')}</div>
+      </div>
+      <div class="hist-valor">${h.valor ? 'R$ ' + escH(h.valor) : '—'}</div>
+      <div class="hist-actions">
+        <button class="btn btn-ghost btn-sm" onclick="excluirProposta(${i})" aria-label="Excluir">
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 01-2 2H8a2 2 0 01-2-2L5 6"/><path d="M10 11v6M14 11v6"/><path d="M9 6V4h6v2"/></svg>
+        </button>
+      </div>
+    </div>`).join('')}</div>`
 }
 
-/* ── toast ── */
+function excluirProposta(i) {
+  historico.splice(i, 1)
+  localStorage.setItem('cpr_hist', JSON.stringify(historico))
+  atualizarBadgeHist()
+  renderHistory()
+  toast('Proposta removida')
+}
+
+/* ── CONFIG / PERFIL ── */
+function carregarFormConfig() {
+  document.getElementById('c-nome').value  = perfil.nome  || ''
+  document.getElementById('c-creci').value = perfil.creci || ''
+  document.getElementById('c-tel').value   = perfil.tel   || ''
+  document.getElementById('c-email').value = perfil.email || ''
+  document.getElementById('c-cor').value   = perfil.cor   || '#4D7EFF'
+  atualizarCor(perfil.cor || '#4D7EFF')
+  if (perfil.logo) {
+    const prev = document.getElementById('logo-prev')
+    prev.innerHTML = `<img src="${perfil.logo}" alt="Logo">`
+  }
+}
+
+function atualizarPreview() {
+  const nome  = document.getElementById('c-nome')?.value.trim() || 'Seu Nome Aqui'
+  const creci = document.getElementById('c-creci')?.value.trim() || 'CRECI 00000-SP'
+  document.getElementById('cfg-prev-nome').textContent  = nome
+  document.getElementById('cfg-prev-creci').textContent = creci ? 'CRECI ' + creci : ''
+  // update sidebar too
+  renderSidebarUser()
+}
+
+function salvarConfig(ev) {
+  ev.preventDefault()
+  const nome = document.getElementById('c-nome').value.trim()
+  if (!nome) { document.getElementById('c-nome').focus(); return }
+  perfil.nome  = nome
+  perfil.creci = document.getElementById('c-creci').value.trim()
+  perfil.tel   = document.getElementById('c-tel').value.trim()
+  perfil.email = document.getElementById('c-email').value.trim()
+  perfil.cor   = document.getElementById('c-cor').value
+  localStorage.setItem('cpr_perfil', JSON.stringify(perfil))
+  aplicarPerfil()
+  renderSidebarUser()
+  document.getElementById('banner-profile').classList.remove('show')
+  toast('Perfil salvo! Suas propostas terão sua marca.')
+  showView('form')
+}
+
+function aplicarPerfil() {
+  // apply brand color to CSS var
+  if (perfil.cor) {
+    document.documentElement.style.setProperty('--p', perfil.cor)
+    // derive hover (slightly darker)
+    document.documentElement.style.setProperty('--ph', perfil.cor)
+    document.documentElement.style.setProperty('--ps', perfil.cor + '1F')
+  }
+}
+
+function renderSidebarUser() {
+  const av = document.getElementById('sb-av')
+  const nm = document.getElementById('sb-nome')
+  nm.textContent = perfil.nome || 'Configure seu perfil'
+  av.innerHTML = ''
+  av.style.background = perfil.cor || '#4D7EFF'
+  if (perfil.logo) {
+    const img = document.createElement('img')
+    img.src = perfil.logo
+    img.alt = ''
+    img.style.cssText = 'width:100%;height:100%;object-fit:cover;border-radius:50%'
+    av.appendChild(img)
+  } else {
+    av.textContent = (perfil.nome || 'C')[0].toUpperCase()
+  }
+}
+
+/* ── COR ── */
+function atualizarCor(hex) {
+  perfil.cor = hex
+  document.getElementById('c-cor').value = hex
+  document.getElementById('color-swatch').style.background = hex
+  // highlight selected preset
+  document.querySelectorAll('.preset').forEach(p => {
+    p.classList.toggle('sel-p', p.style.background === hex || p.getAttribute('onclick')?.includes(hex))
+  })
+  aplicarPerfil()
+}
+
+/* ── LOGO UPLOAD ── */
+function carregarLogo(ev) {
+  const file = ev.target.files[0]
+  if (!file) return
+  if (file.size > 1024 * 1024) { toast('Logo muito grande — máx 1MB'); return }
+  const reader = new FileReader()
+  reader.onload = e => {
+    perfil.logo = e.target.result
+    const prev = document.getElementById('logo-prev')
+    prev.innerHTML = `<img src="${perfil.logo}" alt="Logo">`
+    const prevCfg = document.getElementById('cfg-prev-logo')
+    prevCfg.innerHTML = `<img src="${perfil.logo}" alt="Logo" style="width:100%;height:100%;object-fit:contain">`
+    renderSidebarUser()
+    toast('Logo carregado')
+  }
+  reader.readAsDataURL(file)
+}
+
+function removerLogo() {
+  perfil.logo = null
+  document.getElementById('logo-prev').innerHTML = `<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>`
+  document.getElementById('cfg-prev-logo').innerHTML = `<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>`
+  renderSidebarUser()
+}
+
+/* ── TOAST ── */
 function toast(msg) {
   const el = document.getElementById('toast')
   document.getElementById('toast-txt').textContent = msg
@@ -776,7 +1234,7 @@ function toast(msg) {
   _toastT = setTimeout(() => el.classList.remove('on'), 2800)
 }
 
-/* ── mobile sidebar ── */
+/* ── MOBILE SIDEBAR ── */
 function openSidebar() {
   document.getElementById('sidebar').classList.add('open')
   document.getElementById('overlay').classList.add('on')
@@ -788,10 +1246,10 @@ function closeSidebar() {
   document.body.style.overflow = ''
 }
 
-/* ── spin keyframe ── */
-const _s = document.createElement('style')
-_s.textContent = '@keyframes spin{to{transform:rotate(360deg)}}'
-document.head.appendChild(_s)
+/* ── SPIN KEYFRAME ── */
+const _ks = document.createElement('style')
+_ks.textContent = '@keyframes spin{to{transform:rotate(360deg)}}'
+document.head.appendChild(_ks)
 </script>
 </body>
 </html>
