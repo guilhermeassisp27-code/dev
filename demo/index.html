@@ -3,267 +3,619 @@
 <head>
 <meta charset="UTF-8"/>
 <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-<title>Gerador de Propostas com IA</title>
-<script src="https://cdn.tailwindcss.com"></script>
+<title>PropostaPro — Gerador de Propostas Comerciais</title>
 <style>
-  body{background:#0f0f13;color:#e5e7eb;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;min-height:100vh}
-  .card{background:#18181f;border:1px solid #2a2a35;border-radius:12px}
-  .card-sel{border-color:#6366f1;background:rgba(99,102,241,.06);box-shadow:0 0 0 1px #6366f1}
-  input,textarea{background:#0f0f13;border:1px solid #2a2a35;border-radius:8px;padding:10px 14px;color:#e5e7eb;font-size:14px;width:100%;box-sizing:border-box;outline:none;font-family:inherit}
-  input:focus,textarea:focus{border-color:#6366f1}
-  textarea{resize:none}
-  .btn-p{background:#6366f1;color:#fff;border:none;border-radius:8px;padding:13px 20px;font-size:15px;font-weight:600;cursor:pointer;width:100%;display:flex;align-items:center;justify-content:center;gap:8px;transition:background .15s}
-  .btn-p:hover{background:#5254cc}
-  .btn-p:disabled{opacity:.4;cursor:not-allowed}
-  .btn-o{background:transparent;color:#9ca3af;border:1px solid #2a2a35;border-radius:8px;padding:11px 20px;font-size:14px;font-weight:500;cursor:pointer;width:100%;display:flex;align-items:center;justify-content:center;gap:8px;transition:all .15s;font-family:inherit}
-  .btn-o:hover{border-color:#6366f1;color:#e5e7eb}
-  .btn-sm{background:transparent;border:1px solid #2a2a35;border-radius:6px;padding:4px 10px;font-size:12px;color:#9ca3af;cursor:pointer;display:inline-flex;align-items:center;gap:4px;transition:all .15s;font-family:inherit}
-  .btn-sm:hover{border-color:#6366f1;color:#e5e7eb}
-  .tab{padding:8px 14px;font-size:13px;font-weight:500;cursor:pointer;border-radius:6px;color:#9ca3af;transition:all .15s;border:none;background:transparent;font-family:inherit;flex:1;text-align:center}
-  .tab.act{background:#18181f;color:#e5e7eb}
-  .tabbar{background:#0f0f13;border:1px solid #2a2a35;border-radius:8px;padding:3px;display:flex;gap:2px}
-  pre{white-space:pre-wrap;font-family:inherit;font-size:13px;line-height:1.75}
-  .spin{width:16px;height:16px;border:2px solid #6366f1;border-top-color:transparent;border-radius:50%;animation:spin .7s linear infinite;flex-shrink:0;display:inline-block}
-  @keyframes spin{to{transform:rotate(360deg)}}
-  .pulse{animation:pulse 1.5s ease-in-out infinite}
-  @keyframes pulse{0%,100%{opacity:1}50%{opacity:.4}}
-  .hidden{display:none!important}
-  label{font-size:13px;font-weight:500;display:block;margin-bottom:6px}
+:root {
+  --bg: #09090f;
+  --card: #13131c;
+  --border: #1f1f2e;
+  --primary: #7c3aed;
+  --primary-hover: #6d28d9;
+  --primary-alpha: rgba(124,58,237,.12);
+  --text: #f1f5f9;
+  --muted: #64748b;
+  --subtle: #94a3b8;
+  --success: #22c55e;
+  --r: 12px;
+  --r-sm: 8px;
+  --r-xs: 6px;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+body{background:var(--bg);color:var(--text);font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;min-height:100vh;font-size:15px;line-height:1.6}
+.wrap{max-width:700px;margin:0 auto;padding:40px 20px}
+
+h1{font-size:26px;font-weight:800;letter-spacing:-.5px;line-height:1.2}
+h2{font-size:20px;font-weight:700;letter-spacing:-.3px}
+h3{font-size:15px;font-weight:600}
+label{font-size:12px;font-weight:700;color:var(--subtle);display:block;margin-bottom:6px;text-transform:uppercase;letter-spacing:.06em}
+
+.card{background:var(--card);border:1px solid var(--border);border-radius:var(--r);padding:24px}
+.card-sm{background:var(--card);border:1px solid var(--border);border-radius:var(--r);padding:16px}
+.card-scope{background:var(--card);border:1px solid var(--border);border-radius:10px;padding:16px;cursor:pointer;transition:all .15s;position:relative}
+.card-scope:hover{border-color:var(--primary)}
+.card-scope.sel{border-color:var(--primary);background:var(--primary-alpha)}
+
+input,textarea,select{background:var(--bg);border:1px solid var(--border);border-radius:var(--r-sm);padding:11px 14px;color:var(--text);font-size:14px;width:100%;font-family:inherit;outline:none;transition:border-color .15s}
+input:focus,textarea:focus,select:focus{border-color:var(--primary)}
+textarea{resize:vertical}
+input[type=color]{padding:3px;height:42px;cursor:pointer}
+input[type=file]{display:none}
+input.inline{background:transparent;border:none;border-bottom:1px dashed var(--border);border-radius:0;padding:2px 0;font-size:inherit;color:inherit}
+input.inline:focus{border-bottom-color:var(--primary);outline:none}
+
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:7px;padding:12px 18px;border-radius:var(--r-sm);font-size:14px;font-weight:600;cursor:pointer;border:none;font-family:inherit;transition:all .15s;white-space:nowrap}
+.btn-primary{background:var(--primary);color:#fff;width:100%;font-size:15px;padding:15px}
+.btn-primary:hover{background:var(--primary-hover)}
+.btn-primary:disabled{opacity:.35;cursor:not-allowed}
+.btn-outline{background:transparent;border:1px solid var(--border);color:var(--muted);width:100%}
+.btn-outline:hover{border-color:var(--primary);color:var(--text)}
+.btn-sm{background:transparent;border:1px solid var(--border);color:var(--muted);padding:6px 12px;font-size:12px;border-radius:var(--r-xs);cursor:pointer;display:inline-flex;align-items:center;gap:5px;font-family:inherit;transition:all .15s}
+.btn-sm:hover{border-color:var(--primary);color:var(--text)}
+.btn-pdf{background:var(--primary);color:#fff;border-color:var(--primary)}
+.btn-pdf:hover{background:var(--primary-hover);border-color:var(--primary-hover);color:#fff}
+
+.tabbar{background:var(--bg);border:1px solid var(--border);border-radius:var(--r-sm);padding:3px;display:flex;gap:2px}
+.tab{flex:1;padding:9px 10px;font-size:13px;font-weight:500;cursor:pointer;border-radius:6px;color:var(--muted);transition:all .15s;border:none;background:transparent;font-family:inherit;text-align:center}
+.tab.act{background:var(--card);color:var(--text)}
+
+.badge{display:inline-flex;align-items:center;padding:2px 8px;border-radius:999px;font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.06em}
+.badge-primary{background:var(--primary);color:#fff}
+
+.spin{width:16px;height:16px;border:2px solid var(--primary);border-top-color:transparent;border-radius:50%;animation:spin .7s linear infinite;flex-shrink:0;display:inline-block}
+@keyframes spin{to{transform:rotate(360deg)}}
+.pulse{animation:pulse 2s ease-in-out infinite}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:.4}}
+.fade-in{animation:fadeIn .3s ease}
+@keyframes fadeIn{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
+
+.hidden{display:none!important}
+.g2{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+.g3{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}
+.flex{display:flex;align-items:center}
+.between{display:flex;align-items:center;justify-content:space-between}
+.col{display:flex;flex-direction:column}
+.gap4{gap:4px}.gap8{gap:8px}.gap12{gap:12px}.gap16{gap:16px}.gap20{gap:20px}.gap24{gap:24px}
+.mb4{margin-bottom:4px}.mb8{margin-bottom:8px}.mb12{margin-bottom:12px}.mb16{margin-bottom:16px}
+.mb20{margin-bottom:20px}.mb24{margin-bottom:24px}.mb32{margin-bottom:32px}
+.muted{color:var(--muted)}.subtle{color:var(--subtle)}.sm{font-size:13px}.xs{font-size:12px}
+.primary{color:var(--primary)}.semibold{font-weight:600}.bold{font-weight:700}
+pre{white-space:pre-wrap;font-family:inherit;font-size:13px;line-height:1.85}
+
+.logo-zone{width:88px;height:88px;border:2px dashed var(--border);border-radius:12px;display:flex;flex-direction:column;align-items:center;justify-content:center;cursor:pointer;gap:4px;transition:all .15s;flex-shrink:0;overflow:hidden}
+.logo-zone:hover{border-color:var(--primary);background:var(--primary-alpha)}
+.logo-zone img{width:100%;height:100%;object-fit:contain;padding:8px}
+
+.step{display:flex;align-items:center;gap:12px;font-size:14px}
+.step-dot{width:22px;height:22px;border-radius:50%;border:2px solid var(--border);flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:700;transition:all .3s}
+.step-dot.done{border-color:var(--primary);background:var(--primary);color:#fff}
+.step-dot.active{border-color:var(--primary)}
 </style>
 </head>
 <body>
-<div id="app" style="max-width:680px;margin:0 auto;padding:32px 16px"></div>
-
+<div id="root"></div>
 <script>
-const DEMO = {
-  escopos:[
-    {nome:"Essencial",desc:"Gestão de redes sociais com foco em engajamento orgânico.",items:["12 posts/mês (feed + stories)","Copywriting para Instagram e Facebook","Relatório mensal de desempenho"],prazo:"30 dias úteis",valor:"R$ 1.800",star:false},
-    {nome:"Profissional",desc:"Estratégia completa de marketing digital com gestão de tráfego e conteúdo.",items:["20 posts/mês (feed + stories)","Gestão de Meta Ads (tráfego pago)","2 peças gráficas por semana","Reunião quinzenal de alinhamento","Relatório detalhado com insights"],prazo:"45 dias úteis",valor:"R$ 3.500",star:true},
-    {nome:"Premium",desc:"Presença digital completa com estratégia omnichannel e vídeos.",items:["30 posts/mês em todas as redes","Meta Ads + Google Ads","4 Reels/mês (produção inclusa)","Landing page otimizada","Email marketing mensal","Dashboard de resultados em tempo real"],prazo:"60 dias úteis",valor:"R$ 6.800",star:false}
-  ],
-  proposta:`# Proposta Comercial — Marketing Digital
-Preparada para: Padaria do João | Data: ${new Date().toLocaleDateString('pt-BR')} | Validade: 15 dias
-
----
-
-## Apresentação
-
-A [Sua Agência] transforma negócios locais em referências digitais. Nosso trabalho vai além de "postar nas redes" — criamos um ecossistema digital que atrai, engaja e converte clientes reais.
-
-## Entendimento do Desafio
-
-A Padaria do João busca aumentar sua visibilidade online para atrair novos clientes e fidelizar os atuais, num mercado onde a concorrência digital no setor alimentício cresce a cada mês.
-
-## Solução Proposta — Escopo Profissional
-
-Estratégia completa combinando conteúdo orgânico de alta qualidade com tráfego pago segmentado para o público local da região.
-
-## Metodologia
-
-1. Diagnóstico (semana 1): Análise do perfil, benchmarking e definição de personas
-2. Estratégia (semana 2): Calendário editorial, tom de voz e identidade visual digital
-3. Execução (semanas 3–8): Produção de conteúdo + gestão das campanhas
-4. Otimização (contínuo): Análise semanal de métricas e ajustes táticos
-
-## Entregáveis
-
-✓ 20 posts/mês (feed + stories)
-✓ Gestão de Meta Ads com budget gerenciado
-✓ 2 peças gráficas por semana
-✓ Reunião quinzenal de alinhamento estratégico
-✓ Relatório detalhado mensal com insights e próximos passos
-
-## Investimento e Condições
-
-Investimento mensal: R$ 3.500,00
-Pagamento: Boleto ou PIX até dia 5 de cada mês
-Fidelidade: Contrato mínimo de 3 meses
-Início: Em até 7 dias úteis após assinatura`,
-  objecoes:[
-    {q:"O investimento está alto para uma padaria",a:"Entendo. Para contextualizar: se atrairmos apenas 2 novos clientes fixos por semana com ticket médio de R$ 50, o retorno acontece com menos de 10 novos clientes regulares. Temos também o escopo Essencial a R$ 1.800 como ponto de entrada."},
-    {q:"Já tentei agência antes e não funcionou",a:"Justo. A diferença está na nossa metodologia: metas claras desde o início, relatórios quinzenais de transparência e reuniões de alinhamento para garantir que estamos no caminho certo. Você acompanha cada resultado em tempo real."},
-    {q:"Preciso pensar e ver com meu sócio",a:"Claro, faz todo sentido. Posso preparar um resumo executivo de 1 página para facilitar a conversa, ou agendar uma reunião rápida de 20 minutos com vocês dois. Qual opção funciona melhor?"}
-  ],
-  msg:`Olá, João! Tudo bem?
-
-Conforme combinamos, estou enviando nossa proposta comercial para a Padaria do João.
-
-Preparei 3 opções de escopo pensando na realidade do seu negócio — desde um ponto de entrada mais acessível até uma estratégia completa para você dominar o digital na sua região.
-
-Minha recomendação é o escopo Profissional, que combina o melhor custo-benefício e costuma gerar resultados visíveis já no primeiro mês.
-
-Fico à disposição para tirar qualquer dúvida. Podemos conversar ainda essa semana?
-
-Abraço,
-[Seu Nome]
-[Seu WhatsApp]`
+// ─── CONFIG & STATE ───────────────────────────
+const defaultCfg = {
+  empresa:'', nome:'', email:'', whatsapp:'',
+  bio:'', validade:15, cor:'#7c3aed',
+  pagamento:'PIX ou boleto até o 5º dia útil', logo:null
 };
+let cfg = JSON.parse(localStorage.getItem('pp_cfg') || 'null') || {...defaultCfg};
+let page = (cfg.empresa || cfg.nome) ? 'form' : 'setup';
+let tab = 'proposta', selScope = 1;
+let form = {servico:'', cliente:'', segmento:'', contexto:''};
+let scopes = makeScopes();
 
-const STEPS=["Analisando seu serviço e contexto...","Pesquisando práticas de mercado...","Calculando investimentos sugeridos...","Redigindo proposta profissional...","Preparando respostas para objeções..."];
+function makeScopes(){
+  return [
+    {nome:'Essencial',preco:'',prazo:'30 dias',items:['Entregável 1','Entregável 2','Entregável 3'],star:false},
+    {nome:'Profissional',preco:'',prazo:'45 dias',items:['Entregável 1','Entregável 2','Entregável 3','Entregável 4','Entregável 5'],star:true},
+    {nome:'Premium',preco:'',prazo:'60 dias',items:['Entregável 1','Entregável 2','Entregável 3','Entregável 4','Entregável 5','Entregável 6'],star:false}
+  ];
+}
 
-let state='form', escopo=1, tab='proposta';
-
-function $(id){return document.getElementById(id)}
-function show(id){$(id)&&$(id).classList.remove('hidden')}
-function hide(id){$(id)&&$(id).classList.add('hidden')}
-
-function copy(text,btn){
-  navigator.clipboard.writeText(text).catch(()=>{});
-  const orig=btn.innerHTML;
+// ─── UTILS ────────────────────────────────────
+const $ = id => document.getElementById(id);
+function setColor(hex){
+  if(!/^#[0-9a-fA-F]{6}$/.test(hex)) return;
+  document.documentElement.style.setProperty('--primary', hex);
+  const r=parseInt(hex.slice(1,3),16), g=parseInt(hex.slice(3,5),16), b=parseInt(hex.slice(5,7),16);
+  document.documentElement.style.setProperty('--primary-alpha',`rgba(${r},${g},${b},.12)`);
+  const d=[Math.max(0,r-20),Math.max(0,g-20),Math.max(0,b-20)];
+  document.documentElement.style.setProperty('--primary-hover','#'+d.map(v=>v.toString(16).padStart(2,'0')).join(''));
+}
+function toRgb(hex){ return [parseInt(hex.slice(1,3),16),parseInt(hex.slice(3,5),16),parseInt(hex.slice(5,7),16)].join(','); }
+const today = () => new Date().toLocaleDateString('pt-BR');
+function copy(txt, btn){
+  navigator.clipboard.writeText(txt).catch(()=>{});
+  const o=btn.innerHTML;
   btn.innerHTML='✓ Copiado!';
-  btn.style.borderColor='#22c55e';btn.style.color='#22c55e';
-  setTimeout(()=>{btn.innerHTML=orig;btn.style.borderColor='';btn.style.color='';},2000);
+  btn.style.borderColor='var(--success)'; btn.style.color='var(--success)';
+  setTimeout(()=>{ btn.innerHTML=o; btn.style.borderColor=''; btn.style.color=''; }, 2000);
+}
+function readImg(input, cb){
+  const f=input.files[0]; if(!f) return;
+  const r=new FileReader(); r.onload=e=>cb(e.target.result); r.readAsDataURL(f);
+}
+function saveCfg(){ localStorage.setItem('pp_cfg', JSON.stringify(cfg)); }
+function render(){ $('root').innerHTML = buildPage(); setColor(cfg.cor); bindInputs(); }
+function go(p){ page=p; render(); }
+
+// ─── CONTENT GENERATORS ───────────────────────
+function genProposta(){
+  const s=scopes[selScope], emp=cfg.empresa||cfg.nome||'Nossa empresa';
+  return `PROPOSTA COMERCIAL — ${form.servico}
+${'─'.repeat(54)}
+Para: ${form.cliente}${form.segmento?' | Segmento: '+form.segmento:''}
+Data: ${today()} | Validade: ${cfg.validade} dias
+${'─'.repeat(54)}
+
+SOBRE ${emp.toUpperCase()}
+
+${cfg.bio || emp+' é especializada em '+form.servico.toLowerCase()+', com foco total em resultado e satisfação do cliente.'}
+
+${'─'.repeat(54)}
+ENTENDIMENTO DO PROJETO
+
+Entendemos que ${form.cliente} busca ${form.servico.toLowerCase()}${form.segmento?' no segmento de '+form.segmento:''}. ${form.contexto||'Nossa abordagem é orientada a resultados, com metodologia comprovada e acompanhamento próximo em todas as etapas.'}
+
+${'─'.repeat(54)}
+ESCOPO SELECIONADO: ${s.nome.toUpperCase()}
+
+${s.items.map(i=>'  ✓  '+i).join('\n')}
+
+Prazo de entrega: ${s.prazo}
+Investimento: ${s.preco||'A combinar'}
+
+${'─'.repeat(54)}
+CONDIÇÕES COMERCIAIS
+
+• Pagamento: ${cfg.pagamento}
+• Início: Até 5 dias úteis após aprovação
+• Validade: ${cfg.validade} dias a partir desta data
+
+${'─'.repeat(54)}
+${[cfg.nome, cfg.email, cfg.whatsapp?'WhatsApp: '+cfg.whatsapp:'', cfg.empresa].filter(Boolean).join('\n')}`.trim();
 }
 
-function renderForm(){
-  return `
-  <div style="text-align:center;margin-bottom:32px">
-    <div style="width:56px;height:56px;background:rgba(99,102,241,.12);border-radius:16px;display:flex;align-items:center;justify-content:center;margin:0 auto 16px;font-size:28px">✨</div>
-    <h1 style="font-size:24px;font-weight:700;margin:0 0 8px">Gerador de Propostas com IA</h1>
-    <p style="color:#9ca3af;font-size:14px;margin:0">Preencha 3 campos e a IA gera escopo, investimento e proposta completa em segundos.</p>
+function genObjecoes(){
+  return [
+    {q:'O investimento está acima do meu orçamento',
+     a:`Entendo. Temos o escopo ${scopes[0].nome} como ponto de entrada com o mesmo nível de qualidade. Também podemos estruturar o pagamento de forma parcelada para facilitar. O que faz mais sentido para você?`},
+    {q:'Já trabalhei com outro profissional e não tive resultado',
+     a:`Lamento essa experiência. É por isso que trabalhamos com metas claras desde o início, relatórios transparentes e reuniões periódicas de alinhamento. Você acompanha cada resultado em tempo real — sem surpresas.`},
+    {q:'Preciso pensar e consultar meu sócio/parceiro',
+     a:`Claro, faz total sentido! Posso preparar um resumo de 1 página para facilitar essa conversa, ou agendar uma reunião rápida de 20 minutos com vocês dois. O que funciona melhor?`}
+  ];
+}
+
+function genMsg(){
+  const s=scopes[selScope];
+  return `Olá, ${form.cliente}! Tudo bem?\n\nConforme alinhamos, estou enviando a proposta comercial para ${form.servico.toLowerCase()}.\n\nPreparei ${scopes.length} opções de escopo pensadas especialmente para a sua realidade — do ponto de entrada à solução completa.\n\nMinha recomendação é o escopo ${s.nome}, que oferece o melhor custo-benefício com entrega em ${s.prazo}.\n\nFico à disposição para tirar qualquer dúvida. Podemos conversar ainda essa semana?\n\nAbraço,\n${[cfg.nome||cfg.empresa, cfg.whatsapp?'WhatsApp: '+cfg.whatsapp:''].filter(Boolean).join('\n')}`.trim();
+}
+
+// ─── PAGE RENDERERS ───────────────────────────
+function buildPage(){
+  if(page==='setup')  return pageSetup();
+  if(page==='form')   return pageForm();
+  if(page==='load')   return pageLoad(0);
+  if(page==='result') return pageResult();
+  return '';
+}
+
+function pageSetup(){
+  return `<div class="wrap fade-in">
+  <div style="text-align:center;margin-bottom:36px">
+    <div style="font-size:44px;margin-bottom:14px">✨</div>
+    <h1 class="mb8">Configure sua identidade</h1>
+    <p class="muted sm">Essas informações aparecem em todas as suas propostas</p>
   </div>
-  <div class="card" style="padding:24px">
-    <div style="margin-bottom:18px">
-      <label>O que você oferece? <span style="color:#ef4444">*</span></label>
-      <textarea id="f-servico" rows="2" placeholder="Ex: Consultoria de marketing digital, Desenvolvimento de site..."></textarea>
-    </div>
-    <div style="display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-bottom:18px">
-      <div><label>Nome do cliente <span style="color:#ef4444">*</span></label><input id="f-cliente" placeholder="Ex: Empresa ABC"/></div>
-      <div><label>Segmento <span style="color:#6b7280;font-weight:400">(opcional)</span></label><input id="f-seg" placeholder="Ex: Varejo, Saúde..."/></div>
-    </div>
-    <div style="margin-bottom:20px">
-      <label>Contexto adicional <span style="color:#6b7280;font-weight:400">(opcional)</span></label>
-      <textarea id="f-ctx" rows="2" placeholder="Ex: Budget de R$5k, urgência para esse mês, dor principal é conversão..."></textarea>
-    </div>
-    <button class="btn-p" id="btn-gerar" onclick="simular()" disabled style="margin-bottom:10px">✨ Gerar Proposta Completa →</button>
-    <button class="btn-o" onclick="showDemo()">Ver exemplo gerado pela IA</button>
-    <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;margin-top:16px">
-      ${[['📦','3 escopos com preço'],['⚡','Objeções + respostas'],['✉️','Mensagem de envio']].map(([i,t])=>`<div style="display:flex;flex-direction:column;align-items:center;gap:3px;font-size:12px;color:#9ca3af;text-align:center"><span style="font-size:18px">${i}</span>${t}</div>`).join('')}
-    </div>
-  </div>`;
-}
 
-function renderLoading(step){
-  return `
-  <div style="display:flex;flex-direction:column;align-items:center;justify-content:center;min-height:420px;gap:40px">
-    <div style="text-align:center">
-      <div style="width:56px;height:56px;background:rgba(99,102,241,.12);border-radius:16px;display:flex;align-items:center;justify-content:center;margin:0 auto 16px;font-size:28px" class="pulse">✨</div>
-      <h2 style="font-size:20px;font-weight:700;margin:0 0 4px">Gerando sua proposta...</h2>
-      <p style="color:#9ca3af;font-size:14px;margin:0">Isso leva alguns segundos</p>
+  <div class="card mb16">
+    <h3 class="mb20">Marca &amp; Aparência</h3>
+    <div class="flex gap16 mb20">
+      <div>
+        <label>Logo</label>
+        <div class="logo-zone" onclick="$('logo-in').click()">
+          ${cfg.logo ? `<img src="${cfg.logo}"/>` : `<span style="font-size:28px">🏢</span><span class="xs muted">Adicionar</span>`}
+        </div>
+        <input type="file" id="logo-in" accept="image/*" onchange="readImg(this,d=>{cfg.logo=d;render()})"/>
+      </div>
+      <div style="flex:1">
+        <div class="mb16">
+          <label>Nome da empresa / freelancer *</label>
+          <input id="s-emp" value="${escH(cfg.empresa)}" placeholder="Ex: Studio Silva Design"/>
+        </div>
+        <div>
+          <label>Cor da marca</label>
+          <div class="flex gap8">
+            <input type="color" id="s-cor" value="${cfg.cor}" style="width:54px" oninput="cfg.cor=this.value;setColor(this.value);$('s-hex').value=this.value"/>
+            <input id="s-hex" value="${cfg.cor}" placeholder="#7c3aed" oninput="if(/^#[0-9a-fA-F]{6}$/.test(this.value)){cfg.cor=this.value;setColor(this.value);$('s-cor').value=this.value}" style="flex:1"/>
+          </div>
+        </div>
+      </div>
     </div>
-    <div style="display:flex;flex-direction:column;gap:12px;width:100%;max-width:300px">
-      ${STEPS.map((s,i)=>`
-        <div style="display:flex;align-items:center;gap:10px;font-size:14px;color:${i<step?'#6366f1':i===step?'#e5e7eb':'#374151'}">
-          ${i<step?'<span style="color:#6366f1;font-size:16px">✓</span>':i===step?'<div class="spin"></div>':'<span style="width:16px;height:16px;border-radius:50%;border:1.5px solid #374151;display:inline-block;flex-shrink:0"></span>'}
-          ${s}
-        </div>`).join('')}
-    </div>
-  </div>`;
-}
-
-function renderResult(){
-  const e=DEMO.escopos[escopo];
-  return `
-  <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:24px">
     <div>
-      <h2 style="font-size:20px;font-weight:700;margin:0 0 4px">Proposta gerada com sucesso</h2>
-      <p style="color:#9ca3af;font-size:13px;margin:0">Selecione o escopo e copie sua proposta</p>
+      <label>Apresentação institucional</label>
+      <textarea id="s-bio" rows="3" placeholder="Ex: Somos especialistas em marketing digital para pequenas empresas, com +5 anos de experiência e 80+ clientes atendidos.">${escH(cfg.bio)}</textarea>
+      <p class="xs muted" style="margin-top:5px">Aparece no topo de cada proposta gerada</p>
     </div>
-    <button class="btn-sm" onclick="setState('form')">↩ Nova</button>
   </div>
 
-  <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-bottom:20px">
-    ${DEMO.escopos.map((e,i)=>`
-      <div class="card ${escopo===i?'card-sel':''}" style="padding:16px 14px;cursor:pointer;position:relative;transition:all .15s" onclick="selEscopo(${i})">
-        ${e.star?`<div style="position:absolute;top:-10px;left:50%;transform:translateX(-50%);background:#6366f1;color:#fff;font-size:10px;font-weight:700;padding:2px 8px;border-radius:999px;white-space:nowrap">Recomendado</div>`:''}
-        <p style="font-size:10px;font-weight:700;color:#6b7280;text-transform:uppercase;letter-spacing:.1em;margin:4px 0 4px">${e.nome}</p>
-        <p style="font-size:22px;font-weight:700;margin:0 0 4px">${e.valor}</p>
-        <p style="font-size:12px;color:#9ca3af;margin:0 0 10px">⏱ ${e.prazo}</p>
-        <ul style="list-style:none;padding:0;margin:0;display:flex;flex-direction:column;gap:5px">
-          ${e.items.slice(0,4).map(it=>`<li style="font-size:12px;color:#9ca3af;display:flex;align-items:flex-start;gap:5px"><span style="color:#6366f1;flex-shrink:0">✓</span>${it}</li>`).join('')}
-          ${e.items.length>4?`<li style="font-size:12px;color:#6366f1;font-weight:500">+${e.items.length-4} entregáveis</li>`:''}
-        </ul>
+  <div class="card mb24">
+    <h3 class="mb20">Informações de Contato</h3>
+    <div class="g2 mb16">
+      <div><label>Seu nome *</label><input id="s-nome" value="${escH(cfg.nome)}" placeholder="João Silva"/></div>
+      <div><label>WhatsApp</label><input id="s-wp" value="${escH(cfg.whatsapp)}" placeholder="(11) 99999-0000"/></div>
+    </div>
+    <div class="g2">
+      <div><label>E-mail</label><input id="s-em" value="${escH(cfg.email)}" placeholder="joao@empresa.com"/></div>
+      <div>
+        <label>Validade das propostas</label>
+        <select id="s-val">
+          ${[7,10,15,20,30].map(d=>`<option value="${d}"${cfg.validade==d?' selected':''}>${d} dias</option>`).join('')}
+        </select>
+      </div>
+    </div>
+  </div>
+
+  <button class="btn btn-primary mb8" onclick="saveSetup()">Salvar e Continuar →</button>
+  ${(cfg.empresa||cfg.nome)?`<button class="btn btn-outline" onclick="go('form')">Usar configuração salva</button>`:''}
+</div>`;
+}
+
+function pageForm(){
+  return `<div class="wrap fade-in">
+  <div class="between mb32">
+    <div>
+      ${cfg.logo?`<img src="${cfg.logo}" style="height:32px;object-fit:contain;margin-bottom:6px;display:block"/>`:''}
+      <h2 class="mb4">${escH(cfg.empresa)||'Gerador de Propostas'}</h2>
+      <p class="muted sm">Preencha os dados para gerar sua proposta profissional</p>
+    </div>
+    <button class="btn-sm" onclick="go('setup')">⚙️ Editar perfil</button>
+  </div>
+
+  <div class="card mb16">
+    <h3 class="mb20">Dados da Proposta</h3>
+    <div class="mb16">
+      <label>Serviço / Solução oferecida *</label>
+      <textarea id="f-srv" rows="2" placeholder="Ex: Gestão de redes sociais, Desenvolvimento de site, Consultoria financeira...">${escH(form.servico)}</textarea>
+    </div>
+    <div class="g2 mb16">
+      <div><label>Nome do cliente *</label><input id="f-cli" value="${escH(form.cliente)}" placeholder="Ex: Empresa ABC"/></div>
+      <div><label>Segmento <span style="font-weight:400;text-transform:none;letter-spacing:0">(opcional)</span></label><input id="f-seg" value="${escH(form.segmento)}" placeholder="Ex: Varejo, Saúde..."/></div>
+    </div>
+    <div>
+      <label>Contexto adicional <span style="font-weight:400;text-transform:none;letter-spacing:0">(opcional)</span></label>
+      <textarea id="f-ctx" rows="2" placeholder="Ex: Budget de R$5k, urgência para esse mês, maior dor é conversão...">${escH(form.contexto)}</textarea>
+    </div>
+  </div>
+
+  <div class="card mb24">
+    <div class="between mb20">
+      <h3>Escopos e Investimento</h3>
+      <span class="xs muted">Edite nomes, preços e entregáveis</span>
+    </div>
+    <div class="col gap12">
+      ${scopes.map((s,i)=>`
+      <div style="border:1px solid var(--border);border-radius:10px;padding:16px;position:relative">
+        ${s.star?`<div style="position:absolute;top:-10px;right:14px"><span class="badge badge-primary">★ Recomendado</span></div>`:''}
+        <div class="between mb12">
+          <input class="inline" value="${escH(s.nome)}" style="font-size:15px;font-weight:700;width:130px" oninput="scopes[${i}].nome=this.value"/>
+          <input class="inline" value="${escH(s.preco)}" placeholder="R$ 0,00" style="text-align:right;width:120px;font-size:20px;font-weight:800" oninput="scopes[${i}].preco=this.value"/>
+        </div>
+        <div class="flex gap8 mb10">
+          <span class="xs muted">⏱</span>
+          <input class="inline" value="${escH(s.prazo)}" style="font-size:12px;color:var(--muted);width:100px" oninput="scopes[${i}].prazo=this.value"/>
+        </div>
+        <div class="col" style="gap:5px">
+          ${s.items.map((item,j)=>`
+          <div class="flex gap8">
+            <span class="primary sm">✓</span>
+            <input class="inline" value="${escH(item)}" style="flex:1;font-size:13px;color:var(--subtle)" oninput="scopes[${i}].items[${j}]=this.value" placeholder="Descreva o entregável..."/>
+          </div>`).join('')}
+          <button onclick="scopes[${i}].items.push('');render()" style="background:none;border:none;cursor:pointer;text-align:left;padding:4px 0 0 22px;font-size:12px;color:var(--primary);font-family:inherit">+ adicionar item</button>
+        </div>
       </div>`).join('')}
+    </div>
   </div>
 
-  <div class="tabbar" style="margin-bottom:16px">
-    <button class="tab ${tab==='proposta'?'act':''}" onclick="setTab('proposta')">📄 Proposta</button>
-    <button class="tab ${tab==='objecoes'?'act':''}" onclick="setTab('objecoes')">⚡ Objeções (3)</button>
-    <button class="tab ${tab==='msg'?'act':''}" onclick="setTab('msg')">✉️ Mensagem</button>
+  <button class="btn btn-primary mb8" id="btn-go" onclick="gerarProposta()" disabled>✨ Gerar Proposta Completa →</button>
+  <button class="btn btn-outline" onclick="loadDemo()">Ver exemplo pronto</button>
+
+  <div class="g3" style="margin-top:20px">
+    ${[['📄','Proposta completa'],['⚡','Objeções respondidas'],['✉️','Mensagem de envio']].map(([ic,tx])=>`
+    <div class="col" style="align-items:center;gap:5px;font-size:12px;color:var(--muted);text-align:center">
+      <span style="font-size:22px">${ic}</span>${tx}
+    </div>`).join('')}
+  </div>
+</div>`;
+}
+
+function pageLoad(step){
+  const steps=['Analisando serviço e contexto...','Estruturando os 3 escopos...','Calculando investimentos...','Redigindo proposta profissional...','Preparando respostas a objeções...'];
+  return `<div class="wrap" style="display:flex;flex-direction:column;align-items:center;justify-content:center;min-height:85vh;gap:48px">
+  <div style="text-align:center">
+    <div style="font-size:52px;margin-bottom:16px" class="pulse">✨</div>
+    <h2 class="mb8">Gerando sua proposta...</h2>
+    <p class="muted sm">Aguarde alguns instantes</p>
+  </div>
+  <div class="col" style="gap:14px;width:100%;max-width:300px">
+    ${steps.map((s,i)=>`
+    <div class="step">
+      <div class="step-dot ${i<step?'done':i===step?'active':''}">
+        ${i<step?'✓':i===step?'<div class="spin" style="width:10px;height:10px;border-width:2px"></div>':''}
+      </div>
+      <span style="color:${i<=step?'var(--text)':'var(--muted)'}">${s}</span>
+    </div>`).join('')}
+  </div>
+</div>`;
+}
+
+function pageResult(){
+  const s=scopes[selScope];
+  const prop=genProposta(), objs=genObjecoes(), msg=genMsg();
+  return `<div class="wrap fade-in">
+  <div class="between mb24">
+    <div>
+      ${cfg.logo?`<img src="${cfg.logo}" style="height:28px;object-fit:contain;margin-bottom:6px;display:block"/>`:''}
+      <h2 class="mb4">Proposta gerada ✓</h2>
+      <p class="muted sm">Para: <strong style="color:var(--text)">${escH(form.cliente)||'–'}</strong></p>
+    </div>
+    <div class="flex gap8">
+      <button class="btn-sm btn-pdf" onclick="exportPDF()">📄 Exportar PDF</button>
+      <button class="btn-sm" onclick="go('form')">↩ Nova</button>
+    </div>
+  </div>
+
+  <div class="g3 mb20">
+    ${scopes.map((sc,i)=>`
+    <div class="card-scope${selScope===i?' sel':''}" onclick="selScope=${i};render()">
+      ${sc.star?`<div style="position:absolute;top:-9px;left:50%;transform:translateX(-50%)"><span class="badge badge-primary" style="font-size:9px;white-space:nowrap">★ Rec.</span></div>`:''}
+      <p class="xs muted bold" style="text-transform:uppercase;letter-spacing:.1em;margin:${sc.star?'8px':0} 0 3px">${escH(sc.nome)}</p>
+      <p style="font-size:19px;font-weight:800;margin:0 0 2px">${escH(sc.preco)||'–'}</p>
+      <p class="xs muted mb8">⏱ ${escH(sc.prazo)}</p>
+      <ul style="list-style:none;padding:0;display:flex;flex-direction:column;gap:4px">
+        ${sc.items.slice(0,3).map(it=>`<li class="xs muted" style="display:flex;gap:4px"><span class="primary">✓</span>${escH(it)}</li>`).join('')}
+        ${sc.items.length>3?`<li class="xs primary">+${sc.items.length-3} mais</li>`:''}
+      </ul>
+    </div>`).join('')}
+  </div>
+
+  <div class="tabbar mb16">
+    <button class="tab${tab==='proposta'?' act':''}" onclick="tab='proposta';render()">📄 Proposta</button>
+    <button class="tab${tab==='objecoes'?' act':''}" onclick="tab='objecoes';render()">⚡ Objeções (3)</button>
+    <button class="tab${tab==='msg'?' act':''}" onclick="tab='msg';render()">✉️ Mensagem</button>
   </div>
 
   ${tab==='proposta'?`
-  <div class="card" style="padding:20px">
-    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:14px">
-      <span style="font-size:13px;font-weight:600">Escopo ${e.nome} — ${e.valor}</span>
-      <button class="btn-sm" onclick="copy(DEMO.proposta,this)">⎘ Copiar</button>
+  <div class="card">
+    <div class="between mb14">
+      <h3>Escopo ${escH(s.nome)} — ${escH(s.preco)||'a combinar'}</h3>
+      <button class="btn-sm" onclick="copy(genProposta(),this)">⎘ Copiar</button>
     </div>
-    <div style="background:rgba(255,255,255,.03);border-radius:8px;border:1px solid #2a2a35;padding:14px 16px;max-height:420px;overflow-y:auto">
-      <pre style="color:#d1d5db">${DEMO.proposta}</pre>
+    <div style="background:rgba(255,255,255,.025);border:1px solid var(--border);border-radius:8px;padding:16px;max-height:440px;overflow-y:auto">
+      <pre class="subtle">${escH(prop)}</pre>
     </div>
   </div>`:''}
 
   ${tab==='objecoes'?`
-  <div style="display:flex;flex-direction:column;gap:10px">
-    ${DEMO.objecoes.map((o,i)=>`
-    <div class="card" style="padding:16px">
-      <div style="display:flex;gap:12px">
-        <div style="width:26px;height:26px;border-radius:50%;background:rgba(239,68,68,.1);display:flex;align-items:center;justify-content:center;flex-shrink:0;margin-top:2px;font-size:13px">⚡</div>
+  <div class="col gap10">
+    ${objs.map(o=>`
+    <div class="card-sm">
+      <div class="flex gap12">
+        <div style="width:30px;height:30px;border-radius:50%;background:rgba(239,68,68,.1);display:flex;align-items:center;justify-content:center;flex-shrink:0;margin-top:1px">⚡</div>
         <div style="flex:1">
-          <p style="font-size:14px;font-weight:600;margin:0 0 8px">"${o.q}"</p>
-          <div style="display:flex;gap:8px;align-items:flex-start">
-            <div style="width:20px;height:20px;border-radius:50%;background:rgba(99,102,241,.1);display:flex;align-items:center;justify-content:center;flex-shrink:0;margin-top:1px;font-size:11px;color:#6366f1">✓</div>
-            <p style="font-size:13px;color:#9ca3af;margin:0">${o.a}</p>
-          </div>
+          <p class="semibold sm mb8">"${escH(o.q)}"</p>
+          <p class="muted sm">${escH(o.a)}</p>
         </div>
-        <button class="btn-sm" style="flex-shrink:0;align-self:flex-start" onclick="copy('${o.a.replace(/'/g,"\\'")}',this)">⎘</button>
+        <button class="btn-sm" style="flex-shrink:0;align-self:flex-start" onclick="copy(${JSON.stringify(o.a)},this)">⎘</button>
       </div>
     </div>`).join('')}
   </div>`:''}
 
   ${tab==='msg'?`
-  <div class="card" style="padding:20px">
-    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:14px">
-      <span style="font-size:13px;font-weight:600">Mensagem para enviar ao cliente</span>
-      <button class="btn-sm" onclick="copy(DEMO.msg,this)">⎘ Copiar</button>
+  <div class="card">
+    <div class="between mb14">
+      <h3>Mensagem de apresentação</h3>
+      <button class="btn-sm" onclick="copy(genMsg(),this)">⎘ Copiar</button>
     </div>
-    <div style="background:rgba(255,255,255,.03);border-radius:8px;border:1px solid #2a2a35;padding:14px 16px">
-      <pre style="color:#d1d5db">${DEMO.msg}</pre>
+    <div style="background:rgba(255,255,255,.025);border:1px solid var(--border);border-radius:8px;padding:16px">
+      <pre class="subtle">${escH(msg)}</pre>
     </div>
-  </div>`:''}`;
+  </div>`:''}
+
+  <div style="margin-top:20px;padding:18px;border:1px solid var(--border);border-radius:12px;display:flex;align-items:center;gap:14px">
+    <span style="font-size:28px">📄</span>
+    <div style="flex:1">
+      <p class="semibold sm mb4">Exportar Proposta em PDF</p>
+      <p class="xs muted">Com sua logo, cores da marca e layout profissional</p>
+    </div>
+    <button class="btn-sm btn-pdf" onclick="exportPDF()">Gerar PDF</button>
+  </div>
+</div>`;
 }
 
-function render(){
-  const app=document.getElementById('app');
-  if(state==='form') app.innerHTML=renderForm();
-  else if(state==='loading') app.innerHTML=renderLoading(0);
-  else app.innerHTML=renderResult();
-  if(state==='form'){
-    const s=$('f-servico'),c=$('f-cliente'),b=$('btn-gerar');
-    if(s&&c&&b){
-      function check(){b.disabled=!s.value.trim()||!c.value.trim();}
-      s.oninput=check;c.oninput=check;
-    }
-  }
+// ─── ESCAPE HTML ─────────────────────────────
+function escH(s){ return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); }
+
+// ─── PDF EXPORT ───────────────────────────────
+function exportPDF(){
+  const s=scopes[selScope], cor=cfg.cor, rgb=toRgb(cor);
+  const pHtml=`<!DOCTYPE html><html lang="pt-BR"><head>
+<meta charset="UTF-8"/><title>Proposta — ${escH(form.cliente)}</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;color:#111;background:#fff;font-size:13px;line-height:1.65;padding:40px}
+.header{display:flex;align-items:center;justify-content:space-between;padding-bottom:20px;border-bottom:3px solid ${cor};margin-bottom:28px}
+.logo{height:56px;object-fit:contain}
+.logo-ico{width:56px;height:56px;background:${cor};border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:26px;color:#fff}
+.hdr-info{display:flex;align-items:center;gap:14px}
+.hdr-right{text-align:right;font-size:12px;color:#6b7280}
+.hdr-right strong{display:block;font-size:13px;color:#111;margin-top:6px}
+h1{font-size:22px;font-weight:800;color:#111}
+h2{font-size:14px;font-weight:700;color:#111;border-bottom:1px solid #e5e7eb;padding-bottom:6px;margin:0 0 12px}
+.hero{background:${cor};color:#fff;border-radius:12px;padding:22px 24px;margin-bottom:24px;display:flex;align-items:center;justify-content:space-between}
+.hero h3{font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.08em;opacity:.75;margin-bottom:5px}
+.hero h1{font-size:26px;font-weight:800;color:#fff}
+.hero-sub{font-size:13px;opacity:.8;margin-top:6px}
+.hero-right .price{font-size:34px;font-weight:900}
+.hero-right .prazo{font-size:12px;opacity:.8;margin-top:3px;text-align:right}
+.scopes{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-bottom:28px}
+.sc{border:1px solid #e5e7eb;border-radius:10px;padding:14px;position:relative}
+.sc.sel{border:2px solid ${cor};background:rgba(${rgb},.04)}
+.sc .rec{background:${cor};color:#fff;font-size:9px;font-weight:700;padding:2px 8px;border-radius:999px;position:absolute;top:-9px;left:50%;transform:translateX(-50%);white-space:nowrap;text-transform:uppercase}
+.sc .lbl{font-size:10px;font-weight:700;color:#6b7280;text-transform:uppercase;letter-spacing:.08em;margin-bottom:3px}
+.sc .pr{font-size:22px;font-weight:800;color:#111;margin:0 0 2px}
+.sc .pz{font-size:11px;color:#9ca3af;margin-bottom:8px}
+.sc ul{list-style:none;padding:0;display:flex;flex-direction:column;gap:4px}
+.sc li{font-size:11px;color:#6b7280;display:flex;gap:4px}
+.sc li span{color:${cor}}
+.bio{background:#f9fafb;border-radius:10px;padding:18px;margin-bottom:24px}
+.bio p{font-size:13px;color:#374151;line-height:1.7}
+.section{margin-bottom:24px}
+.section p{font-size:13px;color:#374151;line-height:1.7}
+.cond{border:1px solid #e5e7eb;border-radius:10px;padding:18px;margin-bottom:28px}
+.cg{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.ci{display:flex;gap:10px;align-items:flex-start}
+.ci .ico{font-size:18px;flex-shrink:0}
+.ci .lbl{font-size:10px;font-weight:700;color:#9ca3af;text-transform:uppercase;letter-spacing:.05em}
+.ci .val{font-size:13px;color:#111}
+.footer{border-top:2px solid ${cor};padding-top:14px;display:flex;justify-content:space-between;align-items:center}
+.fl-logo{height:36px;object-fit:contain;opacity:.6}
+@media print{body{padding:24px}@page{margin:1cm}}
+</style></head><body>
+
+<div class="header">
+  <div class="hdr-info">
+    ${cfg.logo?`<img src="${cfg.logo}" class="logo"/>`:`<div class="logo-ico">✨</div>`}
+    <div>
+      <h1>${escH(cfg.empresa||cfg.nome||'Proposta Comercial')}</h1>
+      ${cfg.bio?`<p style="font-size:12px;color:#6b7280;margin-top:3px;max-width:280px">${escH(cfg.bio.substring(0,90))}${cfg.bio.length>90?'...':''}</p>`:''}
+    </div>
+  </div>
+  <div class="hdr-right">
+    <p>Data: ${today()}</p>
+    <p>Validade: ${cfg.validade} dias</p>
+    <strong>Para: ${escH(form.cliente)}</strong>
+    ${form.segmento?`<p style="font-size:12px">${escH(form.segmento)}</p>`:''}
+  </div>
+</div>
+
+<div class="hero">
+  <div>
+    <h3>Escopo Recomendado</h3>
+    <h1>${escH(s.nome)}</h1>
+    <p class="hero-sub">${escH(form.servico)}</p>
+  </div>
+  <div class="hero-right">
+    <div class="price">${escH(s.preco)||'–'}</div>
+    <div class="prazo">⏱ ${escH(s.prazo)}</div>
+  </div>
+</div>
+
+<h2>Comparativo de Escopos</h2>
+<div class="scopes">
+  ${scopes.map((sc,i)=>`
+  <div class="sc${i===selScope?' sel':''}">
+    ${sc.star?`<span class="rec">★ Recomendado</span>`:''}
+    <p class="lbl" style="margin-top:${sc.star?'8px':0}">${escH(sc.nome)}</p>
+    <p class="pr">${escH(sc.preco)||'–'}</p>
+    <p class="pz">⏱ ${escH(sc.prazo)}</p>
+    <ul>${sc.items.map(it=>`<li><span>✓</span>${escH(it)}</li>`).join('')}</ul>
+  </div>`).join('')}
+</div>
+
+${cfg.bio?`
+<div class="bio">
+  <h2 style="border:none;padding:0;margin-bottom:8px">Sobre ${escH(cfg.empresa||cfg.nome)}</h2>
+  <p>${escH(cfg.bio)}</p>
+</div>`:''}
+
+<div class="section">
+  <h2>Entendimento do Projeto</h2>
+  <p>Entendemos que <strong>${escH(form.cliente)}</strong> busca <strong>${escH(form.servico.toLowerCase())}</strong>${form.segmento?` no segmento de <strong>${escH(form.segmento)}</strong>`:''}.
+  ${escH(form.contexto||'Nossa abordagem é orientada a resultados, com metodologia comprovada e acompanhamento próximo em todas as etapas do projeto.')}</p>
+</div>
+
+<div class="cond">
+  <h2 style="margin-bottom:14px">Condições Comerciais</h2>
+  <div class="cg">
+    ${[['💳','Pagamento',cfg.pagamento],['📅','Validade',cfg.validade+' dias'],['🚀','Início','Até 5 dias úteis após aprovação'],['📋','Entrega',s.prazo]].map(([ic,lb,vl])=>`
+    <div class="ci"><span class="ico">${ic}</span><div><p class="lbl">${lb}</p><p class="val">${escH(vl)}</p></div></div>`).join('')}
+  </div>
+</div>
+
+<div class="footer">
+  <div>
+    <p style="font-size:14px;font-weight:700">${escH(cfg.nome||cfg.empresa||'')}</p>
+    ${cfg.email?`<p style="font-size:12px;color:#6b7280">${escH(cfg.email)}</p>`:''}
+    ${cfg.whatsapp?`<p style="font-size:12px;color:#6b7280">WhatsApp: ${escH(cfg.whatsapp)}</p>`:''}
+  </div>
+  ${cfg.logo?`<img src="${cfg.logo}" class="fl-logo"/>`:''}
+</div>
+
+<script>window.onload=function(){window.print()}<\/script>
+</body></html>`;
+
+  const w=window.open('','_blank');
+  if(!w){ alert('Permita pop-ups para gerar o PDF.'); return; }
+  w.document.write(pHtml);
+  w.document.close();
 }
 
-function setState(s){state=s;render();}
-function showDemo(){state='result';escopo=1;tab='proposta';render();}
-function selEscopo(i){escopo=i;render();}
-function setTab(t){tab=t;render();}
+// ─── ACTIONS ──────────────────────────────────
+function saveSetup(){
+  cfg.empresa  = $('s-emp')?.value.trim() || cfg.empresa;
+  cfg.nome     = $('s-nome')?.value.trim() || cfg.nome;
+  cfg.email    = $('s-em')?.value.trim()  || cfg.email;
+  cfg.whatsapp = $('s-wp')?.value.trim()  || cfg.whatsapp;
+  cfg.bio      = $('s-bio')?.value.trim() || cfg.bio;
+  cfg.validade = $('s-val')?.value        || cfg.validade;
+  if(!cfg.empresa && !cfg.nome){ alert('Preencha o nome da empresa ou seu nome para continuar.'); return; }
+  saveCfg(); go('form');
+}
 
-function simular(){
-  state='loading';render();
+function bindInputs(){
+  if(page!=='form') return;
+  const s=$('f-srv'), c=$('f-cli'), b=$('btn-go');
+  if(!s||!c||!b) return;
+  const chk=()=>{ b.disabled=!s.value.trim()||!c.value.trim(); };
+  s.oninput=chk; c.oninput=chk;
+}
+
+function collectForm(){
+  form.servico  = $('f-srv')?.value||'';
+  form.cliente  = $('f-cli')?.value||'';
+  form.segmento = $('f-seg')?.value||'';
+  form.contexto = $('f-ctx')?.value||'';
+}
+
+function gerarProposta(){
+  collectForm();
+  if(!form.servico||!form.cliente) return;
+  page='load'; render();
   let step=0;
   const iv=setInterval(()=>{
     step++;
-    if(step<STEPS.length){document.getElementById('app').innerHTML=renderLoading(step);}
-    else{clearInterval(iv);state='result';escopo=1;tab='proposta';render();}
-  },1000);
+    if(step<5){ $('root').innerHTML=pageLoad(step); }
+    else{ clearInterval(iv); selScope=1; tab='proposta'; page='result'; render(); }
+  }, 850);
 }
 
+function loadDemo(){
+  form={servico:'Gestão de Marketing Digital',cliente:'Padaria do João',segmento:'Alimentação',contexto:'Budget de R$5k, foco em aumentar pedidos pelo WhatsApp e Instagram'};
+  scopes=[
+    {nome:'Essencial',preco:'R$ 1.800',prazo:'30 dias úteis',items:['12 posts/mês (feed + stories)','Copywriting para Instagram e Facebook','Relatório mensal de desempenho'],star:false},
+    {nome:'Profissional',preco:'R$ 3.500',prazo:'45 dias úteis',items:['20 posts/mês em todas as redes','Gestão de Meta Ads (tráfego pago)','2 peças gráficas/semana','Reunião quinzenal de alinhamento','Relatório detalhado com insights'],star:true},
+    {nome:'Premium',preco:'R$ 6.800',prazo:'60 dias úteis',items:['30 posts/mês em todas as redes','Meta Ads + Google Ads','4 Reels/mês (produção inclusa)','Landing page otimizada','Email marketing mensal','Dashboard de resultados em tempo real'],star:false}
+  ];
+  selScope=1; tab='proposta'; page='result'; render();
+}
+
+// ─── INIT ─────────────────────────────────────
+setColor(cfg.cor);
 render();
 </script>
 </body>
 </html>
-
