@@ -2,478 +2,783 @@
 <html lang="pt-BR">
 <head>
 <meta charset="UTF-8"/>
-<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-<title>PropCORR — Propostas para Corretores em 30 segundos</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover"/>
+<title>PropCORR — Propostas de Imóveis em 30 segundos</title>
 <link rel="preconnect" href="https://fonts.googleapis.com"/>
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet"/>
 <style>
-:root{
-  --navy:#060C1C;
-  --navy-2:#0A1228;
-  --navy-3:#0F1A35;
-  --card:#111D38;
-  --border:rgba(255,255,255,.075);
-  --border-hi:rgba(255,255,255,.13);
-  --blue:#0C6EFF;
-  --blue-2:#3D8FFF;
-  --blue-gl:rgba(12,110,255,.35);
-  --blue-sf:rgba(12,110,255,.10);
-  --blue-sf2:rgba(12,110,255,.06);
-  --cyan:#00C2FF;
-  --green:#00D16C;
-  --green-sf:rgba(0,209,108,.12);
-  --amber:#FFB020;
-  --red:#FF4757;
-  --text:#EDF2FF;
-  --text-2:#A8B8D8;
-  --muted:#5A6E94;
-  --subtle:#3A4D6A;
-  --grad-btn:linear-gradient(135deg,#0C6EFF,#3D8FFF);
-  --grad-green:linear-gradient(135deg,#00B85A,#00D16C);
-  --grad-accent:linear-gradient(135deg,#0C6EFF 0%,#00C2FF 100%);
-  --shadow-blue:0 8px 32px rgba(12,110,255,.4);
-  --shadow-green:0 8px 32px rgba(0,209,108,.35);
-  --r:16px;--r-md:12px;--r-sm:9px;--r-xs:7px;
+/* ════════════════════════════════
+   DESIGN SYSTEM
+════════════════════════════════ */
+:root {
+  /* Cores base */
+  --bg:       #F1F5F9;
+  --bg-2:     #E8EDF5;
+  --surface:  #FFFFFF;
+  --border:   #E2E8F0;
+  --border-2: #CBD5E1;
+
+  /* Texto */
+  --text:     #0F172A;
+  --text-2:   #334155;
+  --muted:    #64748B;
+  --subtle:   #94A3B8;
+
+  /* Primária — Azul forte */
+  --blue:     #1D4ED8;
+  --blue-lt:  #2563EB;
+  --blue-2:   #3B82F6;
+  --blue-sf:  #EFF6FF;
+  --blue-bd:  #BFDBFE;
+
+  /* CTA — Verde */
+  --green:    #16A34A;
+  --green-lt: #22C55E;
+  --green-sf: #F0FDF4;
+  --green-bd: #BBF7D0;
+
+  /* Accent — Âmbar */
+  --amber:    #D97706;
+  --amber-sf: #FFFBEB;
+
+  /* Erro */
+  --red:      #DC2626;
+  --red-sf:   #FEF2F2;
+
+  /* Sombras */
+  --sh-xs: 0 1px 2px rgba(15,23,42,.06);
+  --sh-sm: 0 1px 3px rgba(15,23,42,.08), 0 1px 2px rgba(15,23,42,.05);
+  --sh-md: 0 4px 6px -1px rgba(15,23,42,.07), 0 2px 4px -2px rgba(15,23,42,.05);
+  --sh-lg: 0 10px 15px -3px rgba(15,23,42,.08), 0 4px 6px -4px rgba(15,23,42,.04);
+  --sh-xl: 0 20px 25px -5px rgba(15,23,42,.08), 0 8px 10px -6px rgba(15,23,42,.04);
+
+  /* Bordas */
+  --r:    16px;
+  --r-md: 12px;
+  --r-sm:  9px;
+  --r-xs:  6px;
+
+  /* Nav inferior */
+  --nav-h: 68px;
 }
-*{box-sizing:border-box;margin:0;padding:0}
-body{
-  background:var(--navy);
-  background-image:
-    radial-gradient(900px 500px at 50% -100px,rgba(12,110,255,.18),transparent 70%),
-    radial-gradient(600px 400px at 80% 60%,rgba(0,194,255,.06),transparent 70%);
-  color:var(--text);
-  font-family:'Inter',-apple-system,BlinkMacSystemFont,sans-serif;
-  min-height:100vh;font-size:15px;line-height:1.6;
-  -webkit-font-smoothing:antialiased;
+
+* { box-sizing: border-box; margin: 0; padding: 0; }
+html { -webkit-text-size-adjust: 100%; }
+
+body {
+  background: var(--bg);
+  color: var(--text);
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  font-size: 15px;
+  line-height: 1.6;
+  min-height: 100vh;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  padding-bottom: calc(var(--nav-h) + env(safe-area-inset-bottom));
 }
-::selection{background:var(--blue-sf);color:var(--cyan)}
-h1{font-size:30px;font-weight:800;letter-spacing:-.03em;line-height:1.12}
-h2{font-size:21px;font-weight:700;letter-spacing:-.025em}
-h3{font-size:16px;font-weight:700;letter-spacing:-.015em}
-label{font-size:12.5px;font-weight:600;color:var(--text-2);display:block;margin-bottom:7px}
-label .opt{font-weight:400;color:var(--muted);font-size:12px}
+::selection { background: var(--blue-sf); color: var(--blue); }
 
-/* NAV */
-.nav{position:sticky;top:0;z-index:100;background:rgba(6,12,28,.88);backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);border-bottom:1px solid var(--border)}
-.nav-in{max-width:860px;margin:0 auto;padding:13px 22px;display:flex;align-items:center;justify-content:space-between;gap:12px}
-.brand{display:flex;align-items:center;gap:11px;min-width:0}
-.logo-mark{width:38px;height:38px;border-radius:11px;background:var(--grad-btn);display:flex;align-items:center;justify-content:center;box-shadow:0 4px 16px var(--blue-gl);overflow:hidden;flex-shrink:0}
-.logo-mark img{width:100%;height:100%;object-fit:cover}
-.brand-name{font-weight:800;font-size:16px;letter-spacing:-.025em;background:var(--grad-accent);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
-.brand-sub{font-size:11.5px;color:var(--muted);margin-top:1px}
+/* ── Typography ── */
+h1 { font-size: 28px; font-weight: 800; letter-spacing: -.03em; line-height: 1.15; color: var(--text); }
+h2 { font-size: 20px; font-weight: 700; letter-spacing: -.02em; color: var(--text); }
+h3 { font-size: 15px; font-weight: 700; letter-spacing: -.01em; color: var(--text); }
+p  { color: var(--text-2); }
+label {
+  font-size: 12px; font-weight: 700; color: var(--muted);
+  text-transform: uppercase; letter-spacing: .06em;
+  display: block; margin-bottom: 8px;
+}
+label .opt { font-weight: 500; text-transform: none; letter-spacing: 0; font-size: 11.5px; }
 
-/* LAYOUT */
-.wrap{max-width:780px;margin:0 auto;padding:32px 22px 100px}
+/* ── TOP BAR ── */
+.topbar {
+  position: sticky; top: 0; z-index: 100;
+  background: var(--surface);
+  border-bottom: 1px solid var(--border);
+  box-shadow: var(--sh-xs);
+}
+.topbar-in {
+  max-width: 860px; margin: 0 auto;
+  padding: 0 20px;
+  height: 58px;
+  display: flex; align-items: center; justify-content: space-between; gap: 12px;
+}
+.brand { display: flex; align-items: center; gap: 10px; min-width: 0; text-decoration: none; }
+.brand-ic {
+  width: 36px; height: 36px; border-radius: 10px;
+  background: var(--blue); color: #fff;
+  display: flex; align-items: center; justify-content: center;
+  flex-shrink: 0; overflow: hidden; box-shadow: var(--sh-sm);
+}
+.brand-ic img { width: 100%; height: 100%; object-fit: cover; }
+.brand-ic svg { width: 18px; height: 18px; }
+.brand-name { font-weight: 800; font-size: 16px; letter-spacing: -.02em; color: var(--text); }
+.brand-tag  { font-size: 11px; color: var(--muted); margin-top: 0px; line-height: 1; }
 
-/* HERO */
-.hero-sect{position:relative;overflow:hidden;text-align:center;padding:52px 22px 42px}
-.hero-orb{position:absolute;border-radius:50%;filter:blur(80px);pointer-events:none}
-.hero-orb-1{width:600px;height:320px;background:rgba(12,110,255,.15);top:-60px;left:50%;transform:translateX(-50%)}
-.hero-orb-2{width:280px;height:200px;background:rgba(0,194,255,.07);top:10px;right:5%}
-.hero-inner{position:relative;z-index:1}
+/* ── BOTTOM NAV (mobile app feel) ── */
+.bottom-nav {
+  position: fixed; bottom: 0; left: 0; right: 0; z-index: 100;
+  background: var(--surface);
+  border-top: 1px solid var(--border);
+  display: flex;
+  padding-bottom: env(safe-area-inset-bottom);
+  box-shadow: 0 -4px 16px rgba(15,23,42,.07);
+}
+.bnav-item {
+  flex: 1; display: flex; flex-direction: column; align-items: center;
+  justify-content: center; gap: 4px;
+  padding: 10px 4px 8px;
+  cursor: pointer; border: none; background: transparent;
+  font-family: inherit; transition: all .15s;
+  -webkit-tap-highlight-color: transparent;
+  color: var(--subtle);
+  font-size: 10.5px; font-weight: 600; letter-spacing: .01em;
+}
+.bnav-item svg { width: 22px; height: 22px; stroke-width: 1.8; }
+.bnav-item.active { color: var(--blue); }
+.bnav-item.active svg { stroke-width: 2.4; }
+.bnav-cta {
+  background: var(--green); color: #fff;
+  margin: 8px 0; border-radius: 14px;
+  flex: 1.3;
+  box-shadow: 0 4px 14px rgba(22,163,74,.35);
+}
+.bnav-cta.active, .bnav-cta:hover { background: var(--green); color: #fff; filter: brightness(1.05); }
 
-/* CARDS */
-.card{background:rgba(15,26,53,.75);border:1px solid var(--border);border-radius:var(--r);padding:26px;backdrop-filter:blur(10px)}
-.card-hi{border-color:var(--border-hi);box-shadow:0 0 0 1px rgba(12,110,255,.12),0 4px 24px rgba(0,0,0,.4)}
-.card-sm{background:rgba(15,26,53,.65);border:1px solid var(--border);border-radius:var(--r-md);padding:18px}
-.card-inset{background:rgba(6,12,28,.55);border:1px solid var(--border);border-radius:var(--r-sm);padding:16px}
+/* ── LAYOUT ── */
+.page { max-width: 760px; margin: 0 auto; padding: 24px 18px 32px; }
+.page-wide { max-width: 920px; }
 
-/* INPUTS */
-input,textarea,select{background:rgba(6,12,28,.7);border:1px solid var(--border-hi);border-radius:var(--r-sm);padding:12px 15px;color:var(--text);font-size:14.5px;width:100%;font-family:inherit;outline:none;transition:border-color .18s,box-shadow .18s;font-weight:500}
-input::placeholder,textarea::placeholder{color:var(--muted);font-weight:400}
-input:focus,textarea:focus,select:focus{border-color:var(--blue);box-shadow:0 0 0 3px var(--blue-sf)}
-textarea{resize:vertical;line-height:1.65}
-select{appearance:none;-webkit-appearance:none;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' fill='none' stroke='%235A6E94' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m4 6 4 4 4-4'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 13px center;padding-right:40px;cursor:pointer}
-input[type=color]{padding:4px;height:46px;cursor:pointer}
-input[type=file]{display:none}
-input.inline{background:transparent;border:none;border-radius:0;padding:3px 6px;font-size:inherit;color:inherit;font-weight:inherit;border-bottom:1px dashed var(--border-hi);transition:border-color .15s,background .15s}
-input.inline:hover{background:var(--blue-sf2)}
-input.inline:focus{border-bottom-color:var(--blue);background:var(--blue-sf2);box-shadow:none}
+/* ── CARDS ── */
+.card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--r);
+  padding: 24px;
+  box-shadow: var(--sh-sm);
+}
+.card-flat { box-shadow: none; }
+.card-sm {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--r-md);
+  padding: 16px;
+  box-shadow: var(--sh-xs);
+}
+.card-inset {
+  background: var(--bg);
+  border: 1px solid var(--border);
+  border-radius: var(--r-sm);
+  padding: 14px;
+}
 
-/* BUTTONS */
-.btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;padding:13px 22px;border-radius:var(--r-sm);font-size:14.5px;font-weight:700;cursor:pointer;border:none;font-family:inherit;transition:all .18s;white-space:nowrap;letter-spacing:-.01em}
-.btn svg{width:17px;height:17px;flex-shrink:0}
-.btn-blue{background:var(--grad-btn);color:#fff;width:100%;font-size:15.5px;padding:15px 24px;box-shadow:var(--shadow-blue)}
-.btn-blue:hover{transform:translateY(-2px);box-shadow:0 16px 40px rgba(12,110,255,.55);filter:brightness(1.08)}
-.btn-blue:active{transform:translateY(0)}
-.btn-blue:disabled{opacity:.35;cursor:not-allowed;transform:none;box-shadow:none;filter:none}
-.btn-green{background:var(--grad-green);color:#fff;box-shadow:var(--shadow-green)}
-.btn-green:hover{transform:translateY(-2px);box-shadow:0 16px 40px rgba(0,209,108,.5);filter:brightness(1.08)}
-.btn-outline{background:transparent;border:1px solid var(--border-hi);color:var(--text-2);width:100%}
-.btn-outline:hover{border-color:var(--blue);color:var(--text);background:var(--blue-sf2)}
-.btn-sm{background:rgba(255,255,255,.06);border:1px solid var(--border);color:var(--text-2);padding:8px 14px;font-size:13px;border-radius:var(--r-xs);cursor:pointer;display:inline-flex;align-items:center;gap:6px;font-family:inherit;font-weight:600;transition:all .18s}
-.btn-sm svg{width:14px;height:14px}
-.btn-sm:hover{border-color:var(--blue-2);color:var(--text);background:var(--blue-sf)}
-.btn-ghost{background:transparent;border:none;color:var(--muted);padding:7px 10px;font-size:13px;border-radius:var(--r-xs);cursor:pointer;font-family:inherit;font-weight:600;display:inline-flex;align-items:center;gap:5px;transition:all .15s}
-.btn-ghost:hover{background:var(--blue-sf2);color:var(--text-2)}
+/* ── INPUTS ── */
+input, textarea, select {
+  background: var(--surface);
+  border: 1.5px solid var(--border-2);
+  border-radius: var(--r-sm);
+  padding: 11px 14px;
+  color: var(--text);
+  font-size: 14.5px;
+  width: 100%;
+  font-family: inherit;
+  outline: none;
+  transition: border-color .15s, box-shadow .15s;
+  font-weight: 500;
+  -webkit-appearance: none;
+}
+input::placeholder, textarea::placeholder { color: var(--subtle); font-weight: 400; }
+input:focus, textarea:focus, select:focus {
+  border-color: var(--blue-lt);
+  box-shadow: 0 0 0 3px var(--blue-sf);
+}
+textarea { resize: vertical; line-height: 1.65; }
+select {
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' fill='none' stroke='%2394A3B8' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m4 6 4 4 4-4'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 12px center;
+  padding-right: 38px;
+  cursor: pointer;
+}
+input[type=color] { padding: 4px; height: 46px; cursor: pointer; }
+input[type=file]  { display: none; }
+input.bare {
+  background: transparent; border: none; border-radius: 0;
+  border-bottom: 1.5px dashed var(--border-2);
+  padding: 2px 4px; font-size: inherit;
+  color: inherit; font-weight: inherit;
+  transition: border-color .15s;
+}
+input.bare:hover  { border-bottom-color: var(--blue-lt); }
+input.bare:focus  { border-bottom-color: var(--blue); box-shadow: none; }
 
-/* BADGES */
-.badge{display:inline-flex;align-items:center;gap:5px;padding:4px 11px;border-radius:999px;font-size:11px;font-weight:700}
-.badge-blue{background:var(--grad-btn);color:#fff;box-shadow:0 4px 14px var(--blue-gl)}
-.badge-soft{background:var(--blue-sf);color:var(--blue-2);border:1px solid rgba(12,110,255,.2)}
-.badge-green{background:var(--green-sf);color:var(--green);border:1px solid rgba(0,209,108,.2)}
-.badge-amber{background:rgba(255,176,32,.1);color:var(--amber);border:1px solid rgba(255,176,32,.2)}
+/* ── BUTTONS ── */
+.btn {
+  display: inline-flex; align-items: center; justify-content: center;
+  gap: 8px; padding: 13px 22px;
+  border-radius: var(--r-sm);
+  font-size: 14.5px; font-weight: 700;
+  cursor: pointer; border: none;
+  font-family: inherit;
+  transition: all .16s;
+  white-space: nowrap;
+  letter-spacing: -.01em;
+  -webkit-tap-highlight-color: transparent;
+}
+.btn svg { width: 17px; height: 17px; flex-shrink: 0; }
 
-/* STEPPER */
-.stepper{display:flex;align-items:center;justify-content:center;margin-bottom:30px}
-.stp{display:flex;align-items:center;gap:8px;color:var(--muted);font-size:13px;font-weight:600;white-space:nowrap}
-.stp-num{width:27px;height:27px;border-radius:50%;border:1.5px solid var(--border-hi);display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:700;background:var(--navy-3);transition:all .3s;flex-shrink:0}
-.stp.active{color:var(--blue-2)}
-.stp.active .stp-num{border-color:var(--blue);background:var(--blue);color:#fff;box-shadow:0 0 0 4px var(--blue-sf)}
-.stp.done{color:var(--text-2)}
-.stp.done .stp-num{border-color:var(--blue);background:var(--blue);color:#fff}
-.stp-line{flex:1;max-width:44px;height:1.5px;background:var(--border-hi);margin:0 8px;border-radius:2px}
-.stp-line.on{background:var(--blue)}
+.btn-primary {
+  background: var(--blue); color: #fff; width: 100%;
+  font-size: 15px; padding: 14px 24px;
+  box-shadow: 0 4px 14px rgba(29,78,216,.3);
+}
+.btn-primary:hover  { background: var(--blue-lt); box-shadow: 0 6px 20px rgba(29,78,216,.4); }
+.btn-primary:active { transform: scale(.99); }
+.btn-primary:disabled { opacity: .4; cursor: not-allowed; box-shadow: none; }
 
-/* SCOPE CARDS */
-.sc-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:13px}
-.sc-card{background:rgba(15,26,53,.8);border:1.5px solid var(--border);border-radius:var(--r-md);padding:16px 14px;cursor:pointer;transition:all .2s;position:relative}
-.sc-card:hover{border-color:rgba(12,110,255,.4);transform:translateY(-3px);box-shadow:0 12px 40px rgba(0,0,0,.4)}
-.sc-card.sel{border-color:var(--blue);background:linear-gradient(160deg,rgba(12,110,255,.12),rgba(12,110,255,.04));box-shadow:0 0 0 1px var(--blue),0 12px 40px rgba(12,110,255,.2)}
-.sc-card.sel::after{content:'✓';position:absolute;top:11px;right:12px;width:20px;height:20px;border-radius:50%;background:var(--blue);color:#fff;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:800;line-height:20px;text-align:center}
+.btn-cta {
+  background: var(--green); color: #fff; width: 100%;
+  font-size: 15px; padding: 14px 24px;
+  box-shadow: 0 4px 14px rgba(22,163,74,.3);
+}
+.btn-cta:hover  { background: var(--green-lt); box-shadow: 0 6px 20px rgba(22,163,74,.4); }
+.btn-cta:active { transform: scale(.99); }
 
-/* LOGO ZONE */
-.logo-zone{width:96px;height:96px;border:2px dashed var(--border-hi);border-radius:var(--r-md);display:flex;flex-direction:column;align-items:center;justify-content:center;cursor:pointer;gap:5px;transition:all .2s;flex-shrink:0;overflow:hidden;background:var(--navy-3)}
-.logo-zone:hover{border-color:var(--blue);background:var(--blue-sf2)}
-.logo-zone img{width:100%;height:100%;object-fit:contain;padding:10px}
+.btn-outline {
+  background: var(--surface);
+  border: 1.5px solid var(--border-2);
+  color: var(--text-2); width: 100%;
+}
+.btn-outline:hover { border-color: var(--blue-lt); color: var(--blue); background: var(--blue-sf); }
 
-/* SWATCHES */
-.swatches{display:flex;gap:7px;flex-wrap:wrap;margin-top:10px}
-.swatch{width:26px;height:26px;border-radius:8px;cursor:pointer;border:2px solid transparent;transition:all .18s;box-shadow:0 2px 8px rgba(0,0,0,.3)}
-.swatch:hover{transform:scale(1.2);border-color:rgba(255,255,255,.5)}
+.btn-sm {
+  background: var(--surface);
+  border: 1.5px solid var(--border);
+  color: var(--text-2);
+  padding: 7px 13px;
+  font-size: 13px;
+  border-radius: var(--r-xs);
+  cursor: pointer;
+  display: inline-flex; align-items: center; gap: 6px;
+  font-family: inherit; font-weight: 600;
+  transition: all .15s;
+}
+.btn-sm svg { width: 14px; height: 14px; }
+.btn-sm:hover { border-color: var(--blue-lt); color: var(--blue); background: var(--blue-sf); }
 
-/* TABS */
-.tabbar{background:rgba(6,12,28,.6);border:1px solid var(--border);border-radius:var(--r-sm);padding:4px;display:flex;gap:3px}
-.tab{flex:1;padding:10px 8px;font-size:13px;font-weight:600;cursor:pointer;border-radius:7px;color:var(--muted);transition:all .18s;border:none;background:transparent;font-family:inherit;display:flex;align-items:center;justify-content:center;gap:6px}
-.tab svg{width:15px;height:15px}
-.tab.act{background:rgba(12,110,255,.15);color:var(--blue-2);border:1px solid rgba(12,110,255,.25)}
+.btn-icon {
+  width: 36px; height: 36px; border-radius: var(--r-xs);
+  background: var(--surface); border: 1.5px solid var(--border);
+  display: inline-flex; align-items: center; justify-content: center;
+  cursor: pointer; transition: all .15s; flex-shrink: 0; color: var(--muted);
+}
+.btn-icon svg { width: 16px; height: 16px; }
+.btn-icon:hover { border-color: var(--blue-lt); color: var(--blue); background: var(--blue-sf); }
 
-/* FEATURE ICON */
-.fi{width:42px;height:42px;border-radius:12px;display:flex;align-items:center;justify-content:center;flex-shrink:0}
-.fi svg{width:20px;height:20px}
-.fi-blue{background:var(--blue-sf);color:var(--blue-2)}
-.fi-cyan{background:rgba(0,194,255,.1);color:var(--cyan)}
-.fi-green{background:var(--green-sf);color:var(--green)}
-.fi-amber{background:rgba(255,176,32,.1);color:var(--amber)}
+/* ── BADGE / PILL ── */
+.badge {
+  display: inline-flex; align-items: center; gap: 5px;
+  padding: 4px 10px; border-radius: 999px;
+  font-size: 11.5px; font-weight: 700;
+}
+.badge-blue   { background: var(--blue-sf);  color: var(--blue);  border: 1px solid var(--blue-bd); }
+.badge-green  { background: var(--green-sf); color: var(--green); border: 1px solid var(--green-bd); }
+.badge-amber  { background: var(--amber-sf); color: var(--amber); border: 1px solid #FDE68A; }
+.badge-solid  { background: var(--blue);     color: #fff; }
 
-/* LOADING */
-.lstep{display:flex;align-items:center;gap:13px;font-size:14.5px;font-weight:500}
-.lstep-dot{width:26px;height:26px;border-radius:50%;border:1.5px solid var(--border-hi);flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;transition:all .3s;background:var(--navy-3)}
-.lstep-dot.done{border-color:var(--blue);background:var(--blue);color:#fff}
-.lstep-dot.active{border-color:var(--blue);box-shadow:0 0 0 4px var(--blue-sf);animation:pdot 1.4s ease-in-out infinite}
-@keyframes pdot{0%,100%{box-shadow:0 0 0 4px var(--blue-sf)}50%{box-shadow:0 0 0 8px rgba(12,110,255,.04)}}
+.chip {
+  display: inline-flex; align-items: center; gap: 6px;
+  padding: 6px 12px; border-radius: 999px;
+  background: var(--surface); border: 1px solid var(--border);
+  font-size: 12.5px; font-weight: 600; color: var(--text-2);
+}
+.chip svg { width: 14px; height: 14px; color: var(--blue); }
 
-/* OUTPUT */
-.output{background:rgba(6,12,28,.7);border:1px solid var(--border);border-radius:var(--r-md);padding:20px;max-height:480px;overflow-y:auto}
-pre{white-space:pre-wrap;font-family:'Inter',sans-serif;font-size:13.5px;line-height:1.85;color:var(--text-2)}
-.output::-webkit-scrollbar{width:6px}
-.output::-webkit-scrollbar-thumb{background:var(--border-hi);border-radius:6px}
+/* ── STEP INDICATOR ── */
+.steps-bar {
+  display: flex; align-items: center; gap: 0;
+  margin-bottom: 28px;
+}
+.step-item {
+  display: flex; align-items: center; gap: 8px;
+  font-size: 12.5px; font-weight: 600;
+  color: var(--subtle);
+}
+.step-num {
+  width: 26px; height: 26px; border-radius: 50%;
+  background: var(--bg-2); border: 1.5px solid var(--border-2);
+  display: flex; align-items: center; justify-content: center;
+  font-size: 11.5px; font-weight: 700;
+  transition: all .25s; flex-shrink: 0;
+}
+.step-item.active { color: var(--blue); }
+.step-item.active .step-num { background: var(--blue); border-color: var(--blue); color: #fff; box-shadow: 0 0 0 3px var(--blue-sf); }
+.step-item.done { color: var(--text-2); }
+.step-item.done .step-num { background: var(--green-sf); border-color: var(--green-bd); color: var(--green); }
+.step-line { flex: 1; height: 1.5px; background: var(--border-2); margin: 0 8px; max-width: 40px; border-radius: 2px; }
+.step-line.on { background: var(--blue); }
 
-/* ANIMATIONS */
-.spin{width:14px;height:14px;border:2px solid var(--blue-2);border-top-color:transparent;border-radius:50%;animation:spin .7s linear infinite;flex-shrink:0;display:inline-block}
-@keyframes spin{to{transform:rotate(360deg)}}
-.pulse-anim{animation:pul 2s ease-in-out infinite}
-@keyframes pul{0%,100%{opacity:1;transform:scale(1)}50%{opacity:.7;transform:scale(.94)}}
-.fade-in{animation:fadein .4s cubic-bezier(.16,1,.3,1)}
-@keyframes fadein{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:translateY(0)}}
+/* ── SCOPE / MODAL CARDS ── */
+.modal-grid { display: grid; grid-template-columns: repeat(3,1fr); gap: 12px; }
+.modal-card {
+  background: var(--surface);
+  border: 2px solid var(--border);
+  border-radius: var(--r-md);
+  padding: 15px 13px;
+  cursor: pointer; position: relative;
+  transition: all .18s;
+  box-shadow: var(--sh-xs);
+}
+.modal-card:hover { border-color: var(--blue-2); box-shadow: var(--sh-md); transform: translateY(-2px); }
+.modal-card.sel   {
+  border-color: var(--blue);
+  background: var(--blue-sf);
+  box-shadow: 0 0 0 1px var(--blue), var(--sh-md);
+}
+.modal-card.sel::after {
+  content: '';
+  position: absolute; top: 10px; right: 10px;
+  width: 20px; height: 20px; border-radius: 50%;
+  background: var(--blue);
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' fill='none' stroke='white' stroke-width='3' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M10 3 4.5 8.5 2 6'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: center;
+}
 
-/* UTILS */
-.hidden{display:none!important}
-.g2{display:grid;grid-template-columns:1fr 1fr;gap:15px}
-.g3{display:grid;grid-template-columns:repeat(3,1fr);gap:13px}
-.g4{display:grid;grid-template-columns:repeat(4,1fr);gap:10px}
-.flex{display:flex;align-items:center}
-.col{display:flex;flex-direction:column}
-.between{display:flex;align-items:center;justify-content:space-between;gap:12px}
-.wfl{flex-wrap:wrap}
-.center{text-align:center}
-.gap4{gap:4px}.gap6{gap:6px}.gap8{gap:8px}.gap10{gap:10px}.gap12{gap:12px}.gap14{gap:14px}.gap16{gap:16px}.gap20{gap:20px}
-.mb4{margin-bottom:4px}.mb6{margin-bottom:6px}.mb8{margin-bottom:8px}.mb10{margin-bottom:10px}
-.mb12{margin-bottom:12px}.mb14{margin-bottom:14px}.mb16{margin-bottom:16px}.mb20{margin-bottom:20px}
-.mb24{margin-bottom:24px}.mb28{margin-bottom:28px}.mb32{margin-bottom:32px}
-.mt4{margin-top:4px}.mt6{margin-top:6px}.mt8{margin-top:8px}.mt12{margin-top:12px}.mt16{margin-top:16px}.mt20{margin-top:20px}.mt24{margin-top:24px}
-.muted{color:var(--muted)}.t2{color:var(--text-2)}.subtle{color:var(--subtle)}
-.sm{font-size:13.5px}.xs{font-size:12px}
-.blue{color:var(--blue-2)}.cyan{color:var(--cyan)}.green{color:var(--green)}.amber{color:var(--amber)}
-.semibold{font-weight:600}.bold{font-weight:700}.w800{font-weight:800}
-.flex1{flex:1;min-width:0}
-.divider{height:1px;background:var(--border);margin:22px 0}
-@media(max-width:560px){
-  h1{font-size:25px}h2{font-size:18px}
-  .wrap{padding:24px 16px 80px}
-  .g2{grid-template-columns:1fr}
-  .g3{grid-template-columns:1fr 1fr;gap:9px}
-  .g4{grid-template-columns:1fr 1fr}
-  .card{padding:20px}
-  .stp-line{max-width:20px;margin:0 5px}
-  .stp .stp-lbl{display:none}
-  .hero-sect{padding:36px 16px 30px}
-  .sc-grid{gap:9px}
+/* ── LOGO UPLOAD ── */
+.logo-zone {
+  width: 88px; height: 88px;
+  border: 2px dashed var(--border-2);
+  border-radius: var(--r-md);
+  display: flex; flex-direction: column; align-items: center; justify-content: center;
+  cursor: pointer; gap: 5px; transition: all .18s; flex-shrink: 0;
+  overflow: hidden; background: var(--bg);
+  color: var(--subtle);
+}
+.logo-zone:hover { border-color: var(--blue-lt); background: var(--blue-sf); color: var(--blue); }
+.logo-zone img { width: 100%; height: 100%; object-fit: contain; padding: 8px; }
+
+/* ── SWATCHES ── */
+.swatches { display: flex; gap: 7px; flex-wrap: wrap; margin-top: 10px; }
+.swatch {
+  width: 26px; height: 26px; border-radius: 8px; cursor: pointer;
+  border: 2px solid transparent; transition: all .15s;
+  box-shadow: var(--sh-sm);
+}
+.swatch:hover { transform: scale(1.2); border-color: rgba(0,0,0,.2); }
+
+/* ── TABS ── */
+.tabbar {
+  background: var(--bg); border: 1.5px solid var(--border);
+  border-radius: var(--r-sm); padding: 3px; display: flex; gap: 2px;
+}
+.tab {
+  flex: 1; padding: 9px 6px;
+  font-size: 13px; font-weight: 600;
+  cursor: pointer; border-radius: 8px;
+  color: var(--muted); transition: all .16s;
+  border: none; background: transparent;
+  font-family: inherit;
+  display: flex; align-items: center; justify-content: center; gap: 5px;
+}
+.tab svg { width: 15px; height: 15px; }
+.tab.act {
+  background: var(--surface); color: var(--blue);
+  box-shadow: var(--sh-sm);
+  border: 1px solid var(--border);
+}
+
+/* ── LOADING STEPS ── */
+.lstep { display: flex; align-items: center; gap: 13px; }
+.lstep-dot {
+  width: 26px; height: 26px; border-radius: 50%;
+  border: 1.5px solid var(--border-2);
+  flex-shrink: 0; display: flex; align-items: center; justify-content: center;
+  font-size: 11px; font-weight: 700; transition: all .3s;
+  background: var(--surface);
+}
+.lstep-dot.done   { border-color: var(--green); background: var(--green-sf); color: var(--green); }
+.lstep-dot.active { border-color: var(--blue); box-shadow: 0 0 0 4px var(--blue-sf); animation: pulse-step 1.4s ease-in-out infinite; }
+@keyframes pulse-step { 0%,100%{box-shadow:0 0 0 4px var(--blue-sf)}50%{box-shadow:0 0 0 8px rgba(29,78,216,.05)} }
+
+/* ── OUTPUT TEXT ── */
+.output {
+  background: var(--bg); border: 1px solid var(--border);
+  border-radius: var(--r-md); padding: 18px;
+  max-height: 440px; overflow-y: auto;
+}
+pre { white-space: pre-wrap; font-family: inherit; font-size: 13.5px; line-height: 1.9; color: var(--text-2); }
+.output::-webkit-scrollbar { width: 5px; }
+.output::-webkit-scrollbar-thumb { background: var(--border-2); border-radius: 5px; }
+
+/* ── SECTION HEADER ── */
+.sec-hdr {
+  display: flex; align-items: center; gap: 12px;
+  margin-bottom: 20px;
+}
+.sec-ic {
+  width: 38px; height: 38px; border-radius: 10px;
+  display: flex; align-items: center; justify-content: center;
+  flex-shrink: 0;
+}
+.sec-ic svg { width: 18px; height: 18px; }
+.si-blue   { background: var(--blue-sf); color: var(--blue); }
+.si-green  { background: var(--green-sf); color: var(--green); }
+.si-amber  { background: var(--amber-sf); color: var(--amber); }
+.si-slate  { background: var(--bg-2); color: var(--text-2); }
+
+/* ── ANIMS ── */
+.spin { width: 14px; height: 14px; border: 2px solid var(--blue-bd); border-top-color: var(--blue); border-radius: 50%; animation: spin .7s linear infinite; flex-shrink: 0; display: inline-block; }
+@keyframes spin { to{ transform: rotate(360deg) } }
+.pulse-ic { animation: pulse-ic 2s ease-in-out infinite; }
+@keyframes pulse-ic { 0%,100%{transform:scale(1)}50%{transform:scale(.93)} }
+.fade-up { animation: fadeUp .35s cubic-bezier(.16,1,.3,1); }
+@keyframes fadeUp { from{opacity:0;transform:translateY(14px)}to{opacity:1;transform:translateY(0)} }
+
+/* ── DIVIDER ── */
+.divider { height: 1px; background: var(--border); margin: 22px 0; }
+
+/* ── HERO section ── */
+.hero {
+  background: var(--surface);
+  border-bottom: 1px solid var(--border);
+  padding: 32px 20px 28px;
+  text-align: center;
+}
+.hero-tag {
+  display: inline-flex; align-items: center; gap: 6px;
+  background: var(--green-sf); color: var(--green);
+  border: 1px solid var(--green-bd);
+  border-radius: 999px; padding: 5px 13px;
+  font-size: 12px; font-weight: 700;
+  margin-bottom: 16px;
+}
+.hero h1 { font-size: 32px; margin-bottom: 10px; }
+.hero h1 span { color: var(--blue); }
+.hero p { color: var(--muted); max-width: 420px; margin: 0 auto; font-size: 15px; }
+.hero-stats {
+  display: flex; align-items: center; justify-content: center;
+  gap: 6px; flex-wrap: wrap; margin-top: 20px;
+}
+
+/* ── UTILS ── */
+.hidden  { display: none !important; }
+.g2      { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+.g3      { display: grid; grid-template-columns: repeat(3,1fr); gap: 12px; }
+.flex    { display: flex; align-items: center; }
+.col     { display: flex; flex-direction: column; }
+.between { display: flex; align-items: center; justify-content: space-between; gap: 12px; }
+.wfl     { flex-wrap: wrap; }
+.center  { text-align: center; }
+.flex1   { flex: 1; min-width: 0; }
+.gap4  { gap: 4px;  } .gap6  { gap: 6px;  } .gap8  { gap: 8px;  }
+.gap10 { gap: 10px; } .gap12 { gap: 12px; } .gap14 { gap: 14px; } .gap16 { gap: 16px; }
+.mb4  { margin-bottom: 4px;  } .mb6  { margin-bottom: 6px;  } .mb8  { margin-bottom: 8px;  }
+.mb10 { margin-bottom: 10px; } .mb12 { margin-bottom: 12px; } .mb14 { margin-bottom: 14px; }
+.mb16 { margin-bottom: 16px; } .mb20 { margin-bottom: 20px; } .mb24 { margin-bottom: 24px; }
+.mb28 { margin-bottom: 28px; } .mb32 { margin-bottom: 32px; }
+.mt4  { margin-top: 4px;  } .mt6  { margin-top: 6px;  } .mt8  { margin-top: 8px;  }
+.mt12 { margin-top: 12px; } .mt16 { margin-top: 16px; } .mt20 { margin-top: 20px; } .mt24 { margin-top: 24px; }
+.muted  { color: var(--muted);  } .t2  { color: var(--text-2); } .subtle { color: var(--subtle); }
+.blue   { color: var(--blue);   } .green { color: var(--green); } .amber { color: var(--amber); }
+.sm  { font-size: 13.5px; } .xs  { font-size: 12px; }
+.w600 { font-weight: 600; } .w700 { font-weight: 700; } .w800 { font-weight: 800; }
+
+@media (max-width: 560px) {
+  h1 { font-size: 25px; }
+  h2 { font-size: 18px; }
+  .page { padding: 20px 16px 28px; }
+  .card { padding: 18px; }
+  .g2 { grid-template-columns: 1fr; }
+  .g3 { grid-template-columns: 1fr 1fr; }
+  .modal-grid { gap: 8px; }
+  .modal-card { padding: 12px 10px; }
+  .step-line { max-width: 20px; margin: 0 5px; }
+  .step-lbl { display: none; }
+  .hero { padding: 24px 16px 20px; }
+  .hero h1 { font-size: 26px; }
 }
 </style>
 </head>
 <body>
 
-<nav class="nav">
-  <div class="nav-in">
-    <div class="brand">
-      <div class="logo-mark" id="nav-logo"></div>
+<!-- TOP BAR -->
+<header class="topbar">
+  <div class="topbar-in">
+    <a class="brand" href="#" onclick="return false">
+      <div class="brand-ic" id="bar-ic"></div>
       <div>
-        <div class="brand-name" id="nav-name">PropCORR</div>
-        <div class="brand-sub" id="nav-sub">Propostas para Corretores</div>
+        <div class="brand-name" id="bar-name">PropCORR</div>
+        <div class="brand-tag" id="bar-tag">Propostas em 30s</div>
       </div>
-    </div>
-    <div id="nav-actions"></div>
+    </a>
+    <div id="bar-actions"></div>
   </div>
+</header>
+
+<!-- MAIN CONTENT -->
+<main id="root"></main>
+
+<!-- BOTTOM NAV -->
+<nav class="bottom-nav" id="bottom-nav">
+  <button class="bnav-item" id="bn-perfil" onclick="goNav('setup')">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="4"/><path d="M4 20c0-4 3.6-7 8-7s8 3 8 7"/></svg>
+    Perfil
+  </button>
+  <button class="bnav-item bnav-cta" id="bn-nova" onclick="goNav('form')">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M12 8v8M8 12h8"/></svg>
+    Nova
+  </button>
+  <button class="bnav-item" id="bn-demo" onclick="loadDemo()">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+    Exemplo
+  </button>
 </nav>
 
-<div id="root"></div>
-
 <script>
-/* ───────────────────────────────
-   SVG ICONS
-─────────────────────────────── */
-const I={
-  wand:     `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m15 4 2 2"/><path d="M9 9 3 21l12-6"/><path d="m14 7 3 3"/><path d="M5 6v4M3 8h4M19 13v4M17 15h4"/></svg>`,
-  sparkles: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m12 3-1.9 5.8a2 2 0 0 1-1.3 1.3L3 12l5.8 1.9a2 2 0 0 1 1.3 1.3L12 21l1.9-5.8a2 2 0 0 1 1.3-1.3L21 12l-5.8-1.9a2 2 0 0 1-1.3-1.3z"/></svg>`,
-  building: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M9 22V12h6v10M9 7h.01M15 7h.01M9 12h.01M15 12h.01"/></svg>`,
-  image:    `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="9" cy="9" r="2"/><path d="m21 15-3.5-3.5a2 2 0 0 0-2.8 0L6 21"/></svg>`,
+/* ══════════════════════════════════
+   ICONS
+══════════════════════════════════ */
+const I = {
+  home:     `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m3 9 9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>`,
+  user:     `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="4"/><path d="M4 20c0-4 3.6-7 8-7s8 3 8 7"/></svg>`,
   check:    `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg>`,
   copy:     `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>`,
   download: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4M7 10l5 5 5-5M12 15V3"/></svg>`,
-  arrow:    `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg>`,
-  back:     `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 12H5M11 6l-6 6 6 6"/></svg>`,
-  gear:     `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>`,
+  arrow:    `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg>`,
+  back:     `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M19 12H5M11 6l-6 6 6 6"/></svg>`,
+  gear:     `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>`,
   doc:      `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><path d="M14 2v6h6M16 13H8M16 17H8M10 9H8"/></svg>`,
   bolt:     `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M13 2 3 14h9l-1 8 10-12h-9z"/></svg>`,
   mail:     `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="4" width="20" height="16" rx="2"/><path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7"/></svg>`,
-  plus:     `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 5v14M5 12h14"/></svg>`,
+  plus:     `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M12 5v14M5 12h14"/></svg>`,
   clock:    `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></svg>`,
-  star:     `<svg viewBox="0 0 24 24" fill="currentColor" stroke="none"><path d="m12 2 3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14l-5-4.87 6.91-1.01z"/></svg>`,
-  home:     `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m3 9 9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>`,
-  cash:     `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="6" width="20" height="12" rx="2"/><circle cx="12" cy="12" r="2"/><path d="M6 12h.01M18 12h.01"/></svg>`,
-  chart:    `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg>`,
+  star:     `<svg viewBox="0 0 24 24" fill="currentColor"><path d="m12 2 3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14l-5-4.87 6.91-1.01z"/></svg>`,
+  image:    `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="9" cy="9" r="2"/><path d="m21 15-3.5-3.5a2 2 0 0 0-2.8 0L6 21"/></svg>`,
   palette:  `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="13.5" cy="6.5" r=".5" fill="currentColor"/><circle cx="17.5" cy="10.5" r=".5" fill="currentColor"/><circle cx="8.5" cy="7.5" r=".5" fill="currentColor"/><circle cx="6.5" cy="12.5" r=".5" fill="currentColor"/><path d="M12 2C6.5 2 2 6.5 2 12s4.5 10 10 10c.926 0 1.648-.746 1.648-1.688 0-.437-.18-.835-.437-1.125-.29-.289-.438-.652-.438-1.125a1.64 1.64 0 0 1 1.668-1.668h1.996c3.051 0 5.555-2.503 5.555-5.554C21.965 6.012 17.461 2 12 2z"/></svg>`,
-  contact:  `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>`,
-  eye:      `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>`,
+  cash:     `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="6" width="20" height="12" rx="2"/><circle cx="12" cy="12" r="2"/><path d="M6 12h.01M18 12h.01"/></svg>`,
+  list:     `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M8 6h13M8 12h13M8 18h13M3 6h.01M3 12h.01M3 18h.01"/></svg>`,
   trash:    `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg>`,
   key:      `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="7.5" cy="15.5" r="5.5"/><path d="m21 2-9.6 9.6M15.5 7.5l3 3L22 7l-3-3"/></svg>`,
-  shield:   `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>`,
-  list:     `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M8 6h13M8 12h13M8 18h13M3 6h.01M3 12h.01M3 18h.01"/></svg>`,
-  user:     `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>`,
+  sparkle:  `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m12 3-1.9 5.8a2 2 0 0 1-1.3 1.3L3 12l5.8 1.9a2 2 0 0 1 1.3 1.3L12 21l1.9-5.8a2 2 0 0 1 1.3-1.3L21 12l-5.8-1.9a2 2 0 0 1-1.3-1.3z"/></svg>`,
 };
 
-/* ───────────────────────────────
-   CONFIG & STATE
-─────────────────────────────── */
-const defaultCfg={
-  empresa:'',nome:'',email:'',whatsapp:'',creci:'',
-  bio:'',validade:7,cor:'#0C6EFF',logo:null,
-  pagamento:'Conforme combinado em contrato'
-};
-let cfg   = JSON.parse(localStorage.getItem('pc_cfg')||'null')||{...defaultCfg};
-let page  = (cfg.empresa||cfg.nome)?'form':'setup';
-let tab   = 'proposta', selModal = 1;
-let form  = {tipo:'',end:'',area:'',dorms:'',vagas:'',valor:'',cliente:'',obs:''};
-let modais = makeModais();
+/* ══════════════════════════════════
+   STATE
+══════════════════════════════════ */
+const dfCfg = { empresa:'', nome:'', email:'', whatsapp:'', creci:'', bio:'', validade:7, cor:'#1D4ED8', logo:null, pagamento:'Conforme combinado em contrato' };
+let cfg    = JSON.parse(localStorage.getItem('pc2_cfg')||'null') || {...dfCfg};
+let page   = (cfg.empresa||cfg.nome) ? 'form' : 'setup';
+let tab    = 'proposta';
+let selMod = 1;
+let form   = { tipo:'', valor:'', end:'', area:'', dorms:'', vagas:'', cliente:'', obs:'' };
+let modais = makeMods();
 
-function makeModais(){
+function makeMods(){
   return [
-    {nome:'À Vista',    icon:'💰', cor:'#00D16C', preco:'',    entrada:'',   parcelas:'',   banco:'',   obs:'Desconto para pagamento à vista',     items:['Desconto negociável','Escritura imediata','Sem taxa de financiamento'],         star:false},
-    {nome:'Financiamento',icon:'🏦',cor:'#0C6EFF', preco:'',    entrada:'20%',parcelas:'360',banco:'',   obs:'Financiamento bancário (SFH/SFI)',    items:['Entrada + parcelas mensais','Possibilidade de usar FGTS na entrada','Aprovação rápida nos principais bancos'], star:true },
-    {nome:'FGTS + Fin.',icon:'📋', cor:'#FFB020', preco:'',    entrada:'FGTS',parcelas:'360',banco:'',   obs:'FGTS como entrada + financiamento',  items:['FGTS abate o valor total','Parcelas reduzidas após entrada','Ideal para 1º imóvel'],             star:false},
+    { nome:'À Vista',       icon:'💰', preco:'', entrada:'',    meses:'',    banco:'',               obs:'',  items:['Desconto negociável no valor final','Escritura e registro imediatos','Sem juros ou encargos bancários'], star:false },
+    { nome:'Financiamento', icon:'🏦', preco:'', entrada:'20%', meses:'360', banco:'',               obs:'',  items:['Entrada + parcelas mensais','FGTS pode ser usado na entrada','Aprovação nos principais bancos'],          star:true  },
+    { nome:'FGTS',          icon:'📋', preco:'', entrada:'FGTS',meses:'420', banco:'Caixa Econômica',obs:'',  items:['FGTS utilizado como entrada','Parcelas reduzidas após entrada','Ideal para primeiro imóvel'],              star:false },
   ];
 }
 
-/* ───────────────────────────────
+/* ══════════════════════════════════
    UTILS
-─────────────────────────────── */
-const $=id=>document.getElementById(id);
-const esc=s=>String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+══════════════════════════════════ */
+const $   = id => document.getElementById(id);
+const esc = s  => String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+
 function setColor(hex){
-  if(!/^#[0-9a-fA-F]{6}$/.test(hex))return;
-  const r=parseInt(hex.slice(1,3),16),g=parseInt(hex.slice(3,5),16),b=parseInt(hex.slice(5,7),16);
+  if(!/^#[0-9a-fA-F]{6}$/.test(hex)) return;
+  const r=parseInt(hex.slice(1,3),16), g=parseInt(hex.slice(3,5),16), b=parseInt(hex.slice(5,7),16);
   const lt=(c,a)=>Math.round(Math.min(255,c+(255-c)*a));
   const dk=(c,a)=>Math.round(Math.max(0,c*(1-a)));
   const hx=arr=>'#'+arr.map(v=>Math.max(0,Math.min(255,v)).toString(16).padStart(2,'0')).join('');
-  const root=document.documentElement.style;
-  root.setProperty('--blue',hex);
-  root.setProperty('--blue-2',hx([lt(r,.28),lt(g,.28),lt(b,.28)]));
-  root.setProperty('--blue-gl',`rgba(${r},${g},${b},.35)`);
-  root.setProperty('--blue-sf',`rgba(${r},${g},${b},.10)`);
-  root.setProperty('--blue-sf2',`rgba(${r},${g},${b},.06)`);
-  root.setProperty('--grad-btn',`linear-gradient(135deg,${hex},${hx([lt(r,.28),lt(g,.28),lt(b,.28)])})`);
-  root.setProperty('--grad-accent',`linear-gradient(135deg,${hex},${hx([lt(r,.28),lt(g,.28),lt(b,.28)])})`);
-  root.setProperty('--shadow-blue',`0 8px 32px rgba(${r},${g},${b},.4)`);
+  const root = document.documentElement.style;
+  root.setProperty('--blue',    hex);
+  root.setProperty('--blue-lt', hx([lt(r,.08),lt(g,.08),lt(b,.08)]));
+  root.setProperty('--blue-2',  hx([lt(r,.22),lt(g,.22),lt(b,.22)]));
+  root.setProperty('--blue-sf', `rgba(${r},${g},${b},.07)`);
+  root.setProperty('--blue-bd', `rgba(${r},${g},${b},.28)`);
+  // nav bg
+  $('bar-ic').style.background = hex;
 }
-function toRgb(hex){return [parseInt(hex.slice(1,3),16),parseInt(hex.slice(3,5),16),parseInt(hex.slice(5,7),16)].join(',');}
-const today=()=>new Date().toLocaleDateString('pt-BR');
-function copy(txt,btn){
+
+function toRgb(hex){ return [parseInt(hex.slice(1,3),16),parseInt(hex.slice(3,5),16),parseInt(hex.slice(5,7),16)].join(','); }
+const today = () => new Date().toLocaleDateString('pt-BR');
+
+function copy(txt, btn){
   navigator.clipboard.writeText(txt).catch(()=>{});
-  const o=btn.innerHTML;
-  btn.innerHTML=I.check+' Copiado!';
-  btn.style.borderColor='var(--green)';btn.style.color='var(--green)';
-  setTimeout(()=>{btn.innerHTML=o;btn.style.borderColor='';btn.style.color='';},1800);
+  const o = btn.innerHTML;
+  btn.innerHTML = I.check + ' Copiado!';
+  btn.style.cssText += ';border-color:var(--green);color:var(--green)';
+  setTimeout(()=>{ btn.innerHTML=o; btn.removeAttribute('style'); }, 1800);
 }
-function readImg(input,cb){const f=input.files[0];if(!f)return;const r=new FileReader();r.onload=e=>cb(e.target.result);r.readAsDataURL(f);}
-function saveCfg(){localStorage.setItem('pc_cfg',JSON.stringify(cfg));}
-function render(){$('root').innerHTML=buildPage();setColor(cfg.cor);renderNav();bindInputs();window.scrollTo({top:0,behavior:'instant'});}
-function go(p){page=p;render();}
+function readImg(input, cb){ const f=input.files[0]; if(!f)return; const r=new FileReader(); r.onload=e=>cb(e.target.result); r.readAsDataURL(f); }
+function saveCfg(){ localStorage.setItem('pc2_cfg', JSON.stringify(cfg)); }
+function render(){ $('root').innerHTML = buildPage(); setColor(cfg.cor); renderChrome(); bindInputs(); window.scrollTo({top:0,behavior:'instant'}); }
+function go(p)   { page = p; render(); }
+function goNav(p){ if(p==='form' && !(cfg.empresa||cfg.nome)){ go('setup'); return; } go(p); }
 
-function renderNav(){
-  const name=cfg.empresa||cfg.nome||'PropCORR';
-  $('nav-logo').innerHTML=cfg.logo?`<img src="${cfg.logo}"/>`:I.home;
-  $('nav-name').textContent=name;
-  $('nav-sub').textContent=cfg.empresa?'Propostas de imóveis':'Propostas para Corretores';
-  let acts='';
-  if(page==='form')acts=`<button class="btn-sm" onclick="go('setup')">${I.gear}<span>Perfil</span></button>`;
-  if(page==='result')acts=`<div class="flex gap8"><button class="btn-sm" onclick="go('form')">${I.back}<span>Nova</span></button><button class="btn btn-green" style="width:auto;padding:9px 16px;font-size:13px" onclick="exportPDF()">${I.download} PDF</button></div>`;
-  if(page==='setup'&&(cfg.empresa||cfg.nome))acts=`<button class="btn-sm" onclick="go('form')">${I.arrow}<span>Voltar</span></button>`;
-  $('nav-actions').innerHTML=acts;
+function renderChrome(){
+  const name = cfg.empresa || cfg.nome || 'PropCORR';
+  $('bar-ic').innerHTML = cfg.logo ? `<img src="${cfg.logo}"/>` : I.home;
+  $('bar-name').textContent = name;
+  $('bar-tag').textContent  = cfg.creci ? `CRECI ${cfg.creci}` : 'Propostas em 30s';
+
+  let acts = '';
+  if(page==='form')   acts = `<button class="btn-sm" onclick="go('setup')">${I.gear}</button>`;
+  if(page==='result') acts = `<div class="flex gap8"><button class="btn-sm" onclick="go('form')">${I.back} Nova</button><button class="btn-sm" style="background:var(--green);color:#fff;border-color:var(--green)" onclick="exportPDF()">${I.download} PDF</button></div>`;
+  $('bar-actions').innerHTML = acts;
+
+  // bottom nav active state
+  ['bn-perfil','bn-nova','bn-demo'].forEach(id => $(`${id}`)?.classList.remove('active'));
+  if(page==='setup')  $('bn-perfil')?.classList.add('active');
+  if(page==='form')   $('bn-nova')?.classList.add('active');
+  if(page==='result') $('bn-nova')?.classList.add('active');
 }
 
-/* ───────────────────────────────
-   CONTENT GENERATORS
-─────────────────────────────── */
+/* ══════════════════════════════════
+   GENERATORS
+══════════════════════════════════ */
 function genProposta(){
-  const m=modais[selModal],emp=cfg.empresa||cfg.nome||'Nossa imobiliária';
-  const creci=cfg.creci?`CRECI: ${cfg.creci}`:'';
+  const m = modais[selMod];
+  const emp = cfg.empresa || cfg.nome || 'Corretor';
+  const creci = cfg.creci ? ` | CRECI: ${cfg.creci}` : '';
   return `PROPOSTA COMERCIAL DE IMÓVEL
-${'═'.repeat(54)}
-Para: ${form.cliente||'–'}
-Corretor: ${cfg.nome||cfg.empresa||'–'}${creci?' | '+creci:''}
-Data: ${today()} | Validade: ${cfg.validade} dias
-${'═'.repeat(54)}
+${'═'.repeat(52)}
+Para:     ${form.cliente || '–'}
+Corretor: ${emp}${creci}
+Data:     ${today()} | Validade: ${cfg.validade} dias
+${'═'.repeat(52)}
 
-IMÓVEL OFERTADO
+IMÓVEL
+Tipo:      ${form.tipo || '–'}
+Valor:     ${form.valor || 'A consultar'}
+${form.end    ? 'Endereço:  ' + form.end + '\n' : ''
+}${form.area  ? 'Área:      ' + form.area + ' m²' : ''
+}${form.dorms ? ' | Dorm.: ' + form.dorms : ''
+}${form.vagas ? ' | Vagas: ' + form.vagas : ''}
 
-Tipo: ${form.tipo||'–'}
-${form.end?'Endereço: '+form.end:''}
-${form.area?'Área: '+form.area+' m²':''}${form.dorms?' | '+form.dorms+' dorm(s)':''}${form.vagas?' | '+form.vagas+' vaga(s)':''}
-
-Valor de Venda: ${form.valor||'A consultar'}
-
-${'─'.repeat(54)}
+${'─'.repeat(52)}
 SOBRE ${emp.toUpperCase()}
 
-${cfg.bio||emp+' atua no mercado imobiliário com foco em atendimento consultivo e resultados. Nosso objetivo é fazer o melhor negócio para o cliente.'}
+${cfg.bio || emp + ' atua no mercado imobiliário com foco em atendimento consultivo e resultados sólidos para o cliente.'}
 
-${'─'.repeat(54)}
-MODALIDADE ESCOLHIDA: ${m.nome.toUpperCase()}
+${'─'.repeat(52)}
+MODALIDADE: ${m.nome.toUpperCase()}
 
-${m.items.map(i=>'  ✓  '+i).join('\n')}
-${m.entrada?'\nEntrada: '+m.entrada:''}
-${m.parcelas?'Prazo: '+m.parcelas+' meses ('+Math.round(Number(m.parcelas.replace(/\D/g,''))/12||30)+' anos)':''}
-${m.banco?'Banco: '+m.banco:''}
+${m.items.map(i => '  ✓  ' + i).join('\n')}
+${m.entrada ? '\nEntrada:   ' + m.entrada : ''}
+${m.meses   ? 'Prazo:     ' + m.meses + ' meses (' + Math.round(+m.meses.replace(/\D/g,'')/12 || 30) + ' anos)' : ''}
+${m.banco   ? 'Banco:     ' + m.banco : ''}
 
-Valor da proposta: ${m.preco||form.valor||'A consultar'}
+Valor desta modalidade: ${m.preco || form.valor || 'A consultar'}
 
-${'─'.repeat(54)}
+${'─'.repeat(52)}
 CONDIÇÕES
 
-• Validade desta proposta: ${cfg.validade} dias
-• Prazo para resposta: 48 horas
-• Documentação necessária: RG, CPF, comprovante de renda
-• Vistoria e avaliação mediante agendamento
-${form.obs?'\nObservações: '+form.obs:''}
+• Validade da proposta: ${cfg.validade} dias
+• Prazo para resposta:  48 horas
+• Documentação:         RG, CPF e comprovante de renda
+${form.obs ? '• Obs: ' + form.obs : ''}
 
-${'─'.repeat(54)}
-${[cfg.nome,creci,cfg.email,cfg.whatsapp?'WhatsApp: '+cfg.whatsapp:'',cfg.empresa].filter(Boolean).join('\n')}`.trim();
+${'─'.repeat(52)}
+${[cfg.nome, cfg.creci?'CRECI: '+cfg.creci:'', cfg.email, cfg.whatsapp?'WhatsApp: '+cfg.whatsapp:'', cfg.empresa].filter(Boolean).join('\n')}`.trim();
 }
 
 function genObjecoes(){
   return [
-    {q:'O preço está caro para minha realidade',
-     a:`Entendo sua preocupação. Vamos analisar juntos as modalidades de pagamento — com o FGTS na entrada, o valor das parcelas cai bastante. Também posso verificar se há margem de negociação com o proprietário. Qual seria o valor que te deixaria confortável para fechar?`},
-    {q:'Preciso pensar / consultar minha família',
-     a:`Claro, é a decisão mais importante da vida! Posso preparar um resumo completo com comparativo das 3 modalidades para facilitar a conversa em casa. Quer que eu envie por WhatsApp? Assim você mostra tudo certinho.`},
-    {q:'Já vi outros imóveis por um preço menor',
-     a:`Ótimo que você está pesquisando! Posso fazer um comparativo mostrando o custo-benefício deste imóvel frente às outras opções — localização, metragem, acabamento e valorização da região são fatores que fazem muita diferença no longo prazo. Quando posso te ligar para conversarmos sobre isso?`}
+    { q: 'O preço está acima do meu orçamento',
+      a: `Entendo sua preocupação! Vamos analisar juntos as 3 modalidades — com FGTS na entrada, o valor das parcelas cai bastante. Também posso verificar margem de negociação com o proprietário. Qual seria um valor que te deixaria confortável para fechar?` },
+    { q: 'Preciso pensar / consultar a família',
+      a: `Claro, é a decisão mais importante! Posso preparar um comparativo completo das 3 modalidades para facilitar a conversa em casa. Posso enviar pelo WhatsApp agora? Assim você mostra certinho para quem precisar.` },
+    { q: 'Vi outro imóvel por um preço menor',
+      a: `Ótimo que você está pesquisando! Posso fazer um comparativo mostrando o custo-benefício: localização, metragem, acabamento e potencial de valorização fazem muita diferença no longo prazo. Quando posso te ligar para conversarmos?` },
   ];
 }
 
 function genMsg(){
-  const m=modais[selModal];
-  const tipo=form.tipo||'imóvel';
-  return `Olá, ${form.cliente||''}! Tudo bem? 😊\n\nConforme conversamos, estou enviando a proposta comercial do ${tipo.toLowerCase()}${form.end?' localizado em '+form.end:''}.\n\nMontei 3 opções de pagamento pensadas pra sua realidade:\n💰 À Vista | 🏦 Financiamento | 📋 FGTS + Financiamento\n\nMinha recomendação é a modalidade *${m.nome}*, que costuma ser a mais vantajosa para o seu perfil.\n\nA proposta tem validade de ${cfg.validade} dias. Posso agendar uma visita ainda essa semana?\n\nQualquer dúvida, pode me chamar! 🏠\n\n${[cfg.nome,cfg.creci?'CRECI: '+cfg.creci:'',cfg.whatsapp?'WhatsApp: '+cfg.whatsapp:'',cfg.empresa].filter(Boolean).join('\n')}`.trim();
+  const m = modais[selMod];
+  return `Olá, ${form.cliente || ''}! Tudo bem? 😊\n\nConforme conversamos, segue a proposta do ${(form.tipo||'imóvel').toLowerCase()}${form.end?' na '+form.end.split(',')[0]:''}.\n\nMontei 3 opções de pagamento:\n💰 À Vista  |  🏦 Financiamento  |  📋 FGTS\n\nMinha recomendação é a modalidade *${m.nome}*, que costuma ser a mais vantajosa para o seu perfil.\n\nProposta válida por ${cfg.validade} dias. Posso agendar uma visita ainda essa semana? 🏠\n\n${[cfg.nome, cfg.creci?'CRECI: '+cfg.creci:'', cfg.whatsapp?'WhatsApp: '+cfg.whatsapp:'', cfg.empresa].filter(Boolean).join('\n')}`.trim();
 }
 
-/* ───────────────────────────────
+/* ══════════════════════════════════
    PAGE ROUTER
-─────────────────────────────── */
+══════════════════════════════════ */
 function buildPage(){
-  if(page==='setup') return pageSetup();
-  if(page==='form')  return pageForm();
-  if(page==='load')  return pageLoad(0);
-  if(page==='result')return pageResult();
+  if(page==='setup')  return pageSetup();
+  if(page==='form')   return pageForm();
+  if(page==='load')   return pageLoad(0);
+  if(page==='result') return pageResult();
   return '';
 }
 
-/* ── SETUP ── */
+/* ── SETUP ─────────────────────── */
 function pageSetup(){
-  const swColors=['#0C6EFF','#7C3AED','#0EA5E9','#10B981','#F59E0B','#EF4444','#EC4899','#1E293B'];
+  const sw = ['#1D4ED8','#7C3AED','#0891B2','#059669','#D97706','#DC2626','#DB2777','#0F172A'];
   return `
-<div class="hero-sect">
-  <div class="hero-orb hero-orb-1"></div>
-  <div class="hero-orb hero-orb-2"></div>
-  <div class="hero-inner">
-    <span class="badge badge-soft mb16" style="display:inline-flex">${I.sparkles} Configuração inicial</span>
-    <h1 class="mb10">Configure seu perfil de corretor</h1>
-    <p class="t2" style="max-width:440px;margin:0 auto">Preencha uma vez. Todas as suas propostas sairão com a sua marca e identidade profissional.</p>
-  </div>
+<div class="hero">
+  <div class="hero-tag">${I.sparkle} Configure seu perfil</div>
+  <h1>Sua proposta com a sua <span>identidade</span></h1>
+  <p>Preencha uma vez. Todas as propostas saem com a sua marca, logo e contato de corretor.</p>
 </div>
 
-<div class="wrap fade-in">
-  <div class="stepper">
-    <div class="stp active"><span class="stp-num">1</span><span class="stp-lbl">Perfil</span></div>
-    <div class="stp-line"></div>
-    <div class="stp"><span class="stp-num">2</span><span class="stp-lbl">Imóvel</span></div>
-    <div class="stp-line"></div>
-    <div class="stp"><span class="stp-num">3</span><span class="stp-lbl">Proposta</span></div>
+<div class="page fade-up">
+  <div class="steps-bar mb28">
+    <div class="step-item active"><span class="step-num">1</span><span class="step-lbl">Perfil</span></div>
+    <div class="step-line"></div>
+    <div class="step-item"><span class="step-num">2</span><span class="step-lbl">Imóvel</span></div>
+    <div class="step-line"></div>
+    <div class="step-item"><span class="step-num">3</span><span class="step-lbl">Proposta</span></div>
   </div>
 
-  <div class="card card-hi mb16">
-    <div class="flex gap12 mb20">
-      <div class="fi fi-blue">${I.palette}</div>
-      <div><h3>Marca &amp; Identidade</h3><p class="xs muted mt4">Logo e cor da sua imobiliária ou marca pessoal</p></div>
+  <!-- Marca -->
+  <div class="card mb16">
+    <div class="sec-hdr">
+      <div class="sec-ic si-blue">${I.palette}</div>
+      <div><h3>Marca &amp; Aparência</h3><p class="xs muted mt4">Logo e cor que aparecem em toda proposta</p></div>
     </div>
+
     <div class="flex gap16 mb20 wfl" style="align-items:flex-start">
       <div>
         <label>Logo</label>
-        <div class="logo-zone" onclick="$('logo-in').click()">
-          ${cfg.logo?`<img src="${cfg.logo}"/>`:I.image+'<span class="xs muted" style="font-weight:600;margin-top:3px">Enviar logo</span>'}
+        <div class="logo-zone" onclick="$('lg-in').click()">
+          ${cfg.logo ? `<img src="${cfg.logo}"/>` : I.image + `<span class="xs muted mt4" style="font-size:11px">Enviar</span>`}
         </div>
-        <input type="file" id="logo-in" accept="image/*" onchange="readImg(this,d=>{cfg.logo=d;render()})"/>
-        ${cfg.logo?`<button class="btn-ghost xs" style="padding:5px 0;margin-top:5px;color:var(--red)" onclick="cfg.logo=null;render()">${I.trash} Remover</button>`:''}
+        <input type="file" id="lg-in" accept="image/*" onchange="readImg(this,d=>{cfg.logo=d;render()})"/>
+        ${cfg.logo ? `<button onclick="cfg.logo=null;render()" style="background:none;border:none;cursor:pointer;font-size:12px;color:var(--red);font-family:inherit;font-weight:600;padding:6px 0;display:flex;align-items:center;gap:4px">${I.trash} Remover</button>` : ''}
       </div>
       <div class="flex1">
         <div class="mb14">
-          <label>Imobiliária / Nome da marca *</label>
+          <label>Nome da imobiliária / marca *</label>
           <input id="s-emp" value="${esc(cfg.empresa)}" placeholder="Ex: Silva Imóveis"/>
         </div>
         <div>
           <label>Cor da marca</label>
-          <div class="flex gap8 mb0">
-            <input type="color" id="s-cor" value="${cfg.cor}" style="width:56px;flex-shrink:0" oninput="cfg.cor=this.value;setColor(this.value);$('s-hex').value=this.value"/>
-            <input id="s-hex" value="${cfg.cor}" placeholder="#0C6EFF" oninput="if(/^#[0-9a-fA-F]{6}$/.test(this.value)){cfg.cor=this.value;setColor(this.value);$('s-cor').value=this.value}"/>
+          <div class="flex gap8">
+            <input type="color" id="s-cor" value="${cfg.cor}" style="width:52px;flex-shrink:0" oninput="cfg.cor=this.value;setColor(this.value);$('s-hex').value=this.value"/>
+            <input id="s-hex" value="${cfg.cor}" placeholder="#1D4ED8" oninput="if(/^#[0-9a-fA-F]{6}$/.test(this.value)){cfg.cor=this.value;setColor(this.value);$('s-cor').value=this.value}"/>
           </div>
           <div class="swatches">
-            ${swColors.map(c=>`<span class="swatch" style="background:${c}" onclick="cfg.cor='${c}';setColor('${c}');$('s-cor').value='${c}';$('s-hex').value='${c}'" title="${c}"></span>`).join('')}
+            ${sw.map(c=>`<span class="swatch" style="background:${c}" onclick="cfg.cor='${c}';setColor('${c}');$('s-cor').value='${c}';$('s-hex').value='${c}'" title="${c}"></span>`).join('')}
           </div>
         </div>
       </div>
     </div>
+
     <div>
       <label>Apresentação institucional</label>
-      <textarea id="s-bio" rows="3" placeholder="Ex: Especialista em imóveis residenciais na zona sul de SP. +10 anos de mercado, CRECI-SP ativo, mais de 200 imóveis negociados.">${esc(cfg.bio)}</textarea>
-      <p class="xs muted mt6">Aparece no corpo da proposta e no PDF</p>
+      <textarea id="s-bio" rows="3" placeholder="Ex: Especialista em imóveis residenciais na zona sul de SP. Mais de 10 anos de mercado e 200 imóveis negociados.">${esc(cfg.bio)}</textarea>
+      <p class="xs muted mt6">Aparece no corpo das propostas e no PDF exportado</p>
     </div>
   </div>
 
-  <div class="card card-hi mb24">
-    <div class="flex gap12 mb20">
-      <div class="fi fi-cyan">${I.contact}</div>
+  <!-- Contato -->
+  <div class="card mb24">
+    <div class="sec-hdr">
+      <div class="sec-ic si-blue">${I.user}</div>
       <div><h3>Dados do Corretor</h3><p class="xs muted mt4">Suas informações de contato profissional</p></div>
     </div>
     <div class="g2 mb14">
@@ -482,45 +787,45 @@ function pageSetup(){
     </div>
     <div class="g2 mb14">
       <div><label>WhatsApp</label><input id="s-wp" value="${esc(cfg.whatsapp)}" placeholder="(11) 99999-0000"/></div>
-      <div><label>E-mail</label><input id="s-em" value="${esc(cfg.email)}" placeholder="joao@siivaimoveis.com"/></div>
+      <div><label>E-mail</label><input id="s-em" value="${esc(cfg.email)}" placeholder="joao@silva.com"/></div>
     </div>
-    <div>
-      <label>Validade padrão das propostas</label>
-      <select id="s-val" style="max-width:200px">${[3,5,7,10,15].map(d=>`<option value="${d}"${cfg.validade==d?' selected':''}>${d} dias</option>`).join('')}</select>
+    <div style="max-width:200px">
+      <label>Validade padrão</label>
+      <select id="s-val">${[3,5,7,10,15].map(d=>`<option value="${d}"${cfg.validade==d?' selected':''}>${d} dias</option>`).join('')}</select>
     </div>
   </div>
 
-  <button class="btn btn-blue mb10" onclick="saveSetup()">Salvar e continuar ${I.arrow}</button>
-  ${(cfg.empresa||cfg.nome)?`<button class="btn btn-outline" onclick="go('form')">Usar configuração salva</button>`:''}
+  <button class="btn btn-cta mb10" onclick="saveSetup()">Salvar e continuar ${I.arrow}</button>
+  ${(cfg.empresa||cfg.nome)?`<button class="btn btn-outline" onclick="go('form')">Pular — usar configuração salva</button>`:''}
 </div>`;
 }
 
-/* ── FORM ── */
+/* ── FORM ──────────────────────── */
 function pageForm(){
   return `
-<div class="hero-sect" style="padding:42px 22px 36px">
-  <div class="hero-orb hero-orb-1" style="opacity:.55"></div>
-  <div class="hero-inner">
-    <span class="badge badge-soft mb14" style="display:inline-flex">${I.home} Passo 2 de 3</span>
-    <h1 class="mb8">Dados do imóvel e cliente</h1>
-    <p class="t2">Preencha os campos abaixo. A proposta profissional é gerada em segundos.</p>
+<div class="hero" style="text-align:left;padding:24px 20px 22px">
+  <div class="flex between">
+    <div>
+      <p class="xs muted w700 mb6" style="text-transform:uppercase;letter-spacing:.06em">Nova Proposta</p>
+      <h1 style="font-size:22px">Preencha os dados do imóvel</h1>
+    </div>
   </div>
 </div>
 
-<div class="wrap fade-in">
-  <div class="stepper">
-    <div class="stp done"><span class="stp-num">${I.check}</span><span class="stp-lbl">Perfil</span></div>
-    <div class="stp-line on"></div>
-    <div class="stp active"><span class="stp-num">2</span><span class="stp-lbl">Imóvel</span></div>
-    <div class="stp-line"></div>
-    <div class="stp"><span class="stp-num">3</span><span class="stp-lbl">Proposta</span></div>
+<div class="page fade-up">
+  <div class="steps-bar mb24">
+    <div class="step-item done"><span class="step-num">${I.check}</span><span class="step-lbl">Perfil</span></div>
+    <div class="step-line on"></div>
+    <div class="step-item active"><span class="step-num">2</span><span class="step-lbl">Imóvel</span></div>
+    <div class="step-line"></div>
+    <div class="step-item"><span class="step-num">3</span><span class="step-lbl">Proposta</span></div>
   </div>
 
-  <!-- Dados do imóvel -->
-  <div class="card card-hi mb16">
-    <div class="flex gap12 mb20">
-      <div class="fi fi-blue">${I.home}</div>
-      <div><h3>Dados do Imóvel</h3><p class="xs muted mt4">Informações do imóvel a ser ofertado</p></div>
+  <!-- Imóvel -->
+  <div class="card mb14">
+    <div class="sec-hdr">
+      <div class="sec-ic si-blue">${I.home}</div>
+      <div><h3>Dados do Imóvel</h3><p class="xs muted mt4">Tipo, localização e características</p></div>
     </div>
     <div class="g2 mb14">
       <div>
@@ -540,305 +845,286 @@ function pageForm(){
       <input id="f-end" value="${esc(form.end)}" placeholder="Ex: Rua das Flores, 123 — Jardim Paulista, São Paulo/SP"/>
     </div>
     <div class="g3">
-      <div><label>Área (m²)</label><input id="f-area" value="${esc(form.area)}" placeholder="Ex: 85"/></div>
-      <div><label>Dormitórios</label><input id="f-dorms" value="${esc(form.dorms)}" placeholder="Ex: 3"/></div>
-      <div><label>Vagas</label><input id="f-vagas" value="${esc(form.vagas)}" placeholder="Ex: 2"/></div>
+      <div><label>Área (m²)</label><input id="f-area" value="${esc(form.area)}" placeholder="85"/></div>
+      <div><label>Dormitórios</label><input id="f-dorms" value="${esc(form.dorms)}" placeholder="3"/></div>
+      <div><label>Vagas</label><input id="f-vagas" value="${esc(form.vagas)}" placeholder="2"/></div>
     </div>
   </div>
 
   <!-- Cliente -->
-  <div class="card card-hi mb16">
-    <div class="flex gap12 mb20">
-      <div class="fi fi-cyan">${I.user}</div>
-      <div><h3>Dados do Cliente Interessado *</h3><p class="xs muted mt4">Nome de quem vai receber a proposta</p></div>
+  <div class="card mb14">
+    <div class="sec-hdr">
+      <div class="sec-ic si-blue">${I.user}</div>
+      <div><h3>Cliente Interessado *</h3><p class="xs muted mt4">Para quem esta proposta será enviada</p></div>
     </div>
     <div class="g2">
-      <div><label>Nome completo *</label><input id="f-cli" value="${esc(form.cliente)}" placeholder="Ex: Carlos Oliveira"/></div>
-      <div><label>Observações <span class="opt">(opcional)</span></label><input id="f-obs" value="${esc(form.obs)}" placeholder="Ex: Quer usar FGTS, 1º imóvel"/></div>
+      <div><label>Nome completo *</label><input id="f-cli" value="${esc(form.cliente)}" placeholder="Carlos Oliveira"/></div>
+      <div><label>Observações <span class="opt">(opcional)</span></label><input id="f-obs" value="${esc(form.obs)}" placeholder="Ex: quer usar FGTS, 1º imóvel"/></div>
     </div>
   </div>
 
   <!-- Modalidades -->
-  <div class="card card-hi mb28">
+  <div class="card mb24">
     <div class="between mb20">
-      <div class="flex gap12">
-        <div class="fi fi-amber">${I.cash}</div>
-        <div><h3>Modalidades de Pagamento</h3><p class="xs muted mt4">Edite os valores e condições de cada opção</p></div>
+      <div class="sec-hdr" style="margin-bottom:0">
+        <div class="sec-ic si-amber">${I.cash}</div>
+        <div><h3>Modalidades de Pagamento</h3><p class="xs muted mt4">Edite valores e condições de cada opção</p></div>
       </div>
     </div>
     <div class="col gap12">
       ${modais.map((m,i)=>`
-      <div style="border:1.5px solid ${m.star?'var(--blue)':'var(--border)'};border-radius:var(--r-md);padding:18px;position:relative;background:${m.star?'var(--blue-sf2)':'rgba(6,12,28,.4)'}">
-        ${m.star?`<div style="position:absolute;top:-12px;right:15px"><span class="badge badge-blue">${I.star} Recomendada</span></div>`:''}
-        <div class="between mb12 gap8">
+      <div style="border:1.5px solid ${m.star?'var(--blue)':'var(--border-2)'};border-radius:var(--r-md);padding:16px;position:relative;background:${m.star?'var(--blue-sf)':'var(--bg)'}">
+        ${m.star?`<div style="position:absolute;top:-11px;right:14px"><span class="badge badge-solid" style="font-size:10px;padding:3px 10px">${I.star} Recomendada</span></div>`:''}
+        <div class="between mb10 gap8">
           <div class="flex gap8">
-            <span style="font-size:20px">${m.icon}</span>
-            <input class="inline" value="${esc(m.nome)}" style="font-size:15px;font-weight:700;max-width:160px" oninput="modais[${i}].nome=this.value"/>
+            <span style="font-size:20px;line-height:1">${m.icon}</span>
+            <input class="bare" value="${esc(m.nome)}" style="font-size:14.5px;font-weight:700;max-width:150px" oninput="modais[${i}].nome=this.value"/>
           </div>
-          <input class="inline" value="${esc(m.preco||form.valor)}" placeholder="Valor" style="text-align:right;max-width:140px;font-size:20px;font-weight:800;color:var(--blue-2)" oninput="modais[${i}].preco=this.value"/>
+          <input class="bare" value="${esc(m.preco||form.valor)}" placeholder="Valor" style="text-align:right;max-width:140px;font-size:19px;font-weight:800;color:var(--blue)" oninput="modais[${i}].preco=this.value"/>
         </div>
-        <div class="g3 mb12" style="gap:10px">
-          <div>
-            <label style="font-size:11px;margin-bottom:4px">Entrada</label>
-            <input class="inline" value="${esc(m.entrada)}" placeholder="—" style="font-size:12.5px;color:var(--text-2);width:100%" oninput="modais[${i}].entrada=this.value"/>
-          </div>
-          <div>
-            <label style="font-size:11px;margin-bottom:4px">Prazo (meses)</label>
-            <input class="inline" value="${esc(m.parcelas)}" placeholder="—" style="font-size:12.5px;color:var(--text-2);width:100%" oninput="modais[${i}].parcelas=this.value"/>
-          </div>
-          <div>
-            <label style="font-size:11px;margin-bottom:4px">Banco/Instituição</label>
-            <input class="inline" value="${esc(m.banco)}" placeholder="—" style="font-size:12.5px;color:var(--text-2);width:100%" oninput="modais[${i}].banco=this.value"/>
-          </div>
+        <div class="g3 mb10" style="gap:8px">
+          <div><label style="font-size:10.5px;margin-bottom:3px">Entrada</label><input class="bare" value="${esc(m.entrada)}" placeholder="—" style="font-size:12.5px;width:100%;color:var(--text-2)" oninput="modais[${i}].entrada=this.value"/></div>
+          <div><label style="font-size:10.5px;margin-bottom:3px">Prazo (meses)</label><input class="bare" value="${esc(m.meses)}" placeholder="—" style="font-size:12.5px;width:100%;color:var(--text-2)" oninput="modais[${i}].meses=this.value"/></div>
+          <div><label style="font-size:10.5px;margin-bottom:3px">Banco</label><input class="bare" value="${esc(m.banco)}" placeholder="—" style="font-size:12.5px;width:100%;color:var(--text-2)" oninput="modais[${i}].banco=this.value"/></div>
         </div>
         <div class="col gap4">
-          ${m.items.map((item,j)=>`
+          ${m.items.map((it,j)=>`
           <div class="flex gap8">
             <span class="blue" style="display:inline-flex;width:13px;height:13px;flex-shrink:0;margin-top:3px">${I.check}</span>
-            <input class="inline" value="${esc(item)}" style="flex:1;font-size:13px;color:var(--text-2)" oninput="modais[${i}].items[${j}]=this.value" placeholder="Vantagem desta modalidade..."/>
-            ${m.items.length>1?`<button onclick="modais[${i}].items.splice(${j},1);render()" style="background:none;border:none;cursor:pointer;color:var(--muted);font-size:17px;line-height:1;padding:0 4px" onmouseover="this.style.color='var(--red)'" onmouseout="this.style.color='var(--muted)'">×</button>`:''}
+            <input class="bare" value="${esc(it)}" style="flex:1;font-size:13px;color:var(--text-2)" oninput="modais[${i}].items[${j}]=this.value" placeholder="Vantagem desta modalidade..."/>
+            ${m.items.length>1?`<button onclick="modais[${i}].items.splice(${j},1);render()" style="background:none;border:none;cursor:pointer;color:var(--subtle);font-size:17px;line-height:1;padding:0 4px;transition:color .15s" onmouseover="this.style.color='var(--red)'" onmouseout="this.style.color='var(--subtle)'">×</button>`:''}
           </div>`).join('')}
-          <button onclick="modais[${i}].items.push('');render()" style="background:none;border:none;cursor:pointer;text-align:left;padding:5px 0 0 22px;font-size:12.5px;color:var(--blue-2);font-family:inherit;font-weight:600;display:flex;align-items:center;gap:5px"><span style="display:inline-flex;width:13px;height:13px">${I.plus}</span>adicionar vantagem</button>
+          <button onclick="modais[${i}].items.push('');render()" style="background:none;border:none;cursor:pointer;text-align:left;padding:5px 0 0 21px;font-size:12.5px;color:var(--blue);font-family:inherit;font-weight:700;display:flex;align-items:center;gap:5px">${I.plus} adicionar vantagem</button>
         </div>
       </div>`).join('')}
     </div>
   </div>
 
-  <button class="btn btn-blue mb10" id="btn-go" onclick="gerarProposta()" disabled>${I.wand} Gerar Proposta Profissional</button>
-  <button class="btn btn-outline" onclick="loadDemo()">${I.eye} Ver exemplo pronto</button>
-
-  <div class="g3 mt24">
-    ${[[I.doc,'fi-blue','Proposta completa'],[I.bolt,'fi-amber','Objeções respondidas'],[I.mail,'fi-cyan','Mensagem WhatsApp']].map(([ic,cl,tx])=>`
-    <div class="col gap8" style="align-items:center;text-align:center">
-      <div class="fi ${cl}">${ic}</div>
-      <span class="xs t2 semibold" style="line-height:1.35">${tx}</span>
-    </div>`).join('')}
-  </div>
+  <button class="btn btn-cta mb10" id="btn-go" onclick="gerarProposta()" disabled>${I.sparkle} Gerar Proposta Profissional</button>
+  <button class="btn btn-outline" onclick="loadDemo()">${I.key} Carregar exemplo</button>
 </div>`;
 }
 
-/* ── LOADING ── */
+/* ── LOADING ────────────────────── */
 function pageLoad(step){
-  const steps=['Analisando o imóvel...','Estruturando as 3 modalidades...','Calculando condições de pagamento...','Redigindo proposta profissional...','Preparando respostas a objeções...'];
-  return `<div class="wrap" style="display:flex;flex-direction:column;align-items:center;justify-content:center;min-height:75vh;gap:48px">
+  const steps = ['Analisando o imóvel...','Montando as 3 modalidades...','Calculando condições de pagamento...','Redigindo proposta profissional...','Preparando respostas a objeções...'];
+  return `
+<div class="page" style="display:flex;flex-direction:column;align-items:center;justify-content:center;min-height:70vh;gap:44px">
   <div class="center">
-    <div style="width:72px;height:72px;border-radius:20px;background:var(--grad-btn);display:flex;align-items:center;justify-content:center;color:#fff;margin:0 auto 20px;box-shadow:var(--shadow-blue)" class="pulse-anim">${I.wand}</div>
-    <h2 class="mb8">Gerando sua proposta...</h2>
-    <p class="muted sm">Montando tudo com a sua identidade de corretor</p>
+    <div style="width:68px;height:68px;border-radius:20px;background:var(--blue);display:flex;align-items:center;justify-content:center;color:#fff;margin:0 auto 18px;box-shadow:0 8px 24px rgba(29,78,216,.35)" class="pulse-ic">${I.sparkle}</div>
+    <h2 class="mb6">Gerando sua proposta...</h2>
+    <p class="muted sm">Com a sua identidade de corretor</p>
   </div>
-  <div class="col gap14" style="width:100%;max-width:320px">
+  <div class="col gap13" style="gap:13px;width:100%;max-width:300px">
     ${steps.map((s,i)=>`
     <div class="lstep">
       <div class="lstep-dot ${i<step?'done':i===step?'active':''}">
         ${i<step?`<span style="display:inline-flex;width:12px;height:12px">${I.check}</span>`:i===step?'<div class="spin"></div>':''}
       </div>
-      <span style="color:${i<=step?'var(--text)':'var(--muted)'};font-size:14px">${s}</span>
+      <span style="color:${i<=step?'var(--text)':'var(--subtle)'};font-size:14px">${s}</span>
     </div>`).join('')}
   </div>
 </div>`;
 }
 
-/* ── RESULT ── */
+/* ── RESULT ─────────────────────── */
 function pageResult(){
-  const m=modais[selModal];
-  const prop=genProposta(),objs=genObjecoes(),msg=genMsg();
+  const m = modais[selMod];
+  const prop = genProposta(), objs = genObjecoes(), msg = genMsg();
   return `
-<div class="hero-sect" style="padding:42px 22px 34px">
-  <div class="hero-orb hero-orb-1" style="opacity:.45"></div>
-  <div class="hero-inner">
-    <span class="badge badge-green mb14" style="display:inline-flex">${I.check} Proposta gerada</span>
-    <h1 class="mb8">Pronta para enviar</h1>
-    <p class="t2">Para <strong style="color:var(--text)">${esc(form.cliente||'–')}</strong> · ${esc(form.tipo||'')}${form.end?' em '+esc(form.end.split(',')[0]):''}</p>
+<div class="hero" style="text-align:left;padding:20px 20px 18px">
+  <div class="flex between wfl gap12">
+    <div>
+      <span class="badge badge-green mb8" style="display:inline-flex">${I.check} Proposta pronta</span>
+      <h1 style="font-size:20px">Para: <strong>${esc(form.cliente||'–')}</strong></h1>
+      <p class="xs muted mt4">${esc(form.tipo||'')}${form.valor?' · '+esc(form.valor):''}</p>
+    </div>
+    <button class="btn btn-cta" style="width:auto;padding:11px 18px;font-size:13.5px" onclick="exportPDF()">${I.download} Exportar PDF</button>
   </div>
 </div>
 
-<div class="wrap fade-in">
-  <div class="stepper mb28">
-    <div class="stp done"><span class="stp-num">${I.check}</span><span class="stp-lbl">Perfil</span></div>
-    <div class="stp-line on"></div>
-    <div class="stp done"><span class="stp-num">${I.check}</span><span class="stp-lbl">Imóvel</span></div>
-    <div class="stp-line on"></div>
-    <div class="stp active"><span class="stp-num">3</span><span class="stp-lbl">Proposta</span></div>
+<div class="page fade-up">
+  <div class="steps-bar mb24">
+    <div class="step-item done"><span class="step-num">${I.check}</span><span class="step-lbl">Perfil</span></div>
+    <div class="step-line on"></div>
+    <div class="step-item done"><span class="step-num">${I.check}</span><span class="step-lbl">Imóvel</span></div>
+    <div class="step-line on"></div>
+    <div class="step-item active"><span class="step-num">3</span><span class="step-lbl">Proposta</span></div>
   </div>
 
-  <p class="xs muted semibold mb10" style="text-transform:uppercase;letter-spacing:.07em">Escolha a modalidade a destacar na proposta</p>
-  <div class="sc-grid mb28">
+  <p class="xs muted w700 mb10" style="text-transform:uppercase;letter-spacing:.06em">Modalidade em destaque</p>
+  <div class="modal-grid mb24">
     ${modais.map((mo,i)=>`
-    <div class="sc-card${selModal===i?' sel':''}" onclick="selModal=${i};render()">
-      ${mo.star?`<div style="position:absolute;top:-11px;left:50%;transform:translateX(-50%)"><span class="badge badge-blue" style="font-size:9.5px;white-space:nowrap;padding:3px 9px">${I.star} Rec.</span></div>`:''}
-      <p class="xs bold muted" style="text-transform:uppercase;letter-spacing:.08em;margin:${mo.star?'8px':0} 0 5px">${esc(mo.nome)}</p>
-      <p style="font-size:18px;font-weight:800;margin:0 0 4px;color:var(--text)">${esc(mo.preco||form.valor||'–')}</p>
-      ${mo.entrada?`<p class="xs muted mb2">Entrada: ${esc(mo.entrada)}</p>`:''}
-      ${mo.parcelas?`<p class="xs muted mb10">Prazo: ${esc(mo.parcelas)} meses</p>`:`<div class="mb10"></div>`}
-      <ul style="list-style:none;padding:0;display:flex;flex-direction:column;gap:5px">
+    <div class="modal-card${selMod===i?' sel':''}" onclick="selMod=${i};render()">
+      ${mo.star?`<div style="position:absolute;top:-10px;left:50%;transform:translateX(-50%)"><span class="badge badge-solid" style="font-size:9px;padding:2px 9px;white-space:nowrap">${I.star} Rec.</span></div>`:''}
+      <p class="xs muted w700" style="text-transform:uppercase;letter-spacing:.07em;margin:${mo.star?'7px':0} 0 4px">${esc(mo.nome)}</p>
+      <p style="font-size:17px;font-weight:800;color:var(--text);margin-bottom:3px">${esc(mo.preco||form.valor||'–')}</p>
+      ${mo.entrada?`<p class="xs muted mb2">Ent.: ${esc(mo.entrada)}</p>`:''}
+      ${mo.meses?`<p class="xs muted mb10">${esc(mo.meses)} meses</p>`:`<div class="mb10"></div>`}
+      <ul style="list-style:none;padding:0;display:flex;flex-direction:column;gap:4px">
         ${mo.items.slice(0,3).map(it=>`<li class="xs t2" style="display:flex;gap:5px;align-items:flex-start"><span class="blue" style="display:inline-flex;width:11px;height:11px;flex-shrink:0;margin-top:2px">${I.check}</span>${esc(it)}</li>`).join('')}
-        ${mo.items.length>3?`<li class="xs blue semibold" style="padding-left:16px">+${mo.items.length-3} mais</li>`:''}
+        ${mo.items.length>3?`<li class="xs blue w700" style="padding-left:16px">+${mo.items.length-3} mais</li>`:''}
       </ul>
     </div>`).join('')}
   </div>
 
-  <div class="tabbar mb16">
+  <div class="tabbar mb14">
     <button class="tab${tab==='proposta'?' act':''}" onclick="tab='proposta';render()">${I.doc} Proposta</button>
     <button class="tab${tab==='objecoes'?' act':''}" onclick="tab='objecoes';render()">${I.bolt} Objeções</button>
     <button class="tab${tab==='msg'?' act':''}" onclick="tab='msg';render()">${I.mail} WhatsApp</button>
   </div>
 
   ${tab==='proposta'?`
-  <div class="card card-hi">
-    <div class="between mb16">
-      <div><h3>${esc(m.nome)} · <span class="blue">${esc(m.preco||form.valor||'a consultar')}</span></h3><p class="xs muted mt4">Proposta completa formatada</p></div>
+  <div class="card">
+    <div class="between mb14">
+      <div><h3>${esc(m.nome)} · <span class="blue">${esc(m.preco||form.valor||'–')}</span></h3><p class="xs muted mt4">Proposta completa pronta para enviar</p></div>
       <button class="btn-sm" onclick="copy(genProposta(),this)">${I.copy} Copiar</button>
     </div>
     <div class="output"><pre>${esc(prop)}</pre></div>
   </div>`:''}
 
   ${tab==='objecoes'?`
-  <div class="col gap12">
-    <p class="sm muted mb4">Respostas prontas para as 3 objeções mais comuns na venda de imóveis:</p>
+  <div class="col" style="gap:10px">
+    <p class="sm muted mb4">Respostas prontas para as 3 objeções mais comuns:</p>
     ${objs.map(o=>`
     <div class="card-sm">
       <div class="flex gap12" style="align-items:flex-start">
-        <div class="fi fi-amber" style="flex-shrink:0;margin-top:2px">${I.bolt}</div>
+        <div class="sec-ic si-amber" style="flex-shrink:0;margin-top:2px">${I.bolt}</div>
         <div class="flex1">
-          <p class="semibold sm mb8">"${esc(o.q)}"</p>
+          <p class="w700 sm mb6">"${esc(o.q)}"</p>
           <p class="t2 sm">${esc(o.a)}</p>
         </div>
-        <button class="btn-sm" style="flex-shrink:0;padding:8px" onclick="copy(${JSON.stringify(o.a)},this)">${I.copy}</button>
+        <button class="btn-icon" onclick="copy(${JSON.stringify(o.a)},this)">${I.copy}</button>
       </div>
     </div>`).join('')}
   </div>`:''}
 
   ${tab==='msg'?`
-  <div class="card card-hi">
-    <div class="between mb16">
-      <div><h3>Mensagem de apresentação</h3><p class="xs muted mt4">Pronta para enviar pelo WhatsApp</p></div>
+  <div class="card">
+    <div class="between mb14">
+      <div><h3>Mensagem para WhatsApp</h3><p class="xs muted mt4">Pronta para colar e enviar</p></div>
       <button class="btn-sm" onclick="copy(genMsg(),this)">${I.copy} Copiar</button>
     </div>
     <div class="output"><pre>${esc(msg)}</pre></div>
   </div>`:''}
 
-  <div class="card-hi mt20" style="padding:20px 22px;display:flex;align-items:center;gap:16px;border-radius:var(--r);border:1px solid rgba(0,209,108,.22);background:linear-gradient(120deg,rgba(0,209,108,.07),rgba(0,209,108,.02))">
-    <div class="fi fi-green" style="flex-shrink:0">${I.download}</div>
+  <div class="card mt16" style="background:var(--green-sf);border-color:var(--green-bd);display:flex;align-items:center;gap:14px;padding:18px 20px">
+    <div class="sec-ic si-green" style="flex-shrink:0">${I.download}</div>
     <div class="flex1">
-      <p class="semibold mb4">Exportar em PDF</p>
-      <p class="xs muted">Com sua logo, cores da marca, comparativo das 3 modalidades e condições comerciais. No celular: toque Compartilhar → Salvar em PDF.</p>
+      <p class="w700 mb4">Exportar em PDF profissional</p>
+      <p class="xs muted">Com logo, cor da marca e comparativo das 3 modalidades. No iPhone: toque Compartilhar → Salvar em PDF.</p>
     </div>
-    <button class="btn btn-green" style="width:auto;flex-shrink:0;padding:11px 18px;font-size:13.5px" onclick="exportPDF()">${I.download} Gerar</button>
+    <button class="btn btn-cta" style="width:auto;flex-shrink:0;padding:10px 16px;font-size:13px" onclick="exportPDF()">${I.download} Gerar</button>
   </div>
 </div>`;
 }
 
-/* ───────────────────────────────
+/* ══════════════════════════════════
    PDF EXPORT
-─────────────────────────────── */
+══════════════════════════════════ */
 function exportPDF(){
-  const m=modais[selModal],cor=cfg.cor,rgb=toRgb(cor);
+  const m=modais[selMod], cor=cfg.cor, rgb=toRgb(cor);
   const ph=`<!DOCTYPE html><html lang="pt-BR"><head>
 <meta charset="UTF-8"/><title>Proposta — ${esc(form.cliente)}</title>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet"/>
 <style>
 *{box-sizing:border-box;margin:0;padding:0}
-body{font-family:'Inter',-apple-system,sans-serif;color:#111827;background:#fff;font-size:13px;line-height:1.65;padding:44px}
-.hdr{display:flex;align-items:center;justify-content:space-between;padding-bottom:22px;border-bottom:3px solid ${cor};margin-bottom:28px}
-.logo{height:56px;object-fit:contain}
-.logo-ic{width:56px;height:56px;background:linear-gradient(135deg,${cor},rgba(${rgb},.6));border-radius:13px;display:flex;align-items:center;justify-content:center;font-size:22px;color:#fff;font-weight:900}
+body{font-family:'Inter',sans-serif;color:#111827;background:#fff;font-size:13px;line-height:1.65;padding:44px}
+.hdr{display:flex;align-items:center;justify-content:space-between;padding-bottom:20px;border-bottom:3px solid ${cor};margin-bottom:26px}
+.logo{height:54px;object-fit:contain}
+.logo-ic{width:52px;height:52px;background:${cor};border-radius:12px;display:flex;align-items:center;justify-content:center;font-size:22px;color:#fff;font-weight:900}
 .hdr-l{display:flex;align-items:center;gap:14px}
 .hdr-r{text-align:right;font-size:12px;color:#6b7280}
-.hdr-r strong{display:block;font-size:14px;color:#111827;margin-top:7px;font-weight:800}
-h1{font-size:22px;font-weight:800;color:#111827;letter-spacing:-.02em}
-h2{font-size:14px;font-weight:700;color:#111827;border-bottom:1.5px solid #e5e7eb;padding-bottom:7px;margin:0 0 14px}
-.hero{background:linear-gradient(130deg,${cor},rgba(${rgb},.75));color:#fff;border-radius:16px;padding:24px 28px;margin-bottom:26px;display:flex;align-items:center;justify-content:space-between;box-shadow:0 12px 36px -10px rgba(${rgb},.5)}
-.hero-l .lbl{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.1em;opacity:.8;margin-bottom:6px}
-.hero-l h1{font-size:26px;color:#fff}
-.hero-l .sub{font-size:13px;opacity:.88;margin-top:7px}
-.hero-r .price{font-size:36px;font-weight:900;line-height:1}
-.hero-r .prazo{font-size:12px;opacity:.85;margin-top:5px;text-align:right}
-.imovel-info{background:#f9fafb;border-radius:13px;padding:18px 20px;margin-bottom:24px;border:1px solid #f1f3f7}
-.imovel-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin-top:12px}
-.imovel-item .lbl{font-size:10px;font-weight:700;color:#9ca3af;text-transform:uppercase;letter-spacing:.05em}
-.imovel-item .val{font-size:14px;font-weight:700;color:#111827;margin-top:2px}
-.modais{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-bottom:28px}
-.modal-c{border:1.5px solid #e5e7eb;border-radius:13px;padding:16px;position:relative}
-.modal-c.sel{border-color:${cor};border-width:2px;background:rgba(${rgb},.04)}
-.modal-c .rec{background:${cor};color:#fff;font-size:9px;font-weight:700;padding:3px 10px;border-radius:999px;position:absolute;top:-10px;left:50%;transform:translateX(-50%);white-space:nowrap;text-transform:uppercase}
-.modal-c .nm{font-size:11px;font-weight:700;color:#6b7280;text-transform:uppercase;letter-spacing:.07em;margin-bottom:4px}
-.modal-c .pr{font-size:21px;font-weight:800;color:#111827;margin:0 0 3px;letter-spacing:-.02em}
-.modal-c .dt{font-size:11px;color:#9ca3af;margin-bottom:9px}
-.modal-c ul{list-style:none;padding:0;display:flex;flex-direction:column;gap:5px}
-.modal-c li{font-size:11px;color:#4b5563;display:flex;gap:5px;align-items:flex-start}
-.modal-c li b{color:${cor}}
-.bio-box{background:#f9fafb;border-radius:13px;padding:18px 20px;margin-bottom:24px;border:1px solid #f1f3f7}
+.hdr-r strong{display:block;font-size:14px;color:#111827;margin-top:6px;font-weight:800}
+h1{font-size:22px;font-weight:800;letter-spacing:-.02em}
+h2{font-size:13.5px;font-weight:700;color:#111827;border-bottom:1.5px solid #f1f5f9;padding-bottom:7px;margin:0 0 14px}
+.hero-box{background:${cor};color:#fff;border-radius:14px;padding:22px 26px;margin-bottom:24px;display:flex;align-items:center;justify-content:space-between;box-shadow:0 10px 30px -8px rgba(${rgb},.5)}
+.hero-box .lbl{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.1em;opacity:.8;margin-bottom:5px}
+.hero-box h1{font-size:26px;color:#fff}
+.hero-box .sub{font-size:13px;opacity:.85;margin-top:6px}
+.hero-box .price{font-size:34px;font-weight:900;line-height:1}
+.hero-box .prazo{font-size:12px;opacity:.8;margin-top:5px;text-align:right}
+.imovel{background:#f8fafc;border-radius:12px;padding:16px 18px;margin-bottom:22px;border:1px solid #f1f5f9}
+.ig{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-top:10px}
+.ig-item .lbl{font-size:10px;font-weight:700;color:#9ca3af;text-transform:uppercase;letter-spacing:.05em}
+.ig-item .val{font-size:14px;font-weight:700;color:#111827;margin-top:2px}
+.mods{display:grid;grid-template-columns:repeat(3,1fr);gap:11px;margin-bottom:26px}
+.mod{border:1.5px solid #e5e7eb;border-radius:12px;padding:14px;position:relative}
+.mod.sel{border-color:${cor};border-width:2px;background:rgba(${rgb},.04)}
+.mod .rec{background:${cor};color:#fff;font-size:9px;font-weight:700;padding:2px 9px;border-radius:999px;position:absolute;top:-9px;left:50%;transform:translateX(-50%);white-space:nowrap;text-transform:uppercase}
+.mod .nm{font-size:10px;font-weight:700;color:#6b7280;text-transform:uppercase;letter-spacing:.08em;margin-bottom:3px}
+.mod .pr{font-size:21px;font-weight:800;color:#111827;margin:0 0 3px;letter-spacing:-.02em}
+.mod .dt{font-size:11px;color:#9ca3af;margin-bottom:8px}
+.mod ul{list-style:none;padding:0;display:flex;flex-direction:column;gap:4px}
+.mod li{font-size:11px;color:#4b5563;display:flex;gap:5px;align-items:flex-start}
+.mod li b{color:${cor}}
+.bio-box{background:#f8fafc;border-radius:12px;padding:16px 18px;margin-bottom:22px;border:1px solid #f1f5f9}
 .bio-box p{font-size:13px;color:#374151;line-height:1.75}
-.cond{border:1.5px solid #e5e7eb;border-radius:13px;padding:20px;margin-bottom:28px}
-.cg{display:grid;grid-template-columns:1fr 1fr;gap:14px}
-.ci{display:flex;gap:12px;align-items:flex-start}
-.ci-dot{width:34px;height:34px;border-radius:9px;background:rgba(${rgb},.1);display:flex;align-items:center;justify-content:center;flex-shrink:0;font-size:15px}
+.sec{margin-bottom:22px}
+.sec p{font-size:13px;color:#374151;line-height:1.75}
+.cond{border:1.5px solid #e5e7eb;border-radius:12px;padding:18px;margin-bottom:26px}
+.cg{display:grid;grid-template-columns:1fr 1fr;gap:13px}
+.ci{display:flex;gap:11px;align-items:flex-start}
+.ci-ic{width:33px;height:33px;border-radius:8px;background:rgba(${rgb},.1);display:flex;align-items:center;justify-content:center;flex-shrink:0;font-size:15px}
 .ci-lbl{font-size:10px;font-weight:700;color:#9ca3af;text-transform:uppercase;letter-spacing:.05em}
 .ci-val{font-size:13px;color:#111827;font-weight:600}
-.footer{border-top:2px solid ${cor};padding-top:18px;display:flex;justify-content:space-between;align-items:center}
-.footer h4{font-size:15px;font-weight:800;color:#111827}
-.footer p{font-size:12px;color:#6b7280;margin-top:3px}
-.fl-logo{height:38px;object-fit:contain;opacity:.5}
-@media print{body{padding:28px}@page{margin:1.2cm}}
+.footer{border-top:2px solid ${cor};padding-top:16px;display:flex;justify-content:space-between;align-items:center}
+.footer h4{font-size:14px;font-weight:800;color:#111827}
+.footer p{font-size:12px;color:#6b7280;margin-top:2px}
+.fl-logo{height:36px;object-fit:contain;opacity:.5}
+@media print{body{padding:26px}@page{margin:1.2cm}}
 </style></head><body>
 <div class="hdr">
   <div class="hdr-l">
-    ${cfg.logo?`<img src="${cfg.logo}" class="logo"/>`:`<div class="logo-ic">${(cfg.empresa||cfg.nome||'P').charAt(0).toUpperCase()}</div>`}
+    ${cfg.logo?`<img src="${cfg.logo}" class="logo"/>`:`<div class="logo-ic">${(cfg.empresa||cfg.nome||'P').charAt(0)}</div>`}
     <div>
       <h1>${esc(cfg.empresa||cfg.nome||'Proposta Comercial')}</h1>
       ${cfg.creci?`<p style="font-size:12px;color:#6b7280;margin-top:3px">CRECI: ${esc(cfg.creci)}</p>`:''}
-      ${cfg.bio?`<p style="font-size:12px;color:#9ca3af;margin-top:3px;max-width:320px">${esc(cfg.bio.substring(0,90))}${cfg.bio.length>90?'...':''}</p>`:''}
     </div>
   </div>
   <div class="hdr-r">
-    <p>Data: ${today()}</p>
-    <p>Validade: ${cfg.validade} dias</p>
+    <p>Data: ${today()} · Validade: ${cfg.validade} dias</p>
     <strong>Para: ${esc(form.cliente||'–')}</strong>
   </div>
 </div>
 
-<div class="hero">
-  <div class="hero-l">
-    <p class="lbl">Modalidade recomendada</p>
+<div class="hero-box">
+  <div>
+    <p class="lbl">Modalidade Recomendada</p>
     <h1>${esc(m.nome)}</h1>
     <p class="sub">${esc(form.tipo||'')}${form.end?' · '+esc(form.end.split(',').slice(0,2).join(',')):''}
     </p>
   </div>
-  <div class="hero-r">
+  <div style="text-align:right">
     <div class="price">${esc(m.preco||form.valor||'–')}</div>
     ${m.entrada?`<div class="prazo">Entrada: ${esc(m.entrada)}</div>`:''}
   </div>
 </div>
 
-<div class="imovel-info">
-  <h2 style="border:none;padding:0;margin-bottom:10px">Informações do Imóvel</h2>
-  <div class="imovel-grid">
-    ${[['Tipo',form.tipo||'–'],['Valor',form.valor||'–'],form.area?['Área',form.area+' m²']:null,form.dorms?['Dormitórios',form.dorms]:null,form.vagas?['Vagas',form.vagas]:null].filter(Boolean).map(([l,v])=>`<div class="imovel-item"><div class="lbl">${l}</div><div class="val">${esc(v)}</div></div>`).join('')}
-  </div>
-  ${form.end?`<p style="font-size:12px;color:#6b7280;margin-top:12px">📍 ${esc(form.end)}</p>`:''}
-</div>
+${form.tipo||form.valor?`<div class="imovel"><h2 style="border:none;padding:0;margin-bottom:8px">Dados do Imóvel</h2><div class="ig">${[['Tipo',form.tipo||'–'],['Valor',form.valor||'–'],form.area?['Área',form.area+' m²']:null,form.dorms?['Dorm.',form.dorms]:null,form.vagas?['Vagas',form.vagas]:null].filter(Boolean).map(([l,v])=>`<div class="ig-item"><div class="lbl">${l}</div><div class="val">${esc(v)}</div></div>`).join('')}</div>${form.end?`<p style="font-size:12px;color:#6b7280;margin-top:10px">📍 ${esc(form.end)}</p>`:''}</div>`:''}
 
 <h2>Comparativo de Modalidades</h2>
-<div class="modais">
+<div class="mods">
   ${modais.map((mo,i)=>`
-  <div class="modal-c${i===selModal?' sel':''}">
+  <div class="mod${i===selMod?' sel':''}">
     ${mo.star?`<span class="rec">★ Recomendada</span>`:''}
-    <p class="nm" style="margin-top:${mo.star?'9px':0}">${esc(mo.nome)}</p>
+    <p class="nm" style="margin-top:${mo.star?'8px':0}">${esc(mo.nome)}</p>
     <p class="pr">${esc(mo.preco||form.valor||'–')}</p>
-    <div class="dt">${mo.entrada?'Entrada: '+esc(mo.entrada):''}${mo.parcelas?' · '+esc(mo.parcelas)+' meses':''}</div>
+    <div class="dt">${mo.entrada?'Entrada: '+esc(mo.entrada):''}${mo.meses?' · '+esc(mo.meses)+' meses':''}</div>
     <ul>${mo.items.map(it=>`<li><b>✓</b><span>${esc(it)}</span></li>`).join('')}</ul>
   </div>`).join('')}
 </div>
 
 ${cfg.bio?`<div class="bio-box"><h2 style="border:none;padding:0;margin-bottom:8px">Sobre ${esc(cfg.empresa||cfg.nome)}</h2><p>${esc(cfg.bio)}</p></div>`:''}
 
+<div class="sec"><h2>Entendimento do Cliente</h2><p>Entendemos que <strong>${esc(form.cliente)}</strong> busca um <strong>${esc((form.tipo||'imóvel').toLowerCase())}</strong>${form.end?' na região de <strong>'+esc(form.end.split(',').pop().trim())+'</strong>':''} com as melhores condições de pagamento. ${esc(form.obs||'Nossa missão é encontrar a melhor solução para o seu perfil e objetivos.')}</p></div>
+
 <div class="cond">
-  <h2 style="margin-bottom:15px">Condições Comerciais</h2>
+  <h2 style="margin-bottom:14px">Condições Comerciais</h2>
   <div class="cg">
-    ${[['📋','Validade',cfg.validade+' dias'],['⏰','Prazo resp.','48 horas'],['📅','Início','Após aprovação de documentação'],['🔑','Entrega',m.parcelas?'Conforme contrato':'Escritura imediata']].map(([ic,lb,vl])=>`
-    <div class="ci"><div class="ci-dot">${ic}</div><div><p class="ci-lbl">${lb}</p><p class="ci-val">${esc(vl)}</p></div></div>`).join('')}
+    ${[['📋','Validade',cfg.validade+' dias'],['⏰','Resposta','48 horas'],['📅','Início','Após aprovação de documentação'],['🔑','Entrega',m.meses?'Conforme contrato':'Imediata após escritura']].map(([ic,lb,vl])=>`<div class="ci"><div class="ci-ic">${ic}</div><div><p class="ci-lbl">${lb}</p><p class="ci-val">${esc(vl)}</p></div></div>`).join('')}
   </div>
-  ${form.obs?`<p style="font-size:12px;color:#6b7280;margin-top:14px;padding-top:14px;border-top:1px solid #f1f3f7">Obs: ${esc(form.obs)}</p>`:''}
+  ${form.obs?`<p style="font-size:12px;color:#6b7280;margin-top:12px;padding-top:12px;border-top:1px solid #f1f5f9">Obs: ${esc(form.obs)}</p>`:''}
 </div>
 
 <div class="footer">
@@ -854,64 +1140,68 @@ ${cfg.bio?`<div class="bio-box"><h2 style="border:none;padding:0;margin-bottom:8
 </body></html>`;
   const w=window.open('','_blank');
   if(!w){alert('Permita pop-ups para gerar o PDF.');return;}
-  w.document.write(ph);w.document.close();
+  w.document.write(ph); w.document.close();
 }
 
-/* ───────────────────────────────
+/* ══════════════════════════════════
    ACTIONS
-─────────────────────────────── */
+══════════════════════════════════ */
 function saveSetup(){
-  cfg.empresa =$('s-emp')?.value.trim() ||cfg.empresa;
-  cfg.nome    =$('s-nome')?.value.trim()||cfg.nome;
-  cfg.email   =$('s-em')?.value.trim()  ||cfg.email;
-  cfg.whatsapp=$('s-wp')?.value.trim()  ||cfg.whatsapp;
-  cfg.creci   =$('s-creci')?.value.trim()||cfg.creci||'';
-  cfg.bio     =$('s-bio')?.value.trim() ||cfg.bio;
-  cfg.validade=$('s-val')?.value        ||cfg.validade;
-  if(!cfg.empresa&&!cfg.nome){alert('Preencha o nome da imobiliária ou seu nome para continuar.');return;}
-  saveCfg();go('form');
+  cfg.empresa  = $('s-emp')?.value.trim()   || cfg.empresa;
+  cfg.nome     = $('s-nome')?.value.trim()  || cfg.nome;
+  cfg.email    = $('s-em')?.value.trim()    || cfg.email;
+  cfg.whatsapp = $('s-wp')?.value.trim()    || cfg.whatsapp;
+  cfg.creci    = $('s-creci')?.value.trim() || cfg.creci || '';
+  cfg.bio      = $('s-bio')?.value.trim()   || cfg.bio;
+  cfg.validade = $('s-val')?.value          || cfg.validade;
+  if(!cfg.empresa && !cfg.nome){ alert('Preencha o nome da imobiliária ou seu nome.'); return; }
+  saveCfg(); go('form');
 }
+
 function bindInputs(){
-  if(page!=='form')return;
-  const tp=$('f-tipo'),vl=$('f-valor'),cl=$('f-cli'),b=$('btn-go');
-  if(!tp||!vl||!cl||!b)return;
-  const chk=()=>{b.disabled=!tp.value||!vl.value.trim()||!cl.value.trim();};
-  tp.onchange=chk;vl.oninput=chk;cl.oninput=chk;
+  if(page !== 'form') return;
+  const tp=$('f-tipo'), vl=$('f-valor'), cl=$('f-cli'), b=$('btn-go');
+  if(!tp||!vl||!cl||!b) return;
+  const chk = () => { b.disabled = !tp.value || !vl.value.trim() || !cl.value.trim(); };
+  tp.onchange = chk; vl.oninput = chk; cl.oninput = chk;
 }
+
 function collectForm(){
-  form.tipo   =$('f-tipo')?.value  ||'';
-  form.valor  =$('f-valor')?.value ||'';
-  form.end    =$('f-end')?.value   ||'';
-  form.area   =$('f-area')?.value  ||'';
-  form.dorms  =$('f-dorms')?.value ||'';
-  form.vagas  =$('f-vagas')?.value ||'';
-  form.cliente=$('f-cli')?.value   ||'';
-  form.obs    =$('f-obs')?.value   ||'';
+  form.tipo    = $('f-tipo')?.value  || '';
+  form.valor   = $('f-valor')?.value || '';
+  form.end     = $('f-end')?.value   || '';
+  form.area    = $('f-area')?.value  || '';
+  form.dorms   = $('f-dorms')?.value || '';
+  form.vagas   = $('f-vagas')?.value || '';
+  form.cliente = $('f-cli')?.value   || '';
+  form.obs     = $('f-obs')?.value   || '';
 }
+
 function gerarProposta(){
   collectForm();
-  if(!form.tipo||!form.valor||!form.cliente)return;
-  page='load';render();
-  let step=0;
-  const iv=setInterval(()=>{
+  if(!form.tipo || !form.valor || !form.cliente) return;
+  page = 'load'; render();
+  let step = 0;
+  const iv = setInterval(()=>{
     step++;
-    if(step<5){$('root').innerHTML=pageLoad(step);setColor(cfg.cor);}
-    else{clearInterval(iv);selModal=1;tab='proposta';page='result';render();}
-  },780);
-}
-function loadDemo(){
-  form={tipo:'Apartamento',valor:'R$ 450.000',end:'Av. Paulista, 1200 — Bela Vista, São Paulo/SP',area:'78',dorms:'3',vagas:'1',cliente:'Carlos Oliveira',obs:'Quer usar FGTS, 1º imóvel'};
-  modais=[
-    {nome:'À Vista',      icon:'💰',cor:'#00D16C',preco:'R$ 425.000',entrada:'',     parcelas:'',   banco:'',    obs:'Desconto de 5% para pagamento à vista', items:['5% de desconto no valor total','Escritura e registro imediatos','Sem encargos bancários','Entrega das chaves em 30 dias'],                                   star:false},
-    {nome:'Financiamento',icon:'🏦',cor:'#0C6EFF',preco:'R$ 450.000',entrada:'20%',  parcelas:'360',banco:'CEF/Bradesco/Itaú',obs:'Financiamento SFH com FGTS na entrada', items:['Entrada: R$ 90.000 (20%)','Parcelas a partir de R$ 1.600/mês','FGTS pode complementar a entrada','Possibilidade de portabilidade futura'],   star:true },
-    {nome:'FGTS + Fin.',  icon:'📋',cor:'#FFB020',preco:'R$ 450.000',entrada:'FGTS', parcelas:'420',banco:'Caixa Econômica',  obs:'FGTS abate o valor total',             items:['FGTS utilizado como entrada','Parcelas a partir de R$ 1.480/mês','Ideal para quem trabalha com carteira assinada','Redução do saldo devedor'], star:false},
-  ];
-  selModal=1;tab='proposta';page='result';render();
+    if(step < 5){ $('root').innerHTML = pageLoad(step); setColor(cfg.cor); }
+    else { clearInterval(iv); selMod=1; tab='proposta'; page='result'; render(); }
+  }, 780);
 }
 
-/* ───────────────────────────────
+function loadDemo(){
+  form = { tipo:'Apartamento', valor:'R$ 450.000', end:'Av. Paulista, 1200 — Bela Vista, São Paulo/SP', area:'78', dorms:'3', vagas:'1', cliente:'Carlos Oliveira', obs:'1º imóvel, quer usar FGTS' };
+  modais = [
+    { nome:'À Vista',       icon:'💰', preco:'R$ 427.500', entrada:'',     meses:'',    banco:'',               obs:'', items:['5% de desconto no valor total','Escritura e registro imediatos','Sem juros ou encargos bancários','Chaves em até 30 dias'],                                       star:false },
+    { nome:'Financiamento', icon:'🏦', preco:'R$ 450.000', entrada:'20%',  meses:'360', banco:'CEF / Bradesco',  obs:'', items:['Entrada: R$ 90.000 (20%)','Parcelas a partir de R$ 1.600/mês','FGTS pode abater o saldo devedor','Portabilidade futura disponível'],                            star:true  },
+    { nome:'FGTS',          icon:'📋', preco:'R$ 450.000', entrada:'FGTS', meses:'420', banco:'Caixa Econômica', obs:'', items:['FGTS utilizado como entrada','Parcelas a partir de R$ 1.480/mês','Ideal para quem tem carteira assinada','Redução significativa do saldo devedor'],                star:false },
+  ];
+  selMod=1; tab='proposta'; page='result'; render();
+}
+
+/* ══════════════════════════════════
    INIT
-─────────────────────────────── */
+══════════════════════════════════ */
 setColor(cfg.cor);
 render();
 </script>
