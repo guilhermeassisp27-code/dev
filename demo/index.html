@@ -3,108 +3,252 @@
 <head>
 <meta charset="UTF-8"/>
 <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-<title>PropostaPro — Gerador de Propostas Comerciais</title>
+<title>PropostaPro — Gerador de Propostas Comerciais com IA</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet"/>
 <style>
-:root {
-  --bg: #09090f;
-  --card: #13131c;
-  --border: #1f1f2e;
-  --primary: #7c3aed;
-  --primary-hover: #6d28d9;
-  --primary-alpha: rgba(124,58,237,.12);
-  --text: #f1f5f9;
-  --muted: #64748b;
-  --subtle: #94a3b8;
-  --success: #22c55e;
-  --r: 12px;
-  --r-sm: 8px;
-  --r-xs: 6px;
+:root{
+  --bg:#f3f4fb;
+  --bg-2:#eef0fa;
+  --surface:#ffffff;
+  --surface-2:#fafbff;
+  --border:#e7e9f3;
+  --border-2:#eef0f7;
+  --text:#0d1326;
+  --text-2:#36405c;
+  --muted:#737d96;
+  --subtle:#9aa3bd;
+  --primary:#6d5efc;
+  --primary-2:#8b7dff;
+  --primary-hover:#5b4ce0;
+  --primary-soft:rgba(109,94,252,.10);
+  --primary-soft-2:rgba(109,94,252,.06);
+  --success:#10b981;
+  --warn:#f59e0b;
+  --danger:#ef4444;
+  --shadow-sm:0 1px 2px rgba(16,24,40,.05);
+  --shadow:0 4px 16px -4px rgba(16,24,40,.10),0 2px 6px -2px rgba(16,24,40,.06);
+  --shadow-lg:0 24px 48px -12px rgba(16,24,40,.18),0 8px 16px -8px rgba(16,24,40,.08);
+  --shadow-primary:0 12px 32px -8px rgba(109,94,252,.45);
+  --r:18px;--r-md:14px;--r-sm:10px;--r-xs:8px;
 }
 *{box-sizing:border-box;margin:0;padding:0}
-body{background:var(--bg);color:var(--text);font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;min-height:100vh;font-size:15px;line-height:1.6}
-.wrap{max-width:700px;margin:0 auto;padding:40px 20px}
+html{-webkit-text-size-adjust:100%}
+body{
+  background:var(--bg);
+  background-image:radial-gradient(1200px 600px at 50% -10%,var(--primary-soft-2),transparent 70%);
+  color:var(--text);
+  font-family:'Inter',-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;
+  min-height:100vh;font-size:15px;line-height:1.6;-webkit-font-smoothing:antialiased;
+}
+::selection{background:var(--primary-soft);color:var(--primary-hover)}
 
-h1{font-size:26px;font-weight:800;letter-spacing:-.5px;line-height:1.2}
-h2{font-size:20px;font-weight:700;letter-spacing:-.3px}
-h3{font-size:15px;font-weight:600}
-label{font-size:12px;font-weight:700;color:var(--subtle);display:block;margin-bottom:6px;text-transform:uppercase;letter-spacing:.06em}
+h1{font-size:30px;font-weight:800;letter-spacing:-.025em;line-height:1.15}
+h2{font-size:21px;font-weight:700;letter-spacing:-.02em}
+h3{font-size:16px;font-weight:700;letter-spacing:-.01em}
+label{font-size:12.5px;font-weight:600;color:var(--text-2);display:block;margin-bottom:7px;letter-spacing:-.005em}
+label .opt{font-weight:400;color:var(--subtle);text-transform:none;letter-spacing:0}
 
-.card{background:var(--card);border:1px solid var(--border);border-radius:var(--r);padding:24px}
-.card-sm{background:var(--card);border:1px solid var(--border);border-radius:var(--r);padding:16px}
-.card-scope{background:var(--card);border:1px solid var(--border);border-radius:10px;padding:16px;cursor:pointer;transition:all .15s;position:relative}
-.card-scope:hover{border-color:var(--primary)}
-.card-scope.sel{border-color:var(--primary);background:var(--primary-alpha)}
+/* ── App bar ── */
+.appbar{position:sticky;top:0;z-index:50;background:rgba(255,255,255,.82);backdrop-filter:saturate(180%) blur(14px);-webkit-backdrop-filter:saturate(180%) blur(14px);border-bottom:1px solid var(--border)}
+.appbar-in{max-width:920px;margin:0 auto;padding:13px 22px;display:flex;align-items:center;justify-content:space-between;gap:12px}
+.brand{display:flex;align-items:center;gap:11px;min-width:0}
+.brand-logo{width:38px;height:38px;border-radius:11px;background:linear-gradient(135deg,var(--primary),var(--primary-2));display:flex;align-items:center;justify-content:center;color:#fff;flex-shrink:0;box-shadow:var(--shadow-primary);overflow:hidden}
+.brand-logo img{width:100%;height:100%;object-fit:cover}
+.brand-name{font-weight:800;font-size:16px;letter-spacing:-.02em;line-height:1.1}
+.brand-tag{font-size:11px;color:var(--muted);font-weight:500}
 
-input,textarea,select{background:var(--bg);border:1px solid var(--border);border-radius:var(--r-sm);padding:11px 14px;color:var(--text);font-size:14px;width:100%;font-family:inherit;outline:none;transition:border-color .15s}
-input:focus,textarea:focus,select:focus{border-color:var(--primary)}
-textarea{resize:vertical}
-input[type=color]{padding:3px;height:42px;cursor:pointer}
+.wrap{max-width:760px;margin:0 auto;padding:34px 22px 80px}
+.wrap-wide{max-width:920px}
+
+/* ── Cards ── */
+.card{background:var(--surface);border:1px solid var(--border);border-radius:var(--r);padding:26px;box-shadow:var(--shadow-sm)}
+.card-hover{transition:box-shadow .2s,transform .2s,border-color .2s}
+.card-elevated{box-shadow:var(--shadow)}
+.card-sm{background:var(--surface);border:1px solid var(--border);border-radius:var(--r-md);padding:18px;box-shadow:var(--shadow-sm)}
+
+/* ── Inputs ── */
+input,textarea,select{background:var(--surface-2);border:1.5px solid var(--border);border-radius:var(--r-sm);padding:12px 14px;color:var(--text);font-size:14.5px;width:100%;font-family:inherit;outline:none;transition:border-color .15s,box-shadow .15s,background .15s;font-weight:500}
+input::placeholder,textarea::placeholder{color:var(--subtle);font-weight:400}
+input:focus,textarea:focus,select:focus{border-color:var(--primary);background:#fff;box-shadow:0 0 0 4px var(--primary-soft)}
+textarea{resize:vertical;line-height:1.6}
+select{appearance:none;-webkit-appearance:none;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' fill='none' stroke='%239aa3bd' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m4 6 4 4 4-4'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 13px center;padding-right:38px;cursor:pointer}
+input[type=color]{padding:3px;height:46px;cursor:pointer;border-radius:var(--r-sm)}
 input[type=file]{display:none}
-input.inline{background:transparent;border:none;border-bottom:1px dashed var(--border);border-radius:0;padding:2px 0;font-size:inherit;color:inherit}
-input.inline:focus{border-bottom-color:var(--primary);outline:none}
+input.inline{background:transparent;border:none;border-radius:0;padding:3px 6px;font-size:inherit;color:inherit;font-weight:inherit;transition:background .15s}
+input.inline:hover{background:var(--primary-soft-2)}
+input.inline:focus{background:var(--primary-soft);box-shadow:none}
 
-.btn{display:inline-flex;align-items:center;justify-content:center;gap:7px;padding:12px 18px;border-radius:var(--r-sm);font-size:14px;font-weight:600;cursor:pointer;border:none;font-family:inherit;transition:all .15s;white-space:nowrap}
-.btn-primary{background:var(--primary);color:#fff;width:100%;font-size:15px;padding:15px}
-.btn-primary:hover{background:var(--primary-hover)}
-.btn-primary:disabled{opacity:.35;cursor:not-allowed}
-.btn-outline{background:transparent;border:1px solid var(--border);color:var(--muted);width:100%}
-.btn-outline:hover{border-color:var(--primary);color:var(--text)}
-.btn-sm{background:transparent;border:1px solid var(--border);color:var(--muted);padding:6px 12px;font-size:12px;border-radius:var(--r-xs);cursor:pointer;display:inline-flex;align-items:center;gap:5px;font-family:inherit;transition:all .15s}
-.btn-sm:hover{border-color:var(--primary);color:var(--text)}
-.btn-pdf{background:var(--primary);color:#fff;border-color:var(--primary)}
-.btn-pdf:hover{background:var(--primary-hover);border-color:var(--primary-hover);color:#fff}
+/* ── Buttons ── */
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;padding:13px 20px;border-radius:var(--r-sm);font-size:14.5px;font-weight:600;cursor:pointer;border:none;font-family:inherit;transition:all .16s;white-space:nowrap;letter-spacing:-.01em}
+.btn svg{width:17px;height:17px;flex-shrink:0}
+.btn-primary{background:linear-gradient(135deg,var(--primary),var(--primary-2));color:#fff;width:100%;font-size:15.5px;padding:15px;box-shadow:var(--shadow-primary)}
+.btn-primary:hover{transform:translateY(-1px);box-shadow:0 16px 36px -8px rgba(109,94,252,.55)}
+.btn-primary:active{transform:translateY(0)}
+.btn-primary:disabled{opacity:.45;cursor:not-allowed;transform:none;box-shadow:var(--shadow-sm);filter:grayscale(.3)}
+.btn-outline{background:var(--surface);border:1.5px solid var(--border);color:var(--text-2);width:100%}
+.btn-outline:hover{border-color:var(--primary);color:var(--primary-hover);background:var(--primary-soft-2)}
+.btn-sm{background:var(--surface);border:1.5px solid var(--border);color:var(--text-2);padding:8px 14px;font-size:13px;border-radius:var(--r-xs);cursor:pointer;display:inline-flex;align-items:center;gap:6px;font-family:inherit;font-weight:600;transition:all .16s}
+.btn-sm svg{width:15px;height:15px}
+.btn-sm:hover{border-color:var(--primary);color:var(--primary-hover);background:var(--primary-soft-2)}
+.btn-grad{background:linear-gradient(135deg,var(--primary),var(--primary-2));color:#fff;border:none;box-shadow:var(--shadow-primary)}
+.btn-grad:hover{color:#fff;transform:translateY(-1px)}
+.btn-ghost{background:transparent;border:none;color:var(--muted);padding:8px 12px;font-size:13px;border-radius:var(--r-xs);cursor:pointer;font-family:inherit;font-weight:600;display:inline-flex;align-items:center;gap:6px;transition:all .15s}
+.btn-ghost svg{width:15px;height:15px}
+.btn-ghost:hover{background:var(--bg-2);color:var(--text)}
 
-.tabbar{background:var(--bg);border:1px solid var(--border);border-radius:var(--r-sm);padding:3px;display:flex;gap:2px}
-.tab{flex:1;padding:9px 10px;font-size:13px;font-weight:500;cursor:pointer;border-radius:6px;color:var(--muted);transition:all .15s;border:none;background:transparent;font-family:inherit;text-align:center}
-.tab.act{background:var(--card);color:var(--text)}
+/* ── Stepper ── */
+.stepper{display:flex;align-items:center;justify-content:center;gap:0;margin-bottom:30px}
+.st{display:flex;align-items:center;gap:9px;color:var(--subtle);font-size:13px;font-weight:600}
+.st-num{width:26px;height:26px;border-radius:50%;border:1.5px solid var(--border);display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:700;background:var(--surface);transition:all .25s;flex-shrink:0}
+.st.active{color:var(--primary)}
+.st.active .st-num{border-color:var(--primary);background:var(--primary);color:#fff;box-shadow:0 0 0 4px var(--primary-soft)}
+.st.done{color:var(--text-2)}
+.st.done .st-num{border-color:var(--primary);background:var(--primary);color:#fff}
+.st-line{width:34px;height:1.5px;background:var(--border);margin:0 8px;border-radius:2px}
+.st-line.fill{background:var(--primary)}
 
-.badge{display:inline-flex;align-items:center;padding:2px 8px;border-radius:999px;font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.06em}
-.badge-primary{background:var(--primary);color:#fff}
+/* ── Pills / badges ── */
+.badge{display:inline-flex;align-items:center;gap:5px;padding:4px 10px;border-radius:999px;font-size:11px;font-weight:700;letter-spacing:-.01em}
+.badge-primary{background:linear-gradient(135deg,var(--primary),var(--primary-2));color:#fff;box-shadow:0 4px 12px -2px rgba(109,94,252,.5)}
+.badge-soft{background:var(--primary-soft);color:var(--primary-hover)}
+.badge-success{background:rgba(16,185,129,.12);color:#059669}
+.chip{display:inline-flex;align-items:center;gap:6px;padding:6px 12px;border-radius:999px;font-size:12.5px;font-weight:600;background:var(--surface);border:1px solid var(--border);color:var(--text-2)}
+.chip svg{width:14px;height:14px;color:var(--primary)}
 
-.spin{width:16px;height:16px;border:2px solid var(--primary);border-top-color:transparent;border-radius:50%;animation:spin .7s linear infinite;flex-shrink:0;display:inline-block}
+/* ── Tabs ── */
+.tabbar{background:var(--bg-2);border:1px solid var(--border);border-radius:var(--r-sm);padding:4px;display:flex;gap:3px}
+.tab{flex:1;padding:10px 8px;font-size:13px;font-weight:600;cursor:pointer;border-radius:8px;color:var(--muted);transition:all .16s;border:none;background:transparent;font-family:inherit;display:flex;align-items:center;justify-content:center;gap:6px}
+.tab svg{width:15px;height:15px}
+.tab.act{background:var(--surface);color:var(--primary-hover);box-shadow:var(--shadow-sm)}
+
+/* ── Scope cards (result) ── */
+.scope-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:12px}
+.scope-card{background:var(--surface);border:1.5px solid var(--border);border-radius:var(--r-md);padding:16px 15px;cursor:pointer;transition:all .18s;position:relative;box-shadow:var(--shadow-sm)}
+.scope-card:hover{border-color:var(--primary-2);transform:translateY(-2px);box-shadow:var(--shadow)}
+.scope-card.sel{border-color:var(--primary);background:linear-gradient(180deg,var(--primary-soft-2),transparent);box-shadow:0 0 0 3px var(--primary-soft),var(--shadow)}
+.scope-card.sel::after{content:'';position:absolute;top:11px;right:11px;width:18px;height:18px;border-radius:50%;background:var(--primary);background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' fill='none' stroke='white' stroke-width='3' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M20 6 9 17l-5-5'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:center}
+
+/* ── Logo dropzone ── */
+.logo-zone{width:96px;height:96px;border:2px dashed var(--border);border-radius:var(--r-md);display:flex;flex-direction:column;align-items:center;justify-content:center;cursor:pointer;gap:5px;transition:all .18s;flex-shrink:0;overflow:hidden;background:var(--surface-2)}
+.logo-zone:hover{border-color:var(--primary);background:var(--primary-soft-2)}
+.logo-zone svg{color:var(--subtle);transition:color .18s}
+.logo-zone:hover svg{color:var(--primary)}
+.logo-zone img{width:100%;height:100%;object-fit:contain;padding:10px}
+
+/* ── Loading steps ── */
+.lstep{display:flex;align-items:center;gap:13px;font-size:14.5px;font-weight:500;transition:all .3s}
+.lstep-dot{width:26px;height:26px;border-radius:50%;border:2px solid var(--border);flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;transition:all .3s;background:var(--surface)}
+.lstep-dot.done{border-color:var(--primary);background:var(--primary);color:#fff}
+.lstep-dot.active{border-color:var(--primary);box-shadow:0 0 0 4px var(--primary-soft)}
+
+/* ── Feature row ── */
+.feat{display:flex;flex-direction:column;align-items:center;gap:9px;text-align:center;padding:4px}
+.feat-ic{width:46px;height:46px;border-radius:13px;background:var(--primary-soft);display:flex;align-items:center;justify-content:center;color:var(--primary)}
+.feat-ic svg{width:22px;height:22px}
+.feat-tx{font-size:12.5px;color:var(--text-2);font-weight:600;line-height:1.35}
+
+/* ── Hero ── */
+.hero{text-align:center;margin-bottom:34px}
+.hero-icon{width:72px;height:72px;border-radius:20px;background:linear-gradient(135deg,var(--primary),var(--primary-2));display:inline-flex;align-items:center;justify-content:center;color:#fff;margin-bottom:20px;box-shadow:var(--shadow-primary)}
+.hero-icon svg{width:36px;height:36px}
+
+/* ── Output box ── */
+.output{background:var(--surface-2);border:1px solid var(--border);border-radius:var(--r-md);padding:20px;max-height:480px;overflow-y:auto}
+pre{white-space:pre-wrap;font-family:'Inter',sans-serif;font-size:13.5px;line-height:1.85;color:var(--text-2)}
+.output::-webkit-scrollbar{width:8px}
+.output::-webkit-scrollbar-thumb{background:var(--border);border-radius:8px}
+
+/* ── Misc ── */
+.spin{width:14px;height:14px;border:2px solid #fff;border-top-color:transparent;border-radius:50%;animation:spin .7s linear infinite;flex-shrink:0;display:inline-block}
+.spin-p{border-color:var(--primary);border-top-color:transparent}
 @keyframes spin{to{transform:rotate(360deg)}}
-.pulse{animation:pulse 2s ease-in-out infinite}
-@keyframes pulse{0%,100%{opacity:1}50%{opacity:.4}}
-.fade-in{animation:fadeIn .3s ease}
-@keyframes fadeIn{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
+.pulse{animation:pulse 1.8s ease-in-out infinite}
+@keyframes pulse{0%,100%{opacity:1;transform:scale(1)}50%{opacity:.7;transform:scale(.96)}}
+.fade-in{animation:fadeIn .35s cubic-bezier(.16,1,.3,1)}
+@keyframes fadeIn{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:translateY(0)}}
+.pop{animation:pop .4s cubic-bezier(.34,1.56,.64,1)}
+@keyframes pop{from{opacity:0;transform:scale(.9)}to{opacity:1;transform:scale(1)}}
 
 .hidden{display:none!important}
-.g2{display:grid;grid-template-columns:1fr 1fr;gap:14px}
-.g3{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}
+.g2{display:grid;grid-template-columns:1fr 1fr;gap:15px}
+.g3{display:grid;grid-template-columns:repeat(3,1fr);gap:12px}
 .flex{display:flex;align-items:center}
-.between{display:flex;align-items:center;justify-content:space-between}
+.between{display:flex;align-items:center;justify-content:space-between;gap:12px}
 .col{display:flex;flex-direction:column}
-.gap4{gap:4px}.gap8{gap:8px}.gap12{gap:12px}.gap16{gap:16px}.gap20{gap:20px}.gap24{gap:24px}
-.mb4{margin-bottom:4px}.mb8{margin-bottom:8px}.mb12{margin-bottom:12px}.mb16{margin-bottom:16px}
-.mb20{margin-bottom:20px}.mb24{margin-bottom:24px}.mb32{margin-bottom:32px}
-.muted{color:var(--muted)}.subtle{color:var(--subtle)}.sm{font-size:13px}.xs{font-size:12px}
-.primary{color:var(--primary)}.semibold{font-weight:600}.bold{font-weight:700}
-pre{white-space:pre-wrap;font-family:inherit;font-size:13px;line-height:1.85}
+.wrap-fl{flex-wrap:wrap}
+.gap4{gap:4px}.gap6{gap:6px}.gap8{gap:8px}.gap10{gap:10px}.gap12{gap:12px}.gap14{gap:14px}.gap16{gap:16px}.gap20{gap:20px}
+.mb4{margin-bottom:4px}.mb6{margin-bottom:6px}.mb8{margin-bottom:8px}.mb10{margin-bottom:10px}.mb12{margin-bottom:12px}.mb14{margin-bottom:14px}.mb16{margin-bottom:16px}.mb20{margin-bottom:20px}.mb24{margin-bottom:24px}.mb28{margin-bottom:28px}.mb32{margin-bottom:32px}
+.mt6{margin-top:6px}.mt16{margin-top:16px}.mt20{margin-top:20px}.mt24{margin-top:24px}
+.muted{color:var(--muted)}.subtle{color:var(--subtle)}.t2{color:var(--text-2)}
+.sm{font-size:13.5px}.xs{font-size:12px}.lg{font-size:16px}
+.primary{color:var(--primary)}.semibold{font-weight:600}.bold{font-weight:700}.w800{font-weight:800}
+.center{text-align:center}.right{text-align:right}
+.divider{height:1px;background:var(--border);margin:22px 0}
+.flex1{flex:1;min-width:0}
 
-.logo-zone{width:88px;height:88px;border:2px dashed var(--border);border-radius:12px;display:flex;flex-direction:column;align-items:center;justify-content:center;cursor:pointer;gap:4px;transition:all .15s;flex-shrink:0;overflow:hidden}
-.logo-zone:hover{border-color:var(--primary);background:var(--primary-alpha)}
-.logo-zone img{width:100%;height:100%;object-fit:contain;padding:8px}
-
-.step{display:flex;align-items:center;gap:12px;font-size:14px}
-.step-dot{width:22px;height:22px;border-radius:50%;border:2px solid var(--border);flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:700;transition:all .3s}
-.step-dot.done{border-color:var(--primary);background:var(--primary);color:#fff}
-.step-dot.active{border-color:var(--primary)}
+@media(max-width:560px){
+  .wrap{padding:24px 16px 70px}
+  h1{font-size:25px}h2{font-size:19px}
+  .g2{grid-template-columns:1fr}
+  .card{padding:20px}
+  .st-line{width:20px;margin:0 5px}
+  .st span.lbl{display:none}
+  .scope-grid{gap:9px}
+  .scope-card{padding:13px 11px}
+  .brand-tag{display:none}
+}
 </style>
 </head>
 <body>
+<div class="appbar">
+  <div class="appbar-in">
+    <div class="brand">
+      <div class="brand-logo" id="bar-logo"></div>
+      <div style="min-width:0">
+        <div class="brand-name" id="bar-name">PropostaPro</div>
+        <div class="brand-tag" id="bar-tag">Propostas que vendem</div>
+      </div>
+    </div>
+    <div id="bar-actions"></div>
+  </div>
+</div>
 <div id="root"></div>
+
 <script>
-// ─── CONFIG & STATE ───────────────────────────
-const defaultCfg = {
-  empresa:'', nome:'', email:'', whatsapp:'',
-  bio:'', validade:15, cor:'#7c3aed',
-  pagamento:'PIX ou boleto até o 5º dia útil', logo:null
+// ════════ ICONS (inline SVG) ════════
+const I={
+  wand:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m15 4 2 2"/><path d="M9 9 3 21l12-6"/><path d="m14 7 3 3"/><path d="M5 6v4M3 8h4M19 13v4M17 15h4"/></svg>',
+  building:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="2" width="16" height="20" rx="2"/><path d="M9 22v-4h6v4M8 6h.01M16 6h.01M8 10h.01M16 10h.01M8 14h.01M16 14h.01"/></svg>',
+  image:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="9" cy="9" r="2"/><path d="m21 15-3.5-3.5a2 2 0 0 0-2.8 0L6 21"/></svg>',
+  check:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg>',
+  copy:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>',
+  download:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4M7 10l5 5 5-5M12 15V3"/></svg>',
+  arrow:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg>',
+  back:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 12H5M11 6l-6 6 6 6"/></svg>',
+  gear:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>',
+  doc:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><path d="M14 2v6h6M16 13H8M16 17H8M10 9H8"/></svg>',
+  bolt:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M13 2 3 14h9l-1 8 10-12h-9z"/></svg>',
+  mail:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="4" width="20" height="16" rx="2"/><path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7"/></svg>',
+  plus:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 5v14M5 12h14"/></svg>',
+  clock:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></svg>',
+  star:'<svg viewBox="0 0 24 24" fill="currentColor" stroke="none"><path d="m12 2 3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14l-5-4.87 6.91-1.01z"/></svg>',
+  card:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="5" width="20" height="14" rx="2"/><path d="M2 10h20"/></svg>',
+  calendar:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2"/><path d="M16 2v4M8 2v4M3 10h18"/></svg>',
+  rocket:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4.5 16.5c-1.5 1.26-2 5-2 5s3.74-.5 5-2c.71-.84.7-2.13-.09-2.91a2.18 2.18 0 0 0-2.91-.09z"/><path d="m12 15-3-3a22 22 0 0 1 2-3.95A12.88 12.88 0 0 1 22 2c0 2.72-.78 7.5-6 11a22.35 22.35 0 0 1-4 2z"/><path d="M9 12H4s.55-3.03 2-4c1.62-1.08 5 0 5 0M12 15v5s3.03-.55 4-2c1.08-1.62 0-5 0-5"/></svg>',
+  list:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M8 6h13M8 12h13M8 18h13M3 6h.01M3 12h.01M3 18h.01"/></svg>',
+  shield:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>',
+  sparkles:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m12 3-1.9 5.8a2 2 0 0 1-1.3 1.3L3 12l5.8 1.9a2 2 0 0 1 1.3 1.3L12 21l1.9-5.8a2 2 0 0 1 1.3-1.3L21 12l-5.8-1.9a2 2 0 0 1-1.3-1.3z"/><path d="M5 3v4M19 17v4M3 5h4M17 19h4"/></svg>'
 };
-let cfg = JSON.parse(localStorage.getItem('pp_cfg') || 'null') || {...defaultCfg};
-let page = (cfg.empresa || cfg.nome) ? 'form' : 'setup';
-let tab = 'proposta', selScope = 1;
-let form = {servico:'', cliente:'', segmento:'', contexto:''};
-let scopes = makeScopes();
+
+// ════════ CONFIG & STATE ════════
+const defaultCfg={empresa:'',nome:'',email:'',whatsapp:'',bio:'',validade:15,cor:'#6d5efc',pagamento:'PIX ou boleto até o 5º dia útil',logo:null};
+let cfg=JSON.parse(localStorage.getItem('pp_cfg')||'null')||{...defaultCfg};
+let page=(cfg.empresa||cfg.nome)?'form':'setup';
+let tab='proposta',selScope=1;
+let form={servico:'',cliente:'',segmento:'',contexto:''};
+let scopes=makeScopes();
 
 function makeScopes(){
   return [
@@ -114,36 +258,53 @@ function makeScopes(){
   ];
 }
 
-// ─── UTILS ────────────────────────────────────
-const $ = id => document.getElementById(id);
+// ════════ UTILS ════════
+const $=id=>document.getElementById(id);
+function escH(s){return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');}
 function setColor(hex){
-  if(!/^#[0-9a-fA-F]{6}$/.test(hex)) return;
-  document.documentElement.style.setProperty('--primary', hex);
-  const r=parseInt(hex.slice(1,3),16), g=parseInt(hex.slice(3,5),16), b=parseInt(hex.slice(5,7),16);
-  document.documentElement.style.setProperty('--primary-alpha',`rgba(${r},${g},${b},.12)`);
-  const d=[Math.max(0,r-20),Math.max(0,g-20),Math.max(0,b-20)];
-  document.documentElement.style.setProperty('--primary-hover','#'+d.map(v=>v.toString(16).padStart(2,'0')).join(''));
+  if(!/^#[0-9a-fA-F]{6}$/.test(hex))return;
+  const r=parseInt(hex.slice(1,3),16),g=parseInt(hex.slice(3,5),16),b=parseInt(hex.slice(5,7),16);
+  const lt=(c,a)=>Math.round(c+(255-c)*a);
+  const dk=(c,a)=>Math.round(c*(1-a));
+  const hx=arr=>'#'+arr.map(v=>Math.max(0,Math.min(255,v)).toString(16).padStart(2,'0')).join('');
+  const root=document.documentElement.style;
+  root.setProperty('--primary',hex);
+  root.setProperty('--primary-2',hx([lt(r,.22),lt(g,.22),lt(b,.22)]));
+  root.setProperty('--primary-hover',hx([dk(r,.12),dk(g,.12),dk(b,.12)]));
+  root.setProperty('--primary-soft',`rgba(${r},${g},${b},.10)`);
+  root.setProperty('--primary-soft-2',`rgba(${r},${g},${b},.06)`);
 }
-function toRgb(hex){ return [parseInt(hex.slice(1,3),16),parseInt(hex.slice(3,5),16),parseInt(hex.slice(5,7),16)].join(','); }
-const today = () => new Date().toLocaleDateString('pt-BR');
-function copy(txt, btn){
+function toRgb(hex){return [parseInt(hex.slice(1,3),16),parseInt(hex.slice(3,5),16),parseInt(hex.slice(5,7),16)].join(',');}
+const today=()=>new Date().toLocaleDateString('pt-BR');
+function copy(txt,btn){
   navigator.clipboard.writeText(txt).catch(()=>{});
   const o=btn.innerHTML;
-  btn.innerHTML='✓ Copiado!';
-  btn.style.borderColor='var(--success)'; btn.style.color='var(--success)';
-  setTimeout(()=>{ btn.innerHTML=o; btn.style.borderColor=''; btn.style.color=''; }, 2000);
+  btn.innerHTML=I.check+' Copiado!';
+  btn.style.borderColor='var(--success)';btn.style.color='var(--success)';
+  setTimeout(()=>{btn.innerHTML=o;btn.style.borderColor='';btn.style.color='';},1900);
 }
-function readImg(input, cb){
-  const f=input.files[0]; if(!f) return;
-  const r=new FileReader(); r.onload=e=>cb(e.target.result); r.readAsDataURL(f);
-}
-function saveCfg(){ localStorage.setItem('pp_cfg', JSON.stringify(cfg)); }
-function render(){ $('root').innerHTML = buildPage(); setColor(cfg.cor); bindInputs(); }
-function go(p){ page=p; render(); }
+function readImg(input,cb){const f=input.files[0];if(!f)return;const r=new FileReader();r.onload=e=>cb(e.target.result);r.readAsDataURL(f);}
+function saveCfg(){localStorage.setItem('pp_cfg',JSON.stringify(cfg));}
+function render(){$('root').innerHTML=buildPage();setColor(cfg.cor);renderBar();bindInputs();window.scrollTo({top:0,behavior:'instant'});}
+function go(p){page=p;render();}
 
-// ─── CONTENT GENERATORS ───────────────────────
+function renderBar(){
+  const name=cfg.empresa||cfg.nome||'PropostaPro';
+  const tag=cfg.empresa?'Propostas comerciais':'Propostas que vendem';
+  $('bar-logo').innerHTML=cfg.logo?`<img src="${cfg.logo}"/>`:I.wand;
+  $('bar-logo').style.fontSize='';
+  $('bar-name').textContent=name;
+  $('bar-tag').textContent=tag;
+  let acts='';
+  if(page==='form')acts=`<button class="btn-sm" onclick="go('setup')">${I.gear}<span class="lbl">Perfil</span></button>`;
+  else if(page==='result')acts=`<button class="btn-sm" onclick="go('form')">${I.back}<span class="lbl">Nova</span></button>`;
+  else if(page==='setup'&&(cfg.empresa||cfg.nome))acts=`<button class="btn-sm" onclick="go('form')">${I.arrow}<span class="lbl">Voltar</span></button>`;
+  $('bar-actions').innerHTML=acts;
+}
+
+// ════════ CONTENT GENERATORS ════════
 function genProposta(){
-  const s=scopes[selScope], emp=cfg.empresa||cfg.nome||'Nossa empresa';
+  const s=scopes[selScope],emp=cfg.empresa||cfg.nome||'Nossa empresa';
   return `PROPOSTA COMERCIAL — ${form.servico}
 ${'─'.repeat(54)}
 Para: ${form.cliente}${form.segmento?' | Segmento: '+form.segmento:''}
@@ -152,7 +313,7 @@ ${'─'.repeat(54)}
 
 SOBRE ${emp.toUpperCase()}
 
-${cfg.bio || emp+' é especializada em '+form.servico.toLowerCase()+', com foco total em resultado e satisfação do cliente.'}
+${cfg.bio||emp+' é especializada em '+form.servico.toLowerCase()+', com foco total em resultado e satisfação do cliente.'}
 
 ${'─'.repeat(54)}
 ENTENDIMENTO DO PROJETO
@@ -175,53 +336,61 @@ CONDIÇÕES COMERCIAIS
 • Validade: ${cfg.validade} dias a partir desta data
 
 ${'─'.repeat(54)}
-${[cfg.nome, cfg.email, cfg.whatsapp?'WhatsApp: '+cfg.whatsapp:'', cfg.empresa].filter(Boolean).join('\n')}`.trim();
+${[cfg.nome,cfg.email,cfg.whatsapp?'WhatsApp: '+cfg.whatsapp:'',cfg.empresa].filter(Boolean).join('\n')}`.trim();
 }
-
 function genObjecoes(){
   return [
-    {q:'O investimento está acima do meu orçamento',
-     a:`Entendo. Temos o escopo ${scopes[0].nome} como ponto de entrada com o mesmo nível de qualidade. Também podemos estruturar o pagamento de forma parcelada para facilitar. O que faz mais sentido para você?`},
-    {q:'Já trabalhei com outro profissional e não tive resultado',
-     a:`Lamento essa experiência. É por isso que trabalhamos com metas claras desde o início, relatórios transparentes e reuniões periódicas de alinhamento. Você acompanha cada resultado em tempo real — sem surpresas.`},
-    {q:'Preciso pensar e consultar meu sócio/parceiro',
-     a:`Claro, faz total sentido! Posso preparar um resumo de 1 página para facilitar essa conversa, ou agendar uma reunião rápida de 20 minutos com vocês dois. O que funciona melhor?`}
+    {q:'O investimento está acima do meu orçamento',a:`Entendo perfeitamente. Temos o escopo ${scopes[0].nome} como ponto de entrada com o mesmo nível de qualidade. Também podemos estruturar o pagamento de forma parcelada para facilitar. O que faz mais sentido para você?`},
+    {q:'Já trabalhei com outro profissional e não tive resultado',a:`Lamento essa experiência. É exatamente por isso que trabalhamos com metas claras desde o início, relatórios transparentes e reuniões periódicas de alinhamento. Você acompanha cada resultado em tempo real — sem surpresas.`},
+    {q:'Preciso pensar e consultar meu sócio/parceiro',a:`Claro, faz total sentido! Posso preparar um resumo de 1 página para facilitar essa conversa, ou agendar uma reunião rápida de 20 minutos com vocês dois. O que funciona melhor para vocês?`}
   ];
 }
-
 function genMsg(){
   const s=scopes[selScope];
-  return `Olá, ${form.cliente}! Tudo bem?\n\nConforme alinhamos, estou enviando a proposta comercial para ${form.servico.toLowerCase()}.\n\nPreparei ${scopes.length} opções de escopo pensadas especialmente para a sua realidade — do ponto de entrada à solução completa.\n\nMinha recomendação é o escopo ${s.nome}, que oferece o melhor custo-benefício com entrega em ${s.prazo}.\n\nFico à disposição para tirar qualquer dúvida. Podemos conversar ainda essa semana?\n\nAbraço,\n${[cfg.nome||cfg.empresa, cfg.whatsapp?'WhatsApp: '+cfg.whatsapp:''].filter(Boolean).join('\n')}`.trim();
+  return `Olá, ${form.cliente}! Tudo bem?\n\nConforme alinhamos, estou enviando a proposta comercial para ${form.servico.toLowerCase()}.\n\nPreparei ${scopes.length} opções de escopo pensadas especialmente para a sua realidade — do ponto de entrada à solução completa.\n\nMinha recomendação é o escopo ${s.nome}, que oferece o melhor custo-benefício com entrega em ${s.prazo}.\n\nFico à disposição para tirar qualquer dúvida. Podemos conversar ainda essa semana?\n\nAbraço,\n${[cfg.nome||cfg.empresa,cfg.whatsapp?'WhatsApp: '+cfg.whatsapp:''].filter(Boolean).join('\n')}`.trim();
 }
 
-// ─── PAGE RENDERERS ───────────────────────────
+// ════════ PAGE ROUTER ════════
 function buildPage(){
-  if(page==='setup')  return pageSetup();
-  if(page==='form')   return pageForm();
-  if(page==='load')   return pageLoad(0);
-  if(page==='result') return pageResult();
+  if(page==='setup')return pageSetup();
+  if(page==='form')return pageForm();
+  if(page==='load')return pageLoad(0);
+  if(page==='result')return pageResult();
   return '';
 }
 
+// ──── SETUP ────
 function pageSetup(){
   return `<div class="wrap fade-in">
-  <div style="text-align:center;margin-bottom:36px">
-    <div style="font-size:44px;margin-bottom:14px">✨</div>
-    <h1 class="mb8">Configure sua identidade</h1>
-    <p class="muted sm">Essas informações aparecem em todas as suas propostas</p>
+  <div class="stepper">
+    <div class="st active"><span class="st-num">1</span><span class="lbl">Identidade</span></div>
+    <div class="st-line"></div>
+    <div class="st"><span class="st-num">2</span><span class="lbl">Proposta</span></div>
+    <div class="st-line"></div>
+    <div class="st"><span class="st-num">3</span><span class="lbl">Enviar</span></div>
   </div>
 
-  <div class="card mb16">
-    <h3 class="mb20">Marca &amp; Aparência</h3>
-    <div class="flex gap16 mb20">
+  <div class="hero">
+    <div class="hero-icon">${I.sparkles}</div>
+    <h1 class="mb8">Configure sua identidade</h1>
+    <p class="muted">Personalize uma vez. Todas as suas propostas saem com a sua cara.</p>
+  </div>
+
+  <div class="card card-elevated mb16">
+    <div class="flex gap10 mb20">
+      <div class="feat-ic" style="width:38px;height:38px;border-radius:11px">${I.image}</div>
+      <div><h3>Marca &amp; Aparência</h3><p class="xs muted">Logo e cor que aparecem em cada proposta</p></div>
+    </div>
+    <div class="flex gap16 mb20 wrap-fl" style="align-items:flex-start">
       <div>
         <label>Logo</label>
         <div class="logo-zone" onclick="$('logo-in').click()">
-          ${cfg.logo ? `<img src="${cfg.logo}"/>` : `<span style="font-size:28px">🏢</span><span class="xs muted">Adicionar</span>`}
+          ${cfg.logo?`<img src="${cfg.logo}"/>`:`${I.building}<span class="xs subtle" style="font-weight:600">Enviar</span>`}
         </div>
         <input type="file" id="logo-in" accept="image/*" onchange="readImg(this,d=>{cfg.logo=d;render()})"/>
+        ${cfg.logo?`<button class="btn-ghost xs" style="padding:6px 0;margin-top:4px" onclick="cfg.logo=null;render()">Remover</button>`:''}
       </div>
-      <div style="flex:1">
+      <div class="flex1">
         <div class="mb16">
           <label>Nome da empresa / freelancer *</label>
           <input id="s-emp" value="${escH(cfg.empresa)}" placeholder="Ex: Studio Silva Design"/>
@@ -229,21 +398,27 @@ function pageSetup(){
         <div>
           <label>Cor da marca</label>
           <div class="flex gap8">
-            <input type="color" id="s-cor" value="${cfg.cor}" style="width:54px" oninput="cfg.cor=this.value;setColor(this.value);$('s-hex').value=this.value"/>
-            <input id="s-hex" value="${cfg.cor}" placeholder="#7c3aed" oninput="if(/^#[0-9a-fA-F]{6}$/.test(this.value)){cfg.cor=this.value;setColor(this.value);$('s-cor').value=this.value}" style="flex:1"/>
+            <input type="color" id="s-cor" value="${cfg.cor}" style="width:58px;flex-shrink:0" oninput="cfg.cor=this.value;setColor(this.value);$('s-hex').value=this.value"/>
+            <input id="s-hex" value="${cfg.cor}" placeholder="#6d5efc" oninput="if(/^#[0-9a-fA-F]{6}$/.test(this.value)){cfg.cor=this.value;setColor(this.value);$('s-cor').value=this.value}"/>
+          </div>
+          <div class="flex gap6 mt6">
+            ${['#6d5efc','#2563eb','#0ea5e9','#10b981','#f59e0b','#ef4444','#ec4899','#0f172a'].map(c=>`<span onclick="cfg.cor='${c}';setColor('${c}');$('s-cor').value='${c}';$('s-hex').value='${c}'" style="width:24px;height:24px;border-radius:7px;background:${c};cursor:pointer;border:2px solid #fff;box-shadow:0 0 0 1px var(--border)"></span>`).join('')}
           </div>
         </div>
       </div>
     </div>
     <div>
       <label>Apresentação institucional</label>
-      <textarea id="s-bio" rows="3" placeholder="Ex: Somos especialistas em marketing digital para pequenas empresas, com +5 anos de experiência e 80+ clientes atendidos.">${escH(cfg.bio)}</textarea>
-      <p class="xs muted" style="margin-top:5px">Aparece no topo de cada proposta gerada</p>
+      <textarea id="s-bio" rows="3" placeholder="Ex: Somos especialistas em marketing digital para pequenas empresas, com +5 anos de experiência e mais de 80 clientes atendidos.">${escH(cfg.bio)}</textarea>
+      <p class="xs subtle mt6">Aparece no topo de cada proposta e PDF gerado</p>
     </div>
   </div>
 
-  <div class="card mb24">
-    <h3 class="mb20">Informações de Contato</h3>
+  <div class="card card-elevated mb24">
+    <div class="flex gap10 mb20">
+      <div class="feat-ic" style="width:38px;height:38px;border-radius:11px">${I.mail}</div>
+      <div><h3>Informações de Contato</h3><p class="xs muted">Usadas no rodapé e na mensagem de envio</p></div>
+    </div>
     <div class="g2 mb16">
       <div><label>Seu nome *</label><input id="s-nome" value="${escH(cfg.nome)}" placeholder="João Silva"/></div>
       <div><label>WhatsApp</label><input id="s-wp" value="${escH(cfg.whatsapp)}" placeholder="(11) 99999-0000"/></div>
@@ -252,246 +427,256 @@ function pageSetup(){
       <div><label>E-mail</label><input id="s-em" value="${escH(cfg.email)}" placeholder="joao@empresa.com"/></div>
       <div>
         <label>Validade das propostas</label>
-        <select id="s-val">
-          ${[7,10,15,20,30].map(d=>`<option value="${d}"${cfg.validade==d?' selected':''}>${d} dias</option>`).join('')}
-        </select>
+        <select id="s-val">${[7,10,15,20,30].map(d=>`<option value="${d}"${cfg.validade==d?' selected':''}>${d} dias</option>`).join('')}</select>
       </div>
     </div>
   </div>
 
-  <button class="btn btn-primary mb8" onclick="saveSetup()">Salvar e Continuar →</button>
-  ${(cfg.empresa||cfg.nome)?`<button class="btn btn-outline" onclick="go('form')">Usar configuração salva</button>`:''}
+  <button class="btn btn-primary mb10" onclick="saveSetup()">Salvar e Continuar ${I.arrow}</button>
+  ${(cfg.empresa||cfg.nome)?`<button class="btn btn-outline" onclick="go('form')">Pular — usar configuração salva</button>`:''}
 </div>`;
 }
 
+// ──── FORM ────
 function pageForm(){
   return `<div class="wrap fade-in">
-  <div class="between mb32">
-    <div>
-      ${cfg.logo?`<img src="${cfg.logo}" style="height:32px;object-fit:contain;margin-bottom:6px;display:block"/>`:''}
-      <h2 class="mb4">${escH(cfg.empresa)||'Gerador de Propostas'}</h2>
-      <p class="muted sm">Preencha os dados para gerar sua proposta profissional</p>
-    </div>
-    <button class="btn-sm" onclick="go('setup')">⚙️ Editar perfil</button>
+  <div class="stepper">
+    <div class="st done"><span class="st-num">${I.check}</span><span class="lbl">Identidade</span></div>
+    <div class="st-line fill"></div>
+    <div class="st active"><span class="st-num">2</span><span class="lbl">Proposta</span></div>
+    <div class="st-line"></div>
+    <div class="st"><span class="st-num">3</span><span class="lbl">Enviar</span></div>
   </div>
 
-  <div class="card mb16">
-    <h3 class="mb20">Dados da Proposta</h3>
+  <div class="mb24">
+    <h1 class="mb6">Gerar nova proposta</h1>
+    <p class="muted">Preencha os dados e monte os escopos. Geramos a proposta completa em segundos.</p>
+  </div>
+
+  <div class="card card-elevated mb16">
+    <div class="flex gap10 mb20">
+      <div class="feat-ic" style="width:38px;height:38px;border-radius:11px">${I.doc}</div>
+      <div><h3>Dados da Proposta</h3><p class="xs muted">Sobre o cliente e o serviço</p></div>
+    </div>
     <div class="mb16">
       <label>Serviço / Solução oferecida *</label>
       <textarea id="f-srv" rows="2" placeholder="Ex: Gestão de redes sociais, Desenvolvimento de site, Consultoria financeira...">${escH(form.servico)}</textarea>
     </div>
     <div class="g2 mb16">
       <div><label>Nome do cliente *</label><input id="f-cli" value="${escH(form.cliente)}" placeholder="Ex: Empresa ABC"/></div>
-      <div><label>Segmento <span style="font-weight:400;text-transform:none;letter-spacing:0">(opcional)</span></label><input id="f-seg" value="${escH(form.segmento)}" placeholder="Ex: Varejo, Saúde..."/></div>
+      <div><label>Segmento <span class="opt">(opcional)</span></label><input id="f-seg" value="${escH(form.segmento)}" placeholder="Ex: Varejo, Saúde..."/></div>
     </div>
     <div>
-      <label>Contexto adicional <span style="font-weight:400;text-transform:none;letter-spacing:0">(opcional)</span></label>
+      <label>Contexto adicional <span class="opt">(opcional)</span></label>
       <textarea id="f-ctx" rows="2" placeholder="Ex: Budget de R$5k, urgência para esse mês, maior dor é conversão...">${escH(form.contexto)}</textarea>
     </div>
   </div>
 
-  <div class="card mb24">
+  <div class="card card-elevated mb24">
     <div class="between mb20">
-      <h3>Escopos e Investimento</h3>
-      <span class="xs muted">Edite nomes, preços e entregáveis</span>
+      <div class="flex gap10">
+        <div class="feat-ic" style="width:38px;height:38px;border-radius:11px">${I.list}</div>
+        <div><h3>Escopos e Investimento</h3><p class="xs muted">Edite nomes, preços e entregáveis</p></div>
+      </div>
     </div>
     <div class="col gap12">
       ${scopes.map((s,i)=>`
-      <div style="border:1px solid var(--border);border-radius:10px;padding:16px;position:relative">
-        ${s.star?`<div style="position:absolute;top:-10px;right:14px"><span class="badge badge-primary">★ Recomendado</span></div>`:''}
-        <div class="between mb12">
-          <input class="inline" value="${escH(s.nome)}" style="font-size:15px;font-weight:700;width:130px" oninput="scopes[${i}].nome=this.value"/>
-          <input class="inline" value="${escH(s.preco)}" placeholder="R$ 0,00" style="text-align:right;width:120px;font-size:20px;font-weight:800" oninput="scopes[${i}].preco=this.value"/>
+      <div style="border:1.5px solid ${s.star?'var(--primary)':'var(--border)'};border-radius:var(--r-md);padding:17px;position:relative;background:${s.star?'var(--primary-soft-2)':'var(--surface-2)'}">
+        ${s.star?`<div style="position:absolute;top:-11px;right:15px"><span class="badge badge-primary">${I.star} Recomendado</span></div>`:''}
+        <div class="between mb12 gap8">
+          <input class="inline" value="${escH(s.nome)}" style="font-size:15.5px;font-weight:700;max-width:150px" oninput="scopes[${i}].nome=this.value"/>
+          <input class="inline" value="${escH(s.preco)}" placeholder="R$ 0,00" style="text-align:right;max-width:130px;font-size:20px;font-weight:800;color:var(--primary)" oninput="scopes[${i}].preco=this.value"/>
         </div>
-        <div class="flex gap8 mb10">
-          <span class="xs muted">⏱</span>
-          <input class="inline" value="${escH(s.prazo)}" style="font-size:12px;color:var(--muted);width:100px" oninput="scopes[${i}].prazo=this.value"/>
+        <div class="flex gap6 mb10" style="color:var(--muted)">
+          <span style="display:inline-flex;width:14px;height:14px">${I.clock}</span>
+          <input class="inline" value="${escH(s.prazo)}" style="font-size:12.5px;color:var(--muted);max-width:120px" oninput="scopes[${i}].prazo=this.value"/>
         </div>
-        <div class="col" style="gap:5px">
+        <div class="col gap4">
           ${s.items.map((item,j)=>`
           <div class="flex gap8">
-            <span class="primary sm">✓</span>
-            <input class="inline" value="${escH(item)}" style="flex:1;font-size:13px;color:var(--subtle)" oninput="scopes[${i}].items[${j}]=this.value" placeholder="Descreva o entregável..."/>
+            <span class="primary" style="display:inline-flex;width:14px;height:14px;flex-shrink:0">${I.check}</span>
+            <input class="inline" value="${escH(item)}" style="flex:1;font-size:13px;color:var(--text-2)" oninput="scopes[${i}].items[${j}]=this.value" placeholder="Descreva o entregável..."/>
+            ${s.items.length>1?`<button onclick="scopes[${i}].items.splice(${j},1);render()" style="background:none;border:none;cursor:pointer;color:var(--subtle);font-size:16px;line-height:1;padding:0 4px" title="Remover">×</button>`:''}
           </div>`).join('')}
-          <button onclick="scopes[${i}].items.push('');render()" style="background:none;border:none;cursor:pointer;text-align:left;padding:4px 0 0 22px;font-size:12px;color:var(--primary);font-family:inherit">+ adicionar item</button>
+          <button onclick="scopes[${i}].items.push('');render()" style="background:none;border:none;cursor:pointer;text-align:left;padding:5px 0 0 22px;font-size:12.5px;color:var(--primary);font-family:inherit;font-weight:600;display:flex;align-items:center;gap:5px"><span style="display:inline-flex;width:13px;height:13px">${I.plus}</span>adicionar item</button>
         </div>
       </div>`).join('')}
     </div>
   </div>
 
-  <button class="btn btn-primary mb8" id="btn-go" onclick="gerarProposta()" disabled>✨ Gerar Proposta Completa →</button>
-  <button class="btn btn-outline" onclick="loadDemo()">Ver exemplo pronto</button>
+  <button class="btn btn-primary mb10" id="btn-go" onclick="gerarProposta()" disabled>${I.wand} Gerar Proposta Completa</button>
+  <button class="btn btn-outline" onclick="loadDemo()">${I.sparkles} Ver exemplo pronto</button>
 
-  <div class="g3" style="margin-top:20px">
-    ${[['📄','Proposta completa'],['⚡','Objeções respondidas'],['✉️','Mensagem de envio']].map(([ic,tx])=>`
-    <div class="col" style="align-items:center;gap:5px;font-size:12px;color:var(--muted);text-align:center">
-      <span style="font-size:22px">${ic}</span>${tx}
-    </div>`).join('')}
+  <div class="g3 mt24">
+    ${[[I.doc,'Proposta completa'],[I.bolt,'Objeções respondidas'],[I.mail,'Mensagem de envio']].map(([ic,tx])=>`
+    <div class="feat"><div class="feat-ic">${ic}</div><span class="feat-tx">${tx}</span></div>`).join('')}
   </div>
 </div>`;
 }
 
+// ──── LOADING ────
 function pageLoad(step){
   const steps=['Analisando serviço e contexto...','Estruturando os 3 escopos...','Calculando investimentos...','Redigindo proposta profissional...','Preparando respostas a objeções...'];
-  return `<div class="wrap" style="display:flex;flex-direction:column;align-items:center;justify-content:center;min-height:85vh;gap:48px">
-  <div style="text-align:center">
-    <div style="font-size:52px;margin-bottom:16px" class="pulse">✨</div>
+  return `<div class="wrap" style="display:flex;flex-direction:column;align-items:center;justify-content:center;min-height:78vh;gap:46px">
+  <div class="center">
+    <div class="hero-icon pulse" style="margin-bottom:18px">${I.wand}</div>
     <h2 class="mb8">Gerando sua proposta...</h2>
-    <p class="muted sm">Aguarde alguns instantes</p>
+    <p class="muted">Montando tudo com a sua identidade</p>
   </div>
-  <div class="col" style="gap:14px;width:100%;max-width:300px">
+  <div class="col gap14" style="width:100%;max-width:320px">
     ${steps.map((s,i)=>`
-    <div class="step">
-      <div class="step-dot ${i<step?'done':i===step?'active':''}">
-        ${i<step?'✓':i===step?'<div class="spin" style="width:10px;height:10px;border-width:2px"></div>':''}
+    <div class="lstep">
+      <div class="lstep-dot ${i<step?'done':i===step?'active':''}">
+        ${i<step?`<span style="display:inline-flex;width:13px;height:13px">${I.check}</span>`:i===step?'<div class="spin spin-p" style="width:11px;height:11px;border-width:2px"></div>':''}
       </div>
-      <span style="color:${i<=step?'var(--text)':'var(--muted)'}">${s}</span>
+      <span style="color:${i<=step?'var(--text)':'var(--subtle)'}">${s}</span>
     </div>`).join('')}
   </div>
 </div>`;
 }
 
+// ──── RESULT ────
 function pageResult(){
   const s=scopes[selScope];
-  const prop=genProposta(), objs=genObjecoes(), msg=genMsg();
+  const prop=genProposta(),objs=genObjecoes(),msg=genMsg();
   return `<div class="wrap fade-in">
-  <div class="between mb24">
-    <div>
-      ${cfg.logo?`<img src="${cfg.logo}" style="height:28px;object-fit:contain;margin-bottom:6px;display:block"/>`:''}
-      <h2 class="mb4">Proposta gerada ✓</h2>
-      <p class="muted sm">Para: <strong style="color:var(--text)">${escH(form.cliente)||'–'}</strong></p>
-    </div>
-    <div class="flex gap8">
-      <button class="btn-sm btn-pdf" onclick="exportPDF()">📄 Exportar PDF</button>
-      <button class="btn-sm" onclick="go('form')">↩ Nova</button>
-    </div>
+  <div class="stepper">
+    <div class="st done"><span class="st-num">${I.check}</span><span class="lbl">Identidade</span></div>
+    <div class="st-line fill"></div>
+    <div class="st done"><span class="st-num">${I.check}</span><span class="lbl">Proposta</span></div>
+    <div class="st-line fill"></div>
+    <div class="st active"><span class="st-num">3</span><span class="lbl">Enviar</span></div>
   </div>
 
-  <div class="g3 mb20">
+  <div class="between mb24 wrap-fl">
+    <div>
+      <div class="flex gap8 mb6"><span class="badge badge-success">${I.check} Proposta gerada</span></div>
+      <h1 class="mb4">Pronto para enviar</h1>
+      <p class="muted sm">Para <strong class="t2">${escH(form.cliente)||'–'}</strong> · ${escH(form.servico)||''}</p>
+    </div>
+    <button class="btn btn-grad" style="width:auto" onclick="exportPDF()">${I.download} Exportar PDF</button>
+  </div>
+
+  <p class="xs subtle bold mb10" style="text-transform:uppercase;letter-spacing:.06em">Escolha o escopo recomendado ao cliente</p>
+  <div class="scope-grid mb24">
     ${scopes.map((sc,i)=>`
-    <div class="card-scope${selScope===i?' sel':''}" onclick="selScope=${i};render()">
-      ${sc.star?`<div style="position:absolute;top:-9px;left:50%;transform:translateX(-50%)"><span class="badge badge-primary" style="font-size:9px;white-space:nowrap">★ Rec.</span></div>`:''}
-      <p class="xs muted bold" style="text-transform:uppercase;letter-spacing:.1em;margin:${sc.star?'8px':0} 0 3px">${escH(sc.nome)}</p>
-      <p style="font-size:19px;font-weight:800;margin:0 0 2px">${escH(sc.preco)||'–'}</p>
-      <p class="xs muted mb8">⏱ ${escH(sc.prazo)}</p>
-      <ul style="list-style:none;padding:0;display:flex;flex-direction:column;gap:4px">
-        ${sc.items.slice(0,3).map(it=>`<li class="xs muted" style="display:flex;gap:4px"><span class="primary">✓</span>${escH(it)}</li>`).join('')}
-        ${sc.items.length>3?`<li class="xs primary">+${sc.items.length-3} mais</li>`:''}
+    <div class="scope-card${selScope===i?' sel':''}" onclick="selScope=${i};render()">
+      ${sc.star?`<div style="position:absolute;top:-10px;left:50%;transform:translateX(-50%)"><span class="badge badge-primary" style="font-size:9.5px;white-space:nowrap;padding:3px 9px">${I.star} Rec.</span></div>`:''}
+      <p class="xs bold subtle" style="text-transform:uppercase;letter-spacing:.08em;margin:${sc.star?'7px':0} 0 4px">${escH(sc.nome)}</p>
+      <p style="font-size:19px;font-weight:800;margin:0 0 3px;color:var(--text)">${escH(sc.preco)||'–'}</p>
+      <p class="xs muted flex gap4 mb10"><span style="display:inline-flex;width:12px;height:12px">${I.clock}</span>${escH(sc.prazo)}</p>
+      <ul style="list-style:none;padding:0;display:flex;flex-direction:column;gap:5px">
+        ${sc.items.slice(0,3).map(it=>`<li class="xs muted" style="display:flex;gap:5px;align-items:flex-start"><span class="primary" style="display:inline-flex;width:12px;height:12px;flex-shrink:0;margin-top:2px">${I.check}</span><span>${escH(it)}</span></li>`).join('')}
+        ${sc.items.length>3?`<li class="xs primary bold" style="padding-left:17px">+${sc.items.length-3} entregáveis</li>`:''}
       </ul>
     </div>`).join('')}
   </div>
 
   <div class="tabbar mb16">
-    <button class="tab${tab==='proposta'?' act':''}" onclick="tab='proposta';render()">📄 Proposta</button>
-    <button class="tab${tab==='objecoes'?' act':''}" onclick="tab='objecoes';render()">⚡ Objeções (3)</button>
-    <button class="tab${tab==='msg'?' act':''}" onclick="tab='msg';render()">✉️ Mensagem</button>
+    <button class="tab${tab==='proposta'?' act':''}" onclick="tab='proposta';render()">${I.doc} Proposta</button>
+    <button class="tab${tab==='objecoes'?' act':''}" onclick="tab='objecoes';render()">${I.bolt} Objeções</button>
+    <button class="tab${tab==='msg'?' act':''}" onclick="tab='msg';render()">${I.mail} Mensagem</button>
   </div>
 
   ${tab==='proposta'?`
-  <div class="card">
+  <div class="card card-elevated">
     <div class="between mb14">
-      <h3>Escopo ${escH(s.nome)} — ${escH(s.preco)||'a combinar'}</h3>
-      <button class="btn-sm" onclick="copy(genProposta(),this)">⎘ Copiar</button>
+      <div><h3>${escH(s.nome)} — <span class="primary">${escH(s.preco)||'a combinar'}</span></h3><p class="xs muted">Proposta completa formatada</p></div>
+      <button class="btn-sm" onclick="copy(genProposta(),this)">${I.copy} Copiar</button>
     </div>
-    <div style="background:rgba(255,255,255,.025);border:1px solid var(--border);border-radius:8px;padding:16px;max-height:440px;overflow-y:auto">
-      <pre class="subtle">${escH(prop)}</pre>
-    </div>
+    <div class="output"><pre>${escH(prop)}</pre></div>
   </div>`:''}
 
   ${tab==='objecoes'?`
-  <div class="col gap10">
+  <div class="col gap12">
+    <p class="sm muted mb4">Respostas prontas para as 3 objeções mais comuns:</p>
     ${objs.map(o=>`
     <div class="card-sm">
-      <div class="flex gap12">
-        <div style="width:30px;height:30px;border-radius:50%;background:rgba(239,68,68,.1);display:flex;align-items:center;justify-content:center;flex-shrink:0;margin-top:1px">⚡</div>
-        <div style="flex:1">
+      <div class="flex gap12" style="align-items:flex-start">
+        <div style="width:34px;height:34px;border-radius:10px;background:rgba(245,158,11,.12);color:var(--warn);display:flex;align-items:center;justify-content:center;flex-shrink:0"><span style="display:inline-flex;width:17px;height:17px">${I.bolt}</span></div>
+        <div class="flex1">
           <p class="semibold sm mb8">"${escH(o.q)}"</p>
           <p class="muted sm">${escH(o.a)}</p>
         </div>
-        <button class="btn-sm" style="flex-shrink:0;align-self:flex-start" onclick="copy(${JSON.stringify(o.a)},this)">⎘</button>
+        <button class="btn-sm" style="flex-shrink:0;padding:8px" onclick="copy(${JSON.stringify(o.a)},this)">${I.copy}</button>
       </div>
     </div>`).join('')}
   </div>`:''}
 
   ${tab==='msg'?`
-  <div class="card">
+  <div class="card card-elevated">
     <div class="between mb14">
-      <h3>Mensagem de apresentação</h3>
-      <button class="btn-sm" onclick="copy(genMsg(),this)">⎘ Copiar</button>
+      <div><h3>Mensagem de apresentação</h3><p class="xs muted">Cole no WhatsApp ou e-mail ao enviar</p></div>
+      <button class="btn-sm" onclick="copy(genMsg(),this)">${I.copy} Copiar</button>
     </div>
-    <div style="background:rgba(255,255,255,.025);border:1px solid var(--border);border-radius:8px;padding:16px">
-      <pre class="subtle">${escH(msg)}</pre>
-    </div>
+    <div class="output"><pre>${escH(msg)}</pre></div>
   </div>`:''}
 
-  <div style="margin-top:20px;padding:18px;border:1px solid var(--border);border-radius:12px;display:flex;align-items:center;gap:14px">
-    <span style="font-size:28px">📄</span>
-    <div style="flex:1">
-      <p class="semibold sm mb4">Exportar Proposta em PDF</p>
-      <p class="xs muted">Com sua logo, cores da marca e layout profissional</p>
+  <div class="card card-elevated mt20 flex gap14" style="align-items:center;background:linear-gradient(120deg,var(--primary-soft-2),transparent)">
+    <div class="feat-ic" style="flex-shrink:0">${I.download}</div>
+    <div class="flex1">
+      <p class="semibold mb4">Exportar Proposta em PDF</p>
+      <p class="xs muted">Com sua logo, cores da marca e layout profissional. No celular: toque em compartilhar → "Salvar em PDF".</p>
     </div>
-    <button class="btn-sm btn-pdf" onclick="exportPDF()">Gerar PDF</button>
+    <button class="btn btn-grad" style="width:auto;flex-shrink:0" onclick="exportPDF()">${I.download} Gerar</button>
   </div>
 </div>`;
 }
 
-// ─── ESCAPE HTML ─────────────────────────────
-function escH(s){ return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); }
-
-// ─── PDF EXPORT ───────────────────────────────
+// ════════ PDF EXPORT ════════
 function exportPDF(){
-  const s=scopes[selScope], cor=cfg.cor, rgb=toRgb(cor);
+  const s=scopes[selScope],cor=cfg.cor,rgb=toRgb(cor);
   const pHtml=`<!DOCTYPE html><html lang="pt-BR"><head>
 <meta charset="UTF-8"/><title>Proposta — ${escH(form.cliente)}</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet"/>
 <style>
 *{box-sizing:border-box;margin:0;padding:0}
-body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;color:#111;background:#fff;font-size:13px;line-height:1.65;padding:40px}
-.header{display:flex;align-items:center;justify-content:space-between;padding-bottom:20px;border-bottom:3px solid ${cor};margin-bottom:28px}
-.logo{height:56px;object-fit:contain}
-.logo-ico{width:56px;height:56px;background:${cor};border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:26px;color:#fff}
-.hdr-info{display:flex;align-items:center;gap:14px}
+body{font-family:'Inter',-apple-system,sans-serif;color:#111827;background:#fff;font-size:13px;line-height:1.65;padding:42px}
+.header{display:flex;align-items:center;justify-content:space-between;padding-bottom:20px;border-bottom:3px solid ${cor};margin-bottom:26px}
+.logo{height:58px;object-fit:contain}
+.logo-ico{width:58px;height:58px;background:linear-gradient(135deg,${cor},rgba(${rgb},.7));border-radius:13px;display:flex;align-items:center;justify-content:center;font-size:28px;color:#fff;font-weight:800}
+.hdr-info{display:flex;align-items:center;gap:15px}
 .hdr-right{text-align:right;font-size:12px;color:#6b7280}
-.hdr-right strong{display:block;font-size:13px;color:#111;margin-top:6px}
-h1{font-size:22px;font-weight:800;color:#111}
-h2{font-size:14px;font-weight:700;color:#111;border-bottom:1px solid #e5e7eb;padding-bottom:6px;margin:0 0 12px}
-.hero{background:${cor};color:#fff;border-radius:12px;padding:22px 24px;margin-bottom:24px;display:flex;align-items:center;justify-content:space-between}
-.hero h3{font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.08em;opacity:.75;margin-bottom:5px}
-.hero h1{font-size:26px;font-weight:800;color:#fff}
-.hero-sub{font-size:13px;opacity:.8;margin-top:6px}
-.hero-right .price{font-size:34px;font-weight:900}
-.hero-right .prazo{font-size:12px;opacity:.8;margin-top:3px;text-align:right}
+.hdr-right strong{display:block;font-size:13px;color:#111827;margin-top:6px}
+h1{font-size:22px;font-weight:800;color:#111827;letter-spacing:-.02em}
+h2{font-size:14px;font-weight:700;color:#111827;border-bottom:1px solid #e5e7eb;padding-bottom:6px;margin:0 0 13px}
+.hero{background:linear-gradient(120deg,${cor},rgba(${rgb},.82));color:#fff;border-radius:16px;padding:24px 26px;margin-bottom:24px;display:flex;align-items:center;justify-content:space-between;box-shadow:0 14px 30px -10px rgba(${rgb},.5)}
+.hero h3{font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.09em;opacity:.8;margin-bottom:5px}
+.hero h1{font-size:27px;font-weight:800;color:#fff}
+.hero-sub{font-size:13px;opacity:.88;margin-top:6px}
+.hero-right{text-align:right}
+.hero-right .price{font-size:36px;font-weight:900;line-height:1}
+.hero-right .prazo{font-size:12px;opacity:.85;margin-top:5px}
 .scopes{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-bottom:28px}
-.sc{border:1px solid #e5e7eb;border-radius:10px;padding:14px;position:relative}
+.sc{border:1.5px solid #e5e7eb;border-radius:13px;padding:16px;position:relative}
 .sc.sel{border:2px solid ${cor};background:rgba(${rgb},.04)}
-.sc .rec{background:${cor};color:#fff;font-size:9px;font-weight:700;padding:2px 8px;border-radius:999px;position:absolute;top:-9px;left:50%;transform:translateX(-50%);white-space:nowrap;text-transform:uppercase}
-.sc .lbl{font-size:10px;font-weight:700;color:#6b7280;text-transform:uppercase;letter-spacing:.08em;margin-bottom:3px}
-.sc .pr{font-size:22px;font-weight:800;color:#111;margin:0 0 2px}
-.sc .pz{font-size:11px;color:#9ca3af;margin-bottom:8px}
-.sc ul{list-style:none;padding:0;display:flex;flex-direction:column;gap:4px}
-.sc li{font-size:11px;color:#6b7280;display:flex;gap:4px}
-.sc li span{color:${cor}}
-.bio{background:#f9fafb;border-radius:10px;padding:18px;margin-bottom:24px}
+.sc .rec{background:${cor};color:#fff;font-size:9px;font-weight:700;padding:3px 9px;border-radius:999px;position:absolute;top:-10px;left:50%;transform:translateX(-50%);white-space:nowrap;text-transform:uppercase;letter-spacing:.04em}
+.sc .lbl{font-size:10px;font-weight:700;color:#6b7280;text-transform:uppercase;letter-spacing:.08em;margin-bottom:4px}
+.sc .pr{font-size:23px;font-weight:800;color:#111827;margin:0 0 3px}
+.sc .pz{font-size:11px;color:#9ca3af;margin-bottom:9px}
+.sc ul{list-style:none;padding:0;display:flex;flex-direction:column;gap:5px}
+.sc li{font-size:11px;color:#4b5563;display:flex;gap:5px;align-items:flex-start}
+.sc li b{color:${cor};font-weight:900}
+.bio{background:#f9fafb;border-radius:13px;padding:20px;margin-bottom:24px;border:1px solid #f1f3f7}
 .bio p{font-size:13px;color:#374151;line-height:1.7}
 .section{margin-bottom:24px}
-.section p{font-size:13px;color:#374151;line-height:1.7}
-.cond{border:1px solid #e5e7eb;border-radius:10px;padding:18px;margin-bottom:28px}
-.cg{display:grid;grid-template-columns:1fr 1fr;gap:12px}
-.ci{display:flex;gap:10px;align-items:flex-start}
-.ci .ico{font-size:18px;flex-shrink:0}
+.section p{font-size:13px;color:#374151;line-height:1.75}
+.cond{border:1.5px solid #e5e7eb;border-radius:13px;padding:20px;margin-bottom:28px}
+.cg{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+.ci{display:flex;gap:11px;align-items:flex-start}
+.ci .dot{width:34px;height:34px;border-radius:9px;background:rgba(${rgb},.1);color:${cor};display:flex;align-items:center;justify-content:center;flex-shrink:0;font-size:15px;font-weight:800}
 .ci .lbl{font-size:10px;font-weight:700;color:#9ca3af;text-transform:uppercase;letter-spacing:.05em}
-.ci .val{font-size:13px;color:#111}
-.footer{border-top:2px solid ${cor};padding-top:14px;display:flex;justify-content:space-between;align-items:center}
-.fl-logo{height:36px;object-fit:contain;opacity:.6}
-@media print{body{padding:24px}@page{margin:1cm}}
+.ci .val{font-size:13px;color:#111827;font-weight:600}
+.footer{border-top:2px solid ${cor};padding-top:16px;display:flex;justify-content:space-between;align-items:center}
+.fl-logo{height:38px;object-fit:contain;opacity:.55}
+@media print{body{padding:26px}@page{margin:1cm}}
 </style></head><body>
-
 <div class="header">
   <div class="hdr-info">
-    ${cfg.logo?`<img src="${cfg.logo}" class="logo"/>`:`<div class="logo-ico">✨</div>`}
+    ${cfg.logo?`<img src="${cfg.logo}" class="logo"/>`:`<div class="logo-ico">${(cfg.empresa||cfg.nome||'P').charAt(0).toUpperCase()}</div>`}
     <div>
       <h1>${escH(cfg.empresa||cfg.nome||'Proposta Comercial')}</h1>
-      ${cfg.bio?`<p style="font-size:12px;color:#6b7280;margin-top:3px;max-width:280px">${escH(cfg.bio.substring(0,90))}${cfg.bio.length>90?'...':''}</p>`:''}
+      ${cfg.bio?`<p style="font-size:12px;color:#6b7280;margin-top:3px;max-width:300px">${escH(cfg.bio.substring(0,95))}${cfg.bio.length>95?'...':''}</p>`:''}
     </div>
   </div>
   <div class="hdr-right">
@@ -501,7 +686,6 @@ h2{font-size:14px;font-weight:700;color:#111;border-bottom:1px solid #e5e7eb;pad
     ${form.segmento?`<p style="font-size:12px">${escH(form.segmento)}</p>`:''}
   </div>
 </div>
-
 <div class="hero">
   <div>
     <h3>Escopo Recomendado</h3>
@@ -513,7 +697,6 @@ h2{font-size:14px;font-weight:700;color:#111;border-bottom:1px solid #e5e7eb;pad
     <div class="prazo">⏱ ${escH(s.prazo)}</div>
   </div>
 </div>
-
 <h2>Comparativo de Escopos</h2>
 <div class="scopes">
   ${scopes.map((sc,i)=>`
@@ -522,87 +705,71 @@ h2{font-size:14px;font-weight:700;color:#111;border-bottom:1px solid #e5e7eb;pad
     <p class="lbl" style="margin-top:${sc.star?'8px':0}">${escH(sc.nome)}</p>
     <p class="pr">${escH(sc.preco)||'–'}</p>
     <p class="pz">⏱ ${escH(sc.prazo)}</p>
-    <ul>${sc.items.map(it=>`<li><span>✓</span>${escH(it)}</li>`).join('')}</ul>
+    <ul>${sc.items.map(it=>`<li><b>✓</b><span>${escH(it)}</span></li>`).join('')}</ul>
   </div>`).join('')}
 </div>
-
-${cfg.bio?`
-<div class="bio">
-  <h2 style="border:none;padding:0;margin-bottom:8px">Sobre ${escH(cfg.empresa||cfg.nome)}</h2>
-  <p>${escH(cfg.bio)}</p>
-</div>`:''}
-
+${cfg.bio?`<div class="bio"><h2 style="border:none;padding:0;margin-bottom:8px">Sobre ${escH(cfg.empresa||cfg.nome)}</h2><p>${escH(cfg.bio)}</p></div>`:''}
 <div class="section">
   <h2>Entendimento do Projeto</h2>
-  <p>Entendemos que <strong>${escH(form.cliente)}</strong> busca <strong>${escH(form.servico.toLowerCase())}</strong>${form.segmento?` no segmento de <strong>${escH(form.segmento)}</strong>`:''}.
-  ${escH(form.contexto||'Nossa abordagem é orientada a resultados, com metodologia comprovada e acompanhamento próximo em todas as etapas do projeto.')}</p>
+  <p>Entendemos que <strong>${escH(form.cliente)}</strong> busca <strong>${escH(form.servico.toLowerCase())}</strong>${form.segmento?` no segmento de <strong>${escH(form.segmento)}</strong>`:''}. ${escH(form.contexto||'Nossa abordagem é orientada a resultados, com metodologia comprovada e acompanhamento próximo em todas as etapas do projeto.')}</p>
 </div>
-
 <div class="cond">
-  <h2 style="margin-bottom:14px">Condições Comerciais</h2>
+  <h2 style="margin-bottom:15px">Condições Comerciais</h2>
   <div class="cg">
     ${[['💳','Pagamento',cfg.pagamento],['📅','Validade',cfg.validade+' dias'],['🚀','Início','Até 5 dias úteis após aprovação'],['📋','Entrega',s.prazo]].map(([ic,lb,vl])=>`
-    <div class="ci"><span class="ico">${ic}</span><div><p class="lbl">${lb}</p><p class="val">${escH(vl)}</p></div></div>`).join('')}
+    <div class="ci"><div class="dot">${ic}</div><div><p class="lbl">${lb}</p><p class="val">${escH(vl)}</p></div></div>`).join('')}
   </div>
 </div>
-
 <div class="footer">
   <div>
-    <p style="font-size:14px;font-weight:700">${escH(cfg.nome||cfg.empresa||'')}</p>
+    <p style="font-size:14px;font-weight:800">${escH(cfg.nome||cfg.empresa||'')}</p>
     ${cfg.email?`<p style="font-size:12px;color:#6b7280">${escH(cfg.email)}</p>`:''}
     ${cfg.whatsapp?`<p style="font-size:12px;color:#6b7280">WhatsApp: ${escH(cfg.whatsapp)}</p>`:''}
   </div>
   ${cfg.logo?`<img src="${cfg.logo}" class="fl-logo"/>`:''}
 </div>
-
-<script>window.onload=function(){window.print()}<\/script>
+<script>window.onload=function(){setTimeout(function(){window.print()},350)}<\/script>
 </body></html>`;
-
   const w=window.open('','_blank');
-  if(!w){ alert('Permita pop-ups para gerar o PDF.'); return; }
-  w.document.write(pHtml);
-  w.document.close();
+  if(!w){alert('Permita pop-ups para gerar o PDF.');return;}
+  w.document.write(pHtml);w.document.close();
 }
 
-// ─── ACTIONS ──────────────────────────────────
+// ════════ ACTIONS ════════
 function saveSetup(){
-  cfg.empresa  = $('s-emp')?.value.trim() || cfg.empresa;
-  cfg.nome     = $('s-nome')?.value.trim() || cfg.nome;
-  cfg.email    = $('s-em')?.value.trim()  || cfg.email;
-  cfg.whatsapp = $('s-wp')?.value.trim()  || cfg.whatsapp;
-  cfg.bio      = $('s-bio')?.value.trim() || cfg.bio;
-  cfg.validade = $('s-val')?.value        || cfg.validade;
-  if(!cfg.empresa && !cfg.nome){ alert('Preencha o nome da empresa ou seu nome para continuar.'); return; }
-  saveCfg(); go('form');
+  cfg.empresa=$('s-emp')?.value.trim()||cfg.empresa;
+  cfg.nome=$('s-nome')?.value.trim()||cfg.nome;
+  cfg.email=$('s-em')?.value.trim()||cfg.email;
+  cfg.whatsapp=$('s-wp')?.value.trim()||cfg.whatsapp;
+  cfg.bio=$('s-bio')?.value.trim()||cfg.bio;
+  cfg.validade=$('s-val')?.value||cfg.validade;
+  if(!cfg.empresa&&!cfg.nome){alert('Preencha o nome da empresa ou seu nome para continuar.');return;}
+  saveCfg();go('form');
 }
-
 function bindInputs(){
-  if(page!=='form') return;
-  const s=$('f-srv'), c=$('f-cli'), b=$('btn-go');
-  if(!s||!c||!b) return;
-  const chk=()=>{ b.disabled=!s.value.trim()||!c.value.trim(); };
-  s.oninput=chk; c.oninput=chk;
+  if(page!=='form')return;
+  const s=$('f-srv'),c=$('f-cli'),b=$('btn-go');
+  if(!s||!c||!b)return;
+  const chk=()=>{b.disabled=!s.value.trim()||!c.value.trim();};
+  s.oninput=chk;c.oninput=chk;
 }
-
 function collectForm(){
-  form.servico  = $('f-srv')?.value||'';
-  form.cliente  = $('f-cli')?.value||'';
-  form.segmento = $('f-seg')?.value||'';
-  form.contexto = $('f-ctx')?.value||'';
+  form.servico=$('f-srv')?.value||'';
+  form.cliente=$('f-cli')?.value||'';
+  form.segmento=$('f-seg')?.value||'';
+  form.contexto=$('f-ctx')?.value||'';
 }
-
 function gerarProposta(){
   collectForm();
-  if(!form.servico||!form.cliente) return;
-  page='load'; render();
+  if(!form.servico||!form.cliente)return;
+  page='load';render();
   let step=0;
   const iv=setInterval(()=>{
     step++;
-    if(step<5){ $('root').innerHTML=pageLoad(step); }
-    else{ clearInterval(iv); selScope=1; tab='proposta'; page='result'; render(); }
-  }, 850);
+    if(step<5){$('root').innerHTML=pageLoad(step);setColor(cfg.cor);}
+    else{clearInterval(iv);selScope=1;tab='proposta';page='result';render();}
+  },820);
 }
-
 function loadDemo(){
   form={servico:'Gestão de Marketing Digital',cliente:'Padaria do João',segmento:'Alimentação',contexto:'Budget de R$5k, foco em aumentar pedidos pelo WhatsApp e Instagram'};
   scopes=[
@@ -610,10 +777,10 @@ function loadDemo(){
     {nome:'Profissional',preco:'R$ 3.500',prazo:'45 dias úteis',items:['20 posts/mês em todas as redes','Gestão de Meta Ads (tráfego pago)','2 peças gráficas/semana','Reunião quinzenal de alinhamento','Relatório detalhado com insights'],star:true},
     {nome:'Premium',preco:'R$ 6.800',prazo:'60 dias úteis',items:['30 posts/mês em todas as redes','Meta Ads + Google Ads','4 Reels/mês (produção inclusa)','Landing page otimizada','Email marketing mensal','Dashboard de resultados em tempo real'],star:false}
   ];
-  selScope=1; tab='proposta'; page='result'; render();
+  selScope=1;tab='proposta';page='result';render();
 }
 
-// ─── INIT ─────────────────────────────────────
+// ════════ INIT ════════
 setColor(cfg.cor);
 render();
 </script>
