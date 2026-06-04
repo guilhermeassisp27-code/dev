@@ -4,24 +4,37 @@ on:
   push:
     branches:
       - claude/development-session-O10kI
+  workflow_dispatch:
 
 permissions:
-  contents: write
+  contents: read
   pages: write
   id-token: write
+
+concurrency:
+  group: pages
+  cancel-in-progress: true
 
 jobs:
   deploy:
     runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
     steps:
       - uses: actions/checkout@v4
 
-      - name: Create demo folder
-        run: mkdir -p demo_output && cp demo/index.html demo_output/index.html
+      - name: Setup Pages
+        uses: actions/configure-pages@v5
+
+      - name: Prepare demo
+        run: mkdir -p _site && cp demo/index.html _site/index.html
+
+      - name: Upload artifact
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: _site
 
       - name: Deploy to GitHub Pages
-        uses: peaceiris/actions-gh-pages@v3
-        with:
-          github_token: ${{ secrets.GITHUB_TOKEN }}
-          publish_dir: ./demo_output
-          force_orphan: true
+        id: deployment
+        uses: actions/deploy-pages@v4
