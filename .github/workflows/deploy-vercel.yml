@@ -31,6 +31,8 @@ jobs:
           mkdir -p _site/landing
           cp demo/index.html _site/index.html
           cp landing/index.html _site/landing/index.html
+          cp landing.html _site/landing.html
+          cp tool.html _site/tool.html
 
       - name: Deploy to gh-pages branch
         uses: peaceiris/actions-gh-pages@v3
