@@ -1,9 +1,14 @@
-name: Deploy to Vercel
+name: Deploy Demo to GitHub Pages
 
 on:
   push:
     branches:
       - claude/development-session-O10kI
+
+permissions:
+  contents: write
+  pages: write
+  id-token: write
 
 jobs:
   deploy:
@@ -11,16 +16,12 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      - uses: actions/setup-node@v4
+      - name: Create demo folder
+        run: mkdir -p demo_output && cp demo/index.html demo_output/index.html
+
+      - name: Deploy to GitHub Pages
+        uses: peaceiris/actions-gh-pages@v3
         with:
-          node-version: 20
-
-      - name: Install Vercel CLI
-        run: npm install -g vercel
-
-      - name: Deploy to Vercel
-        run: vercel deploy --yes --token ${{ secrets.VERCEL_TOKEN }} > /tmp/vercel_output.txt 2>&1 && cat /tmp/vercel_output.txt
-        env:
-          ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
-          NEXT_PUBLIC_SUPABASE_URL: ${{ secrets.NEXT_PUBLIC_SUPABASE_URL }}
-          NEXT_PUBLIC_SUPABASE_ANON_KEY: ${{ secrets.NEXT_PUBLIC_SUPABASE_ANON_KEY }}
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          publish_dir: ./demo_output
+          force_orphan: true
