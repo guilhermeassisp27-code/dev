@@ -19,7 +19,7 @@ export async function middleware(req: NextRequest) {
 
   if (!session) {
     if (isAuthPage || isPublic) return res
-    return NextResponse.redirect(new URL('/login', req.url))
+    return NextResponse.redirect(new URL('/acesso', req.url))
   }
 
   // Authenticated users on auth pages
