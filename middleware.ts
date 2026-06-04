@@ -7,7 +7,8 @@ export async function middleware(req: NextRequest) {
   const supabase = createMiddlewareClient({ req, res })
   const { data: { session } } = await supabase.auth.getSession()
   const isAuthPage = req.nextUrl.pathname.startsWith('/login') || req.nextUrl.pathname.startsWith('/callback')
-  if (!session && !isAuthPage) {
+  const isPublic = req.nextUrl.pathname.startsWith('/proposta')
+  if (!session && !isAuthPage && !isPublic) {
     return NextResponse.redirect(new URL('/login', req.url))
   }
   if (session && isAuthPage) {

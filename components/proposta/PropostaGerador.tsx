@@ -48,6 +48,105 @@ interface PropostaResult {
 
 type Estado = 'idle' | 'loading' | 'result'
 
+const DEMO_RESULT: PropostaResult = {
+  escopos: [
+    {
+      nome: 'Essencial',
+      descricao: 'Gestão de redes sociais com foco em engajamento orgânico.',
+      entregaveis: ['Criação de 12 posts/mês', 'Copywriting para Instagram e Facebook', 'Relatório mensal de desempenho'],
+      prazo: '30 dias úteis',
+      investimento: 'R$ 1.800',
+      investimento_numero: 1800,
+      destaque: false,
+    },
+    {
+      nome: 'Profissional',
+      descricao: 'Estratégia completa de marketing digital com gestão de tráfego e conteúdo.',
+      entregaveis: ['20 posts/mês (feed + stories)', 'Gestão de tráfego pago (Meta Ads)', 'Criação de 2 peças gráficas/semana', 'Reunião quinzenal de alinhamento', 'Relatório detalhado com insights'],
+      prazo: '45 dias úteis',
+      investimento: 'R$ 3.500',
+      investimento_numero: 3500,
+      destaque: true,
+    },
+    {
+      nome: 'Premium',
+      descricao: 'Presença digital completa com estratégia omnichannel e produção de conteúdo avançada.',
+      entregaveis: ['30 posts/mês em todas as redes', 'Gestão de Meta Ads + Google Ads', 'Produção de 4 vídeos curtos/mês (Reels)', 'Landing page otimizada', 'Email marketing mensal', 'Dashboard de resultados em tempo real'],
+      prazo: '60 dias úteis',
+      investimento: 'R$ 6.800',
+      investimento_numero: 6800,
+      destaque: false,
+    },
+  ],
+  proposta_completa: `# Proposta Comercial — Marketing Digital
+**Preparada para:** Padaria do João
+**Data:** ${new Date().toLocaleDateString('pt-BR')}
+**Validade:** 15 dias
+
+---
+
+## Apresentação
+
+A [Sua Agência] é especializada em transformar negócios locais em referências digitais. Com uma abordagem estratégica e orientada a resultados, nosso trabalho vai além de "postar nas redes sociais" — criamos um ecossistema digital que atrai, engaja e converte clientes.
+
+## Entendimento do Desafio
+
+Entendemos que a Padaria do João busca aumentar sua visibilidade digital para atrair novos clientes e fidelizar os atuais, especialmente no ambiente digital onde a concorrência no setor alimentício está cada vez mais acirrada.
+
+## Solução Proposta
+
+Nossa proposta para o escopo **Profissional** inclui uma estratégia completa de presença digital, combinando conteúdo orgânico de alta qualidade com tráfego pago segmentado para o público local.
+
+## Metodologia
+
+1. **Diagnóstico** (semana 1): Análise do perfil atual, benchmarking de concorrentes e definição de personas
+2. **Estratégia** (semana 2): Calendário editorial, definição de tom de voz e criação de identidade visual para o digital
+3. **Execução** (semanas 3–8): Produção e publicação de conteúdo + gestão das campanhas de tráfego pago
+4. **Otimização** (contínuo): Análise de métricas semanais e ajustes táticos
+
+## Entregáveis
+
+✓ 20 posts/mês (feed + stories)
+✓ Gestão de tráfego pago (Meta Ads) com budget gerenciado
+✓ Criação de 2 peças gráficas por semana
+✓ Reunião quinzenal de alinhamento estratégico
+✓ Relatório detalhado mensal com insights e próximos passos
+
+## Investimento e Condições Comerciais
+
+**Investimento mensal:** R$ 3.500,00
+**Forma de pagamento:** Boleto ou PIX até o dia 5 de cada mês
+**Fidelidade:** Contrato mínimo de 3 meses
+**Início:** Em até 7 dias úteis após assinatura do contrato`,
+  objecoes: [
+    {
+      objecao: 'O investimento está muito alto para uma padaria',
+      resposta: 'Entendo sua preocupação. Para contextualizar: se atrairmos apenas 2 novos clientes fixos por semana com ticket médio de R$ 50, isso representa R$ 400/mês — o retorno do investimento acontece com menos de 10 novos clientes. Além disso, temos o escopo Essencial a R$ 1.800 que pode ser um ponto de partida.',
+    },
+    {
+      objecao: 'Já tentei agência antes e não funcionou',
+      resposta: 'Isso é muito comum e justo de trazer. A diferença está na nossa metodologia: trabalhamos com metas claras definidas no início, relatórios quinzenais de transparência e reuniões de alinhamento para garantir que estamos no caminho certo. Você acompanha cada resultado em tempo real.',
+    },
+    {
+      objecao: 'Preciso pensar e ver com meu sócio',
+      resposta: 'Claro, faz todo sentido envolver quem decide. Posso preparar um resumo executivo de 1 página para facilitar a conversa com seu sócio, ou agendar uma reunião rápida de 20 minutos com os dois juntos. Qual opção funciona melhor?',
+    },
+  ],
+  mensagem_apresentacao: `Olá, João! Tudo bem?
+
+Conforme combinamos, estou enviando nossa proposta comercial para a Padaria do João.
+
+Preparei 3 opções de escopo pensando especificamente na realidade do seu negócio — desde um ponto de entrada mais acessível até uma estratégia completa para você dominar o digital na sua região.
+
+Minha recomendação pessoal é o escopo **Profissional**, que combina o melhor custo-benefício e costuma gerar resultados visíveis já no primeiro mês.
+
+Fico à disposição para tirar qualquer dúvida ou ajustar algo que faça mais sentido para você. Podemos conversar ainda essa semana?
+
+Abraço,
+[Seu Nome]
+[Seu WhatsApp]`,
+}
+
 const LOADING_STEPS = [
   'Analisando seu serviço e contexto...',
   'Pesquisando práticas de mercado...',
@@ -423,6 +522,18 @@ export function PropostaGerador() {
             <Sparkles className="w-4 h-4" />
             Gerar Proposta Completa
             <ChevronRight className="w-4 h-4" />
+          </Button>
+
+          <Button
+            variant="outline"
+            className="w-full gap-2 text-muted-foreground"
+            onClick={() => {
+              setResultado(DEMO_RESULT)
+              setEscopoSelecionado(1)
+              setEstado('result')
+            }}
+          >
+            Ver exemplo gerado pela IA
           </Button>
 
           <div className="grid grid-cols-3 gap-3 pt-1">
