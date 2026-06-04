@@ -1,109 +1,66 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Gerador de Propostas com IA</title>
-  <script src="https://cdn.tailwindcss.com"></script>
-  <script>
-    tailwind.config = {
-      darkMode: 'class',
-      theme: {
-        extend: {
-          colors: {
-            primary: '#6366f1',
-          }
-        }
-      }
-    }
-  </script>
-  <style>
-    body { background: #0f0f13; color: #e5e7eb; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; }
-    .card { background: #18181f; border: 1px solid #2a2a35; border-radius: 12px; }
-    .card-selected { border-color: #6366f1; background: rgba(99,102,241,0.05); box-shadow: 0 0 0 1px #6366f1; }
-    .badge { background: #6366f1; color: white; font-size: 10px; font-weight: 700; padding: 2px 8px; border-radius: 999px; text-transform: uppercase; letter-spacing: 0.05em; }
-    .btn-primary { background: #6366f1; color: white; border: none; border-radius: 8px; padding: 12px 24px; font-size: 15px; font-weight: 600; cursor: pointer; width: 100%; display: flex; align-items: center; justify-content: center; gap: 8px; transition: background 0.15s; }
-    .btn-primary:hover { background: #5254cc; }
-    .btn-primary:disabled { opacity: 0.4; cursor: not-allowed; }
-    .btn-outline { background: transparent; color: #9ca3af; border: 1px solid #2a2a35; border-radius: 8px; padding: 10px 20px; font-size: 14px; font-weight: 500; cursor: pointer; width: 100%; display: flex; align-items: center; justify-content: center; gap: 8px; transition: all 0.15s; }
-    .btn-outline:hover { border-color: #6366f1; color: #e5e7eb; }
-    .btn-small { background: transparent; border: 1px solid #2a2a35; border-radius: 6px; padding: 4px 10px; font-size: 12px; color: #9ca3af; cursor: pointer; display: inline-flex; align-items: center; gap: 4px; transition: all 0.15s; }
-    .btn-small:hover { border-color: #6366f1; color: #e5e7eb; }
-    .input { background: #0f0f13; border: 1px solid #2a2a35; border-radius: 8px; padding: 10px 14px; color: #e5e7eb; font-size: 14px; width: 100%; box-sizing: border-box; outline: none; transition: border-color 0.15s; }
-    .input:focus { border-color: #6366f1; }
-    .tab { padding: 8px 14px; font-size: 13px; font-weight: 500; cursor: pointer; border-radius: 6px; color: #9ca3af; transition: all 0.15s; border: none; background: transparent; }
-    .tab.active { background: #18181f; color: #e5e7eb; }
-    .tab-bar { background: #0f0f13; border: 1px solid #2a2a35; border-radius: 8px; padding: 3px; display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 2px; }
-    .tag { display: inline-flex; align-items: center; gap: 6px; font-size: 12px; color: #9ca3af; }
-    .check { color: #6366f1; }
-    .step { display: flex; align-items: center; gap: 10px; font-size: 14px; }
-    .spinner { width: 16px; height: 16px; border: 2px solid #6366f1; border-top-color: transparent; border-radius: 50%; animation: spin 0.7s linear infinite; flex-shrink: 0; }
-    @keyframes spin { to { transform: rotate(360deg); } }
-    .pulse { animation: pulse 1.5s ease-in-out infinite; }
-    @keyframes pulse { 0%,100% { opacity: 1; } 50% { opacity: 0.4; } }
-    pre { white-space: pre-wrap; font-family: inherit; font-size: 13px; line-height: 1.7; }
-    .copy-success { color: #22c55e !important; }
-    textarea { resize: none; }
-  </style>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Gerador de Propostas com IA</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<style>
+  body{background:#0f0f13;color:#e5e7eb;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;min-height:100vh}
+  .card{background:#18181f;border:1px solid #2a2a35;border-radius:12px}
+  .card-sel{border-color:#6366f1;background:rgba(99,102,241,.06);box-shadow:0 0 0 1px #6366f1}
+  input,textarea{background:#0f0f13;border:1px solid #2a2a35;border-radius:8px;padding:10px 14px;color:#e5e7eb;font-size:14px;width:100%;box-sizing:border-box;outline:none;font-family:inherit}
+  input:focus,textarea:focus{border-color:#6366f1}
+  textarea{resize:none}
+  .btn-p{background:#6366f1;color:#fff;border:none;border-radius:8px;padding:13px 20px;font-size:15px;font-weight:600;cursor:pointer;width:100%;display:flex;align-items:center;justify-content:center;gap:8px;transition:background .15s}
+  .btn-p:hover{background:#5254cc}
+  .btn-p:disabled{opacity:.4;cursor:not-allowed}
+  .btn-o{background:transparent;color:#9ca3af;border:1px solid #2a2a35;border-radius:8px;padding:11px 20px;font-size:14px;font-weight:500;cursor:pointer;width:100%;display:flex;align-items:center;justify-content:center;gap:8px;transition:all .15s;font-family:inherit}
+  .btn-o:hover{border-color:#6366f1;color:#e5e7eb}
+  .btn-sm{background:transparent;border:1px solid #2a2a35;border-radius:6px;padding:4px 10px;font-size:12px;color:#9ca3af;cursor:pointer;display:inline-flex;align-items:center;gap:4px;transition:all .15s;font-family:inherit}
+  .btn-sm:hover{border-color:#6366f1;color:#e5e7eb}
+  .tab{padding:8px 14px;font-size:13px;font-weight:500;cursor:pointer;border-radius:6px;color:#9ca3af;transition:all .15s;border:none;background:transparent;font-family:inherit;flex:1;text-align:center}
+  .tab.act{background:#18181f;color:#e5e7eb}
+  .tabbar{background:#0f0f13;border:1px solid #2a2a35;border-radius:8px;padding:3px;display:flex;gap:2px}
+  pre{white-space:pre-wrap;font-family:inherit;font-size:13px;line-height:1.75}
+  .spin{width:16px;height:16px;border:2px solid #6366f1;border-top-color:transparent;border-radius:50%;animation:spin .7s linear infinite;flex-shrink:0;display:inline-block}
+  @keyframes spin{to{transform:rotate(360deg)}}
+  .pulse{animation:pulse 1.5s ease-in-out infinite}
+  @keyframes pulse{0%,100%{opacity:1}50%{opacity:.4}}
+  .hidden{display:none!important}
+  label{font-size:13px;font-weight:500;display:block;margin-bottom:6px}
+</style>
 </head>
 <body>
-  <div id="root"></div>
+<div id="app" style="max-width:680px;margin:0 auto;padding:32px 16px"></div>
 
-  <script src="https://unpkg.com/react@18/umd/react.development.js"></script>
-  <script src="https://unpkg.com/react-dom@18/umd/react-dom.development.js"></script>
-  <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
-
-  <script type="text/babel">
-    const { useState } = React;
-
-    const DEMO = {
-      escopos: [
-        {
-          nome: 'Essencial',
-          descricao: 'Gestão de redes sociais com foco em engajamento orgânico.',
-          entregaveis: ['12 posts/mês (feed + stories)', 'Copywriting para Instagram e Facebook', 'Relatório mensal de desempenho'],
-          prazo: '30 dias úteis',
-          investimento: 'R$ 1.800',
-          destaque: false,
-        },
-        {
-          nome: 'Profissional',
-          descricao: 'Estratégia completa de marketing digital com gestão de tráfego e conteúdo.',
-          entregaveis: ['20 posts/mês (feed + stories)', 'Gestão de Meta Ads (tráfego pago)', '2 peças gráficas por semana', 'Reunião quinzenal de alinhamento', 'Relatório detalhado com insights'],
-          prazo: '45 dias úteis',
-          investimento: 'R$ 3.500',
-          destaque: true,
-        },
-        {
-          nome: 'Premium',
-          descricao: 'Presença digital completa com estratégia omnichannel e vídeos.',
-          entregaveis: ['30 posts/mês em todas as redes', 'Meta Ads + Google Ads', '4 Reels/mês (produção inclusa)', 'Landing page otimizada', 'Email marketing mensal', 'Dashboard de resultados em tempo real'],
-          prazo: '60 dias úteis',
-          investimento: 'R$ 6.800',
-          destaque: false,
-        },
-      ],
-      proposta: `# Proposta Comercial — Marketing Digital
-Preparada para: Padaria do João
-Data: ${new Date().toLocaleDateString('pt-BR')} | Validade: 15 dias
+<script>
+const DEMO = {
+  escopos:[
+    {nome:"Essencial",desc:"Gestão de redes sociais com foco em engajamento orgânico.",items:["12 posts/mês (feed + stories)","Copywriting para Instagram e Facebook","Relatório mensal de desempenho"],prazo:"30 dias úteis",valor:"R$ 1.800",star:false},
+    {nome:"Profissional",desc:"Estratégia completa de marketing digital com gestão de tráfego e conteúdo.",items:["20 posts/mês (feed + stories)","Gestão de Meta Ads (tráfego pago)","2 peças gráficas por semana","Reunião quinzenal de alinhamento","Relatório detalhado com insights"],prazo:"45 dias úteis",valor:"R$ 3.500",star:true},
+    {nome:"Premium",desc:"Presença digital completa com estratégia omnichannel e vídeos.",items:["30 posts/mês em todas as redes","Meta Ads + Google Ads","4 Reels/mês (produção inclusa)","Landing page otimizada","Email marketing mensal","Dashboard de resultados em tempo real"],prazo:"60 dias úteis",valor:"R$ 6.800",star:false}
+  ],
+  proposta:`# Proposta Comercial — Marketing Digital
+Preparada para: Padaria do João | Data: ${new Date().toLocaleDateString('pt-BR')} | Validade: 15 dias
 
 ---
 
 ## Apresentação
 
-A [Sua Agência] transforma negócios locais em referências digitais. Nosso trabalho vai além de "postar nas redes" — criamos um ecossistema digital que atrai, engaja e converte clientes.
+A [Sua Agência] transforma negócios locais em referências digitais. Nosso trabalho vai além de "postar nas redes" — criamos um ecossistema digital que atrai, engaja e converte clientes reais.
 
 ## Entendimento do Desafio
 
-A Padaria do João busca aumentar sua visibilidade online para atrair novos clientes e fidelizar os atuais, num mercado onde a concorrência digital no setor alimentício cresce todo mês.
+A Padaria do João busca aumentar sua visibilidade online para atrair novos clientes e fidelizar os atuais, num mercado onde a concorrência digital no setor alimentício cresce a cada mês.
 
 ## Solução Proposta — Escopo Profissional
 
-Estratégia completa combinando conteúdo orgânico de alta qualidade com tráfego pago segmentado para o público local.
+Estratégia completa combinando conteúdo orgânico de alta qualidade com tráfego pago segmentado para o público local da região.
 
 ## Metodologia
 
-1. Diagnóstico (semana 1): Análise do perfil atual, benchmarking e definição de personas
+1. Diagnóstico (semana 1): Análise do perfil, benchmarking e definição de personas
 2. Estratégia (semana 2): Calendário editorial, tom de voz e identidade visual digital
 3. Execução (semanas 3–8): Produção de conteúdo + gestão das campanhas
 4. Otimização (contínuo): Análise semanal de métricas e ajustes táticos
@@ -114,263 +71,198 @@ Estratégia completa combinando conteúdo orgânico de alta qualidade com tráfe
 ✓ Gestão de Meta Ads com budget gerenciado
 ✓ 2 peças gráficas por semana
 ✓ Reunião quinzenal de alinhamento estratégico
-✓ Relatório detalhado mensal com insights
+✓ Relatório detalhado mensal com insights e próximos passos
 
 ## Investimento e Condições
 
 Investimento mensal: R$ 3.500,00
-Forma de pagamento: Boleto ou PIX até dia 5 de cada mês
+Pagamento: Boleto ou PIX até dia 5 de cada mês
 Fidelidade: Contrato mínimo de 3 meses
 Início: Em até 7 dias úteis após assinatura`,
-      objecoes: [
-        {
-          objecao: 'O investimento está alto para uma padaria',
-          resposta: 'Entendo. Para contextualizar: se atrairmos apenas 2 novos clientes fixos por semana com ticket médio de R$ 50, isso representa R$ 400/mês — o retorno acontece com menos de 10 novos clientes regulares. Além disso, temos o escopo Essencial a R$ 1.800 como ponto de entrada.',
-        },
-        {
-          objecao: 'Já tentei agência antes e não funcionou',
-          resposta: 'Justo trazer isso. A diferença está na nossa metodologia: metas claras definidas no início, relatórios quinzenais de transparência e reuniões de alinhamento para garantir que estamos no caminho certo. Você acompanha cada resultado em tempo real.',
-        },
-        {
-          objecao: 'Preciso pensar e ver com meu sócio',
-          resposta: 'Claro, faz todo sentido envolver quem decide. Posso preparar um resumo executivo de 1 página para facilitar a conversa com seu sócio, ou agendar uma reunião rápida de 20 minutos com vocês dois. Qual opção funciona melhor?',
-        },
-      ],
-      mensagem: `Olá, João! Tudo bem?
+  objecoes:[
+    {q:"O investimento está alto para uma padaria",a:"Entendo. Para contextualizar: se atrairmos apenas 2 novos clientes fixos por semana com ticket médio de R$ 50, o retorno acontece com menos de 10 novos clientes regulares. Temos também o escopo Essencial a R$ 1.800 como ponto de entrada."},
+    {q:"Já tentei agência antes e não funcionou",a:"Justo. A diferença está na nossa metodologia: metas claras desde o início, relatórios quinzenais de transparência e reuniões de alinhamento para garantir que estamos no caminho certo. Você acompanha cada resultado em tempo real."},
+    {q:"Preciso pensar e ver com meu sócio",a:"Claro, faz todo sentido. Posso preparar um resumo executivo de 1 página para facilitar a conversa, ou agendar uma reunião rápida de 20 minutos com vocês dois. Qual opção funciona melhor?"}
+  ],
+  msg:`Olá, João! Tudo bem?
 
 Conforme combinamos, estou enviando nossa proposta comercial para a Padaria do João.
 
-Preparei 3 opções de escopo pensando especificamente na realidade do seu negócio — desde um ponto de entrada mais acessível até uma estratégia completa para você dominar o digital na sua região.
+Preparei 3 opções de escopo pensando na realidade do seu negócio — desde um ponto de entrada mais acessível até uma estratégia completa para você dominar o digital na sua região.
 
-Minha recomendação pessoal é o escopo Profissional, que combina o melhor custo-benefício e costuma gerar resultados visíveis já no primeiro mês.
+Minha recomendação é o escopo Profissional, que combina o melhor custo-benefício e costuma gerar resultados visíveis já no primeiro mês.
 
-Fico à disposição para tirar qualquer dúvida ou ajustar algo. Podemos conversar ainda essa semana?
+Fico à disposição para tirar qualquer dúvida. Podemos conversar ainda essa semana?
 
 Abraço,
 [Seu Nome]
-[Seu WhatsApp]`,
-    };
+[Seu WhatsApp]`
+};
 
-    const STEPS = [
-      'Analisando seu serviço e contexto...',
-      'Pesquisando práticas de mercado...',
-      'Calculando investimentos sugeridos...',
-      'Redigindo proposta profissional...',
-      'Preparando respostas para objeções...',
-    ];
+const STEPS=["Analisando seu serviço e contexto...","Pesquisando práticas de mercado...","Calculando investimentos sugeridos...","Redigindo proposta profissional...","Preparando respostas para objeções..."];
 
-    function App() {
-      const [state, setState] = useState('idle');
-      const [step, setStep] = useState(0);
-      const [servico, setServico] = useState('');
-      const [cliente, setCliente] = useState('');
-      const [segmento, setSegmento] = useState('');
-      const [contexto, setContexto] = useState('');
-      const [escopoIdx, setEscopoIdx] = useState(1);
-      const [tab, setTab] = useState('proposta');
-      const [copied, setCopied] = useState(null);
+let state='form', escopo=1, tab='proposta';
 
-      const showDemo = () => {
-        setState('result');
-        setEscopoIdx(1);
-      };
+function $(id){return document.getElementById(id)}
+function show(id){$(id)&&$(id).classList.remove('hidden')}
+function hide(id){$(id)&&$(id).classList.add('hidden')}
 
-      const simularGeracao = () => {
-        if (!servico.trim() || !cliente.trim()) return;
-        setState('loading');
-        setStep(0);
-        let s = 0;
-        const iv = setInterval(() => {
-          s++;
-          if (s < STEPS.length) setStep(s);
-          else { clearInterval(iv); setState('result'); setEscopoIdx(1); }
-        }, 1000);
-      };
+function copy(text,btn){
+  navigator.clipboard.writeText(text).catch(()=>{});
+  const orig=btn.innerHTML;
+  btn.innerHTML='✓ Copiado!';
+  btn.style.borderColor='#22c55e';btn.style.color='#22c55e';
+  setTimeout(()=>{btn.innerHTML=orig;btn.style.borderColor='';btn.style.color='';},2000);
+}
 
-      const copy = (text, key) => {
-        navigator.clipboard.writeText(text).catch(() => {});
-        setCopied(key);
-        setTimeout(() => setCopied(null), 2000);
-      };
+function renderForm(){
+  return `
+  <div style="text-align:center;margin-bottom:32px">
+    <div style="width:56px;height:56px;background:rgba(99,102,241,.12);border-radius:16px;display:flex;align-items:center;justify-content:center;margin:0 auto 16px;font-size:28px">✨</div>
+    <h1 style="font-size:24px;font-weight:700;margin:0 0 8px">Gerador de Propostas com IA</h1>
+    <p style="color:#9ca3af;font-size:14px;margin:0">Preencha 3 campos e a IA gera escopo, investimento e proposta completa em segundos.</p>
+  </div>
+  <div class="card" style="padding:24px">
+    <div style="margin-bottom:18px">
+      <label>O que você oferece? <span style="color:#ef4444">*</span></label>
+      <textarea id="f-servico" rows="2" placeholder="Ex: Consultoria de marketing digital, Desenvolvimento de site..."></textarea>
+    </div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-bottom:18px">
+      <div><label>Nome do cliente <span style="color:#ef4444">*</span></label><input id="f-cliente" placeholder="Ex: Empresa ABC"/></div>
+      <div><label>Segmento <span style="color:#6b7280;font-weight:400">(opcional)</span></label><input id="f-seg" placeholder="Ex: Varejo, Saúde..."/></div>
+    </div>
+    <div style="margin-bottom:20px">
+      <label>Contexto adicional <span style="color:#6b7280;font-weight:400">(opcional)</span></label>
+      <textarea id="f-ctx" rows="2" placeholder="Ex: Budget de R$5k, urgência para esse mês, dor principal é conversão..."></textarea>
+    </div>
+    <button class="btn-p" id="btn-gerar" onclick="simular()" disabled style="margin-bottom:10px">✨ Gerar Proposta Completa →</button>
+    <button class="btn-o" onclick="showDemo()">Ver exemplo gerado pela IA</button>
+    <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;margin-top:16px">
+      ${[['📦','3 escopos com preço'],['⚡','Objeções + respostas'],['✉️','Mensagem de envio']].map(([i,t])=>`<div style="display:flex;flex-direction:column;align-items:center;gap:3px;font-size:12px;color:#9ca3af;text-align:center"><span style="font-size:18px">${i}</span>${t}</div>`).join('')}
+    </div>
+  </div>`;
+}
 
-      if (state === 'loading') return (
-        <div style={{minHeight:'100vh',display:'flex',alignItems:'center',justifyContent:'center',flexDirection:'column',gap:40,padding:24}}>
-          <div style={{textAlign:'center'}}>
-            <div style={{width:56,height:56,background:'rgba(99,102,241,0.1)',borderRadius:16,display:'flex',alignItems:'center',justifyContent:'center',margin:'0 auto 16px',fontSize:28}}>✨</div>
-            <h2 style={{fontSize:20,fontWeight:700,margin:'0 0 4px'}}>Gerando sua proposta...</h2>
-            <p style={{color:'#9ca3af',fontSize:14,margin:0}}>Isso leva alguns segundos</p>
-          </div>
-          <div style={{display:'flex',flexDirection:'column',gap:12,width:'100%',maxWidth:300}}>
-            {STEPS.map((s, i) => (
-              <div key={i} className="step" style={{color: i < step ? '#6366f1' : i === step ? '#e5e7eb' : '#374151'}}>
-                {i < step ? <span style={{color:'#6366f1',fontSize:16}}>✓</span>
-                 : i === step ? <div className="spinner" />
-                 : <span style={{width:16,height:16,borderRadius:'50%',border:'1.5px solid #374151',display:'inline-block',flexShrink:0}} />}
-                {s}
-              </div>
-            ))}
-          </div>
-        </div>
-      );
+function renderLoading(step){
+  return `
+  <div style="display:flex;flex-direction:column;align-items:center;justify-content:center;min-height:420px;gap:40px">
+    <div style="text-align:center">
+      <div style="width:56px;height:56px;background:rgba(99,102,241,.12);border-radius:16px;display:flex;align-items:center;justify-content:center;margin:0 auto 16px;font-size:28px" class="pulse">✨</div>
+      <h2 style="font-size:20px;font-weight:700;margin:0 0 4px">Gerando sua proposta...</h2>
+      <p style="color:#9ca3af;font-size:14px;margin:0">Isso leva alguns segundos</p>
+    </div>
+    <div style="display:flex;flex-direction:column;gap:12px;width:100%;max-width:300px">
+      ${STEPS.map((s,i)=>`
+        <div style="display:flex;align-items:center;gap:10px;font-size:14px;color:${i<step?'#6366f1':i===step?'#e5e7eb':'#374151'}">
+          ${i<step?'<span style="color:#6366f1;font-size:16px">✓</span>':i===step?'<div class="spin"></div>':'<span style="width:16px;height:16px;border-radius:50%;border:1.5px solid #374151;display:inline-block;flex-shrink:0"></span>'}
+          ${s}
+        </div>`).join('')}
+    </div>
+  </div>`;
+}
 
-      if (state === 'result') {
-        const escopo = DEMO.escopos[escopoIdx];
-        return (
-          <div style={{maxWidth:800,margin:'0 auto',padding:'24px 16px'}}>
-            <div style={{display:'flex',alignItems:'center',justifyContent:'space-between',marginBottom:24}}>
-              <div>
-                <h2 style={{fontSize:20,fontWeight:700,margin:'0 0 4px'}}>Proposta gerada com sucesso</h2>
-                <p style={{color:'#9ca3af',fontSize:13,margin:0}}>Selecione o escopo e copie sua proposta</p>
-              </div>
-              <button className="btn-small" onClick={() => setState('idle')}>↩ Nova</button>
-            </div>
+function renderResult(){
+  const e=DEMO.escopos[escopo];
+  return `
+  <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:24px">
+    <div>
+      <h2 style="font-size:20px;font-weight:700;margin:0 0 4px">Proposta gerada com sucesso</h2>
+      <p style="color:#9ca3af;font-size:13px;margin:0">Selecione o escopo e copie sua proposta</p>
+    </div>
+    <button class="btn-sm" onclick="setState('form')">↩ Nova</button>
+  </div>
 
-            {/* Scope cards */}
-            <div style={{display:'grid',gridTemplateColumns:'repeat(3,1fr)',gap:12,marginBottom:20}}>
-              {DEMO.escopos.map((e, i) => (
-                <div key={i} className={`card ${escopoIdx === i ? 'card-selected' : ''}`}
-                  style={{padding:'16px 14px',cursor:'pointer',position:'relative',transition:'all 0.15s'}}
-                  onClick={() => setEscopoIdx(i)}>
-                  {e.destaque && (
-                    <div style={{position:'absolute',top:-10,left:'50%',transform:'translateX(-50%)'}}>
-                      <span className="badge">Recomendado</span>
-                    </div>
-                  )}
-                  <p style={{fontSize:10,fontWeight:700,color:'#6b7280',textTransform:'uppercase',letterSpacing:'0.1em',margin:'4px 0 4px'}}>{e.nome}</p>
-                  <p style={{fontSize:22,fontWeight:700,margin:'0 0 4px'}}>{e.investimento}</p>
-                  <p style={{fontSize:12,color:'#9ca3af',margin:'0 0 10px'}}>⏱ {e.prazo}</p>
-                  <ul style={{listStyle:'none',padding:0,margin:0,display:'flex',flexDirection:'column',gap:5}}>
-                    {e.entregaveis.slice(0,4).map((item, j) => (
-                      <li key={j} style={{fontSize:12,color:'#9ca3af',display:'flex',alignItems:'flex-start',gap:5}}>
-                        <span className="check" style={{flexShrink:0,marginTop:1}}>✓</span>{item}
-                      </li>
-                    ))}
-                    {e.entregaveis.length > 4 && <li style={{fontSize:12,color:'#6366f1',fontWeight:500}}>+{e.entregaveis.length - 4} entregáveis</li>}
-                  </ul>
-                </div>
-              ))}
-            </div>
+  <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-bottom:20px">
+    ${DEMO.escopos.map((e,i)=>`
+      <div class="card ${escopo===i?'card-sel':''}" style="padding:16px 14px;cursor:pointer;position:relative;transition:all .15s" onclick="selEscopo(${i})">
+        ${e.star?`<div style="position:absolute;top:-10px;left:50%;transform:translateX(-50%);background:#6366f1;color:#fff;font-size:10px;font-weight:700;padding:2px 8px;border-radius:999px;white-space:nowrap">Recomendado</div>`:''}
+        <p style="font-size:10px;font-weight:700;color:#6b7280;text-transform:uppercase;letter-spacing:.1em;margin:4px 0 4px">${e.nome}</p>
+        <p style="font-size:22px;font-weight:700;margin:0 0 4px">${e.valor}</p>
+        <p style="font-size:12px;color:#9ca3af;margin:0 0 10px">⏱ ${e.prazo}</p>
+        <ul style="list-style:none;padding:0;margin:0;display:flex;flex-direction:column;gap:5px">
+          ${e.items.slice(0,4).map(it=>`<li style="font-size:12px;color:#9ca3af;display:flex;align-items:flex-start;gap:5px"><span style="color:#6366f1;flex-shrink:0">✓</span>${it}</li>`).join('')}
+          ${e.items.length>4?`<li style="font-size:12px;color:#6366f1;font-weight:500">+${e.items.length-4} entregáveis</li>`:''}
+        </ul>
+      </div>`).join('')}
+  </div>
 
-            {/* Tabs */}
-            <div className="tab-bar" style={{marginBottom:16}}>
-              {[['proposta','📄 Proposta'],['objecoes','⚡ Objeções (3)'],['mensagem','✉️ Mensagem']].map(([key,label]) => (
-                <button key={key} className={`tab ${tab === key ? 'active' : ''}`} onClick={() => setTab(key)}>{label}</button>
-              ))}
-            </div>
+  <div class="tabbar" style="margin-bottom:16px">
+    <button class="tab ${tab==='proposta'?'act':''}" onclick="setTab('proposta')">📄 Proposta</button>
+    <button class="tab ${tab==='objecoes'?'act':''}" onclick="setTab('objecoes')">⚡ Objeções (3)</button>
+    <button class="tab ${tab==='msg'?'act':''}" onclick="setTab('msg')">✉️ Mensagem</button>
+  </div>
 
-            {tab === 'proposta' && (
-              <div className="card" style={{padding:20}}>
-                <div style={{display:'flex',alignItems:'center',justifyContent:'space-between',marginBottom:14}}>
-                  <span style={{fontSize:13,fontWeight:600}}>Escopo {escopo.nome} — {escopo.investimento}</span>
-                  <button className="btn-small" onClick={() => copy(DEMO.proposta, 'proposta')}
-                    style={copied === 'proposta' ? {borderColor:'#22c55e',color:'#22c55e'} : {}}>
-                    {copied === 'proposta' ? '✓ Copiado!' : '⎘ Copiar'}
-                  </button>
-                </div>
-                <div style={{background:'rgba(255,255,255,0.03)',borderRadius:8,border:'1px solid #2a2a35',padding:'14px 16px',maxHeight:440,overflowY:'auto'}}>
-                  <pre style={{color:'#d1d5db'}}>{DEMO.proposta}</pre>
-                </div>
-              </div>
-            )}
+  ${tab==='proposta'?`
+  <div class="card" style="padding:20px">
+    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:14px">
+      <span style="font-size:13px;font-weight:600">Escopo ${e.nome} — ${e.valor}</span>
+      <button class="btn-sm" onclick="copy(DEMO.proposta,this)">⎘ Copiar</button>
+    </div>
+    <div style="background:rgba(255,255,255,.03);border-radius:8px;border:1px solid #2a2a35;padding:14px 16px;max-height:420px;overflow-y:auto">
+      <pre style="color:#d1d5db">${DEMO.proposta}</pre>
+    </div>
+  </div>`:''}
 
-            {tab === 'objecoes' && (
-              <div style={{display:'flex',flexDirection:'column',gap:10}}>
-                {DEMO.objecoes.map((obj, i) => (
-                  <div key={i} className="card" style={{padding:16}}>
-                    <div style={{display:'flex',gap:12}}>
-                      <div style={{width:26,height:26,borderRadius:'50%',background:'rgba(239,68,68,0.1)',display:'flex',alignItems:'center',justifyContent:'center',flexShrink:0,marginTop:2,fontSize:13}}>⚡</div>
-                      <div style={{flex:1}}>
-                        <p style={{fontSize:14,fontWeight:600,margin:'0 0 8px'}}>"{obj.objecao}"</p>
-                        <div style={{display:'flex',gap:8,alignItems:'flex-start'}}>
-                          <div style={{width:20,height:20,borderRadius:'50%',background:'rgba(99,102,241,0.1)',display:'flex',alignItems:'center',justifyContent:'center',flexShrink:0,marginTop:1,fontSize:11,color:'#6366f1'}}>✓</div>
-                          <p style={{fontSize:13,color:'#9ca3af',margin:0}}>{obj.resposta}</p>
-                        </div>
-                      </div>
-                      <button className="btn-small" style={{flexShrink:0,alignSelf:'flex-start', ...(copied === `obj-${i}` ? {borderColor:'#22c55e',color:'#22c55e'} : {})}}
-                        onClick={() => copy(obj.resposta, `obj-${i}`)}>
-                        {copied === `obj-${i}` ? '✓' : '⎘'}
-                      </button>
-                    </div>
-                  </div>
-                ))}
-              </div>
-            )}
-
-            {tab === 'mensagem' && (
-              <div className="card" style={{padding:20}}>
-                <div style={{display:'flex',alignItems:'center',justifyContent:'space-between',marginBottom:14}}>
-                  <span style={{fontSize:13,fontWeight:600}}>Mensagem para enviar ao cliente</span>
-                  <button className="btn-small" onClick={() => copy(DEMO.mensagem, 'mensagem')}
-                    style={copied === 'mensagem' ? {borderColor:'#22c55e',color:'#22c55e'} : {}}>
-                    {copied === 'mensagem' ? '✓ Copiado!' : '⎘ Copiar'}
-                  </button>
-                </div>
-                <div style={{background:'rgba(255,255,255,0.03)',borderRadius:8,border:'1px solid #2a2a35',padding:'14px 16px'}}>
-                  <pre style={{color:'#d1d5db'}}>{DEMO.mensagem}</pre>
-                </div>
-              </div>
-            )}
-          </div>
-        );
-      }
-
-      // Form
-      return (
-        <div style={{maxWidth:580,margin:'0 auto',padding:'40px 16px'}}>
-          <div style={{textAlign:'center',marginBottom:32}}>
-            <div style={{width:56,height:56,background:'rgba(99,102,241,0.1)',borderRadius:16,display:'flex',alignItems:'center',justifyContent:'center',margin:'0 auto 16px',fontSize:28}}>✨</div>
-            <h1 style={{fontSize:24,fontWeight:700,margin:'0 0 8px'}}>Gerador de Propostas com IA</h1>
-            <p style={{color:'#9ca3af',fontSize:14,margin:0,maxWidth:380,marginInline:'auto'}}>
-              Preencha 3 campos e a IA gera escopo, investimento sugerido e proposta completa em segundos.
-            </p>
-          </div>
-
-          <div className="card" style={{padding:24}}>
-            <div style={{marginBottom:18}}>
-              <label style={{fontSize:13,fontWeight:500,display:'block',marginBottom:6}}>O que você oferece? <span style={{color:'#ef4444'}}>*</span></label>
-              <textarea className="input" rows={2} placeholder="Ex: Consultoria de marketing digital, Desenvolvimento de site..."
-                value={servico} onChange={e => setServico(e.target.value)} />
-            </div>
-
-            <div style={{display:'grid',gridTemplateColumns:'1fr 1fr',gap:14,marginBottom:18}}>
-              <div>
-                <label style={{fontSize:13,fontWeight:500,display:'block',marginBottom:6}}>Nome do cliente <span style={{color:'#ef4444'}}>*</span></label>
-                <input className="input" placeholder="Ex: Empresa ABC" value={cliente} onChange={e => setCliente(e.target.value)} />
-              </div>
-              <div>
-                <label style={{fontSize:13,fontWeight:500,display:'block',marginBottom:6}}>Segmento <span style={{color:'#6b7280',fontWeight:400'}}>(opcional)</span></label>
-                <input className="input" placeholder="Ex: Varejo, Saúde..." value={segmento} onChange={e => setSegmento(e.target.value)} />
-              </div>
-            </div>
-
-            <div style={{marginBottom:20}}>
-              <label style={{fontSize:13,fontWeight:500,display:'block',marginBottom:6}}>Contexto adicional <span style={{color:'#6b7280',fontWeight:400}}>(opcional)</span></label>
-              <textarea className="input" rows={2} placeholder="Ex: Budget de R$ 5k, urgência para esse mês, principal dor é conversão..."
-                value={contexto} onChange={e => setContexto(e.target.value)} />
-            </div>
-
-            <button className="btn-primary" disabled={!servico.trim() || !cliente.trim()} onClick={simularGeracao} style={{marginBottom:10}}>
-              ✨ Gerar Proposta Completa →
-            </button>
-
-            <button className="btn-outline" onClick={showDemo}>
-              Ver exemplo gerado pela IA
-            </button>
-
-            <div style={{display:'grid',gridTemplateColumns:'1fr 1fr 1fr',gap:8,marginTop:16}}>
-              {[['📦','3 escopos com preço'],['⚡','Objeções + respostas'],['✉️','Mensagem de envio']].map(([icon,text]) => (
-                <div key={text} className="tag" style={{justifyContent:'center',textAlign:'center',flexDirection:'column',gap:3}}>
-                  <span style={{fontSize:18}}>{icon}</span>
-                  <span>{text}</span>
-                </div>
-              ))}
-            </div>
+  ${tab==='objecoes'?`
+  <div style="display:flex;flex-direction:column;gap:10px">
+    ${DEMO.objecoes.map((o,i)=>`
+    <div class="card" style="padding:16px">
+      <div style="display:flex;gap:12px">
+        <div style="width:26px;height:26px;border-radius:50%;background:rgba(239,68,68,.1);display:flex;align-items:center;justify-content:center;flex-shrink:0;margin-top:2px;font-size:13px">⚡</div>
+        <div style="flex:1">
+          <p style="font-size:14px;font-weight:600;margin:0 0 8px">"${o.q}"</p>
+          <div style="display:flex;gap:8px;align-items:flex-start">
+            <div style="width:20px;height:20px;border-radius:50%;background:rgba(99,102,241,.1);display:flex;align-items:center;justify-content:center;flex-shrink:0;margin-top:1px;font-size:11px;color:#6366f1">✓</div>
+            <p style="font-size:13px;color:#9ca3af;margin:0">${o.a}</p>
           </div>
         </div>
-      );
+        <button class="btn-sm" style="flex-shrink:0;align-self:flex-start" onclick="copy('${o.a.replace(/'/g,"\\'")}',this)">⎘</button>
+      </div>
+    </div>`).join('')}
+  </div>`:''}
+
+  ${tab==='msg'?`
+  <div class="card" style="padding:20px">
+    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:14px">
+      <span style="font-size:13px;font-weight:600">Mensagem para enviar ao cliente</span>
+      <button class="btn-sm" onclick="copy(DEMO.msg,this)">⎘ Copiar</button>
+    </div>
+    <div style="background:rgba(255,255,255,.03);border-radius:8px;border:1px solid #2a2a35;padding:14px 16px">
+      <pre style="color:#d1d5db">${DEMO.msg}</pre>
+    </div>
+  </div>`:''}`;
+}
+
+function render(){
+  const app=document.getElementById('app');
+  if(state==='form') app.innerHTML=renderForm();
+  else if(state==='loading') app.innerHTML=renderLoading(0);
+  else app.innerHTML=renderResult();
+  if(state==='form'){
+    const s=$('f-servico'),c=$('f-cliente'),b=$('btn-gerar');
+    if(s&&c&&b){
+      function check(){b.disabled=!s.value.trim()||!c.value.trim();}
+      s.oninput=check;c.oninput=check;
     }
+  }
+}
 
-    ReactDOM.createRoot(document.getElementById('root')).render(<App />);
-  </script>
+function setState(s){state=s;render();}
+function showDemo(){state='result';escopo=1;tab='proposta';render();}
+function selEscopo(i){escopo=i;render();}
+function setTab(t){tab=t;render();}
+
+function simular(){
+  state='loading';render();
+  let step=0;
+  const iv=setInterval(()=>{
+    step++;
+    if(step<STEPS.length){document.getElementById('app').innerHTML=renderLoading(step);}
+    else{clearInterval(iv);state='result';escopo=1;tab='proposta';render();}
+  },1000);
+}
+
+render();
+</script>
 </body>
 </html>
