@@ -26,8 +26,11 @@ jobs:
             https://api.github.com/repos/${{ github.repository }}/pages \
             -d '{"source":{"branch":"gh-pages","path":"/"}}' || true
 
-      - name: Prepare demo
-        run: mkdir -p _site && cp demo/index.html _site/index.html
+      - name: Prepare site
+        run: |
+          mkdir -p _site/landing
+          cp demo/index.html _site/index.html
+          cp landing/index.html _site/landing/index.html
 
       - name: Deploy to gh-pages branch
         uses: peaceiris/actions-gh-pages@v3
