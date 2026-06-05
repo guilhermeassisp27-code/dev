@@ -13,30 +13,28 @@
       <stop offset="0%" stop-color="#FFFFFF"/>
       <stop offset="100%" stop-color="#E9EEF6"/>
     </linearGradient>
-    <filter id="soft2" x="-30%" y="-30%" width="160%" height="160%">
-      <feDropShadow dx="0" dy="20" stdDeviation="30" flood-color="#000000" flood-opacity="0.5"/>
-    </filter>
   </defs>
 
   <rect width="1000" height="1000" fill="url(#bg2)"/>
   <circle cx="500" cy="500" r="492" fill="none" stroke="#F59E0B" stroke-opacity="0.18" stroke-width="6"/>
 
-  <!-- Documento centralizado e grande (lê bem em 40px) -->
-  <g filter="url(#soft2)">
-    <rect x="312" y="250" width="376" height="500" rx="42" fill="url(#paper2)"/>
-    <path d="M612 250 L688 326 L612 326 Z" fill="#C9D4E6"/>
-    <rect x="368" y="362" width="200" height="26" rx="13" fill="#1B2944"/>
-    <rect x="368" y="420" width="264" height="18" rx="9" fill="#94A3B8"/>
-    <rect x="368" y="458" width="264" height="18" rx="9" fill="#94A3B8"/>
-    <rect x="368" y="496" width="180" height="18" rx="9" fill="#94A3B8"/>
-    <rect x="368" y="560" width="264" height="70" rx="16" fill="#FEF3C7"/>
-    <rect x="394" y="584" width="150" height="22" rx="11" fill="#B45309"/>
-  </g>
+  <!-- Sombra do documento (forma deslocada, sem filtro) -->
+  <rect x="312" y="270" width="376" height="500" rx="42" fill="#000000" opacity="0.32"/>
 
-  <!-- Raio de velocidade -->
-  <g filter="url(#soft2)">
-    <circle cx="690" cy="668" r="112" fill="url(#amber2)"/>
-    <path d="M708 588 L622 690 L680 690 L670 770 L756 656 L696 656 Z"
-          fill="#1A1205" stroke-linejoin="round"/>
-  </g>
+  <!-- Documento -->
+  <rect x="312" y="250" width="376" height="500" rx="42" fill="url(#paper2)"/>
+  <path d="M612 250 L688 326 L612 326 Z" fill="#C9D4E6"/>
+  <rect x="368" y="362" width="200" height="26" rx="13" fill="#1B2944"/>
+  <rect x="368" y="420" width="264" height="18" rx="9" fill="#94A3B8"/>
+  <rect x="368" y="458" width="264" height="18" rx="9" fill="#94A3B8"/>
+  <rect x="368" y="496" width="180" height="18" rx="9" fill="#94A3B8"/>
+  <rect x="368" y="560" width="264" height="70" rx="16" fill="#FEF3C7"/>
+  <rect x="394" y="584" width="150" height="22" rx="11" fill="#B45309"/>
+
+  <!-- Sombra do selo -->
+  <circle cx="690" cy="682" r="112" fill="#000000" opacity="0.32"/>
+  <!-- Selo de velocidade (raio) -->
+  <circle cx="690" cy="668" r="112" fill="url(#amber2)"/>
+  <path d="M708 588 L622 690 L680 690 L670 770 L756 656 L696 656 Z"
+        fill="#1A1205" stroke-linejoin="round"/>
 </svg>
