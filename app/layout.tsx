@@ -5,8 +5,8 @@ import './globals.css'
 const inter = Inter({ subsets: ['latin'] })
 
 export const metadata: Metadata = {
-  title: 'Sales Co-Pilot | Becomex',
-  description: 'Seu assistente de vendas B2B consultivas',
+  title: 'CorretorPRO',
+  description: 'Gerador de propostas comerciais para corretores de imóveis',
 }
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
