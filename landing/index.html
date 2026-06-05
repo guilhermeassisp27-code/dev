@@ -351,6 +351,23 @@
 </head>
 <body>
 
+<!-- Meta Pixel Code -->
+<script>
+!function(f,b,e,v,n,t,s)
+{if(f.fbq)return;n=f.fbq=function(){n.callMethod?
+n.callMethod.apply(n,arguments):n.queue.push(arguments)};
+if(!f._fbq)f._fbq=n;n.push=n;n.loaded=!0;n.version='2.0';
+n.queue=[];t=b.createElement(e);t.async=!0;
+t.src=v;s=b.getElementsByTagName(e)[0];
+s.parentNode.insertBefore(t,s)}(window, document,'script',
+'https://connect.facebook.net/en_US/fbevents.js');
+fbq('init', '2015826029060952');
+fbq('track', 'PageView');
+</script>
+<noscript><img height="1" width="1" style="display:none"
+src="https://www.facebook.com/tr?id=2015826029060952&ev=PageView&noscript=1"/></noscript>
+<!-- End Meta Pixel Code -->
+
 <!-- ===================== HEADER ===================== -->
 <header>
   <div class="wrap nav">
@@ -546,7 +563,7 @@
           <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg> Exportação em PDF e envio no WhatsApp</li>
           <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg> Histórico salvo na nuvem</li>
         </ul>
-        <a class="cta plan-ghost" href="https://pay.hotmart.com/L106145948O?off=hgn79gvq">Assinar mensal</a>
+        <a class="cta plan-ghost" data-plan="mensal" data-value="67" href="https://pay.hotmart.com/L106145948O?off=hgn79gvq">Assinar mensal</a>
       </div>
 
       <!-- Anual (destaque) -->
@@ -565,7 +582,7 @@
           <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg> Exportação em PDF e envio no WhatsApp</li>
           <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg> Histórico salvo na nuvem</li>
         </ul>
-        <a class="cta" href="https://pay.hotmart.com/L106145948O?off=mcjyy7ub">Assinar anual e economizar</a>
+        <a class="cta" data-plan="anual" data-value="497" href="https://pay.hotmart.com/L106145948O?off=mcjyy7ub">Assinar anual e economizar</a>
       </div>
     </div>
 
@@ -640,6 +657,24 @@
     <p style="margin-top:16px">© 2026 CorretorPRO. Todos os direitos reservados.</p>
   </div>
 </footer>
+
+<!-- Dispara InitiateCheckout no Pixel ao clicar para o checkout da Hotmart -->
+<script>
+(function(){
+  var links = document.querySelectorAll('a[href*="pay.hotmart.com"]');
+  for (var i = 0; i < links.length; i++) {
+    links[i].addEventListener('click', function(){
+      if (typeof fbq === 'function') {
+        fbq('track', 'InitiateCheckout', {
+          content_name: this.getAttribute('data-plan') || 'plano',
+          value: parseFloat(this.getAttribute('data-value')) || undefined,
+          currency: 'BRL'
+        });
+      }
+    });
+  }
+})();
+</script>
 
 </body>
 </html>
