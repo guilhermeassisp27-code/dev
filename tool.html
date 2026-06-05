@@ -8,6 +8,10 @@
 <meta property="og:title" content="CorretorPRO — Propostas Imobiliárias Profissionais">
 <meta property="og:description" content="Propostas personalizadas com sua marca em menos de 60 segundos.">
 <meta property="og:type" content="website">
+<meta property="og:image" content="https://guilhermeassisp27-code.github.io/dev/og-image.png">
+<meta property="og:url" content="https://guilhermeassisp27-code.github.io/dev/tool.html">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:image" content="https://guilhermeassisp27-code.github.io/dev/og-image.png">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
@@ -676,13 +680,13 @@ input[type=color]{opacity:0;width:0;height:0;position:absolute}
                 <div class="color-swatch" id="color-swatch" onclick="document.getElementById('c-cor').click()" style="background:var(--p)"></div>
                 <input type="color" id="c-cor" value="#4D7EFF" oninput="atualizarCor(this.value)">
                 <div class="color-presets">
-                  <div class="preset" style="background:#4D7EFF" onclick="atualizarCor('#4D7EFF')" title="Azul"></div>
-                  <div class="preset" style="background:#7C5CFC" onclick="atualizarCor('#7C5CFC')" title="Roxo"></div>
-                  <div class="preset" style="background:#22C55E" onclick="atualizarCor('#22C55E')" title="Verde"></div>
-                  <div class="preset" style="background:#F59E0B" onclick="atualizarCor('#F59E0B')" title="Âmbar"></div>
-                  <div class="preset" style="background:#EF4444" onclick="atualizarCor('#EF4444')" title="Vermelho"></div>
-                  <div class="preset" style="background:#0EA5E9" onclick="atualizarCor('#0EA5E9')" title="Celeste"></div>
-                  <div class="preset" style="background:#6B7280" onclick="atualizarCor('#6B7280')" title="Cinza"></div>
+                  <div class="preset" data-cor="#4D7EFF" style="background:#4D7EFF" onclick="atualizarCor('#4D7EFF')" title="Azul"></div>
+                  <div class="preset" data-cor="#7C5CFC" style="background:#7C5CFC" onclick="atualizarCor('#7C5CFC')" title="Roxo"></div>
+                  <div class="preset" data-cor="#22C55E" style="background:#22C55E" onclick="atualizarCor('#22C55E')" title="Verde"></div>
+                  <div class="preset" data-cor="#F59E0B" style="background:#F59E0B" onclick="atualizarCor('#F59E0B')" title="Âmbar"></div>
+                  <div class="preset" data-cor="#EF4444" style="background:#EF4444" onclick="atualizarCor('#EF4444')" title="Vermelho"></div>
+                  <div class="preset" data-cor="#0EA5E9" style="background:#0EA5E9" onclick="atualizarCor('#0EA5E9')" title="Celeste"></div>
+                  <div class="preset" data-cor="#6B7280" style="background:#6B7280" onclick="atualizarCor('#6B7280')" title="Cinza"></div>
                 </div>
               </div>
             </div>
@@ -738,17 +742,22 @@ const _LOGIN_URL  = 'https://corretorpro-dusky.vercel.app/acesso'
       return
     }
 
+    window._uid = session.user.id
+
     // Mostra email do usuário no rodapé da sidebar
     const sp = document.getElementById('sb-plan')
     if (sp) sp.textContent = session.user.email
+
+    // Carrega perfil + histórico da conta (sincroniza entre dispositivos)
+    await carregarRemoto()
 
     document.getElementById('auth-loading').remove()
     if (location.hash) history.replaceState(null, '', location.pathname + location.search)
     initApp()
   } catch(err) {
     console.error('Auth error:', err)
-    document.getElementById('auth-loading').remove()
-    initApp()
+    // Fail-closed: em erro de autenticação, volta para o login em vez de liberar acesso
+    location.replace(_LOGIN_URL + '?redirect_to=' + encodeURIComponent(location.href))
   }
 })()
 
@@ -777,6 +786,44 @@ function initApp() {
 async function sair() {
   if (window._sb) await window._sb.auth.signOut()
   location.replace(_LOGIN_URL)
+}
+
+/* ── SYNC SUPABASE: perfil + histórico ficam atrelados à conta ──
+   Persiste na tabela cpr_user_data (RLS por user_id). localStorage
+   funciona como cache offline; a nuvem é a fonte de verdade. */
+async function carregarRemoto() {
+  if (!window._sb || !window._uid) return
+  try {
+    const { data, error } = await window._sb
+      .from('cpr_user_data')
+      .select('perfil,historico')
+      .eq('user_id', window._uid)
+      .maybeSingle()
+    if (error) return
+    if (data) {
+      if (data.perfil && typeof data.perfil === 'object') {
+        perfil = Object.assign({ nome:'',creci:'',tel:'',email:'',cor:'#4D7EFF',logo:null }, data.perfil)
+        localStorage.setItem('cpr_perfil', JSON.stringify(perfil))
+      }
+      if (Array.isArray(data.historico)) {
+        historico = data.historico
+        localStorage.setItem('cpr_hist', JSON.stringify(historico))
+      }
+    } else if (perfil.nome || historico.length) {
+      // Primeiro acesso desta conta: migra os dados locais para a nuvem
+      await salvarRemoto()
+    }
+  } catch(e) { /* offline → segue com o cache local */ }
+}
+
+function salvarRemoto() {
+  if (!window._sb || !window._uid) return
+  try {
+    window._sb.from('cpr_user_data').upsert(
+      { user_id: window._uid, perfil, historico, updated_at: new Date().toISOString() },
+      { onConflict: 'user_id' }
+    ).then(() => {}, () => {})
+  } catch(e) { /* offline → mantém só o cache local */ }
 }
 
 /* ── VIEWS ── */
@@ -1117,6 +1164,7 @@ function salvarProposta() {
   historico.unshift(item)
   if (historico.length > 20) historico = historico.slice(0, 20)
   localStorage.setItem('cpr_hist', JSON.stringify(historico))
+  salvarRemoto()
   atualizarBadgeHist()
   toast('Proposta salva em Minhas Propostas!')
 }
@@ -1174,6 +1222,7 @@ function renderHistory() {
 function excluirProposta(i) {
   historico.splice(i, 1)
   localStorage.setItem('cpr_hist', JSON.stringify(historico))
+  salvarRemoto()
   atualizarBadgeHist()
   renderHistory()
   toast('Proposta removida')
@@ -1212,6 +1261,7 @@ function salvarConfig(ev) {
   perfil.email = document.getElementById('c-email').value.trim()
   perfil.cor   = document.getElementById('c-cor').value
   localStorage.setItem('cpr_perfil', JSON.stringify(perfil))
+  salvarRemoto()
   aplicarPerfil()
   renderSidebarUser()
   document.getElementById('banner-profile').classList.remove('show')
@@ -1219,12 +1269,19 @@ function salvarConfig(ev) {
   showView('form')
 }
 
+function escurecer(hex, amt) {
+  const h = String(hex || '').replace('#', '')
+  if (h.length !== 6) return hex
+  const ch = i => Math.max(0, Math.round(parseInt(h.slice(i, i+2), 16) * (1 - amt)))
+  return '#' + [ch(0), ch(2), ch(4)].map(x => x.toString(16).padStart(2, '0')).join('')
+}
+
 function aplicarPerfil() {
-  // apply brand color to CSS var
+  // aplica a cor da marca nas CSS vars
   if (perfil.cor) {
     document.documentElement.style.setProperty('--p', perfil.cor)
-    // derive hover (slightly darker)
-    document.documentElement.style.setProperty('--ph', perfil.cor)
+    // hover é uma versão ~12% mais escura para dar feedback no clique
+    document.documentElement.style.setProperty('--ph', escurecer(perfil.cor, 0.12))
     document.documentElement.style.setProperty('--ps', perfil.cor + '1F')
   }
 }
@@ -1251,9 +1308,10 @@ function atualizarCor(hex) {
   perfil.cor = hex
   document.getElementById('c-cor').value = hex
   document.getElementById('color-swatch').style.background = hex
-  // highlight selected preset
+  // destaca o preset selecionado
   document.querySelectorAll('.preset').forEach(p => {
-    p.classList.toggle('sel-p', p.style.background === hex || p.getAttribute('onclick')?.includes(hex))
+    const c = (p.getAttribute('data-cor') || '').toLowerCase()
+    p.classList.toggle('sel-p', c === String(hex).toLowerCase())
   })
   aplicarPerfil()
 }
