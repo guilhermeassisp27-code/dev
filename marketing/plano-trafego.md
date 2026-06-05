@@ -36,7 +36,7 @@ Antes de gastar com anúncio:
 - **@usuario:** algo como `@corretorpro.app` ou `@usecorretorpro`
 - **Foto:** o logo CorretorPRO (fundo navy)
 - **Bio:** `Propostas imobiliárias profissionais com a sua marca em 60s. ⚡ Direto do celular. Teste agora 👇` + link da landing
-- **Link:** a landing (`https://guilhermeassisp27-code.github.io/dev/`) — ou um domínio próprio depois
+- **Link:** a landing (`https://usecorretorpro.vercel.app/`) — ou um domínio próprio depois
 - **6 a 9 posts iniciais** (carrossséis simples):
   1. Antes/depois de uma proposta (Word vs CorretorPRO)
   2. "3 erros que fazem o corretor perder venda na proposta"

@@ -13,7 +13,7 @@
 | **@usuário** | `corretorpro.app` (1ª opção) · `usecorretorpro` · `corretorpro.oficial` |
 | **Nome** | `CorretorPRO · Propostas Imobiliárias` |
 | **Categoria** | Conta profissional → `Software` ou `Aplicativo de produtividade` |
-| **Site (link)** | `https://guilhermeassisp27-code.github.io/dev/` |
+| **Site (link)** | `https://usecorretorpro.vercel.app/` |
 | **Foto** | `avatar-icone.svg` (exportar em PNG 1000×1000) |
 
 ### Bio (escolha uma — limite 150 caracteres)
