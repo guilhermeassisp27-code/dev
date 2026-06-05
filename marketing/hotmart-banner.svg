@@ -1,40 +1,132 @@
 <svg xmlns="http://www.w3.org/2000/svg" width="1200" height="630" viewBox="0 0 1200 630">
   <defs>
     <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
-      <stop offset="0" stop-color="#040D1C"/>
-      <stop offset="1" stop-color="#0A1A33"/>
+      <stop offset="0" stop-color="#04101F"/>
+      <stop offset=".55" stop-color="#071629"/>
+      <stop offset="1" stop-color="#0A1B33"/>
     </linearGradient>
-    <linearGradient id="card" x1="0" y1="0" x2="1" y2="1">
-      <stop offset="0" stop-color="#4D7EFF" stop-opacity="0.18"/>
-      <stop offset="1" stop-color="#7C5CFC" stop-opacity="0.06"/>
+    <linearGradient id="brand" x1="0" y1="0" x2="1" y2="0">
+      <stop offset="0" stop-color="#5B8BFF"/>
+      <stop offset="1" stop-color="#3D6BF0"/>
     </linearGradient>
+    <linearGradient id="sheet" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#FFFFFF"/>
+      <stop offset="1" stop-color="#EFF4FC"/>
+    </linearGradient>
+    <filter id="soft" x="-40%" y="-40%" width="180%" height="180%">
+      <feDropShadow dx="0" dy="30" stdDeviation="36" flood-color="#000000" flood-opacity="0.5"/>
+    </filter>
+    <clipPath id="cardClip"><rect x="780" y="120" width="330" height="430" rx="22"/></clipPath>
   </defs>
-  <rect width="1200" height="630" fill="url(#bg)"/>
-  <!-- glow -->
-  <circle cx="980" cy="120" r="260" fill="#4D7EFF" opacity="0.10"/>
-  <circle cx="180" cy="560" r="220" fill="#7C5CFC" opacity="0.08"/>
 
+  <rect width="1200" height="630" fill="url(#bg)"/>
+
+  <!-- ambient grid + glow -->
+  <g stroke="#9FB8E6" stroke-opacity="0.045" stroke-width="1">
+    <path d="M0 105 H1200 M0 210 H1200 M0 315 H1200 M0 420 H1200 M0 525 H1200"/>
+    <path d="M150 0 V630 M300 0 V630 M450 0 V630 M600 0 V630 M750 0 V630 M900 0 V630 M1050 0 V630"/>
+  </g>
+  <circle cx="1000" cy="90" r="280" fill="#4D7EFF" opacity="0.12"/>
+  <circle cx="120" cy="600" r="240" fill="#7C5CFC" opacity="0.09"/>
+
+  <!-- ===== LEFT: copy ===== -->
   <!-- badge -->
-  <rect x="90" y="120" width="300" height="44" rx="22" fill="#4D7EFF" opacity="0.14"/>
-  <text x="115" y="149" font-family="Inter,Arial,sans-serif" font-size="18" font-weight="700" fill="#7FA3FF" letter-spacing="2">EXCLUSIVO PARA CORRETORES</text>
+  <g transform="translate(90,118)">
+    <rect x="0" y="0" width="318" height="44" rx="22" fill="#5B8BFF" fill-opacity="0.12" stroke="#5B8BFF" stroke-opacity="0.30"/>
+    <circle cx="26" cy="22" r="4" fill="#5B8BFF"/>
+    <text x="48" y="28" font-family="Inter,Arial,sans-serif" font-size="16" font-weight="700" fill="#A9C2FF" letter-spacing="2.5">EXCLUSIVO PARA CORRETORES</text>
+  </g>
 
   <!-- logo -->
-  <text x="88" y="250" font-family="Inter,Arial,sans-serif" font-size="58" font-weight="800" letter-spacing="-2" fill="#EEF2FF">Corretor<tspan fill="#4D7EFF">PRO</tspan></text>
+  <text x="88" y="238" font-family="Inter,Arial,sans-serif" font-size="50" font-weight="800" letter-spacing="-2" fill="#EEF2FF">Corretor<tspan fill="#5B8BFF">PRO</tspan></text>
 
   <!-- headline -->
-  <text x="90" y="350" font-family="Inter,Arial,sans-serif" font-size="64" font-weight="800" letter-spacing="-2" fill="#FFFFFF">Proposta profissional</text>
-  <text x="90" y="426" font-family="Inter,Arial,sans-serif" font-size="64" font-weight="800" letter-spacing="-2" fill="#FFFFFF">em <tspan fill="#4D7EFF">60 segundos</tspan>, com sua marca.</text>
+  <text x="88" y="318" font-family="Inter,Arial,sans-serif" font-size="58" font-weight="800" letter-spacing="-2" fill="#FFFFFF">Proposta profissional</text>
+  <text x="88" y="384" font-family="Inter,Arial,sans-serif" font-size="58" font-weight="800" letter-spacing="-2" fill="#FFFFFF">em <tspan fill="#5B8BFF">60 segundos</tspan>.</text>
 
   <!-- subline -->
-  <text x="92" y="486" font-family="Inter,Arial,sans-serif" font-size="26" font-weight="500" fill="#9FB3D1">Sem Word. Sem PDF genérico. Direto do celular.</text>
+  <text x="90" y="436" font-family="Inter,Arial,sans-serif" font-size="24" font-weight="500" fill="#9FB3D1">Com a sua marca. Direto do celular.</text>
+  <text x="90" y="468" font-family="Inter,Arial,sans-serif" font-size="24" font-weight="500" fill="#9FB3D1">Sem Word, sem PDF genérico.</text>
 
-  <!-- chips -->
-  <g font-family="Inter,Arial,sans-serif" font-size="20" font-weight="600">
-    <rect x="90" y="528" width="230" height="52" rx="12" fill="url(#card)" stroke="#4D7EFF" stroke-opacity="0.3"/>
-    <text x="115" y="561" fill="#C7D6EC">⚡ Em menos de 60s</text>
-    <rect x="340" y="528" width="210" height="52" rx="12" fill="url(#card)" stroke="#4D7EFF" stroke-opacity="0.3"/>
-    <text x="365" y="561" fill="#C7D6EC">🏷️ Sua marca</text>
-    <rect x="570" y="528" width="240" height="52" rx="12" fill="url(#card)" stroke="#4D7EFF" stroke-opacity="0.3"/>
-    <text x="595" y="561" fill="#C7D6EC">🛡️ 7 dias de garantia</text>
+  <!-- feature chips with real svg icons -->
+  <g font-family="Inter,Arial,sans-serif" font-size="18" font-weight="600">
+    <!-- chip 1: timer -->
+    <rect x="90" y="506" width="196" height="48" rx="13" fill="#5B8BFF" fill-opacity="0.08" stroke="#5B8BFF" stroke-opacity="0.28"/>
+    <g transform="translate(112,530)">
+      <circle cx="0" cy="0" r="11" fill="none" stroke="#5B8BFF" stroke-width="2.2"/>
+      <path d="M0 -6 V0 L4 4" fill="none" stroke="#5B8BFF" stroke-width="2.2" stroke-linecap="round"/>
+    </g>
+    <text x="132" y="536" fill="#C7D6EC">Em menos de 60s</text>
+
+    <!-- chip 2: tag -->
+    <rect x="300" y="506" width="184" height="48" rx="13" fill="#5B8BFF" fill-opacity="0.08" stroke="#5B8BFF" stroke-opacity="0.28"/>
+    <g transform="translate(322,530)">
+      <path d="M-10 -2 L-1 -11 L11 -11 L11 1 L2 10 Z" fill="none" stroke="#5B8BFF" stroke-width="2.2" stroke-linejoin="round"/>
+      <circle cx="6" cy="-6" r="2.4" fill="#5B8BFF"/>
+    </g>
+    <text x="350" y="536" fill="#C7D6EC">Sua marca</text>
+
+    <!-- chip 3: shield -->
+    <rect x="498" y="506" width="218" height="48" rx="13" fill="#5B8BFF" fill-opacity="0.08" stroke="#5B8BFF" stroke-opacity="0.28"/>
+    <g transform="translate(520,530)">
+      <path d="M0 -11 L10 -7 V1 C10 8 0 11 0 11 C0 11 -10 8 -10 1 V-7 Z" fill="none" stroke="#5B8BFF" stroke-width="2.2" stroke-linejoin="round"/>
+      <path d="M-4 0 l3 3 l5 -6" fill="none" stroke="#5B8BFF" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/>
+    </g>
+    <text x="540" y="536" fill="#C7D6EC">7 dias de garantia</text>
+  </g>
+
+  <!-- ===== RIGHT: app mockup ===== -->
+  <g filter="url(#soft)">
+    <rect x="780" y="120" width="330" height="430" rx="22" fill="#0E1F3A" stroke="#33518A" stroke-opacity="0.6"/>
+  </g>
+  <g clip-path="url(#cardClip)">
+    <rect x="780" y="120" width="330" height="430" fill="url(#sheet)"/>
+
+    <!-- branded header -->
+    <rect x="780" y="120" width="330" height="86" fill="url(#brand)"/>
+    <circle cx="824" cy="163" r="20" fill="#FFFFFF" fill-opacity="0.95"/>
+    <path d="M815 163 l6 6 l12 -14" fill="none" stroke="#3D6BF0" stroke-width="3.4" stroke-linecap="round" stroke-linejoin="round"/>
+    <rect x="856" y="150" width="150" height="11" rx="5.5" fill="#FFFFFF" fill-opacity="0.95"/>
+    <rect x="856" y="170" width="96" height="9" rx="4.5" fill="#FFFFFF" fill-opacity="0.6"/>
+
+    <!-- property block -->
+    <rect x="810" y="232" width="200" height="12" rx="6" fill="#1B2A44"/>
+    <rect x="810" y="256" width="150" height="9" rx="4.5" fill="#9AAAC4"/>
+
+    <!-- value highlight -->
+    <rect x="810" y="288" width="270" height="60" rx="12" fill="#3D6BF0" fill-opacity="0.10"/>
+    <rect x="828" y="304" width="80" height="9" rx="4.5" fill="#6E84A6"/>
+    <rect x="828" y="322" width="150" height="16" rx="8" fill="#3D6BF0"/>
+
+    <!-- payment rows -->
+    <g>
+      <rect x="810" y="368" width="270" height="32" rx="9" fill="#EEF3FB" stroke="#DDE6F4"/>
+      <circle cx="828" cy="384" r="6" fill="#5B8BFF"/>
+      <rect x="844" y="380" width="104" height="8" rx="4" fill="#8295B2"/>
+      <rect x="1006" y="380" width="56" height="8" rx="4" fill="#1B2A44"/>
+
+      <rect x="810" y="408" width="270" height="32" rx="9" fill="#EEF3FB" stroke="#DDE6F4"/>
+      <circle cx="828" cy="424" r="6" fill="#16A34A"/>
+      <rect x="844" y="420" width="124" height="8" rx="4" fill="#8295B2"/>
+      <rect x="1006" y="420" width="56" height="8" rx="4" fill="#1B2A44"/>
+
+      <rect x="810" y="448" width="270" height="32" rx="9" fill="#EEF3FB" stroke="#DDE6F4"/>
+      <circle cx="828" cy="464" r="6" fill="#7C5CFC"/>
+      <rect x="844" y="460" width="86" height="8" rx="4" fill="#8295B2"/>
+      <rect x="1006" y="460" width="56" height="8" rx="4" fill="#1B2A44"/>
+    </g>
+
+    <!-- CTA button -->
+    <rect x="810" y="500" width="270" height="34" rx="10" fill="url(#brand)"/>
+    <rect x="888" y="513" width="78" height="9" rx="4.5" fill="#FFFFFF" fill-opacity="0.95"/>
+    <path d="M972 517 h14 m-5 -4 l5 4 l-5 4" fill="none" stroke="#FFFFFF" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/>
+  </g>
+
+  <!-- floating timer chip on mockup -->
+  <g transform="translate(1094,156)">
+    <circle cx="0" cy="0" r="40" fill="#0E1F3A" stroke="#5B8BFF" stroke-opacity="0.5"/>
+    <circle cx="0" cy="0" r="40" fill="#5B8BFF" fill-opacity="0.10"/>
+    <path d="M0 -26 A26 26 0 1 1 -18.4 -18.4" fill="none" stroke="#5B8BFF" stroke-width="4.5" stroke-linecap="round"/>
+    <text x="0" y="7" text-anchor="middle" font-family="Inter,Arial,sans-serif" font-size="20" font-weight="800" fill="#EAF0FF">60s</text>
   </g>
 </svg>

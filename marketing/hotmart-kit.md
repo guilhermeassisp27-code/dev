@@ -87,5 +87,14 @@ Qualquer dúvida, fale com a gente em guilherme.assisp27@gmail.com.
 
 ## Imagens
 
-- **Thumbnail do produto (1:1):** `marketing/hotmart-thumb.svg` → exportar como PNG 600×600
-- **Banner / capa (sociais):** `marketing/hotmart-banner.svg` → exportar como PNG 1200×630
+Prontas para upload (PNG, sem emoji, menos de 5 MB):
+
+- **Thumbnail do produto (1:1):** `marketing/hotmart-thumb.png` — 1200×1200, ~130 KB. Use no campo de imagem do produto.
+- **Banner / capa (sociais):** `marketing/hotmart-banner.png` — 1200×630, ~110 KB. Use na capa / divulgação em redes.
+
+Os arquivos `.svg` correspondentes ficam na mesma pasta como fonte editável. Para regerar os PNG:
+
+```bash
+cd marketing
+python3 -c "import cairosvg; cairosvg.svg2png(url='hotmart-thumb.svg', write_to='hotmart-thumb.png', output_width=1200, output_height=1200); cairosvg.svg2png(url='hotmart-banner.svg', write_to='hotmart-banner.png', output_width=1200, output_height=630)"
+```
