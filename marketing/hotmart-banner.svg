@@ -48,10 +48,10 @@
   <text x="90" y="436" font-family="Inter,Arial,sans-serif" font-size="24" font-weight="500" fill="#9FB3D1">Com a sua marca. Direto do celular.</text>
   <text x="90" y="468" font-family="Inter,Arial,sans-serif" font-size="24" font-weight="500" fill="#9FB3D1">Sem Word, sem PDF genérico.</text>
 
-  <!-- feature chips with real svg icons -->
+  <!-- feature chips with real svg icons (widths fitted to text) -->
   <g font-family="Inter,Arial,sans-serif" font-size="18" font-weight="600">
     <!-- chip 1: timer -->
-    <rect x="90" y="506" width="196" height="48" rx="13" fill="#5B8BFF" fill-opacity="0.08" stroke="#5B8BFF" stroke-opacity="0.28"/>
+    <rect x="90" y="506" width="217" height="48" rx="13" fill="#5B8BFF" fill-opacity="0.08" stroke="#5B8BFF" stroke-opacity="0.28"/>
     <g transform="translate(112,530)">
       <circle cx="0" cy="0" r="11" fill="none" stroke="#5B8BFF" stroke-width="2.2"/>
       <path d="M0 -6 V0 L4 4" fill="none" stroke="#5B8BFF" stroke-width="2.2" stroke-linecap="round"/>
@@ -59,20 +59,20 @@
     <text x="132" y="536" fill="#C7D6EC">Em menos de 60s</text>
 
     <!-- chip 2: tag -->
-    <rect x="300" y="506" width="184" height="48" rx="13" fill="#5B8BFF" fill-opacity="0.08" stroke="#5B8BFF" stroke-opacity="0.28"/>
-    <g transform="translate(322,530)">
+    <rect x="321" y="506" width="154" height="48" rx="13" fill="#5B8BFF" fill-opacity="0.08" stroke="#5B8BFF" stroke-opacity="0.28"/>
+    <g transform="translate(343,530)">
       <path d="M-10 -2 L-1 -11 L11 -11 L11 1 L2 10 Z" fill="none" stroke="#5B8BFF" stroke-width="2.2" stroke-linejoin="round"/>
       <circle cx="6" cy="-6" r="2.4" fill="#5B8BFF"/>
     </g>
-    <text x="350" y="536" fill="#C7D6EC">Sua marca</text>
+    <text x="363" y="536" fill="#C7D6EC">Sua marca</text>
 
     <!-- chip 3: shield -->
-    <rect x="498" y="506" width="218" height="48" rx="13" fill="#5B8BFF" fill-opacity="0.08" stroke="#5B8BFF" stroke-opacity="0.28"/>
-    <g transform="translate(520,530)">
+    <rect x="489" y="506" width="215" height="48" rx="13" fill="#5B8BFF" fill-opacity="0.08" stroke="#5B8BFF" stroke-opacity="0.28"/>
+    <g transform="translate(511,530)">
       <path d="M0 -11 L10 -7 V1 C10 8 0 11 0 11 C0 11 -10 8 -10 1 V-7 Z" fill="none" stroke="#5B8BFF" stroke-width="2.2" stroke-linejoin="round"/>
       <path d="M-4 0 l3 3 l5 -6" fill="none" stroke="#5B8BFF" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/>
     </g>
-    <text x="540" y="536" fill="#C7D6EC">7 dias de garantia</text>
+    <text x="531" y="536" fill="#C7D6EC">7 dias de garantia</text>
   </g>
 
   <!-- ===== RIGHT: app mockup ===== -->
