@@ -257,6 +257,8 @@ input[type=color]{opacity:0;width:0;height:0;position:absolute}
 /* ── TOAST ── */
 .toast{position:fixed;bottom:18px;right:18px;z-index:200;background:var(--s3);border:1px solid var(--bm);border-radius:var(--rad);padding:10px 16px;font-size:13px;font-weight:500;color:var(--t);box-shadow:0 4px 20px rgba(0,0,0,.4);display:flex;align-items:center;gap:8px;opacity:0;transform:translateY(6px);transition:all .22s ease;pointer-events:none}
 .toast.on{opacity:1;transform:translateY(0)}
+.toast.err{background:#3d0c0c;border-color:rgba(239,68,68,.35)}
+.toast.err .tok{stroke:#EF4444}
 .tok{color:var(--g)}
 
 /* ── PRINT: proposal only ── */
@@ -511,7 +513,7 @@ input[type=color]{opacity:0;width:0;height:0;position:absolute}
 
       <!-- SKELETON -->
       <div class="skel" id="skel">
-        <div class="skel-tag"><div class="skel-dot"></div>Gerando proposta personalizada...</div>
+        <div class="skel-tag"><div class="skel-dot"></div>Gerando proposta...</div>
         <div class="skel-group">
           <div class="skel-bar" style="width:40%"></div>
           <div class="skel-bar" style="width:65%"></div>
@@ -707,7 +709,8 @@ input[type=color]{opacity:0;width:0;height:0;position:absolute}
 </div>
 
 <div class="toast" id="toast">
-  <svg class="tok" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>
+  <svg class="tok" id="toast-ico-ok" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>
+  <svg class="tok" id="toast-ico-err" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#EF4444" stroke-width="2.5" style="display:none"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
   <span id="toast-txt"></span>
 </div>
 
@@ -722,20 +725,31 @@ const _LOGIN_URL  = 'https://corretorpro-dusky.vercel.app/acesso'
 
 /* ── AUTH GATE ── */
 ;(async function authGate() {
-  // Se placeholder não foi preenchido, pula auth (modo dev local)
-  if (_SUPA_URL.includes('YOUR_PROJECT')) {
-    document.getElementById('auth-loading').remove()
-    initApp()
-    return
-  }
   try {
     const _sb = supabase.createClient(_SUPA_URL, _SUPA_KEY, {
-      auth: { flowType: 'implicit' }
+      auth: { flowType: 'implicit', detectSessionInUrl: true }
     })
     window._sb = _sb
 
-    // getSession trata automaticamente hash fragment de magic link / invite
-    const { data: { session } } = await _sb.auth.getSession()
+    // Tenta estabelecer sessão a partir dos tokens no hash fragment
+    // (passados pelo app Next.js no formato #access_token=...&refresh_token=...)
+    let session = null
+    const hash = location.hash.slice(1)
+    if (hash) {
+      const p = new URLSearchParams(hash)
+      const at = p.get('access_token')
+      const rt = p.get('refresh_token')
+      if (at && rt) {
+        const { data, error } = await _sb.auth.setSession({ access_token: at, refresh_token: rt })
+        if (!error) session = data.session
+      }
+    }
+
+    // Se não veio pelo hash, verifica sessão existente (re-visita / refresh)
+    if (!session) {
+      const { data } = await _sb.auth.getSession()
+      session = data.session
+    }
 
     if (!session) {
       location.replace(_LOGIN_URL + '?redirect_to=' + encodeURIComponent(location.href))
@@ -816,14 +830,17 @@ async function carregarRemoto() {
   } catch(e) { /* offline → segue com o cache local */ }
 }
 
-function salvarRemoto() {
+async function salvarRemoto() {
   if (!window._sb || !window._uid) return
   try {
-    window._sb.from('cpr_user_data').upsert(
+    const { error } = await window._sb.from('cpr_user_data').upsert(
       { user_id: window._uid, perfil, historico, updated_at: new Date().toISOString() },
       { onConflict: 'user_id' }
-    ).then(() => {}, () => {})
-  } catch(e) { /* offline → mantém só o cache local */ }
+    )
+    if (error) throw error
+  } catch(e) {
+    throw e  // propaga para quem chamou mostrar o erro ao usuário
+  }
 }
 
 /* ── VIEWS ── */
@@ -1153,7 +1170,7 @@ function compartilharWA() {
 }
 
 /* ── SALVAR PROPOSTA ── */
-function salvarProposta() {
+async function salvarProposta() {
   if (!snapProposta) return
   const item = {
     id: Date.now(),
@@ -1164,9 +1181,13 @@ function salvarProposta() {
   historico.unshift(item)
   if (historico.length > 20) historico = historico.slice(0, 20)
   localStorage.setItem('cpr_hist', JSON.stringify(historico))
-  salvarRemoto()
   atualizarBadgeHist()
-  toast('Proposta salva em Minhas Propostas!')
+  try {
+    await salvarRemoto()
+    toast('Proposta salva em Minhas Propostas!')
+  } catch(_) {
+    toast('Salvo localmente — verifique sua conexão', true)
+  }
 }
 
 /* ── NOVA PROPOSTA ── */
@@ -1251,7 +1272,7 @@ function atualizarPreview() {
   renderSidebarUser()
 }
 
-function salvarConfig(ev) {
+async function salvarConfig(ev) {
   ev.preventDefault()
   const nome = document.getElementById('c-nome').value.trim()
   if (!nome) { document.getElementById('c-nome').focus(); return }
@@ -1261,11 +1282,15 @@ function salvarConfig(ev) {
   perfil.email = document.getElementById('c-email').value.trim()
   perfil.cor   = document.getElementById('c-cor').value
   localStorage.setItem('cpr_perfil', JSON.stringify(perfil))
-  salvarRemoto()
   aplicarPerfil()
   renderSidebarUser()
   document.getElementById('banner-profile').classList.remove('show')
-  toast('Perfil salvo! Suas propostas terão sua marca.')
+  try {
+    await salvarRemoto()
+    toast('Perfil salvo! Suas propostas terão sua marca.')
+  } catch(_) {
+    toast('Salvo localmente — verifique sua conexão', true)
+  }
   showView('form')
 }
 
@@ -1342,12 +1367,15 @@ function removerLogo() {
 }
 
 /* ── TOAST ── */
-function toast(msg) {
+function toast(msg, isErr = false) {
   const el = document.getElementById('toast')
   document.getElementById('toast-txt').textContent = msg
+  document.getElementById('toast-ico-ok').style.display = isErr ? 'none' : ''
+  document.getElementById('toast-ico-err').style.display = isErr ? '' : 'none'
+  el.classList.toggle('err', isErr)
   el.classList.add('on')
   clearTimeout(_toastT)
-  _toastT = setTimeout(() => el.classList.remove('on'), 2800)
+  _toastT = setTimeout(() => el.classList.remove('on'), 3400)
 }
 
 /* ── MOBILE SIDEBAR ── */

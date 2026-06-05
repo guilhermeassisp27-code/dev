@@ -105,7 +105,8 @@ export async function POST(req: NextRequest) {
   // Eventos que CORTAM acesso: reembolso, chargeback, cancelamento da assinatura
   if (
     event === 'PURCHASE_REFUNDED' ||
-    event === 'PURCHASE_CANCELLED' ||
+    event === 'PURCHASE_CANCELLED' ||   // grafia BR usada em alguns planos
+    event === 'PURCHASE_CANCELED' ||    // grafia EN usada em outros eventos Hotmart
     event === 'PURCHASE_CHARGEBACK' ||
     event === 'SUBSCRIPTION_CANCELLATION'
   ) {
