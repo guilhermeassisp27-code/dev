@@ -40,35 +40,51 @@ export async function POST(req: NextRequest) {
   // Novo comprador é convidado a DEFINIR A SENHA antes de acessar a ferramenta
   const setPasswordUrl = `${appUrl}/definir-senha`
 
-  if (event === 'PURCHASE_APPROVED' || event === 'PURCHASE_COMPLETE') {
-    const { error } = await supabase.auth.admin.inviteUserByEmail(buyer.email, {
-      data: {
-        full_name: buyer.name ?? '',
-        hotmart_transaction: purchase?.transaction ?? '',
-        plan: 'corretorpro',
-      },
-      redirectTo: setPasswordUrl,
-    })
+  // Localiza um usuário existente pelo email (renovação, cancelamento, etc.)
+  async function findUser(email: string) {
+    const { data: { users } } = await supabase.auth.admin.listUsers({ perPage: 1000 })
+    return users.find((u) => u.email === email)
+  }
 
-    // Usuário já existe (recompra/renovação) — reenvia link para redefinir a senha
-    if (error) {
-      await supabase.auth.admin.generateLink({
-        type: 'recovery',
-        email: buyer.email,
-        options: { redirectTo: setPasswordUrl },
+  // Eventos que LIBERAM acesso: nova assinatura, compra aprovada ou renovação
+  if (event === 'PURCHASE_APPROVED' || event === 'PURCHASE_COMPLETE') {
+    const existing = await findUser(buyer.email)
+
+    if (existing) {
+      // Já tem conta (renovação ou reassinatura após cancelar) — reativa o acesso
+      await supabase.auth.admin.updateUserById(existing.id, { ban_duration: 'none' })
+      // Só envia link de senha se a conta ainda não foi ativada (sem senha definida)
+      const semSenha = !existing.last_sign_in_at
+      if (semSenha) {
+        await supabase.auth.admin.generateLink({
+          type: 'recovery',
+          email: buyer.email,
+          options: { redirectTo: setPasswordUrl },
+        })
+      }
+    } else {
+      // Novo comprador — convida a definir a senha
+      await supabase.auth.admin.inviteUserByEmail(buyer.email, {
+        data: {
+          full_name: buyer.name ?? '',
+          hotmart_transaction: purchase?.transaction ?? '',
+          plan: 'corretorpro',
+        },
+        redirectTo: setPasswordUrl,
       })
     }
   }
 
+  // Eventos que CORTAM acesso: reembolso, chargeback, cancelamento da assinatura
   if (
     event === 'PURCHASE_REFUNDED' ||
     event === 'PURCHASE_CANCELLED' ||
-    event === 'PURCHASE_CHARGEBACK'
+    event === 'PURCHASE_CHARGEBACK' ||
+    event === 'SUBSCRIPTION_CANCELLATION'
   ) {
-    const { data: { users } } = await supabase.auth.admin.listUsers({ perPage: 1000 })
-    const user = users.find((u) => u.email === buyer.email)
+    const user = await findUser(buyer.email)
     if (user) {
-      // Ban for ~10 years (effectively permanent)
+      // Banimento de ~10 anos (efetivamente permanente até reassinar)
       await supabase.auth.admin.updateUserById(user.id, { ban_duration: '87600h' })
     }
   }
