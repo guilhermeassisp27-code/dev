@@ -1,0 +1,51 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1000" height="1000" viewBox="0 0 1000 1000" role="img" aria-label="CorretorPRO">
+  <defs>
+    <radialGradient id="bg" cx="50%" cy="38%" r="75%">
+      <stop offset="0%" stop-color="#1B2944"/>
+      <stop offset="60%" stop-color="#131E36"/>
+      <stop offset="100%" stop-color="#0F172A"/>
+    </radialGradient>
+    <linearGradient id="amber" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#FBBF24"/>
+      <stop offset="100%" stop-color="#F59E0B"/>
+    </linearGradient>
+    <linearGradient id="paper" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#FFFFFF"/>
+      <stop offset="100%" stop-color="#E9EEF6"/>
+    </linearGradient>
+    <filter id="soft" x="-30%" y="-30%" width="160%" height="160%">
+      <feDropShadow dx="0" dy="18" stdDeviation="26" flood-color="#000000" flood-opacity="0.45"/>
+    </filter>
+  </defs>
+
+  <!-- Fundo (Instagram recorta em círculo; conteúdo fica centralizado) -->
+  <rect width="1000" height="1000" fill="url(#bg)"/>
+  <circle cx="500" cy="500" r="492" fill="none" stroke="#F59E0B" stroke-opacity="0.16" stroke-width="6"/>
+
+  <!-- Documento / proposta -->
+  <g filter="url(#soft)">
+    <rect x="338" y="262" width="324" height="416" rx="34" fill="url(#paper)"/>
+    <!-- canto dobrado -->
+    <path d="M598 262 L662 326 L598 326 Z" fill="#C9D4E6"/>
+    <!-- linhas de texto -->
+    <rect x="386" y="350" width="172" height="20" rx="10" fill="#1B2944"/>
+    <rect x="386" y="398" width="228" height="14" rx="7" fill="#94A3B8"/>
+    <rect x="386" y="430" width="228" height="14" rx="7" fill="#94A3B8"/>
+    <rect x="386" y="462" width="160" height="14" rx="7" fill="#94A3B8"/>
+    <!-- bloco de valor (destaque âmbar) -->
+    <rect x="386" y="520" width="228" height="58" rx="14" fill="#FEF3C7"/>
+    <rect x="408" y="540" width="120" height="18" rx="9" fill="#B45309"/>
+  </g>
+
+  <!-- Selo de velocidade (raio) sobre o documento -->
+  <g filter="url(#soft)">
+    <circle cx="648" cy="606" r="92" fill="url(#amber)"/>
+    <path d="M664 540 L592 624 L640 624 L632 690 L704 600 L654 600 Z"
+          fill="#1A1205" stroke="#1A1205" stroke-width="2" stroke-linejoin="round"/>
+  </g>
+
+  <!-- Monograma da marca -->
+  <text x="500" y="800" text-anchor="middle"
+        font-family="'Sora','Inter',sans-serif" font-size="92" font-weight="800"
+        letter-spacing="-3" fill="#FFFFFF">Corretor<tspan fill="#F59E0B">PRO</tspan></text>
+</svg>
