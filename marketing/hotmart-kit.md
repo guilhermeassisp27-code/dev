@@ -8,7 +8,7 @@
 - **Formato:** Software / Ferramenta online (SaaS)
 - **Categoria sugerida:** Negócios e Carreira (ou Aplicativos/Software, se disponível)
 - **Idioma:** Português (Brasil)
-- **Suporte:** suporte@corretorpro.com.br
+- **Suporte:** guilherme.assisp27@gmail.com
 - **Garantia:** 7 dias
 
 ## Preços (criar 2 ofertas)
@@ -81,7 +81,7 @@ Parabéns e bem-vindo(a) ao CorretorPRO! 🎉
 
 Seu acesso está sendo liberado. Em instantes você vai receber um e-mail para **criar sua senha** e já começar a usar a plataforma. Verifique também a caixa de spam/promoções.
 
-Qualquer dúvida, fale com a gente em suporte@corretorpro.com.br.
+Qualquer dúvida, fale com a gente em guilherme.assisp27@gmail.com.
 
 ---
 
