@@ -719,9 +719,11 @@ input[type=color]{opacity:0;width:0;height:0;position:absolute}
    Preencha após criar seu projeto no Supabase e fazer deploy no Vercel.
    Estas são chaves públicas (anon key) — seguro expor no cliente.
 ──────────────────────────────────────────────────────────────────────── */
-const _SUPA_URL   = 'https://kdudodqmijlzqwnkxpjo.supabase.co'
-const _SUPA_KEY   = 'sb_publishable_ADIRZ2I6Eu9S8_CwCt6RSQ_rrRlIqq9'
-const _LOGIN_URL  = 'https://corretorpro-dusky.vercel.app/acesso'
+const _SUPA_URL    = 'https://kdudodqmijlzqwnkxpjo.supabase.co'
+const _SUPA_KEY    = 'sb_publishable_ADIRZ2I6Eu9S8_CwCt6RSQ_rrRlIqq9'
+const _LOGIN_URL   = 'https://corretorpro-dusky.vercel.app/acesso'
+// Link de (re)assinatura — usado quando a assinatura está inativa
+const _CHECKOUT_URL = 'https://pay.hotmart.com/L106145948O'
 
 /* ── AUTH GATE ── */
 ;(async function authGate() {
@@ -756,6 +758,15 @@ const _LOGIN_URL  = 'https://corretorpro-dusky.vercel.app/acesso'
       return
     }
 
+    // Trava de assinatura: o webhook da Hotmart grava o status em app_metadata
+    // (não editável pelo usuário). Se a assinatura foi cancelada/reembolsada,
+    // bloqueia o acesso imediatamente — sem esperar o token expirar.
+    const subStatus = session.user.app_metadata && session.user.app_metadata.subscription_status
+    if (subStatus === 'inactive') {
+      mostrarInativo()
+      return
+    }
+
     window._uid = session.user.id
 
     // Mostra email do usuário no rodapé da sidebar
@@ -774,6 +785,22 @@ const _LOGIN_URL  = 'https://corretorpro-dusky.vercel.app/acesso'
     location.replace(_LOGIN_URL + '?redirect_to=' + encodeURIComponent(location.href))
   }
 })()
+
+/* ── ASSINATURA INATIVA ── */
+function mostrarInativo() {
+  const el = document.getElementById('auth-loading')
+  el.innerHTML =
+    '<div style="max-width:380px;text-align:center;padding:24px">' +
+      '<div style="font-size:19px;font-weight:800;letter-spacing:-.5px;color:#EEF2FF;margin-bottom:20px">Corretor<span style="color:#4D7EFF">PRO</span></div>' +
+      '<div style="width:52px;height:52px;border-radius:50%;background:rgba(239,68,68,.12);display:flex;align-items:center;justify-content:center;margin:0 auto 16px">' +
+        '<svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="#EF4444" stroke-width="2.2" stroke-linecap="round"><circle cx="12" cy="12" r="9"/><path d="M12 8v5M12 16h.01"/></svg>' +
+      '</div>' +
+      '<div style="font-size:16px;font-weight:700;color:#EEF2FF;margin-bottom:8px">Sua assinatura está inativa</div>' +
+      '<p style="font-size:13px;color:#7B93B8;line-height:1.6;margin-bottom:22px">Para voltar a gerar propostas, reative sua assinatura. Seus dados ficam guardados e voltam assim que o acesso for liberado.</p>' +
+      '<a href="' + _CHECKOUT_URL + '" style="display:block;background:#4D7EFF;color:#fff;text-decoration:none;border-radius:8px;padding:12px;font-size:14px;font-weight:600;margin-bottom:12px">Reativar assinatura</a>' +
+      '<a href="#" onclick="sair();return false" style="font-size:13px;color:#7B93B8;text-decoration:none">Sair</a>' +
+    '</div>'
+}
 
 /* ── ESC HTML ── */
 const escH = s => String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;')
@@ -799,6 +826,8 @@ function initApp() {
 
 async function sair() {
   if (window._sb) await window._sb.auth.signOut()
+  // Limpa o cache local para não deixar PII (perfil/histórico) no dispositivo
+  try { localStorage.removeItem('cpr_perfil'); localStorage.removeItem('cpr_hist') } catch(_) {}
   location.replace(_LOGIN_URL)
 }
 
@@ -1342,21 +1371,43 @@ function atualizarCor(hex) {
 }
 
 /* ── LOGO UPLOAD ── */
+// Redimensiona o logo para no máx 256px antes de salvar, evitando inflar a
+// linha no banco (o data URL fica leve em vez de 1MB+ em base64).
 function carregarLogo(ev) {
   const file = ev.target.files[0]
   if (!file) return
-  if (file.size > 1024 * 1024) { toast('Logo muito grande — máx 1MB'); return }
+  if (file.size > 4 * 1024 * 1024) { toast('Logo muito grande — máx 4MB', true); return }
   const reader = new FileReader()
   reader.onload = e => {
-    perfil.logo = e.target.result
-    const prev = document.getElementById('logo-prev')
-    prev.innerHTML = `<img src="${perfil.logo}" alt="Logo">`
-    const prevCfg = document.getElementById('cfg-prev-logo')
-    prevCfg.innerHTML = `<img src="${perfil.logo}" alt="Logo" style="width:100%;height:100%;object-fit:contain">`
-    renderSidebarUser()
-    toast('Logo carregado')
+    const img = new Image()
+    img.onload = () => {
+      const MAX = 256
+      let { width, height } = img
+      if (width > MAX || height > MAX) {
+        const escala = Math.min(MAX / width, MAX / height)
+        width = Math.round(width * escala)
+        height = Math.round(height * escala)
+      }
+      const canvas = document.createElement('canvas')
+      canvas.width = width; canvas.height = height
+      canvas.getContext('2d').drawImage(img, 0, 0, width, height)
+      // PNG preserva transparência (logos costumam ter fundo transparente)
+      perfil.logo = canvas.toDataURL('image/png')
+      aplicarLogoPreview()
+      toast('Logo carregado')
+    }
+    img.onerror = () => toast('Arquivo de imagem inválido', true)
+    img.src = e.target.result
   }
   reader.readAsDataURL(file)
+}
+
+function aplicarLogoPreview() {
+  const prev = document.getElementById('logo-prev')
+  prev.innerHTML = `<img src="${perfil.logo}" alt="Logo">`
+  const prevCfg = document.getElementById('cfg-prev-logo')
+  prevCfg.innerHTML = `<img src="${perfil.logo}" alt="Logo" style="width:100%;height:100%;object-fit:contain">`
+  renderSidebarUser()
 }
 
 function removerLogo() {

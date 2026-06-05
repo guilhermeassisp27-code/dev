@@ -60,10 +60,20 @@ export async function POST(req: NextRequest) {
   // Novo comprador é convidado a DEFINIR A SENHA antes de acessar a ferramenta
   const setPasswordUrl = `${appUrl}/definir-senha`
 
-  // Localiza um usuário existente pelo email (renovação, cancelamento, etc.)
+  // Localiza um usuário existente pelo email (renovação, cancelamento, etc.).
+  // Pagina a lista para funcionar mesmo acima de 1000 usuários.
   async function findUser(email: string) {
-    const { data: { users } } = await supabase.auth.admin.listUsers({ perPage: 1000 })
-    return users.find((u) => u.email === email)
+    const alvo = email.toLowerCase()
+    const perPage = 200
+    for (let page = 1; page <= 500; page++) {
+      const { data, error } = await supabase.auth.admin.listUsers({ page, perPage })
+      if (error) break
+      const users = data?.users ?? []
+      const achado = users.find((u) => (u.email ?? '').toLowerCase() === alvo)
+      if (achado) return achado
+      if (users.length < perPage) break // última página
+    }
+    return undefined
   }
 
   // Eventos que LIBERAM acesso: nova assinatura, compra aprovada ou renovação
@@ -71,9 +81,16 @@ export async function POST(req: NextRequest) {
     const existing = await findUser(buyer.email)
 
     if (existing) {
-      // Já tem conta (renovação ou reassinatura após cancelar) — reativa o acesso
+      // Já tem conta (renovação ou reassinatura após cancelar) — reativa o acesso.
+      // O status fica em app_metadata (NÃO editável pelo usuário) — é o que a
+      // ferramenta consulta para liberar o uso.
       await supabase.auth.admin.updateUserById(existing.id, {
         ban_duration: 'none',
+        app_metadata: {
+          ...(existing.app_metadata ?? {}),
+          subscription_status: 'active',
+          plan,
+        },
         user_metadata: {
           ...(existing.user_metadata ?? {}),
           plan,
@@ -91,7 +108,7 @@ export async function POST(req: NextRequest) {
       }
     } else {
       // Novo comprador — convida a definir a senha
-      await supabase.auth.admin.inviteUserByEmail(buyer.email, {
+      const { data: invited } = await supabase.auth.admin.inviteUserByEmail(buyer.email, {
         data: {
           full_name: buyer.name ?? '',
           hotmart_transaction: purchase?.transaction ?? '',
@@ -99,6 +116,13 @@ export async function POST(req: NextRequest) {
         },
         redirectTo: setPasswordUrl,
       })
+      // Marca a assinatura como ativa em app_metadata (inviteUserByEmail só
+      // grava user_metadata; o status seguro precisa ir em app_metadata).
+      if (invited?.user?.id) {
+        await supabase.auth.admin.updateUserById(invited.user.id, {
+          app_metadata: { subscription_status: 'active', plan },
+        })
+      }
     }
   }
 
@@ -112,8 +136,15 @@ export async function POST(req: NextRequest) {
   ) {
     const user = await findUser(buyer.email)
     if (user) {
-      // Banimento de ~10 anos (efetivamente permanente até reassinar)
-      await supabase.auth.admin.updateUserById(user.id, { ban_duration: '87600h' })
+      // Marca como inativo (a ferramenta bloqueia na hora) E bane a conta
+      // (~10 anos) para impedir refresh/login até reassinar.
+      await supabase.auth.admin.updateUserById(user.id, {
+        ban_duration: '87600h',
+        app_metadata: {
+          ...(user.app_metadata ?? {}),
+          subscription_status: 'inactive',
+        },
+      })
     }
   }
 
