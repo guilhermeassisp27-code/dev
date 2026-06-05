@@ -1,6 +1,15 @@
 'use client'
 import { useState } from 'react'
-import { createClient } from '@/lib/supabase/client'
+import { createClient as createSupabaseClient } from '@supabase/supabase-js'
+
+// Implicit flow: tokens arrive as hash fragment — required for cross-domain redirect to GitHub Pages
+function createImplicitClient() {
+  return createSupabaseClient(
+    process.env.NEXT_PUBLIC_SUPABASE_URL!,
+    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
+    { auth: { flowType: 'implicit', persistSession: false } }
+  )
+}
 
 export default function AcessoPage() {
   const [email, setEmail] = useState('')
@@ -19,14 +28,18 @@ export default function AcessoPage() {
       process.env.NEXT_PUBLIC_TOOL_URL ||
       'https://guilhermeassisp27-code.github.io/dev/tool.html'
 
-    const supabase = createClient()
+    const supabase = createImplicitClient()
     const { error } = await supabase.auth.signInWithOtp({
       email,
       options: { emailRedirectTo: redirectTo },
     })
 
     if (error) {
-      setErro('Erro ao enviar link. Verifique o email e tente novamente.')
+      if (error.message.includes('rate') || error.message.includes('60')) {
+        setErro('Aguarde 1 minuto antes de tentar novamente.')
+      } else {
+        setErro('Erro ao enviar link. Verifique o email e tente novamente.')
+      }
     } else {
       setSent(true)
     }

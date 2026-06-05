@@ -725,7 +725,9 @@ const _LOGIN_URL  = 'https://corretorpro-dusky.vercel.app/acesso'
     return
   }
   try {
-    const _sb = supabase.createClient(_SUPA_URL, _SUPA_KEY)
+    const _sb = supabase.createClient(_SUPA_URL, _SUPA_KEY, {
+      auth: { flowType: 'implicit' }
+    })
     window._sb = _sb
 
     // getSession trata automaticamente hash fragment de magic link / invite
