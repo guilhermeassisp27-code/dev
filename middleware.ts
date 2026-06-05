@@ -11,7 +11,7 @@ export async function middleware(req: NextRequest) {
 
   // Auth pages — accessible without session
   const isAppAuth = pathname.startsWith('/login') || pathname.startsWith('/callback')
-  const isCprAuth = pathname.startsWith('/acesso')
+  const isCprAuth = pathname.startsWith('/acesso') || pathname.startsWith('/definir-senha')
   const isAuthPage = isAppAuth || isCprAuth
 
   // Public routes

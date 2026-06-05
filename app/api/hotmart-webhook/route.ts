@@ -34,9 +34,11 @@ export async function POST(req: NextRequest) {
     { auth: { autoRefreshToken: false, persistSession: false } }
   )
 
-  const toolUrl =
-    (process.env.NEXT_PUBLIC_TOOL_URL ?? '') ||
-    'https://guilhermeassisp27-code.github.io/dev/tool.html'
+  const appUrl =
+    (process.env.NEXT_PUBLIC_APP_URL ?? '') ||
+    'https://corretorpro-dusky.vercel.app'
+  // Novo comprador é convidado a DEFINIR A SENHA antes de acessar a ferramenta
+  const setPasswordUrl = `${appUrl}/definir-senha`
 
   if (event === 'PURCHASE_APPROVED' || event === 'PURCHASE_COMPLETE') {
     const { error } = await supabase.auth.admin.inviteUserByEmail(buyer.email, {
@@ -45,15 +47,15 @@ export async function POST(req: NextRequest) {
         hotmart_transaction: purchase?.transaction ?? '',
         plan: 'corretorpro',
       },
-      redirectTo: toolUrl,
+      redirectTo: setPasswordUrl,
     })
 
-    // User already registered — send a fresh magic link instead
+    // Usuário já existe (recompra/renovação) — reenvia link para redefinir a senha
     if (error) {
       await supabase.auth.admin.generateLink({
-        type: 'magiclink',
+        type: 'recovery',
         email: buyer.email,
-        options: { redirectTo: toolUrl },
+        options: { redirectTo: setPasswordUrl },
       })
     }
   }
