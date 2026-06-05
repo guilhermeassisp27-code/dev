@@ -13,10 +13,13 @@
 
 ## Preços (criar 2 ofertas)
 
-| Oferta | Valor | Recorrência | Usado em |
-|--------|-------|-------------|----------|
-| Mensal | R$ 67,00 | Mensal | `HOTMART_URL_MENSAL` |
-| Anual  | R$ 497,00 | Anual | `HOTMART_URL_ANUAL` |
+| Oferta | Valor | Recorrência | Link de pagamento | Código `off=` |
+|--------|-------|-------------|-------------------|---------------|
+| Mensal | R$ 67,00 | Mensal | `https://pay.hotmart.com/L106145948O?off=hgn79gvq` | `hgn79gvq` |
+| Anual  | R$ 497,00 | Anual | `https://pay.hotmart.com/L106145948O?off=mcjyy7ub` | `mcjyy7ub` |
+
+> Os códigos `off=` são lidos pelo webhook (`app/api/hotmart-webhook/route.ts`) para
+> identificar o plano de cada comprador e gravar em `user_metadata.plan` (`mensal` / `anual`).
 
 ---
 

@@ -4,6 +4,24 @@ import { createClient } from '@supabase/supabase-js'
 // Hotmart sends the token in this header for webhook validation
 const HOTTOK_HEADER = 'x-hotmart-hottok'
 
+// Mapeamento dos códigos de oferta (off=) dos links de pagamento -> plano
+//   Mensal: https://pay.hotmart.com/L106145948O?off=hgn79gvq
+//   Anual:  https://pay.hotmart.com/L106145948O?off=mcjyy7ub
+const OFFER_PLANS: Record<string, string> = {
+  hgn79gvq: 'mensal',
+  mcjyy7ub: 'anual',
+}
+
+// Descobre o plano a partir do código de oferta vindo no payload da Hotmart.
+// A Hotmart pode enviar o código em data.purchase.offer.code (compra)
+// ou em data.subscription.plan / data.purchase.offer (assinatura).
+function resolvePlan(data: Record<string, unknown>): string {
+  const purchase = data?.purchase as Record<string, unknown> | undefined
+  const offer = purchase?.offer as Record<string, unknown> | undefined
+  const offerCode = String(offer?.code ?? offer?.key ?? '')
+  return OFFER_PLANS[offerCode] ?? 'corretorpro'
+}
+
 export async function POST(req: NextRequest) {
   const token =
     req.headers.get(HOTTOK_HEADER) ||
@@ -21,8 +39,10 @@ export async function POST(req: NextRequest) {
   }
 
   const event = String(body?.event ?? '')
-  const buyer = (body?.data as Record<string, unknown>)?.buyer as Record<string, string> | undefined
-  const purchase = (body?.data as Record<string, unknown>)?.purchase as Record<string, string> | undefined
+  const data = (body?.data as Record<string, unknown>) ?? {}
+  const buyer = data?.buyer as Record<string, string> | undefined
+  const purchase = data?.purchase as Record<string, string> | undefined
+  const plan = resolvePlan(data)
 
   if (!buyer?.email) {
     return NextResponse.json({ error: 'Missing buyer.email' }, { status: 400 })
@@ -52,7 +72,14 @@ export async function POST(req: NextRequest) {
 
     if (existing) {
       // Já tem conta (renovação ou reassinatura após cancelar) — reativa o acesso
-      await supabase.auth.admin.updateUserById(existing.id, { ban_duration: 'none' })
+      await supabase.auth.admin.updateUserById(existing.id, {
+        ban_duration: 'none',
+        user_metadata: {
+          ...(existing.user_metadata ?? {}),
+          plan,
+          hotmart_transaction: purchase?.transaction ?? existing.user_metadata?.hotmart_transaction ?? '',
+        },
+      })
       // Só envia link de senha se a conta ainda não foi ativada (sem senha definida)
       const semSenha = !existing.last_sign_in_at
       if (semSenha) {
@@ -68,7 +95,7 @@ export async function POST(req: NextRequest) {
         data: {
           full_name: buyer.name ?? '',
           hotmart_transaction: purchase?.transaction ?? '',
-          plan: 'corretorpro',
+          plan,
         },
         redirectTo: setPasswordUrl,
       })
