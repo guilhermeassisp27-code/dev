@@ -241,13 +241,50 @@
   .step h3{font-size:18px;margin-bottom:5px;font-family:var(--font);font-weight:700;color:var(--white)}
   .step p{font-size:15px}
 
-  /* ---------- mid / final CTA blocks ---------- */
-  .cta-block{text-align:center}
-  .cta-block h2{font-size:30px;margin-bottom:14px}
-  .cta-block h2 em{font-style:normal;color:var(--amber)}
-  .cta-block p{font-size:17px;max-width:500px;margin:0 auto 28px}
+  /* ---------- pricing ---------- */
+  .pricing h2{font-size:32px;text-align:center;margin-bottom:10px}
+  .pricing .lead{text-align:center;max-width:480px;margin:0 auto 44px;font-size:17px}
+  .plans{display:grid;grid-template-columns:1fr 1fr;gap:18px;align-items:stretch}
+  .plan{
+    position:relative;display:flex;flex-direction:column;
+    padding:32px 26px;border-radius:var(--rad-xl);
+    background:var(--card);border:1px solid var(--line);
+  }
+  .plan.feat{border-color:var(--amber);box-shadow:var(--shadow-amber)}
+  .plan-tag{
+    position:absolute;top:-13px;left:50%;transform:translateX(-50%);
+    background:var(--amber);color:#1A1205;
+    font-family:var(--font-h);font-size:12px;font-weight:800;letter-spacing:.08em;
+    padding:6px 16px;border-radius:999px;white-space:nowrap;
+  }
+  .plan-name{
+    font-family:var(--font-h);font-size:14px;font-weight:700;letter-spacing:.1em;
+    text-transform:uppercase;color:var(--t2);margin-bottom:16px;
+  }
+  .plan-price{display:flex;align-items:baseline;gap:5px}
+  .plan-price .cur{font-size:22px;font-weight:700;color:var(--white)}
+  .plan-price .num{font-family:var(--font-h);font-size:50px;font-weight:800;color:var(--white);line-height:1}
+  .plan-price .per{font-size:16px;color:var(--t2);font-weight:500}
+  .plan-sub{font-size:14px;color:var(--t2);margin-top:8px;min-height:20px}
+  .plan-save{
+    display:inline-block;align-self:flex-start;margin-top:12px;
+    font-size:13px;font-weight:700;color:var(--green);
+    background:var(--green-soft);padding:5px 12px;border-radius:8px;
+  }
+  .plan-feats{list-style:none;margin:24px 0;flex:1}
+  .plan-feats li{display:flex;align-items:flex-start;gap:10px;font-size:14px;color:var(--t);margin-bottom:12px}
+  .plan-feats svg{width:17px;height:17px;color:var(--green);flex-shrink:0;margin-top:3px}
+  .plan .cta{width:100%}
+  .plan-ghost{background:transparent;color:var(--amber);border:1.6px solid var(--amber);box-shadow:none}
+  .plan-ghost:hover{background:var(--amber-soft);box-shadow:none;transform:translateY(-2px)}
+  .pricing .guarantee{
+    display:flex;align-items:center;justify-content:center;gap:8px;
+    margin-top:30px;font-size:14px;color:var(--t2);
+  }
+  .pricing .guarantee svg{width:18px;height:18px;color:var(--green);flex-shrink:0}
 
   /* ---------- objections ---------- */
+  .obj{background:var(--navy-2)}
   .obj h2{font-size:32px;text-align:center;margin-bottom:38px}
   .obj-card{
     padding:22px 24px;border-radius:var(--rad-l);
@@ -301,6 +338,9 @@
     .cta{width:100%;font-size:17px}
     .nav-cta{display:none}
     .proof-grid{grid-template-columns:1fr}
+    .pricing h2{font-size:27px}
+    .plans{grid-template-columns:1fr;gap:26px}
+    .plan.feat{order:-1}
   }
 </style>
 </head>
@@ -310,7 +350,7 @@
 <header>
   <div class="wrap nav">
     <div class="logo">Corretor<span>PRO</span></div>
-    <a class="nav-cta" href="https://guilhermeassisp27-code.github.io/dev/tool.html">Começar agora</a>
+    <a class="nav-cta" href="#planos">Ver planos</a>
   </div>
 </header>
 
@@ -323,11 +363,11 @@
     </div>
     <h1>Enquanto você formata a proposta, o concorrente <em>já fechou a venda</em>.</h1>
     <p class="sub">O CorretorPRO gera a sua proposta profissional — com <strong>seu logo, CRECI e cor</strong> — em menos de 60 segundos. Direto do celular, pronta pra enviar no WhatsApp.</p>
-    <a class="cta" href="https://guilhermeassisp27-code.github.io/dev/tool.html">
+    <a class="cta" href="#planos">
       Quero fechar mais
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
     </a>
-    <span class="cta-note"><strong>Sem instalar nada.</strong> Funciona no celular, tablet ou computador.</span>
+    <span class="cta-note"><strong>A partir de R$ 41/mês.</strong> Garantia de 7 dias · Sem instalar nada.</span>
 
     <!-- tool UI mockup (pure CSS, sem foto de banco de imagens) -->
     <div class="mock">
@@ -480,15 +520,54 @@
   </div>
 </section>
 
-<!-- ===================== 7. SECONDARY CTA ===================== -->
-<section class="section cta-block">
+<!-- ===================== 7. PRICING ===================== -->
+<section class="section pricing" id="planos">
   <div class="wrap">
-    <h2>Sua próxima proposta pode sair <em>hoje</em></h2>
-    <p>Comece agora e envie a primeira em poucos minutos. Sem instalação, sem enrolação.</p>
-    <a class="cta" href="https://guilhermeassisp27-code.github.io/dev/tool.html">
-      Começar agora
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
-    </a>
+    <h2>Escolha o seu plano</h2>
+    <p class="lead">Menos que um lanche por mês — e se paga na primeira venda que você fechar.</p>
+
+    <div class="plans">
+      <!-- Mensal -->
+      <div class="plan">
+        <div class="plan-name">Mensal</div>
+        <div class="plan-price">
+          <span class="cur">R$</span><span class="num">67</span><span class="per">/mês</span>
+        </div>
+        <div class="plan-sub">Cobrança mensal. Cancele quando quiser.</div>
+        <ul class="plan-feats">
+          <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg> Propostas ilimitadas com a sua marca</li>
+          <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg> 3 modalidades de pagamento calculadas</li>
+          <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg> Compra, locação e permuta</li>
+          <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg> Exportação em PDF e envio no WhatsApp</li>
+          <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg> Histórico salvo na nuvem</li>
+        </ul>
+        <a class="cta plan-ghost" href="https://pay.hotmart.com/L106145948O?off=hgn79gvq">Assinar mensal</a>
+      </div>
+
+      <!-- Anual (destaque) -->
+      <div class="plan feat">
+        <div class="plan-tag">MELHOR VALOR</div>
+        <div class="plan-name">Anual</div>
+        <div class="plan-price">
+          <span class="cur">R$</span><span class="num">497</span><span class="per">/ano</span>
+        </div>
+        <div class="plan-sub">Equivale a R$ 41/mês.</div>
+        <span class="plan-save">Economize R$ 307 por ano</span>
+        <ul class="plan-feats">
+          <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg> Propostas ilimitadas com a sua marca</li>
+          <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg> 3 modalidades de pagamento calculadas</li>
+          <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg> Compra, locação e permuta</li>
+          <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg> Exportação em PDF e envio no WhatsApp</li>
+          <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg> Histórico salvo na nuvem</li>
+        </ul>
+        <a class="cta" href="https://pay.hotmart.com/L106145948O?off=mcjyy7ub">Assinar anual e economizar</a>
+      </div>
+    </div>
+
+    <div class="guarantee">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3 5 6v6c0 4.5 3 7.5 7 9 4-1.5 7-4.5 7-9V6z"/><path d="m9 12 2 2 4-4"/></svg>
+      Garantia incondicional de 7 dias. Não gostou, devolvemos 100%.
+    </div>
   </div>
 </section>
 
@@ -528,7 +607,7 @@
   <div class="wrap">
     <h2>O próximo cliente que você perder <em>pode ser o último</em>.</h2>
     <p>Cada proposta lenta é uma comissão na mão do concorrente. Vire esse jogo agora.</p>
-    <a class="cta" href="https://guilhermeassisp27-code.github.io/dev/tool.html">
+    <a class="cta" href="#planos">
       Quero começar agora
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
     </a>
@@ -548,6 +627,7 @@
     <div class="footer-logo">Corretor<span>PRO</span></div>
     <p>Propostas imobiliárias profissionais com a sua marca, em segundos.</p>
     <div class="footer-links">
+      <a href="https://guilhermeassisp27-code.github.io/dev/tool.html">Já sou cliente — entrar</a>
       <a href="https://guilhermeassisp27-code.github.io/dev/termos.html">Termos de uso</a>
       <a href="https://guilhermeassisp27-code.github.io/dev/privacidade.html">Privacidade</a>
       <a href="mailto:guilherme.assisp27@gmail.com">Suporte</a>
