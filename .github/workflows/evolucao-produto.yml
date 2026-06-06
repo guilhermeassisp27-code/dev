@@ -1,0 +1,71 @@
+name: Evolução do Produto CorretorPRO
+
+# Ciclo automático de evolução:
+#   1) Agendado (a cada 2 semanas) o agente "produto" propõe e implementa UMA
+#      melhoria, registra em docs/novidades.md e abre um PR para você revisar.
+#   2) Quando uma melhoria entra no main (tool.html muda), o agente "marketing"
+#      lê a novidade e gera Reels + post anunciando, abrindo um PR de conteúdo.
+#
+# PRÉ-REQUISITO: secret ANTHROPIC_API_KEY configurado em
+#   Settings → Secrets and variables → Actions
+
+on:
+  schedule:
+    # Toda 2ª sexta 09:00 BRT (12:00 UTC) — o cron roda toda sexta; o agente
+    # decide se há melhoria de impacto a propor naquela semana.
+    - cron: '0 12 * * 5'
+  push:
+    branches:
+      - main
+    paths:
+      - 'tool.html'
+  workflow_dispatch:
+    inputs:
+      acao:
+        description: 'O que rodar manualmente'
+        required: true
+        type: choice
+        options:
+          - evoluir-produto
+          - anunciar-novidade
+        default: evoluir-produto
+
+permissions:
+  contents: write
+  pull-requests: write
+
+jobs:
+  evoluir-produto:
+    # Roda no agendamento de sexta OU no disparo manual "evoluir-produto"
+    if: github.event_name == 'schedule' || github.event.inputs.acao == 'evoluir-produto'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Rodar agente de produto
+        uses: anthropics/claude-code-action@v1
+        with:
+          anthropic_api_key: ${{ secrets.ANTHROPIC_API_KEY }}
+          prompt: |
+            Use o agente "produto". Leia docs/roadmap.md (crie se não existir),
+            escolha UMA melhoria de alto impacto e baixo risco para a ferramenta
+            (tool.html), implemente a menor versão que entrega valor, registre a
+            novidade no topo de docs/novidades.md e abra um PR. Não faça merge.
+            Garanta que o fluxo salvar→sair→entrar→persiste continua funcionando.
+
+  anunciar-novidade:
+    # Roda quando tool.html muda no main (melhoria publicada) OU disparo manual
+    if: github.event_name == 'push' || github.event.inputs.acao == 'anunciar-novidade'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Rodar agente de marketing (anúncio)
+        uses: anthropics/claude-code-action@v1
+        with:
+          anthropic_api_key: ${{ secrets.ANTHROPIC_API_KEY }}
+          prompt: |
+            Use o agente "marketing". Leia a entrada mais recente de
+            docs/novidades.md (a novidade que acabou de entrar no ar). Crie o
+            material para anunciá-la aos corretores: 1 roteiro de Reels/Shorts
+            (gancho + demonstração + CTA) e 2 copies para feed/stories. Salve em
+            marketing/anuncios/AAAA-MM-DD-<slug>.md e abra um PR. Atualize o
+            Status da novidade em docs/novidades.md para "publicado".

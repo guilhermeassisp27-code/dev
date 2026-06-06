@@ -8,11 +8,28 @@ numa sessão do Claude Code) e **automático** (rodam agendados via GitHub Actio
 
 | Agente | Papel | Faz sozinho? |
 |---|---|---|
-| `dev` | Engenheiro: bugs, features, build, webhook, tool.html | Sim — gera PR para revisão (não faz merge) |
-| `marketing` | Conteúdo e vídeo: roteiros, copy, calendário editorial | Sim — escreve material pronto (não grava vídeo) |
+| `dev` | Engenheiro: bugs, manutenção, build, webhook, tool.html | Sim — gera PR para revisão (não faz merge) |
+| `produto` | Evolução: novas funcionalidades, UX, novidades na ferramenta | Sim — implementa, registra novidade e abre PR |
+| `marketing` | Conteúdo e vídeo: roteiros, copy, calendário, anúncios | Sim — escreve material pronto (não grava vídeo) |
 | `suporte` | Diagnóstico de problemas de usuário e logs | Sim — entrega causa raiz + correção |
 | `dados` | Relatórios de assinantes, churn, uso, conversão | Sim — read-only, nunca altera produção |
 | `trafego` | Tráfego pago: campanhas, públicos, verba, análise | Plano/recomendação — NÃO gasta nem sobe campanha sozinho |
+
+## Ciclo automático produto → marketing
+
+O grande diferencial: o produto evolui sozinho e o marketing anuncia sozinho.
+
+```
+produto evolui a ferramenta → registra em docs/novidades.md → abre PR
+   ↓ você revisa e faz merge no main
+melhoria entra no ar (tool.html muda) → dispara o marketing
+   ↓
+marketing lê a novidade → gera Reels + posts de anúncio → abre PR
+```
+
+Definido em `.github/workflows/evolucao-produto.yml`. O arquivo
+`docs/novidades.md` é a "ponte" entre os dois agentes (changelog que o produto
+escreve e o marketing lê).
 
 ## Como chamar sob demanda
 
