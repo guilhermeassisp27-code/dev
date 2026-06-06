@@ -42,33 +42,94 @@ async function findUser(supabase: ReturnType<typeof getSupabase>, email: string)
   return undefined
 }
 
-// GET /api/admin/invite?email=X&token=Y — consulta status do usuário
+// GET /api/admin/invite?email=X&token=Y[&mode=send|link][&plan=...]
+//   - sem mode: só consulta o status do usuário
+//   - mode=send: garante a conta ativa e DISPARA o email de definir senha (Brevo)
+//   - mode=link: garante a conta ativa e RETORNA o actionLink (envio manual)
+// Pensado para uso direto no navegador (cola a URL), sem terminal.
 export async function GET(req: NextRequest) {
   if (!checkAuth(req)) {
     return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
   }
 
-  const email = req.nextUrl.searchParams.get('email')
-  if (!email) {
+  const params = req.nextUrl.searchParams
+  const emailParam = params.get('email')
+  if (!emailParam) {
     return NextResponse.json({ error: 'Missing email param' }, { status: 400 })
   }
+  const email = emailParam.toLowerCase()
+  const mode = params.get('mode')
+  const plan = params.get('plan') ?? 'corretorpro'
 
   const supabase = getSupabase()
-  const user = await findUser(supabase, email)
+  const setPasswordUrl = `${getAppUrl()}/definir-senha`
 
-  if (!user) {
-    return NextResponse.json({ found: false, email })
+  // Sem ação: apenas consulta
+  if (mode !== 'send' && mode !== 'link') {
+    const user = await findUser(supabase, email)
+    if (!user) return NextResponse.json({ found: false, email })
+    return NextResponse.json({
+      found: true,
+      id: user.id,
+      email: user.email,
+      created_at: user.created_at,
+      last_sign_in_at: user.last_sign_in_at,
+      email_confirmed: !!user.email_confirmed_at,
+      banned_until: (user as { banned_until?: string }).banned_until ?? null,
+      app_metadata: user.app_metadata,
+    })
   }
 
+  // Garante que o usuário existe e está ativo (cria se não existir — simula a compra)
+  let user = await findUser(supabase, email)
+  if (!user) {
+    const { data: created, error: createErr } = await supabase.auth.admin.createUser({
+      email,
+      email_confirm: true,
+      app_metadata: { subscription_status: 'active', plan },
+    })
+    if (createErr && !/already|registered|exist/i.test(createErr.message)) {
+      return NextResponse.json({ error: createErr.message }, { status: 500 })
+    }
+    user = created?.user ?? (await findUser(supabase, email))
+  } else {
+    await supabase.auth.admin.updateUserById(user.id, {
+      ban_duration: 'none',
+      app_metadata: { ...(user.app_metadata ?? {}), subscription_status: 'active', plan },
+    })
+  }
+  if (!user) {
+    return NextResponse.json({ error: 'Não foi possível criar/localizar o usuário' }, { status: 500 })
+  }
+
+  if (mode === 'link') {
+    const { data: linkData, error: linkErr } = await supabase.auth.admin.generateLink({
+      type: 'recovery',
+      email,
+      options: { redirectTo: setPasswordUrl },
+    })
+    if (linkErr) return NextResponse.json({ error: linkErr.message }, { status: 500 })
+    return NextResponse.json({
+      ok: true,
+      action: 'link_generated',
+      userId: user.id,
+      actionLink: (linkData as ActionLinkData)?.properties?.action_link,
+    })
+  }
+
+  // mode === 'send' — dispara o email de definir senha pelo Brevo
+  const { error: mailErr } = await supabase.auth.resetPasswordForEmail(email, {
+    redirectTo: setPasswordUrl,
+  })
   return NextResponse.json({
-    found: true,
-    id: user.id,
-    email: user.email,
-    created_at: user.created_at,
-    last_sign_in_at: user.last_sign_in_at,
-    email_confirmed: !!user.email_confirmed_at,
-    banned_until: (user as { banned_until?: string }).banned_until ?? null,
-    app_metadata: user.app_metadata,
+    ok: true,
+    action: 'email_sent',
+    userId: user.id,
+    emailSent: !mailErr,
+    emailError: mailErr?.message,
+    note: mailErr
+      ? 'Falha no envio pelo Brevo — veja emailError.'
+      : 'Email disparado pelo Brevo. Confira a caixa de entrada E o spam.',
   })
 }
 
