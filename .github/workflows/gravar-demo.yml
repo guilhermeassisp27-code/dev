@@ -42,7 +42,8 @@ jobs:
           mkdir -p saida
           VIDEO=$(ls video/*.webm 2>/dev/null | head -1)
           if [ -n "$VIDEO" ]; then
-            ffmpeg -y -i "$VIDEO" -vf "scale=1080:-2:flags=lanczos,pad=1080:1920:0:(1920-ih)/2:black" \
+            ffmpeg -y -i "$VIDEO" \
+              -vf "scale=1080:1920:force_original_aspect_ratio=decrease:flags=lanczos,pad=1080:1920:(ow-iw)/2:(oh-ih)/2:black,setsar=1" \
               -c:v libx264 -pix_fmt yuv420p -r 30 saida/corretorpro-demo.mp4
             echo "MP4 gerado em saida/corretorpro-demo.mp4"
           else
