@@ -3,10 +3,9 @@ name: Agentes Automáticos CorretorPRO
 # Roda os agentes especializados em horários fixos e abre PR/commit com o
 # resultado para revisão humana. Também pode ser disparado manualmente.
 #
-# PRÉ-REQUISITO: adicionar o secret CLAUDE_CODE_OAUTH_TOKEN em
-#   Settings → Secrets and variables → Actions → New repository secret
-#   (gere o token rodando `claude setup-token` — usa seu plano Claude Pro/Max,
-#    sem cobrança de API à parte).
+# PRÉ-REQUISITO: secret ANTHROPIC_API_KEY configurado em
+#   Settings → Secrets and variables → Actions
+#   (chave de API de console.anthropic.com; requer crédito/cartão em Faturamento).
 #
 # Sem esse secret os jobs falham de propósito (não há como rodar o agente).
 
@@ -42,7 +41,7 @@ jobs:
       - name: Rodar agente de dados
         uses: anthropics/claude-code-action@v1
         with:
-          claude_code_oauth_token: ${{ secrets.CLAUDE_CODE_OAUTH_TOKEN }}
+          anthropic_api_key: ${{ secrets.ANTHROPIC_API_KEY }}
           prompt: |
             Use o agente "dados". Gere o relatório semanal de assinantes do
             CorretorPRO: ativos, cancelados/churn, taxa de ativação, mix de
@@ -58,7 +57,7 @@ jobs:
       - name: Rodar agente de marketing
         uses: anthropics/claude-code-action@v1
         with:
-          claude_code_oauth_token: ${{ secrets.CLAUDE_CODE_OAUTH_TOKEN }}
+          anthropic_api_key: ${{ secrets.ANTHROPIC_API_KEY }}
           prompt: |
             Use o agente "marketing". Crie o lote de conteúdo da semana: 5
             roteiros de Reels/Shorts (gancho + desenvolvimento + CTA) e 3 copies
@@ -74,7 +73,7 @@ jobs:
       - name: Rodar agente de tráfego
         uses: anthropics/claude-code-action@v1
         with:
-          claude_code_oauth_token: ${{ secrets.CLAUDE_CODE_OAUTH_TOKEN }}
+          anthropic_api_key: ${{ secrets.ANTHROPIC_API_KEY }}
           prompt: |
             Use o agente "trafego". Revise marketing/plano-trafego.md e proponha
             ajustes de estrutura, públicos e verba para a próxima semana, com
