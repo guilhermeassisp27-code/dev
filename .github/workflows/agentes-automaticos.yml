@@ -1,0 +1,82 @@
+name: Agentes Automáticos CorretorPRO
+
+# Roda os agentes especializados em horários fixos e abre PR/commit com o
+# resultado para revisão humana. Também pode ser disparado manualmente.
+#
+# PRÉ-REQUISITO: adicionar o secret CLAUDE_CODE_OAUTH_TOKEN em
+#   Settings → Secrets and variables → Actions → New repository secret
+#   (gere o token rodando `claude setup-token` — usa seu plano Claude Pro/Max,
+#    sem cobrança de API à parte).
+#
+# Sem esse secret os jobs falham de propósito (não há como rodar o agente).
+
+on:
+  schedule:
+    # Segunda 09:00 BRT (12:00 UTC) — relatório de dados da semana
+    - cron: '0 12 * * 1'
+    # Quarta 09:00 BRT (12:00 UTC) — lote de conteúdo de marketing
+    - cron: '0 12 * * 3'
+  workflow_dispatch:
+    inputs:
+      agente:
+        description: 'Qual agente rodar manualmente'
+        required: true
+        type: choice
+        options:
+          - dados
+          - marketing
+          - trafego
+        default: dados
+
+permissions:
+  contents: write
+  pull-requests: write
+
+jobs:
+  relatorio-dados:
+    # Roda na segunda agendada OU quando disparado manualmente escolhendo "dados"
+    if: github.event.schedule == '0 12 * * 1' || github.event.inputs.agente == 'dados'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Rodar agente de dados
+        uses: anthropics/claude-code-action@v1
+        with:
+          claude_code_oauth_token: ${{ secrets.CLAUDE_CODE_OAUTH_TOKEN }}
+          prompt: |
+            Use o agente "dados". Gere o relatório semanal de assinantes do
+            CorretorPRO: ativos, cancelados/churn, taxa de ativação, mix de
+            planos e engajamento (propostas salvas). Salve em
+            relatorios/dados-AAAA-MM-DD.md e abra um PR com o relatório.
+            Não exponha emails nem PII; use apenas agregados.
+
+  conteudo-marketing:
+    if: github.event.schedule == '0 12 * * 3' || github.event.inputs.agente == 'marketing'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Rodar agente de marketing
+        uses: anthropics/claude-code-action@v1
+        with:
+          claude_code_oauth_token: ${{ secrets.CLAUDE_CODE_OAUTH_TOKEN }}
+          prompt: |
+            Use o agente "marketing". Crie o lote de conteúdo da semana: 5
+            roteiros de Reels/Shorts (gancho + desenvolvimento + CTA) e 3 copies
+            para feed, focados em corretores de imóveis. Salve em
+            marketing/roteiros/semana-AAAA-MM-DD.md e abra um PR.
+
+  plano-trafego:
+    # Só roda no disparo manual escolhendo "trafego" — nada que gaste é automático
+    if: github.event.inputs.agente == 'trafego'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Rodar agente de tráfego
+        uses: anthropics/claude-code-action@v1
+        with:
+          claude_code_oauth_token: ${{ secrets.CLAUDE_CODE_OAUTH_TOKEN }}
+          prompt: |
+            Use o agente "trafego". Revise marketing/plano-trafego.md e proponha
+            ajustes de estrutura, públicos e verba para a próxima semana, com
+            critérios de corte. Abra um PR. NÃO execute gastos nem alterações em
+            campanhas ao vivo — apenas recomendação para aprovação humana.
