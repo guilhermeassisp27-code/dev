@@ -18,6 +18,6 @@ Formato de cada entrada:
 ## [2026-06-06] Busca no histórico e duplicar proposta
 **Para o corretor:** encontre qualquer proposta salva em segundos e reutilize ela como ponto de partida para um novo cliente — sem redigitar tudo do zero.
 **O que mudou:** adicionada barra de busca em "Minhas Propostas" que filtra por cliente, tipo de imóvel, endereço ou tipo de negociação em tempo real; adicionado botão "Duplicar" em cada proposta salva que pré-preenche o formulário com os dados daquela proposta para edição imediata.
-**Status:** em PR
+**Status:** publicado
 
 <!-- Novas entradas vão acima desta linha, sempre no topo -->
