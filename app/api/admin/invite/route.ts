@@ -19,6 +19,15 @@ function checkAuth(req: NextRequest) {
   )
 }
 
+function getAppUrl() {
+  return (
+    (process.env.NEXT_PUBLIC_APP_URL ?? '').replace(/\/$/, '') ||
+    'https://usecorretorpro.vercel.app'
+  )
+}
+
+type ActionLinkData = { properties?: { action_link?: string } }
+
 async function findUser(supabase: ReturnType<typeof getSupabase>, email: string) {
   const alvo = email.toLowerCase()
   const perPage = 200
@@ -62,7 +71,11 @@ export async function GET(req: NextRequest) {
   })
 }
 
-// POST /api/admin/invite — convida ou reenvia o email de definir senha
+// POST /api/admin/invite — cria/ativa o comprador e SEMPRE retorna o link de
+// definir senha (action_link). Assim você nunca depende da entrega de email do
+// Supabase: pode mandar o link direto pro comprador por WhatsApp/email.
+//
+// Body: { "email": "...", "name"?: "...", "plan"?: "mensal|anual|corretorpro" }
 export async function POST(req: NextRequest) {
   if (!checkAuth(req)) {
     return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
@@ -80,16 +93,13 @@ export async function POST(req: NextRequest) {
   }
 
   const supabase = getSupabase()
-  const appUrl =
-    (process.env.NEXT_PUBLIC_APP_URL ?? '').replace(/\/$/, '') ||
-    'https://usecorretorpro.vercel.app'
-  const setPasswordUrl = `${appUrl}/definir-senha`
+  const setPasswordUrl = `${getAppUrl()}/definir-senha`
   const plan = body.plan ?? 'corretorpro'
 
   const existing = await findUser(supabase, body.email)
 
   if (existing) {
-    // Garante que o acesso está ativo e sem ban
+    // Já existe: garante acesso ativo e sem ban
     await supabase.auth.admin.updateUserById(existing.id, {
       ban_duration: 'none',
       app_metadata: {
@@ -99,65 +109,54 @@ export async function POST(req: NextRequest) {
       },
     })
 
-    if (!existing.last_sign_in_at) {
-      // Nunca fez login — tenta reenviar o convite
-      const { data: resent, error: resendErr } = await supabase.auth.admin.inviteUserByEmail(
-        body.email,
-        {
-          data: {
-            full_name: body.name ?? (existing.user_metadata?.full_name as string) ?? '',
-            plan,
-          },
-          redirectTo: setPasswordUrl,
-        }
-      )
-
-      if (resendErr) {
-        // Fallback: gera link de recovery e retorna para o admin enviar manualmente
-        const { data: linkData } = await supabase.auth.admin.generateLink({
-          type: 'recovery',
-          email: body.email,
-          options: { redirectTo: setPasswordUrl },
-        })
-        return NextResponse.json({
-          ok: true,
-          action: 'recovery_link_generated',
-          userId: existing.id,
-          setPasswordUrl: (linkData as { properties?: { action_link?: string } })?.properties?.action_link,
-          note: 'Invite email could not be resent automatically. Share the setPasswordUrl link directly with the buyer.',
-        })
-      }
-
+    if (existing.last_sign_in_at) {
+      // Já definiu senha antes — é só logar
       return NextResponse.json({
         ok: true,
-        action: 'invite_resent',
-        userId: resent?.user?.id ?? existing.id,
+        action: 'access_reactivated',
+        userId: existing.id,
+        loginUrl: `${getAppUrl()}/acesso`,
+        note: 'Usuario ja definiu senha. Acesso reativado — basta logar em loginUrl.',
       })
+    }
+
+    // Nunca logou — gera link de recovery (serve para definir a senha)
+    const { data: linkData, error: linkErr } = await supabase.auth.admin.generateLink({
+      type: 'recovery',
+      email: body.email,
+      options: { redirectTo: setPasswordUrl },
+    })
+
+    if (linkErr) {
+      return NextResponse.json({ error: linkErr.message }, { status: 500 })
     }
 
     return NextResponse.json({
       ok: true,
-      action: 'access_reactivated',
+      action: 'recovery_link_generated',
       userId: existing.id,
-      note: 'User already set a password. Access reactivated — they can log in normally.',
+      actionLink: (linkData as ActionLinkData)?.properties?.action_link,
+      note: 'Envie o actionLink direto para o comprador (WhatsApp/email). Ele abre a tela de definir senha.',
     })
   }
 
-  // Novo usuário — convida
-  const { data: invited, error: inviteErr } = await supabase.auth.admin.inviteUserByEmail(
-    body.email,
-    {
+  // Novo comprador — generateLink type:invite CRIA o usuario e retorna o link
+  const { data: linkData, error: linkErr } = await supabase.auth.admin.generateLink({
+    type: 'invite',
+    email: body.email,
+    options: {
       data: { full_name: body.name ?? '', plan },
       redirectTo: setPasswordUrl,
-    }
-  )
+    },
+  })
 
-  if (inviteErr) {
-    return NextResponse.json({ error: inviteErr.message }, { status: 500 })
+  if (linkErr) {
+    return NextResponse.json({ error: linkErr.message }, { status: 500 })
   }
 
-  if (invited?.user?.id) {
-    await supabase.auth.admin.updateUserById(invited.user.id, {
+  const newUserId = (linkData as { user?: { id?: string } })?.user?.id
+  if (newUserId) {
+    await supabase.auth.admin.updateUserById(newUserId, {
       app_metadata: { subscription_status: 'active', plan },
     })
   }
@@ -165,6 +164,8 @@ export async function POST(req: NextRequest) {
   return NextResponse.json({
     ok: true,
     action: 'invited_new_user',
-    userId: invited?.user?.id,
+    userId: newUserId,
+    actionLink: (linkData as ActionLinkData)?.properties?.action_link,
+    note: 'Envie o actionLink direto para o comprador (WhatsApp/email). Ele abre a tela de definir senha.',
   })
 }
