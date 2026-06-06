@@ -10,12 +10,11 @@ o próximo item (alto impacto, baixo risco) e implementa um por vez.
 2. **Compartilhar por link/WhatsApp** — gerar link público da proposta para enviar ao cliente.
 3. **Modelos de proposta** — 2–3 layouts prontos para o corretor escolher.
 4. **Cálculo de financiamento aprimorado** — simular SAC e Price lado a lado.
-5. **Busca/filtro no histórico** — encontrar propostas antigas por cliente ou imóvel.
 
 ## Ideias (a avaliar)
 - Logo/cores do corretor aplicadas automaticamente em toda proposta.
 - Campo de observações livres por proposta.
-- Duplicar uma proposta existente como base para uma nova.
 
 ## Já entregue
-_(o agente produto move itens para cá quando publicados)_
+- **Busca/filtro no histórico** — campo de busca em "Minhas Propostas" para encontrar propostas antigas por cliente, tipo de imóvel ou endereço. (2026-06-06)
+- **Duplicar proposta** — botão nas propostas salvas que pré-preenche o formulário para agilizar uma nova proposta similar. (2026-06-06)
