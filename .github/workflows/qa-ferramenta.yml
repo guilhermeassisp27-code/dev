@@ -1,0 +1,46 @@
+name: QA da Ferramenta (fluxo crítico)
+
+# Valida automaticamente a "regra de ouro" do tool.html:
+#   salvar proposta -> sair -> entrar -> a proposta ainda está lá.
+#
+# Roda: todo dia (cron), a cada melhoria publicada (PR feat/* mergeado) e
+# sob demanda. Não usa IA — sem custo de API. Se falhar, o workflow fica
+# VERMELHO avisando que a persistência quebrou.
+#
+# PRÉ-REQUISITO: secrets DEMO_EMAIL e DEMO_PASSWORD.
+
+on:
+  schedule:
+    - cron: '0 11 * * *'          # todo dia 08:00 BRT (11:00 UTC)
+  pull_request:
+    types: [closed]               # valida cada melhoria recém-publicada
+  workflow_dispatch:
+
+jobs:
+  qa:
+    # Roda no cron, no disparo manual, ou quando um PR feat/* é mergeado
+    if: >-
+      github.event_name == 'schedule' ||
+      github.event_name == 'workflow_dispatch' ||
+      (github.event.pull_request.merged == true &&
+       startsWith(github.event.pull_request.head.ref, 'feat/'))
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Instalar Playwright
+        run: |
+          npm init -y >/dev/null 2>&1 || true
+          npm install playwright@latest
+          npx playwright install --with-deps chromium
+
+      - name: Rodar o teste do fluxo crítico
+        env:
+          DEMO_EMAIL: ${{ secrets.DEMO_EMAIL }}
+          DEMO_PASSWORD: ${{ secrets.DEMO_PASSWORD }}
+          APP_URL: https://usecorretorpro.vercel.app
+        run: node scripts/qa-smoke.mjs
