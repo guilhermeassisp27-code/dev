@@ -14,11 +14,10 @@ on:
     # Toda 2ª sexta 09:00 BRT (12:00 UTC) — o cron roda toda sexta; o agente
     # decide se há melhoria de impacto a propor naquela semana.
     - cron: '0 12 * * 5'
-  push:
-    branches:
-      - main
-    paths:
-      - 'tool.html'
+  pull_request:
+    # Quando um PR de melhoria (branch feat/*) é mergeado, dispara o anúncio.
+    # A action do Claude não aceita evento 'push', por isso usamos pull_request.
+    types: [closed]
   workflow_dispatch:
     inputs:
       acao:
@@ -58,8 +57,13 @@ jobs:
             Garanta que o fluxo salvar→sair→entrar→persiste continua funcionando.
 
   anunciar-novidade:
-    # Roda quando tool.html muda no main (melhoria publicada) OU disparo manual
-    if: github.event_name == 'push' || github.event.inputs.acao == 'anunciar-novidade'
+    # Roda quando um PR de melhoria (branch feat/*) é mergeado OU no disparo manual.
+    # O filtro feat/* evita disparar no merge dos próprios PRs de anúncio (evita loop).
+    if: >-
+      (github.event_name == 'pull_request' &&
+       github.event.pull_request.merged == true &&
+       startsWith(github.event.pull_request.head.ref, 'feat/'))
+      || github.event.inputs.acao == 'anunciar-novidade'
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
