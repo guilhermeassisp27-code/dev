@@ -1,9 +1,10 @@
-name: Deploy Demo to GitHub Pages
+name: Deploy Site to GitHub Pages
 
 on:
   push:
     branches:
       - claude/development-session-O10kI
+      - claude/init-repo-setup-9hmiV
   workflow_dispatch:
 
 permissions:
@@ -28,11 +29,17 @@ jobs:
 
       - name: Prepare site
         run: |
-          mkdir -p _site/landing
-          cp demo/index.html _site/index.html
-          cp landing/index.html _site/landing/index.html
-          cp landing.html _site/landing.html
+          mkdir -p _site
+          # Canonical CorretorPRO landing served at the root
+          cp landing/index.html _site/index.html
+          # Legal pages (required for Hotmart)
+          cp termos.html _site/termos.html
+          cp privacidade.html _site/privacidade.html
+          # The authenticated tool
           cp tool.html _site/tool.html
+          # Social share image (PNG exported from og-image.svg, if present)
+          cp og-image.png _site/og-image.png 2>/dev/null || true
+          cp og-image.svg _site/og-image.svg 2>/dev/null || true
 
       - name: Deploy to gh-pages branch
         uses: peaceiris/actions-gh-pages@v3

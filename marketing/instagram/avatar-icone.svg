@@ -1,0 +1,40 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1000" height="1000" viewBox="0 0 1000 1000" role="img" aria-label="CorretorPRO">
+  <defs>
+    <radialGradient id="bg2" cx="50%" cy="40%" r="78%">
+      <stop offset="0%" stop-color="#1B2944"/>
+      <stop offset="62%" stop-color="#131E36"/>
+      <stop offset="100%" stop-color="#0F172A"/>
+    </radialGradient>
+    <linearGradient id="amber2" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#FBBF24"/>
+      <stop offset="100%" stop-color="#F59E0B"/>
+    </linearGradient>
+    <linearGradient id="paper2" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#FFFFFF"/>
+      <stop offset="100%" stop-color="#E9EEF6"/>
+    </linearGradient>
+  </defs>
+
+  <rect width="1000" height="1000" fill="url(#bg2)"/>
+  <circle cx="500" cy="500" r="492" fill="none" stroke="#F59E0B" stroke-opacity="0.18" stroke-width="6"/>
+
+  <!-- Sombra do documento (forma deslocada, sem filtro) -->
+  <rect x="312" y="270" width="376" height="500" rx="42" fill="#000000" opacity="0.32"/>
+
+  <!-- Documento -->
+  <rect x="312" y="250" width="376" height="500" rx="42" fill="url(#paper2)"/>
+  <path d="M612 250 L688 326 L612 326 Z" fill="#C9D4E6"/>
+  <rect x="368" y="362" width="200" height="26" rx="13" fill="#1B2944"/>
+  <rect x="368" y="420" width="264" height="18" rx="9" fill="#94A3B8"/>
+  <rect x="368" y="458" width="264" height="18" rx="9" fill="#94A3B8"/>
+  <rect x="368" y="496" width="180" height="18" rx="9" fill="#94A3B8"/>
+  <rect x="368" y="560" width="264" height="70" rx="16" fill="#FEF3C7"/>
+  <rect x="394" y="584" width="150" height="22" rx="11" fill="#B45309"/>
+
+  <!-- Sombra do selo -->
+  <circle cx="690" cy="682" r="112" fill="#000000" opacity="0.32"/>
+  <!-- Selo de velocidade (raio) -->
+  <circle cx="690" cy="668" r="112" fill="url(#amber2)"/>
+  <path d="M708 588 L622 690 L680 690 L670 770 L756 656 L696 656 Z"
+        fill="#1A1205" stroke-linejoin="round"/>
+</svg>

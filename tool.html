@@ -8,6 +8,10 @@
 <meta property="og:title" content="CorretorPRO — Propostas Imobiliárias Profissionais">
 <meta property="og:description" content="Propostas personalizadas com sua marca em menos de 60 segundos.">
 <meta property="og:type" content="website">
+<meta property="og:image" content="https://guilhermeassisp27-code.github.io/dev/og-image.png">
+<meta property="og:url" content="https://guilhermeassisp27-code.github.io/dev/tool.html">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:image" content="https://guilhermeassisp27-code.github.io/dev/og-image.png">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
@@ -253,6 +257,8 @@ input[type=color]{opacity:0;width:0;height:0;position:absolute}
 /* ── TOAST ── */
 .toast{position:fixed;bottom:18px;right:18px;z-index:200;background:var(--s3);border:1px solid var(--bm);border-radius:var(--rad);padding:10px 16px;font-size:13px;font-weight:500;color:var(--t);box-shadow:0 4px 20px rgba(0,0,0,.4);display:flex;align-items:center;gap:8px;opacity:0;transform:translateY(6px);transition:all .22s ease;pointer-events:none}
 .toast.on{opacity:1;transform:translateY(0)}
+.toast.err{background:#3d0c0c;border-color:rgba(239,68,68,.35)}
+.toast.err .tok{stroke:#EF4444}
 .tok{color:var(--g)}
 
 /* ── PRINT: proposal only ── */
@@ -507,7 +513,7 @@ input[type=color]{opacity:0;width:0;height:0;position:absolute}
 
       <!-- SKELETON -->
       <div class="skel" id="skel">
-        <div class="skel-tag"><div class="skel-dot"></div>Gerando proposta personalizada...</div>
+        <div class="skel-tag"><div class="skel-dot"></div>Gerando proposta...</div>
         <div class="skel-group">
           <div class="skel-bar" style="width:40%"></div>
           <div class="skel-bar" style="width:65%"></div>
@@ -676,13 +682,13 @@ input[type=color]{opacity:0;width:0;height:0;position:absolute}
                 <div class="color-swatch" id="color-swatch" onclick="document.getElementById('c-cor').click()" style="background:var(--p)"></div>
                 <input type="color" id="c-cor" value="#4D7EFF" oninput="atualizarCor(this.value)">
                 <div class="color-presets">
-                  <div class="preset" style="background:#4D7EFF" onclick="atualizarCor('#4D7EFF')" title="Azul"></div>
-                  <div class="preset" style="background:#7C5CFC" onclick="atualizarCor('#7C5CFC')" title="Roxo"></div>
-                  <div class="preset" style="background:#22C55E" onclick="atualizarCor('#22C55E')" title="Verde"></div>
-                  <div class="preset" style="background:#F59E0B" onclick="atualizarCor('#F59E0B')" title="Âmbar"></div>
-                  <div class="preset" style="background:#EF4444" onclick="atualizarCor('#EF4444')" title="Vermelho"></div>
-                  <div class="preset" style="background:#0EA5E9" onclick="atualizarCor('#0EA5E9')" title="Celeste"></div>
-                  <div class="preset" style="background:#6B7280" onclick="atualizarCor('#6B7280')" title="Cinza"></div>
+                  <div class="preset" data-cor="#4D7EFF" style="background:#4D7EFF" onclick="atualizarCor('#4D7EFF')" title="Azul"></div>
+                  <div class="preset" data-cor="#7C5CFC" style="background:#7C5CFC" onclick="atualizarCor('#7C5CFC')" title="Roxo"></div>
+                  <div class="preset" data-cor="#22C55E" style="background:#22C55E" onclick="atualizarCor('#22C55E')" title="Verde"></div>
+                  <div class="preset" data-cor="#F59E0B" style="background:#F59E0B" onclick="atualizarCor('#F59E0B')" title="Âmbar"></div>
+                  <div class="preset" data-cor="#EF4444" style="background:#EF4444" onclick="atualizarCor('#EF4444')" title="Vermelho"></div>
+                  <div class="preset" data-cor="#0EA5E9" style="background:#0EA5E9" onclick="atualizarCor('#0EA5E9')" title="Celeste"></div>
+                  <div class="preset" data-cor="#6B7280" style="background:#6B7280" onclick="atualizarCor('#6B7280')" title="Cinza"></div>
                 </div>
               </div>
             </div>
@@ -703,7 +709,8 @@ input[type=color]{opacity:0;width:0;height:0;position:absolute}
 </div>
 
 <div class="toast" id="toast">
-  <svg class="tok" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>
+  <svg class="tok" id="toast-ico-ok" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>
+  <svg class="tok" id="toast-ico-err" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#EF4444" stroke-width="2.5" style="display:none"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
   <span id="toast-txt"></span>
 </div>
 
@@ -712,43 +719,88 @@ input[type=color]{opacity:0;width:0;height:0;position:absolute}
    Preencha após criar seu projeto no Supabase e fazer deploy no Vercel.
    Estas são chaves públicas (anon key) — seguro expor no cliente.
 ──────────────────────────────────────────────────────────────────────── */
-const _SUPA_URL   = 'https://kdudodqmijlzqwnkxpjo.supabase.co'
-const _SUPA_KEY   = 'sb_publishable_ADIRZ2I6Eu9S8_CwCt6RSQ_rrRlIqq9'
-const _LOGIN_URL  = 'https://YOUR_APP.vercel.app/acesso'    // TODO: preencher após deploy no Vercel
+const _SUPA_URL    = 'https://kdudodqmijlzqwnkxpjo.supabase.co'
+const _SUPA_KEY    = 'sb_publishable_ADIRZ2I6Eu9S8_CwCt6RSQ_rrRlIqq9'
+const _LOGIN_URL   = 'https://usecorretorpro.vercel.app/acesso'
+// Link de (re)assinatura — usado quando a assinatura está inativa
+const _CHECKOUT_URL = 'https://pay.hotmart.com/L106145948O'
 
 /* ── AUTH GATE ── */
 ;(async function authGate() {
-  // Se placeholder não foi preenchido, pula auth (modo dev local)
-  if (_SUPA_URL.includes('YOUR_PROJECT')) {
-    document.getElementById('auth-loading').remove()
-    initApp()
-    return
-  }
   try {
-    const _sb = supabase.createClient(_SUPA_URL, _SUPA_KEY)
+    const _sb = supabase.createClient(_SUPA_URL, _SUPA_KEY, {
+      auth: { flowType: 'implicit', detectSessionInUrl: true }
+    })
     window._sb = _sb
 
-    // getSession trata automaticamente hash fragment de magic link / invite
-    const { data: { session } } = await _sb.auth.getSession()
+    // Tenta estabelecer sessão a partir dos tokens no hash fragment
+    // (passados pelo app Next.js no formato #access_token=...&refresh_token=...)
+    let session = null
+    const hash = location.hash.slice(1)
+    if (hash) {
+      const p = new URLSearchParams(hash)
+      const at = p.get('access_token')
+      const rt = p.get('refresh_token')
+      if (at && rt) {
+        const { data, error } = await _sb.auth.setSession({ access_token: at, refresh_token: rt })
+        if (!error) session = data.session
+      }
+    }
+
+    // Se não veio pelo hash, verifica sessão existente (re-visita / refresh)
+    if (!session) {
+      const { data } = await _sb.auth.getSession()
+      session = data.session
+    }
 
     if (!session) {
       location.replace(_LOGIN_URL + '?redirect_to=' + encodeURIComponent(location.href))
       return
     }
 
+    // Trava de assinatura: o webhook da Hotmart grava o status em app_metadata
+    // (não editável pelo usuário). Se a assinatura foi cancelada/reembolsada,
+    // bloqueia o acesso imediatamente — sem esperar o token expirar.
+    const subStatus = session.user.app_metadata && session.user.app_metadata.subscription_status
+    if (subStatus === 'inactive') {
+      mostrarInativo()
+      return
+    }
+
+    window._uid = session.user.id
+
     // Mostra email do usuário no rodapé da sidebar
     const sp = document.getElementById('sb-plan')
     if (sp) sp.textContent = session.user.email
+
+    // Carrega perfil + histórico da conta (sincroniza entre dispositivos)
+    await carregarRemoto()
 
     document.getElementById('auth-loading').remove()
     if (location.hash) history.replaceState(null, '', location.pathname + location.search)
     initApp()
   } catch(err) {
     console.error('Auth error:', err)
-    document.getElementById('auth-loading').remove()
-    initApp()
+    // Fail-closed: em erro de autenticação, volta para o login em vez de liberar acesso
+    location.replace(_LOGIN_URL + '?redirect_to=' + encodeURIComponent(location.href))
   }
 })()
+
+/* ── ASSINATURA INATIVA ── */
+function mostrarInativo() {
+  const el = document.getElementById('auth-loading')
+  el.innerHTML =
+    '<div style="max-width:380px;text-align:center;padding:24px">' +
+      '<div style="font-size:19px;font-weight:800;letter-spacing:-.5px;color:#EEF2FF;margin-bottom:20px">Corretor<span style="color:#4D7EFF">PRO</span></div>' +
+      '<div style="width:52px;height:52px;border-radius:50%;background:rgba(239,68,68,.12);display:flex;align-items:center;justify-content:center;margin:0 auto 16px">' +
+        '<svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="#EF4444" stroke-width="2.2" stroke-linecap="round"><circle cx="12" cy="12" r="9"/><path d="M12 8v5M12 16h.01"/></svg>' +
+      '</div>' +
+      '<div style="font-size:16px;font-weight:700;color:#EEF2FF;margin-bottom:8px">Sua assinatura está inativa</div>' +
+      '<p style="font-size:13px;color:#7B93B8;line-height:1.6;margin-bottom:22px">Para voltar a gerar propostas, reative sua assinatura. Seus dados ficam guardados e voltam assim que o acesso for liberado.</p>' +
+      '<a href="' + _CHECKOUT_URL + '" style="display:block;background:#4D7EFF;color:#fff;text-decoration:none;border-radius:8px;padding:12px;font-size:14px;font-weight:600;margin-bottom:12px">Reativar assinatura</a>' +
+      '<a href="#" onclick="sair();return false" style="font-size:13px;color:#7B93B8;text-decoration:none">Sair</a>' +
+    '</div>'
+}
 
 /* ── ESC HTML ── */
 const escH = s => String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;')
@@ -774,7 +826,50 @@ function initApp() {
 
 async function sair() {
   if (window._sb) await window._sb.auth.signOut()
+  // Limpa o cache local para não deixar PII (perfil/histórico) no dispositivo
+  try { localStorage.removeItem('cpr_perfil'); localStorage.removeItem('cpr_hist') } catch(_) {}
   location.replace(_LOGIN_URL)
+}
+
+/* ── SYNC SUPABASE: perfil + histórico ficam atrelados à conta ──
+   Persiste na tabela cpr_user_data (RLS por user_id). localStorage
+   funciona como cache offline; a nuvem é a fonte de verdade. */
+async function carregarRemoto() {
+  if (!window._sb || !window._uid) return
+  try {
+    const { data, error } = await window._sb
+      .from('cpr_user_data')
+      .select('perfil,historico')
+      .eq('user_id', window._uid)
+      .maybeSingle()
+    if (error) return
+    if (data) {
+      if (data.perfil && typeof data.perfil === 'object') {
+        perfil = Object.assign({ nome:'',creci:'',tel:'',email:'',cor:'#4D7EFF',logo:null }, data.perfil)
+        localStorage.setItem('cpr_perfil', JSON.stringify(perfil))
+      }
+      if (Array.isArray(data.historico)) {
+        historico = data.historico
+        localStorage.setItem('cpr_hist', JSON.stringify(historico))
+      }
+    } else if (perfil.nome || historico.length) {
+      // Primeiro acesso desta conta: migra os dados locais para a nuvem
+      await salvarRemoto()
+    }
+  } catch(e) { /* offline → segue com o cache local */ }
+}
+
+async function salvarRemoto() {
+  if (!window._sb || !window._uid) return
+  try {
+    const { error } = await window._sb.from('cpr_user_data').upsert(
+      { user_id: window._uid, perfil, historico, updated_at: new Date().toISOString() },
+      { onConflict: 'user_id' }
+    )
+    if (error) throw error
+  } catch(e) {
+    throw e  // propaga para quem chamou mostrar o erro ao usuário
+  }
 }
 
 /* ── VIEWS ── */
@@ -1104,7 +1199,7 @@ function compartilharWA() {
 }
 
 /* ── SALVAR PROPOSTA ── */
-function salvarProposta() {
+async function salvarProposta() {
   if (!snapProposta) return
   const item = {
     id: Date.now(),
@@ -1116,7 +1211,12 @@ function salvarProposta() {
   if (historico.length > 20) historico = historico.slice(0, 20)
   localStorage.setItem('cpr_hist', JSON.stringify(historico))
   atualizarBadgeHist()
-  toast('Proposta salva em Minhas Propostas!')
+  try {
+    await salvarRemoto()
+    toast('Proposta salva em Minhas Propostas!')
+  } catch(_) {
+    toast('Salvo localmente — verifique sua conexão', true)
+  }
 }
 
 /* ── NOVA PROPOSTA ── */
@@ -1172,6 +1272,7 @@ function renderHistory() {
 function excluirProposta(i) {
   historico.splice(i, 1)
   localStorage.setItem('cpr_hist', JSON.stringify(historico))
+  salvarRemoto()
   atualizarBadgeHist()
   renderHistory()
   toast('Proposta removida')
@@ -1200,7 +1301,7 @@ function atualizarPreview() {
   renderSidebarUser()
 }
 
-function salvarConfig(ev) {
+async function salvarConfig(ev) {
   ev.preventDefault()
   const nome = document.getElementById('c-nome').value.trim()
   if (!nome) { document.getElementById('c-nome').focus(); return }
@@ -1213,16 +1314,28 @@ function salvarConfig(ev) {
   aplicarPerfil()
   renderSidebarUser()
   document.getElementById('banner-profile').classList.remove('show')
-  toast('Perfil salvo! Suas propostas terão sua marca.')
+  try {
+    await salvarRemoto()
+    toast('Perfil salvo! Suas propostas terão sua marca.')
+  } catch(_) {
+    toast('Salvo localmente — verifique sua conexão', true)
+  }
   showView('form')
 }
 
+function escurecer(hex, amt) {
+  const h = String(hex || '').replace('#', '')
+  if (h.length !== 6) return hex
+  const ch = i => Math.max(0, Math.round(parseInt(h.slice(i, i+2), 16) * (1 - amt)))
+  return '#' + [ch(0), ch(2), ch(4)].map(x => x.toString(16).padStart(2, '0')).join('')
+}
+
 function aplicarPerfil() {
-  // apply brand color to CSS var
+  // aplica a cor da marca nas CSS vars
   if (perfil.cor) {
     document.documentElement.style.setProperty('--p', perfil.cor)
-    // derive hover (slightly darker)
-    document.documentElement.style.setProperty('--ph', perfil.cor)
+    // hover é uma versão ~12% mais escura para dar feedback no clique
+    document.documentElement.style.setProperty('--ph', escurecer(perfil.cor, 0.12))
     document.documentElement.style.setProperty('--ps', perfil.cor + '1F')
   }
 }
@@ -1249,29 +1362,52 @@ function atualizarCor(hex) {
   perfil.cor = hex
   document.getElementById('c-cor').value = hex
   document.getElementById('color-swatch').style.background = hex
-  // highlight selected preset
+  // destaca o preset selecionado
   document.querySelectorAll('.preset').forEach(p => {
-    p.classList.toggle('sel-p', p.style.background === hex || p.getAttribute('onclick')?.includes(hex))
+    const c = (p.getAttribute('data-cor') || '').toLowerCase()
+    p.classList.toggle('sel-p', c === String(hex).toLowerCase())
   })
   aplicarPerfil()
 }
 
 /* ── LOGO UPLOAD ── */
+// Redimensiona o logo para no máx 256px antes de salvar, evitando inflar a
+// linha no banco (o data URL fica leve em vez de 1MB+ em base64).
 function carregarLogo(ev) {
   const file = ev.target.files[0]
   if (!file) return
-  if (file.size > 1024 * 1024) { toast('Logo muito grande — máx 1MB'); return }
+  if (file.size > 4 * 1024 * 1024) { toast('Logo muito grande — máx 4MB', true); return }
   const reader = new FileReader()
   reader.onload = e => {
-    perfil.logo = e.target.result
-    const prev = document.getElementById('logo-prev')
-    prev.innerHTML = `<img src="${perfil.logo}" alt="Logo">`
-    const prevCfg = document.getElementById('cfg-prev-logo')
-    prevCfg.innerHTML = `<img src="${perfil.logo}" alt="Logo" style="width:100%;height:100%;object-fit:contain">`
-    renderSidebarUser()
-    toast('Logo carregado')
+    const img = new Image()
+    img.onload = () => {
+      const MAX = 256
+      let { width, height } = img
+      if (width > MAX || height > MAX) {
+        const escala = Math.min(MAX / width, MAX / height)
+        width = Math.round(width * escala)
+        height = Math.round(height * escala)
+      }
+      const canvas = document.createElement('canvas')
+      canvas.width = width; canvas.height = height
+      canvas.getContext('2d').drawImage(img, 0, 0, width, height)
+      // PNG preserva transparência (logos costumam ter fundo transparente)
+      perfil.logo = canvas.toDataURL('image/png')
+      aplicarLogoPreview()
+      toast('Logo carregado')
+    }
+    img.onerror = () => toast('Arquivo de imagem inválido', true)
+    img.src = e.target.result
   }
   reader.readAsDataURL(file)
+}
+
+function aplicarLogoPreview() {
+  const prev = document.getElementById('logo-prev')
+  prev.innerHTML = `<img src="${perfil.logo}" alt="Logo">`
+  const prevCfg = document.getElementById('cfg-prev-logo')
+  prevCfg.innerHTML = `<img src="${perfil.logo}" alt="Logo" style="width:100%;height:100%;object-fit:contain">`
+  renderSidebarUser()
 }
 
 function removerLogo() {
@@ -1282,12 +1418,15 @@ function removerLogo() {
 }
 
 /* ── TOAST ── */
-function toast(msg) {
+function toast(msg, isErr = false) {
   const el = document.getElementById('toast')
   document.getElementById('toast-txt').textContent = msg
+  document.getElementById('toast-ico-ok').style.display = isErr ? 'none' : ''
+  document.getElementById('toast-ico-err').style.display = isErr ? '' : 'none'
+  el.classList.toggle('err', isErr)
   el.classList.add('on')
   clearTimeout(_toastT)
-  _toastT = setTimeout(() => el.classList.remove('on'), 2800)
+  _toastT = setTimeout(() => el.classList.remove('on'), 3400)
 }
 
 /* ── MOBILE SIDEBAR ── */
