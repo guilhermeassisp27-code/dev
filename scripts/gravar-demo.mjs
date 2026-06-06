@@ -1,8 +1,8 @@
 // Grava automaticamente um vídeo da ferramenta CorretorPRO demonstrando as
 // funcionalidades de busca no histórico e duplicar proposta.
 //
-// Fluxo: login com conta demo -> cria uma proposta de exemplo -> abre
-// "Minhas Propostas" -> demonstra a busca -> demonstra o duplicar.
+// Fluxo: login com conta demo -> preenche e gera uma proposta -> salva ->
+// abre "Minhas Propostas" -> demonstra a busca -> demonstra o duplicar.
 //
 // O vídeo (webm) é salvo em ./video e depois convertido para mp4 pelo workflow.
 //
@@ -15,7 +15,6 @@
 import { chromium } from 'playwright'
 
 const APP = process.env.APP_URL || 'https://usecorretorpro.vercel.app'
-const TOOL = process.env.TOOL_URL || 'https://guilhermeassisp27-code.github.io/dev/tool.html'
 const EMAIL = process.env.DEMO_EMAIL
 const PASS = process.env.DEMO_PASSWORD
 
@@ -44,45 +43,66 @@ try {
   await beat(600)
   await page.click('button[type="submit"]')
 
-  // 2) Aguarda redirecionar para a ferramenta
+  // 2) Aguarda redirecionar para a ferramenta e o formulário ficar pronto
   console.log('Aguardando a ferramenta carregar...')
   await page.waitForURL(/tool\.html/, { timeout: 40000 })
   await page.waitForLoadState('networkidle')
-  await beat(2500)
+  await page.waitForSelector('#f-cliente', { state: 'visible', timeout: 30000 })
+  await beat(2000)
 
-  // 3) Cria uma proposta de exemplo (para o histórico ter dado)
-  console.log('Criando proposta de exemplo...')
-  await page.click('#btn-exemplo')                 // preenche o formulário
-  await beat(1500)
-  await page.click('#gen-btn')                      // gera a proposta
-  await beat(3200)                                  // a geração tem delay ~1.7s
-  await page.click('[onclick="salvarProposta()"]')  // salva no histórico
+  // 3) Preenche os campos do formulário diretamente (robusto em qualquer tela)
+  console.log('Preenchendo a proposta...')
+  await page.fill('#f-cliente', 'João Silva')
+  await page.selectOption('#f-tipo-imovel', { label: 'Apartamento' })
+  await page.selectOption('#f-tipo-neg', { label: 'Compra' })
+  await beat(400)
+  await page.fill('#f-end', 'Av. Paulista, 1000 — Bela Vista, São Paulo, SP')
+  await page.fill('#f-area', '78')
+  await page.fill('#f-dorms', '3')
+  await page.fill('#f-vagas', '2')
+  await page.fill('#f-valor', '450.000')
+  await page.fill('#f-cond', 'Cliente tem FGTS disponível e busca financiamento de longo prazo')
+  await beat(1200)
+
+  // 4) Gera a proposta (botão principal, submit do form)
+  console.log('Gerando a proposta...')
+  await page.click('#gen-btn')
+  await beat(3500)                                  // geração tem delay ~1.7s + animação
+
+  // 5) Salva no histórico
+  console.log('Salvando no histórico...')
+  await page.click('[onclick="salvarProposta()"]')
   await beat(1800)
 
-  // 4) Abre "Minhas Propostas"
+  // 6) Abre o menu e vai para "Minhas Propostas"
   console.log('Abrindo Minhas Propostas...')
+  const hamburger = page.locator('[onclick="openSidebar()"]')
+  if (await hamburger.isVisible().catch(() => false)) {
+    await hamburger.click()
+    await beat(800)
+  }
   await page.click('[onclick="showView(\'history\')"]')
   await beat(2200)
 
-  // 5) Demonstra a BUSCA
+  // 7) Demonstra a BUSCA (digita devagar para efeito visual)
   console.log('Demonstrando a busca...')
   const busca = page.locator('#hist-search')
   await busca.click()
   await beat(500)
-  for (const ch of 'João') {                        // digita devagar (efeito visual)
-    await busca.type(ch, { delay: 180 })
+  for (const ch of 'João') {
+    await busca.type(ch, { delay: 200 })
   }
   await beat(2200)
-  await busca.fill('')                              // limpa
+  await busca.fill('')                              // limpa o filtro
   await beat(1200)
 
-  // 6) Demonstra o DUPLICAR
+  // 8) Demonstra o DUPLICAR
   console.log('Demonstrando o duplicar...')
   const dup = page.locator('[onclick^="duplicarProposta"]').first()
   await dup.click()
-  await beat(3000)                                  // abre o form preenchido
+  await beat(3000)                                  // abre o formulário pré-preenchido
 
-  console.log('Demo concluída.')
+  console.log('Demo concluída com sucesso.')
 } catch (err) {
   console.error('Falha durante a gravação:', err)
   process.exitCode = 1
