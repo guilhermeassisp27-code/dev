@@ -58,8 +58,8 @@ try {
   await beat(400)
   await page.fill('#f-end', 'Av. Paulista, 1000 — Bela Vista, São Paulo, SP')
   await page.fill('#f-area', '78')
-  await page.fill('#f-dorms', '3')
-  await page.fill('#f-vagas', '2')
+  await page.selectOption('#f-dorms', { label: '3' })   // f-dorms é <select>
+  await page.selectOption('#f-vagas', { label: '2' })   // f-vagas é <select>
   await page.fill('#f-valor', '450.000')
   await page.fill('#f-cond', 'Cliente tem FGTS disponível e busca financiamento de longo prazo')
   await beat(1200)
