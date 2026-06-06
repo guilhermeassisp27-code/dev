@@ -3,8 +3,7 @@ name: Deploy Site to GitHub Pages
 on:
   push:
     branches:
-      - claude/development-session-O10kI
-      - claude/init-repo-setup-9hmiV
+      - main
   workflow_dispatch:
 
 permissions:
