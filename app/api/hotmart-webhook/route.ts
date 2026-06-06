@@ -27,7 +27,10 @@ export async function POST(req: NextRequest) {
     req.headers.get(HOTTOK_HEADER) ||
     req.nextUrl.searchParams.get('hottok')
 
-  if (!process.env.HOTMART_WEBHOOK_TOKEN || token !== process.env.HOTMART_WEBHOOK_TOKEN) {
+  if (!process.env.HOTMART_WEBHOOK_TOKEN) {
+    return NextResponse.json({ error: 'HOTMART_WEBHOOK_TOKEN not configured on server' }, { status: 500 })
+  }
+  if (token !== process.env.HOTMART_WEBHOOK_TOKEN) {
     return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
   }
 
@@ -55,8 +58,8 @@ export async function POST(req: NextRequest) {
   )
 
   const appUrl =
-    (process.env.NEXT_PUBLIC_APP_URL ?? '') ||
-    'https://corretorpro-dusky.vercel.app'
+    (process.env.NEXT_PUBLIC_APP_URL ?? '').replace(/\/$/, '') ||
+    'https://usecorretorpro.vercel.app'
   // Novo comprador é convidado a DEFINIR A SENHA antes de acessar a ferramenta
   const setPasswordUrl = `${appUrl}/definir-senha`
 
