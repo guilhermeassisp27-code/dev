@@ -48,10 +48,10 @@ O workflow `.github/workflows/agentes-automaticos.yml` roda os agentes em horár
 fixos (ex.: relatório de dados toda segunda, lote de conteúdo toda semana) e abre
 PR / commit com o resultado para você revisar.
 
-Requisito: adicionar o secret `CLAUDE_CODE_OAUTH_TOKEN` no GitHub
+Requisito: adicionar o secret `ANTHROPIC_API_KEY` no GitHub
 (Settings → Secrets and variables → Actions → New repository secret).
-Gere o token rodando `claude setup-token` — ele usa seu plano Claude Pro/Max,
-sem cobrança de API à parte.
+A chave vem de console.anthropic.com e consome créditos de API por uso —
+mantenha um limite de gasto baixo em Faturamento.
 
 ## Limites importantes (segurança)
 

@@ -44,7 +44,7 @@ jobs:
       - name: Rodar agente de produto
         uses: anthropics/claude-code-action@v1
         with:
-          claude_code_oauth_token: ${{ secrets.CLAUDE_CODE_OAUTH_TOKEN }}
+          anthropic_api_key: ${{ secrets.ANTHROPIC_API_KEY }}
           prompt: |
             Use o agente "produto". Leia docs/roadmap.md (crie se não existir),
             escolha UMA melhoria de alto impacto e baixo risco para a ferramenta
@@ -61,7 +61,7 @@ jobs:
       - name: Rodar agente de marketing (anúncio)
         uses: anthropics/claude-code-action@v1
         with:
-          claude_code_oauth_token: ${{ secrets.CLAUDE_CODE_OAUTH_TOKEN }}
+          anthropic_api_key: ${{ secrets.ANTHROPIC_API_KEY }}
           prompt: |
             Use o agente "marketing". Leia a entrada mais recente de
             docs/novidades.md (a novidade que acabou de entrar no ar). Crie o
