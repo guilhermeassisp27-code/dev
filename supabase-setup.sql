@@ -14,6 +14,11 @@ create table if not exists public.cpr_user_data (
 -- Liga o Row Level Security: cada usuário só enxerga a própria linha
 alter table public.cpr_user_data enable row level security;
 
+-- Permissões em nível de TABELA para o papel "authenticated".
+-- IMPRESCINDÍVEL ao criar a tabela por SQL puro: sem este GRANT, o usuário
+-- logado leva "permission denied for table" (erro 42501) mesmo com a RLS certa.
+grant select, insert, update on public.cpr_user_data to authenticated;
+
 -- SELECT: ler apenas os próprios dados
 drop policy if exists "cpr_select_own" on public.cpr_user_data;
 create policy "cpr_select_own"
