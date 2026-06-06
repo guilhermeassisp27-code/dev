@@ -46,6 +46,10 @@ jobs:
         uses: anthropics/claude-code-action@v1
         with:
           anthropic_api_key: ${{ secrets.ANTHROPIC_API_KEY }}
+          claude_args: |
+            --model claude-sonnet-4-6
+            --max-turns 25
+            --allowedTools "Read,Edit,Write,Glob,Grep,Bash(git:*),Bash(gh:*),Bash(npx tsc:*)"
           prompt: |
             Use o agente "produto". Leia docs/roadmap.md (crie se não existir),
             escolha UMA melhoria de alto impacto e baixo risco para a ferramenta
@@ -63,6 +67,10 @@ jobs:
         uses: anthropics/claude-code-action@v1
         with:
           anthropic_api_key: ${{ secrets.ANTHROPIC_API_KEY }}
+          claude_args: |
+            --model claude-sonnet-4-6
+            --max-turns 25
+            --allowedTools "Read,Edit,Write,Glob,Grep,Bash(git:*),Bash(gh:*),Bash(npx tsc:*)"
           prompt: |
             Use o agente "marketing". Leia a entrada mais recente de
             docs/novidades.md (a novidade que acabou de entrar no ar). Crie o

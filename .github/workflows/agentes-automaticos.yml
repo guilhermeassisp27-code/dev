@@ -43,6 +43,10 @@ jobs:
         uses: anthropics/claude-code-action@v1
         with:
           anthropic_api_key: ${{ secrets.ANTHROPIC_API_KEY }}
+          claude_args: |
+            --model claude-sonnet-4-6
+            --max-turns 25
+            --allowedTools "Read,Edit,Write,Glob,Grep,Bash(git:*),Bash(gh:*),Bash(npx tsc:*)"
           prompt: |
             Use o agente "dados". Gere o relatório semanal de assinantes do
             CorretorPRO: ativos, cancelados/churn, taxa de ativação, mix de
@@ -59,6 +63,10 @@ jobs:
         uses: anthropics/claude-code-action@v1
         with:
           anthropic_api_key: ${{ secrets.ANTHROPIC_API_KEY }}
+          claude_args: |
+            --model claude-sonnet-4-6
+            --max-turns 25
+            --allowedTools "Read,Edit,Write,Glob,Grep,Bash(git:*),Bash(gh:*),Bash(npx tsc:*)"
           prompt: |
             Use o agente "marketing". Crie o lote de conteúdo da semana: 5
             roteiros de Reels/Shorts (gancho + desenvolvimento + CTA) e 3 copies
@@ -75,6 +83,10 @@ jobs:
         uses: anthropics/claude-code-action@v1
         with:
           anthropic_api_key: ${{ secrets.ANTHROPIC_API_KEY }}
+          claude_args: |
+            --model claude-sonnet-4-6
+            --max-turns 25
+            --allowedTools "Read,Edit,Write,Glob,Grep,Bash(git:*),Bash(gh:*),Bash(npx tsc:*)"
           prompt: |
             Use o agente "trafego". Revise marketing/plano-trafego.md e proponha
             ajustes de estrutura, públicos e verba para a próxima semana, com
