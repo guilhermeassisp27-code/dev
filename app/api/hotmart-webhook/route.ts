@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { createClient } from '@supabase/supabase-js'
+import { sendWelcomeEmail } from '@/lib/email'
 
 // Hotmart sends the token in this header for webhook validation
 const HOTTOK_HEADER = 'x-hotmart-hottok'
@@ -11,6 +12,9 @@ const OFFER_PLANS: Record<string, string> = {
   hgn79gvq: 'mensal',
   mcjyy7ub: 'anual',
 }
+
+// Formato do retorno de admin.generateLink (contém o link de ação pronto)
+type ActionLinkData = { properties?: { action_link?: string } }
 
 // Descobre o plano a partir do código de oferta vindo no payload da Hotmart.
 // A Hotmart pode enviar o código em data.purchase.offer.code (compra)
@@ -84,9 +88,11 @@ export async function POST(req: NextRequest) {
     const existing = await findUser(buyer.email)
 
     if (existing) {
-      // Já tem conta (renovação ou reassinatura após cancelar) — reativa o acesso.
+      // Já tem conta (renovação, reassinatura, ou 2º evento da MESMA compra —
+      // a Hotmart dispara PURCHASE_APPROVED e PURCHASE_COMPLETE). Reativa acesso.
       // O status fica em app_metadata (NÃO editável pelo usuário) — é o que a
       // ferramenta consulta para liberar o uso.
+      const jaEnviou = (existing.app_metadata as Record<string, unknown>)?.welcome_sent === true
       await supabase.auth.admin.updateUserById(existing.id, {
         ban_duration: 'none',
         app_metadata: {
@@ -100,30 +106,79 @@ export async function POST(req: NextRequest) {
           hotmart_transaction: purchase?.transaction ?? existing.user_metadata?.hotmart_transaction ?? '',
         },
       })
-      // Só envia link de senha se a conta ainda não foi ativada (sem senha definida)
-      const semSenha = !existing.last_sign_in_at
-      if (semSenha) {
-        await supabase.auth.admin.generateLink({
+      // (Re)envia o link só se a conta nunca foi ativada (sem senha) E ainda não
+      // enviamos o email de acesso. Isso evita email duplicado quando a Hotmart
+      // manda dois eventos para a mesma compra, e não incomoda quem já tem senha.
+      if (!existing.last_sign_in_at && !jaEnviou) {
+        const { data: linkData } = await supabase.auth.admin.generateLink({
           type: 'recovery',
           email: buyer.email,
           options: { redirectTo: setPasswordUrl },
         })
+        const actionLink = (linkData as ActionLinkData)?.properties?.action_link
+        if (actionLink) {
+          const r = await sendWelcomeEmail({ to: buyer.email, actionLink, name: buyer.name })
+          if (r.sent) {
+            await supabase.auth.admin.updateUserById(existing.id, {
+              app_metadata: {
+                ...(existing.app_metadata ?? {}),
+                subscription_status: 'active',
+                plan,
+                welcome_sent: true,
+              },
+            })
+          } else {
+            console.error('[hotmart-webhook] welcome email falhou (existing):', r.reason)
+          }
+        }
       }
     } else {
-      // Novo comprador — convida a definir a senha
-      const { data: invited } = await supabase.auth.admin.inviteUserByEmail(buyer.email, {
-        data: {
-          full_name: buyer.name ?? '',
-          hotmart_transaction: purchase?.transaction ?? '',
-          plan,
+      // Novo comprador — generateLink type:invite CRIA o usuário e retorna o
+      // action_link, SEM disparar o email do Supabase. Nós enviamos via Resend
+      // (controle total de entregabilidade) logo em seguida.
+      const { data: linkData, error: linkErr } = await supabase.auth.admin.generateLink({
+        type: 'invite',
+        email: buyer.email,
+        options: {
+          data: {
+            full_name: buyer.name ?? '',
+            hotmart_transaction: purchase?.transaction ?? '',
+            plan,
+          },
+          redirectTo: setPasswordUrl,
         },
-        redirectTo: setPasswordUrl,
       })
-      // Marca a assinatura como ativa em app_metadata (inviteUserByEmail só
-      // grava user_metadata; o status seguro precisa ir em app_metadata).
-      if (invited?.user?.id) {
-        await supabase.auth.admin.updateUserById(invited.user.id, {
-          app_metadata: { subscription_status: 'active', plan },
+
+      if (linkErr) {
+        // Corrida rara: dois eventos simultâneos, o outro já criou o usuário.
+        // "already registered" não é erro real — o próximo evento/retry resolve.
+        if (/already|registered|exist/i.test(linkErr.message)) {
+          return NextResponse.json({ ok: true, note: 'user already created by concurrent event' })
+        }
+        console.error('[hotmart-webhook] generateLink invite falhou:', linkErr.message)
+        return NextResponse.json({ error: 'Falha ao criar acesso do comprador' }, { status: 500 })
+      }
+
+      const actionLink = (linkData as ActionLinkData)?.properties?.action_link
+      const newUserId = (linkData as { user?: { id?: string } })?.user?.id
+
+      // Envia o email primeiro para gravar o resultado em welcome_sent.
+      let emailOk = false
+      if (actionLink) {
+        const r = await sendWelcomeEmail({ to: buyer.email, actionLink, name: buyer.name })
+        emailOk = r.sent
+        if (!r.sent) {
+          // Não derruba o webhook: o usuário foi criado. Logamos para reenvio
+          // manual via /api/admin/invite caso o email não saia.
+          console.error('[hotmart-webhook] welcome email falhou (novo):', r.reason)
+        }
+      }
+
+      // Marca assinatura ativa em app_metadata (generateLink grava só
+      // user_metadata; o status seguro precisa ir em app_metadata).
+      if (newUserId) {
+        await supabase.auth.admin.updateUserById(newUserId, {
+          app_metadata: { subscription_status: 'active', plan, welcome_sent: emailOk },
         })
       }
     }

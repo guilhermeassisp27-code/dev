@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { createClient } from '@supabase/supabase-js'
+import { resendAccessEmail } from '@/lib/email'
 
 function getSupabase() {
   return createClient(
@@ -131,12 +132,23 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: linkErr.message }, { status: 500 })
     }
 
+    const actionLink = (linkData as ActionLinkData)?.properties?.action_link
+    const emailResult = actionLink
+      ? await resendAccessEmail({
+          to: body.email,
+          actionLink,
+          name: body.name ?? (existing.user_metadata?.full_name as string) ?? '',
+        })
+      : ({ sent: false, reason: 'no action_link' } as const)
+
     return NextResponse.json({
       ok: true,
       action: 'recovery_link_generated',
       userId: existing.id,
-      actionLink: (linkData as ActionLinkData)?.properties?.action_link,
-      note: 'Envie o actionLink direto para o comprador (WhatsApp/email). Ele abre a tela de definir senha.',
+      emailSent: emailResult.sent,
+      emailError: emailResult.sent ? undefined : emailResult.reason,
+      actionLink,
+      note: 'Email enviado via Resend (se emailSent=true). Se emailSent=false, envie o actionLink direto pro comprador por WhatsApp.',
     })
   }
 
@@ -161,11 +173,18 @@ export async function POST(req: NextRequest) {
     })
   }
 
+  const actionLink = (linkData as ActionLinkData)?.properties?.action_link
+  const emailResult = actionLink
+    ? await resendAccessEmail({ to: body.email, actionLink, name: body.name })
+    : ({ sent: false, reason: 'no action_link' } as const)
+
   return NextResponse.json({
     ok: true,
     action: 'invited_new_user',
     userId: newUserId,
-    actionLink: (linkData as ActionLinkData)?.properties?.action_link,
-    note: 'Envie o actionLink direto para o comprador (WhatsApp/email). Ele abre a tela de definir senha.',
+    emailSent: emailResult.sent,
+    emailError: emailResult.sent ? undefined : emailResult.reason,
+    actionLink,
+    note: 'Email enviado via Resend (se emailSent=true). Se emailSent=false, envie o actionLink direto pro comprador por WhatsApp.',
   })
 }
