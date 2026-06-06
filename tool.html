@@ -227,6 +227,14 @@ input[type=color]{opacity:0;width:0;height:0;position:absolute}
 .hist-valor{font-size:14px;font-weight:700;color:var(--t);flex-shrink:0;text-align:right}
 .hist-actions{display:flex;gap:6px;flex-shrink:0}
 
+/* ── HISTORY SEARCH ── */
+.hist-search-wrap{position:relative;margin-bottom:16px}
+.hist-search-ico{position:absolute;left:11px;top:50%;transform:translateY(-50%);color:var(--t3);pointer-events:none}
+.hist-search{width:100%;background:var(--s2);border:1px solid rgba(255,255,255,.09);border-radius:var(--rad);padding:9px 13px 9px 36px;font-size:14px;color:var(--t);font-family:var(--font);outline:none;transition:border-color .15s,box-shadow .15s}
+.hist-search:focus{border-color:rgba(77,126,255,.5);box-shadow:0 0 0 3px rgba(77,126,255,.08)}
+.hist-search::placeholder{color:var(--t3)}
+.hist-count{font-size:12px;color:var(--t3);margin-bottom:12px}
+
 /* ── CONFIG VIEW ── */
 .cfg-preview{background:var(--s2);border:1px solid var(--b);border-radius:var(--radl);padding:14px 18px;margin-bottom:14px;display:flex;align-items:center;gap:12px}
 .cfg-preview-logo{width:40px;height:40px;border-radius:var(--rad);background:var(--s3);display:flex;align-items:center;justify-content:center;overflow:hidden;flex-shrink:0}
@@ -612,6 +620,11 @@ input[type=color]{opacity:0;width:0;height:0;position:absolute}
         <h1>Minhas Propostas</h1>
         <p>Histórico das suas últimas propostas geradas.</p>
       </div>
+      <div class="hist-search-wrap" id="hist-search-wrap" style="display:none">
+        <svg class="hist-search-ico" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+        <input id="hist-search" class="hist-search" type="search" placeholder="Buscar por cliente, imóvel ou endereço..." oninput="filtrarHistory()" autocomplete="off">
+      </div>
+      <div class="hist-count" id="hist-count" style="display:none"></div>
       <div id="history-content"></div>
     </div>
 
@@ -884,7 +897,12 @@ function showView(name) {
   // topbar buttons only for form
   const btnEx = document.getElementById('btn-exemplo')
   if (btnEx) btnEx.style.display = name === 'form' ? '' : 'none'
-  if (name === 'history') renderHistory()
+  if (name === 'history') {
+    // Limpa busca ao abrir a aba para sempre mostrar o histórico completo
+    const srch = document.getElementById('hist-search')
+    if (srch) srch.value = ''
+    renderHistory()
+  }
   closeSidebar()
   window.scrollTo({ top: 0, behavior: 'smooth' })
 }
@@ -1242,8 +1260,20 @@ function atualizarBadgeHist() {
   }
 }
 
-function renderHistory() {
+function renderHistory(filtrados) {
   const el = document.getElementById('history-content')
+  const wrap = document.getElementById('hist-search-wrap')
+  const countEl = document.getElementById('hist-count')
+  const lista = filtrados !== undefined ? filtrados : historico
+
+  // Mostra barra de busca somente quando há propostas
+  if (historico.length > 0) {
+    wrap.style.display = ''
+  } else {
+    wrap.style.display = 'none'
+    countEl.style.display = 'none'
+  }
+
   if (historico.length === 0) {
     el.innerHTML = `<div class="hist-empty">
       <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
@@ -1252,7 +1282,25 @@ function renderHistory() {
     </div>`
     return
   }
-  el.innerHTML = `<div class="hist-list">${historico.map((h,i) => `
+
+  if (lista.length === 0) {
+    countEl.style.display = ''
+    countEl.textContent = 'Nenhuma proposta encontrada para essa busca.'
+    el.innerHTML = ''
+    return
+  }
+
+  if (filtrados !== undefined && historico.length !== lista.length) {
+    countEl.style.display = ''
+    countEl.textContent = `${lista.length} de ${historico.length} proposta${historico.length > 1 ? 's' : ''}`
+  } else {
+    countEl.style.display = 'none'
+  }
+
+  el.innerHTML = `<div class="hist-list">${lista.map((h) => {
+    // Índice real no array historico (necessário para excluir/duplicar)
+    const realIdx = historico.indexOf(h)
+    return `
     <div class="hist-card">
       <span class="hist-tipo">${escH(h.tipoNeg||'—')}</span>
       <div class="hist-info">
@@ -1262,11 +1310,15 @@ function renderHistory() {
       </div>
       <div class="hist-valor">${h.valor ? 'R$ ' + escH(h.valor) : '—'}</div>
       <div class="hist-actions">
-        <button class="btn btn-ghost btn-sm" onclick="excluirProposta(${i})" aria-label="Excluir">
+        <button class="btn btn-ghost btn-sm" onclick="duplicarProposta(${realIdx})" title="Duplicar — abre o formulário preenchido com os dados desta proposta">
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1"/></svg>
+        </button>
+        <button class="btn btn-ghost btn-sm" onclick="excluirProposta(${realIdx})" aria-label="Excluir">
           <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 01-2 2H8a2 2 0 01-2-2L5 6"/><path d="M10 11v6M14 11v6"/><path d="M9 6V4h6v2"/></svg>
         </button>
       </div>
-    </div>`).join('')}</div>`
+    </div>`
+  }).join('')}</div>`
 }
 
 function excluirProposta(i) {
@@ -1274,8 +1326,73 @@ function excluirProposta(i) {
   localStorage.setItem('cpr_hist', JSON.stringify(historico))
   salvarRemoto()
   atualizarBadgeHist()
-  renderHistory()
+  // Mantém o filtro ativo ao excluir
+  const q = (document.getElementById('hist-search')?.value || '').trim()
+  renderHistory(q ? historico.filter(h => matchFiltro(h, q)) : undefined)
   toast('Proposta removida')
+}
+
+/* ── BUSCA NO HISTÓRICO ── */
+function matchFiltro(h, q) {
+  const needle = q.toLowerCase()
+  return (
+    (h.cliente || '').toLowerCase().includes(needle) ||
+    (h.tipoImovel || '').toLowerCase().includes(needle) ||
+    (h.end || '').toLowerCase().includes(needle) ||
+    (h.tipoNeg || '').toLowerCase().includes(needle)
+  )
+}
+
+function filtrarHistory() {
+  const q = (document.getElementById('hist-search')?.value || '').trim()
+  if (!q) {
+    renderHistory(undefined)
+    return
+  }
+  const filtrados = historico.filter(h => matchFiltro(h, q))
+  renderHistory(filtrados)
+}
+
+/* ── DUPLICAR PROPOSTA ── */
+function duplicarProposta(i) {
+  const h = historico[i]
+  if (!h) return
+
+  // Navega para o formulário e preenche os campos com os dados da proposta
+  showView('form')
+
+  // Aguarda a view estar visível antes de preencher
+  setTimeout(() => {
+    const set = (id, val) => {
+      const el = document.getElementById(id)
+      if (el && val !== undefined && val !== null) el.value = val
+    }
+
+    set('f-cliente',    h.cliente    || '')
+    set('f-tipo-imovel', h.tipoImovel || '')
+    set('f-tipo-neg',   h.tipoNeg    || '')
+    set('f-end',        h.end        || '')
+    set('f-area',       h.area       || '')
+    set('f-dorms',      h.dorms      || '')
+    set('f-vagas',      h.vagas      || '')
+    set('f-valor',      h.valor      || '')
+    set('f-cond',       h.cond       || '')
+
+    // Campos condicionais de compra
+    if (h.prazo)  set('f-prazo', String(h.prazo))
+    if (h.taxa)   set('f-taxa',  String(h.taxa))
+
+    // Campos condicionais de locação
+    if (h.garantia) set('f-garantia', h.garantia)
+
+    // Campos condicionais de permuta
+    if (h.complem) set('f-complem', h.complem)
+
+    atualizarTipoNeg()
+
+    document.getElementById('f-cliente').focus()
+    toast('Proposta duplicada — edite e gere uma nova versão')
+  }, 80)
 }
 
 /* ── CONFIG / PERFIL ── */
