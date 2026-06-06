@@ -1,6 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { createClient } from '@supabase/supabase-js'
-import { resendAccessEmail } from '@/lib/email'
 
 function getSupabase() {
   return createClient(
@@ -68,21 +67,25 @@ export async function GET(req: NextRequest) {
     created_at: user.created_at,
     last_sign_in_at: user.last_sign_in_at,
     email_confirmed: !!user.email_confirmed_at,
+    banned_until: (user as { banned_until?: string }).banned_until ?? null,
     app_metadata: user.app_metadata,
   })
 }
 
-// POST /api/admin/invite — cria/ativa o comprador e SEMPRE retorna o link de
-// definir senha (action_link). Assim você nunca depende da entrega de email do
-// Supabase: pode mandar o link direto pro comprador por WhatsApp/email.
+// POST /api/admin/invite — cria/ativa o comprador e dispara o email de definir
+// senha pelo SMTP do Supabase (Brevo).
 //
-// Body: { "email": "...", "name"?: "...", "plan"?: "mensal|anual|corretorpro" }
+// Body: { "email": "...", "name"?: "...", "plan"?: "mensal|anual|corretorpro",
+//         "mode"?: "link" }
+//   - mode ausente: envia o email via Brevo (resetPasswordForEmail).
+//   - mode "link":  NÃO envia email; retorna o actionLink para envio manual
+//                   (WhatsApp). Use quando o email não estiver entregando.
 export async function POST(req: NextRequest) {
   if (!checkAuth(req)) {
     return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
   }
 
-  let body: { email?: string; name?: string; plan?: string }
+  let body: { email?: string; name?: string; plan?: string; mode?: string }
   try {
     body = await req.json()
   } catch {
@@ -94,97 +97,78 @@ export async function POST(req: NextRequest) {
   }
 
   const supabase = getSupabase()
+  const email = body.email.toLowerCase()
   const setPasswordUrl = `${getAppUrl()}/definir-senha`
   const plan = body.plan ?? 'corretorpro'
+  const modoLink = body.mode === 'link'
 
-  const existing = await findUser(supabase, body.email)
-
-  if (existing) {
-    // Já existe: garante acesso ativo e sem ban
-    await supabase.auth.admin.updateUserById(existing.id, {
-      ban_duration: 'none',
-      app_metadata: {
-        ...(existing.app_metadata ?? {}),
-        subscription_status: 'active',
-        plan,
-      },
+  // Garante que o usuário existe e está ativo
+  let user = await findUser(supabase, email)
+  if (!user) {
+    const { data: created, error: createErr } = await supabase.auth.admin.createUser({
+      email,
+      email_confirm: true,
+      user_metadata: { full_name: body.name ?? '', plan },
+      app_metadata: { subscription_status: 'active', plan },
     })
-
-    if (existing.last_sign_in_at) {
-      // Já definiu senha antes — é só logar
-      return NextResponse.json({
-        ok: true,
-        action: 'access_reactivated',
-        userId: existing.id,
-        loginUrl: `${getAppUrl()}/acesso`,
-        note: 'Usuario ja definiu senha. Acesso reativado — basta logar em loginUrl.',
-      })
+    if (createErr && !/already|registered|exist/i.test(createErr.message)) {
+      return NextResponse.json({ error: createErr.message }, { status: 500 })
     }
+    user = created?.user ?? (await findUser(supabase, email))
+  } else {
+    await supabase.auth.admin.updateUserById(user.id, {
+      ban_duration: 'none',
+      app_metadata: { ...(user.app_metadata ?? {}), subscription_status: 'active', plan },
+    })
+  }
 
-    // Nunca logou — gera link de recovery (serve para definir a senha)
+  if (!user) {
+    return NextResponse.json({ error: 'Não foi possível criar/localizar o usuário' }, { status: 500 })
+  }
+
+  // Já tem senha definida? Então é só logar.
+  if (user.last_sign_in_at) {
+    return NextResponse.json({
+      ok: true,
+      action: 'access_reactivated',
+      userId: user.id,
+      loginUrl: `${getAppUrl()}/acesso`,
+      note: 'Usuário já definiu senha. Acesso reativado — basta logar em loginUrl.',
+    })
+  }
+
+  // Modo link: retorna o action_link para envio manual (não dispara email)
+  if (modoLink) {
     const { data: linkData, error: linkErr } = await supabase.auth.admin.generateLink({
       type: 'recovery',
-      email: body.email,
+      email,
       options: { redirectTo: setPasswordUrl },
     })
-
     if (linkErr) {
       return NextResponse.json({ error: linkErr.message }, { status: 500 })
     }
-
-    const actionLink = (linkData as ActionLinkData)?.properties?.action_link
-    const emailResult = actionLink
-      ? await resendAccessEmail({
-          to: body.email,
-          actionLink,
-          name: body.name ?? (existing.user_metadata?.full_name as string) ?? '',
-        })
-      : ({ sent: false, reason: 'no action_link' } as const)
-
     return NextResponse.json({
       ok: true,
-      action: 'recovery_link_generated',
-      userId: existing.id,
-      emailSent: emailResult.sent,
-      emailError: emailResult.sent ? undefined : emailResult.reason,
-      actionLink,
-      note: 'Email enviado via Resend (se emailSent=true). Se emailSent=false, envie o actionLink direto pro comprador por WhatsApp.',
+      action: 'link_generated',
+      userId: user.id,
+      actionLink: (linkData as ActionLinkData)?.properties?.action_link,
+      note: 'Envie o actionLink direto pro comprador (WhatsApp). Abre a tela de definir senha.',
     })
   }
 
-  // Novo comprador — generateLink type:invite CRIA o usuario e retorna o link
-  const { data: linkData, error: linkErr } = await supabase.auth.admin.generateLink({
-    type: 'invite',
-    email: body.email,
-    options: {
-      data: { full_name: body.name ?? '', plan },
-      redirectTo: setPasswordUrl,
-    },
+  // Modo padrão: dispara o email de definir senha via Brevo
+  const { error: mailErr } = await supabase.auth.resetPasswordForEmail(email, {
+    redirectTo: setPasswordUrl,
   })
-
-  if (linkErr) {
-    return NextResponse.json({ error: linkErr.message }, { status: 500 })
-  }
-
-  const newUserId = (linkData as { user?: { id?: string } })?.user?.id
-  if (newUserId) {
-    await supabase.auth.admin.updateUserById(newUserId, {
-      app_metadata: { subscription_status: 'active', plan },
-    })
-  }
-
-  const actionLink = (linkData as ActionLinkData)?.properties?.action_link
-  const emailResult = actionLink
-    ? await resendAccessEmail({ to: body.email, actionLink, name: body.name })
-    : ({ sent: false, reason: 'no action_link' } as const)
 
   return NextResponse.json({
     ok: true,
-    action: 'invited_new_user',
-    userId: newUserId,
-    emailSent: emailResult.sent,
-    emailError: emailResult.sent ? undefined : emailResult.reason,
-    actionLink,
-    note: 'Email enviado via Resend (se emailSent=true). Se emailSent=false, envie o actionLink direto pro comprador por WhatsApp.',
+    action: 'email_sent',
+    userId: user.id,
+    emailSent: !mailErr,
+    emailError: mailErr?.message,
+    note: mailErr
+      ? 'Falha ao enviar email pelo Brevo. Use mode:"link" para gerar o link e enviar manual.'
+      : 'Email de definir senha enviado pelo Brevo.',
   })
 }

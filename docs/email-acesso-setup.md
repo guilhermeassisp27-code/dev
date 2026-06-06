@@ -10,11 +10,12 @@ Compra na Hotmart
    │
    ▼
 Webhook  POST /api/hotmart-webhook   (valida HOTMART_WEBHOOK_TOKEN)
-   │  cria o usuário no Supabase (generateLink — NÃO usa email do Supabase)
-   │  marca app_metadata.subscription_status = "active"
+   │  1. CRIA o usuário no Supabase (admin.createUser — sempre, mesmo se o email falhar)
+   │  2. marca app_metadata.subscription_status = "active"
+   │  3. dispara o email de definir senha (resetPasswordForEmail → SMTP Brevo)
    ▼
-Email enviado pelo RESEND  (lib/email.ts)  → contém o link "Definir minha senha"
-   │
+Email (template Reset password do Supabase, enviado pelo Brevo)
+   │  contém o link "definir senha" → {NEXT_PUBLIC_APP_URL}/definir-senha
    ▼
 /definir-senha  → usuário cria a senha → sessão criada
    │
@@ -23,6 +24,10 @@ Ferramenta (tool.html)  → checa app_metadata.subscription_status
    │  "active"  → libera
    │  "inactive"→ tela de reativar assinatura
 ```
+
+> Criação da conta e envio do email são SEPARADOS: quem pagou sempre fica com
+> conta ativa, mesmo que o email não saia. O email é reenviável pelo endpoint
+> admin (abaixo).
 
 Cancelamento/reembolso na Hotmart → webhook marca `inactive` e bane a conta.
 
@@ -36,11 +41,21 @@ Cancelamento/reembolso na Hotmart → webhook marca `inactive` e bane a conta.
 | `NEXT_PUBLIC_APP_URL` | `https://usecorretorpro.vercel.app` (sem barra final) |
 | `NEXT_PUBLIC_TOOL_URL` | URL da ferramenta (GitHub Pages) |
 | `HOTMART_WEBHOOK_TOKEN` | Hottok do webhook da Hotmart |
-| `RESEND_API_KEY` | Chave da conta Resend (`re_...`) |
-| `RESEND_FROM` | Remetente verificado, ex: `CorretorPRO <acesso@seudominio.com.br>` |
-| `RESEND_REPLY_TO` | (opcional) email de suporte para respostas |
 
+> Não há variáveis de email no código. O envio é feito pelo Supabase usando o
+> SMTP do **Brevo**, configurado no painel (Authentication → SMTP Settings).
+>
 > Toda vez que mudar uma variável no Vercel, faça **Redeploy** para valer.
+
+## Envio de email (Brevo via Supabase SMTP)
+
+- Supabase → Authentication → **SMTP Settings**: host/credenciais do Brevo,
+  com o remetente (sender) verificado no Brevo.
+- Supabase → Authentication → **Email Templates**: o template **Reset password**
+  é o usado no fluxo de definir senha (o webhook chama `resetPasswordForEmail`).
+- Se o email não chega: confira no Brevo (Transactional → Logs) se saiu, e a
+  pasta de spam. O endpoint admin com `mode:"link"` gera o link para envio
+  manual enquanto o SMTP não estiver 100%.
 
 ## Passo 1 — Webhook da Hotmart
 
@@ -50,17 +65,13 @@ Cancelamento/reembolso na Hotmart → webhook marca `inactive` e bane a conta.
    `PURCHASE_CANCELLED`, `PURCHASE_CHARGEBACK`, `SUBSCRIPTION_CANCELLATION`
 4. Copie o **Hottok** gerado → cole em `HOTMART_WEBHOOK_TOKEN` no Vercel
 
-## Passo 2 — Domínio + Resend (entregabilidade)
+## Passo 2 — Brevo (entregabilidade)
 
-1. Registre um domínio (ex: `usecorretorpro.com.br` no Registro.br, ou um `.com`
-   no Cloudflare/Namecheap).
-2. Resend → Domains → Add Domain → informe o domínio.
-3. O Resend mostra 3 registros DNS (SPF, DKIM e MX de retorno). Adicione-os
-   **exatamente** no painel de DNS do domínio.
-4. Clique em **Verify**. Quando ficar "Verified", o envio para clientes funciona.
-5. Preencha `RESEND_API_KEY` e `RESEND_FROM` (use um email @seudominio) no Vercel.
-
-> Sem domínio verificado, o Resend só entrega para o email dono da conta (teste).
+1. Supabase → Authentication → SMTP Settings → preencher com o SMTP do Brevo
+   (host `smtp-relay.brevo.com`, porta, login e a chave SMTP do Brevo).
+2. No Brevo, verificar o remetente (sender) e, idealmente, autenticar um domínio
+   próprio (SPF/DKIM) para melhor entregabilidade ao escalar.
+3. Testar o envio (Passo 4 abaixo, compra de teste) e checar os logs do Brevo.
 
 ## Passo 3 — Allowlist de redirect no Supabase
 
@@ -76,17 +87,23 @@ Se a URL não estiver aqui, o link do email não estabelece a sessão.
 `POST /api/admin/invite` — autentica com o header `x-admin-token` =
 `SUPABASE_SERVICE_ROLE_KEY`.
 
+Criar/ativar + enviar o email pelo Brevo:
 ```bash
 curl -X POST https://usecorretorpro.vercel.app/api/admin/invite \
   -H "Content-Type: application/json" \
   -H "x-admin-token: <SERVICE_ROLE_KEY>" \
   -d '{"email":"comprador@email.com","name":"Nome","plan":"mensal"}'
 ```
+Resposta: `emailSent: true/false` e `emailError` (se o Brevo falhar).
 
-Resposta inclui:
-- `emailSent: true/false` — se o Resend entregou
-- `emailError` — motivo, se falhou
-- `actionLink` — link de definir senha (envie por WhatsApp se `emailSent=false`)
+Gerar link para envio MANUAL (WhatsApp), sem depender do email:
+```bash
+curl -X POST https://usecorretorpro.vercel.app/api/admin/invite \
+  -H "Content-Type: application/json" \
+  -H "x-admin-token: <SERVICE_ROLE_KEY>" \
+  -d '{"email":"comprador@email.com","name":"Nome","plan":"mensal","mode":"link"}'
+```
+Resposta: `actionLink` — envie esse link direto pro comprador.
 
 Consultar status de um usuário:
 ```bash
@@ -99,6 +116,7 @@ curl "https://usecorretorpro.vercel.app/api/admin/invite?email=comprador@email.c
 |---------|----------------|-----------|
 | Webhook responde 401 | Token errado | `HOTMART_WEBHOOK_TOKEN` no Vercel vs Hottok |
 | Webhook responde 500 "not configured" | Token vazio | preencher `HOTMART_WEBHOOK_TOKEN` |
-| Usuário criado mas sem email | Resend não configurado / domínio não verificado | logs do Vercel; `emailError` no endpoint admin |
-| Email chega mas link "inválido/expirado" | Redirect URL fora da allowlist | Supabase URL Configuration |
+| Compra não cria usuário no banco | Webhook não configurado/401, ou compra anterior ao token | logs de webhook na Hotmart; status no endpoint admin GET |
+| Usuário criado mas sem email | SMTP Brevo não configurado/sender não verificado | Brevo → Transactional → Logs; `emailError` no endpoint admin |
+| Email chega mas link "inválido/expirado" | Redirect URL fora da allowlist OU `NEXT_PUBLIC_APP_URL` ausente | Supabase URL Configuration; var no Vercel |
 | Comprador não consegue logar após cancelar | Esperado: conta banida/inativa | reassinar reativa |

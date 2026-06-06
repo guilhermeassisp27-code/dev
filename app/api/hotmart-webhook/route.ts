@@ -1,8 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { createClient } from '@supabase/supabase-js'
-import { sendWelcomeEmail } from '@/lib/email'
 
-// Hotmart sends the token in this header for webhook validation
+// Hotmart envia o token neste header para validar o webhook
 const HOTTOK_HEADER = 'x-hotmart-hottok'
 
 // Mapeamento dos códigos de oferta (off=) dos links de pagamento -> plano
@@ -13,12 +12,7 @@ const OFFER_PLANS: Record<string, string> = {
   mcjyy7ub: 'anual',
 }
 
-// Formato do retorno de admin.generateLink (contém o link de ação pronto)
-type ActionLinkData = { properties?: { action_link?: string } }
-
 // Descobre o plano a partir do código de oferta vindo no payload da Hotmart.
-// A Hotmart pode enviar o código em data.purchase.offer.code (compra)
-// ou em data.subscription.plan / data.purchase.offer (assinatura).
 function resolvePlan(data: Record<string, unknown>): string {
   const purchase = data?.purchase as Record<string, unknown> | undefined
   const offer = purchase?.offer as Record<string, unknown> | undefined
@@ -54,6 +48,7 @@ export async function POST(req: NextRequest) {
   if (!buyer?.email) {
     return NextResponse.json({ error: 'Missing buyer.email' }, { status: 400 })
   }
+  const email = buyer.email.toLowerCase()
 
   const supabase = createClient(
     process.env.NEXT_PUBLIC_SUPABASE_URL!,
@@ -64,13 +59,11 @@ export async function POST(req: NextRequest) {
   const appUrl =
     (process.env.NEXT_PUBLIC_APP_URL ?? '').replace(/\/$/, '') ||
     'https://usecorretorpro.vercel.app'
-  // Novo comprador é convidado a DEFINIR A SENHA antes de acessar a ferramenta
+  // Novo comprador define a senha antes de acessar a ferramenta
   const setPasswordUrl = `${appUrl}/definir-senha`
 
   // Localiza um usuário existente pelo email (renovação, cancelamento, etc.).
-  // Pagina a lista para funcionar mesmo acima de 1000 usuários.
-  async function findUser(email: string) {
-    const alvo = email.toLowerCase()
+  async function findUser(alvo: string) {
     const perPage = 200
     for (let page = 1; page <= 500; page++) {
       const { data, error } = await supabase.auth.admin.listUsers({ page, perPage })
@@ -78,20 +71,31 @@ export async function POST(req: NextRequest) {
       const users = data?.users ?? []
       const achado = users.find((u) => (u.email ?? '').toLowerCase() === alvo)
       if (achado) return achado
-      if (users.length < perPage) break // última página
+      if (users.length < perPage) break
     }
     return undefined
   }
 
-  // Eventos que LIBERAM acesso: nova assinatura, compra aprovada ou renovação
+  // Envia o email de "definir senha" via o SMTP configurado no Supabase (Brevo).
+  // resetPasswordForEmail dispara o template de recuperação pelo Brevo.
+  async function enviarLinkSenha(): Promise<boolean> {
+    const { error } = await supabase.auth.resetPasswordForEmail(email, {
+      redirectTo: setPasswordUrl,
+    })
+    if (error) {
+      console.error('[hotmart-webhook] envio do link de senha falhou:', error.message)
+      return false
+    }
+    return true
+  }
+
+  // LIBERA acesso: compra aprovada, completa ou renovação
   if (event === 'PURCHASE_APPROVED' || event === 'PURCHASE_COMPLETE') {
-    const existing = await findUser(buyer.email)
+    const existing = await findUser(email)
 
     if (existing) {
-      // Já tem conta (renovação, reassinatura, ou 2º evento da MESMA compra —
-      // a Hotmart dispara PURCHASE_APPROVED e PURCHASE_COMPLETE). Reativa acesso.
-      // O status fica em app_metadata (NÃO editável pelo usuário) — é o que a
-      // ferramenta consulta para liberar o uso.
+      // Já existe (renovação, reassinatura, ou 2º evento da MESMA compra —
+      // a Hotmart dispara PURCHASE_APPROVED e PURCHASE_COMPLETE). Reativa.
       const jaEnviou = (existing.app_metadata as Record<string, unknown>)?.welcome_sent === true
       await supabase.auth.admin.updateUserById(existing.id, {
         ban_duration: 'none',
@@ -106,96 +110,62 @@ export async function POST(req: NextRequest) {
           hotmart_transaction: purchase?.transaction ?? existing.user_metadata?.hotmart_transaction ?? '',
         },
       })
-      // (Re)envia o link só se a conta nunca foi ativada (sem senha) E ainda não
-      // enviamos o email de acesso. Isso evita email duplicado quando a Hotmart
-      // manda dois eventos para a mesma compra, e não incomoda quem já tem senha.
+      // (Re)envia o link só se nunca definiu senha E ainda não mandamos.
+      // Evita email duplicado no 2º evento da mesma compra.
       if (!existing.last_sign_in_at && !jaEnviou) {
-        const { data: linkData } = await supabase.auth.admin.generateLink({
-          type: 'recovery',
-          email: buyer.email,
-          options: { redirectTo: setPasswordUrl },
-        })
-        const actionLink = (linkData as ActionLinkData)?.properties?.action_link
-        if (actionLink) {
-          const r = await sendWelcomeEmail({ to: buyer.email, actionLink, name: buyer.name })
-          if (r.sent) {
-            await supabase.auth.admin.updateUserById(existing.id, {
-              app_metadata: {
-                ...(existing.app_metadata ?? {}),
-                subscription_status: 'active',
-                plan,
-                welcome_sent: true,
-              },
-            })
-          } else {
-            console.error('[hotmart-webhook] welcome email falhou (existing):', r.reason)
-          }
+        const ok = await enviarLinkSenha()
+        if (ok) {
+          await supabase.auth.admin.updateUserById(existing.id, {
+            app_metadata: { ...(existing.app_metadata ?? {}), subscription_status: 'active', plan, welcome_sent: true },
+          })
         }
       }
-    } else {
-      // Novo comprador — generateLink type:invite CRIA o usuário e retorna o
-      // action_link, SEM disparar o email do Supabase. Nós enviamos via Resend
-      // (controle total de entregabilidade) logo em seguida.
-      const { data: linkData, error: linkErr } = await supabase.auth.admin.generateLink({
-        type: 'invite',
-        email: buyer.email,
-        options: {
-          data: {
-            full_name: buyer.name ?? '',
-            hotmart_transaction: purchase?.transaction ?? '',
-            plan,
-          },
-          redirectTo: setPasswordUrl,
-        },
-      })
-
-      if (linkErr) {
-        // Corrida rara: dois eventos simultâneos, o outro já criou o usuário.
-        // "already registered" não é erro real — o próximo evento/retry resolve.
-        if (/already|registered|exist/i.test(linkErr.message)) {
-          return NextResponse.json({ ok: true, note: 'user already created by concurrent event' })
-        }
-        console.error('[hotmart-webhook] generateLink invite falhou:', linkErr.message)
-        return NextResponse.json({ error: 'Falha ao criar acesso do comprador' }, { status: 500 })
-      }
-
-      const actionLink = (linkData as ActionLinkData)?.properties?.action_link
-      const newUserId = (linkData as { user?: { id?: string } })?.user?.id
-
-      // Envia o email primeiro para gravar o resultado em welcome_sent.
-      let emailOk = false
-      if (actionLink) {
-        const r = await sendWelcomeEmail({ to: buyer.email, actionLink, name: buyer.name })
-        emailOk = r.sent
-        if (!r.sent) {
-          // Não derruba o webhook: o usuário foi criado. Logamos para reenvio
-          // manual via /api/admin/invite caso o email não saia.
-          console.error('[hotmart-webhook] welcome email falhou (novo):', r.reason)
-        }
-      }
-
-      // Marca assinatura ativa em app_metadata (generateLink grava só
-      // user_metadata; o status seguro precisa ir em app_metadata).
-      if (newUserId) {
-        await supabase.auth.admin.updateUserById(newUserId, {
-          app_metadata: { subscription_status: 'active', plan, welcome_sent: emailOk },
-        })
-      }
+      return NextResponse.json({ ok: true, action: 'reactivated' })
     }
+
+    // Novo comprador. CRIA a conta primeiro (determinístico, não depende de
+    // email) — assim quem pagou SEMPRE fica com acesso ativo. O email de
+    // definir senha é enviado em seguida, como best-effort reenviável.
+    const { data: created, error: createErr } = await supabase.auth.admin.createUser({
+      email,
+      email_confirm: true,
+      user_metadata: {
+        full_name: buyer.name ?? '',
+        hotmart_transaction: purchase?.transaction ?? '',
+        plan,
+      },
+      app_metadata: { subscription_status: 'active', plan },
+    })
+
+    if (createErr && !/already|registered|exist/i.test(createErr.message)) {
+      // Erro real de criação — NÃO responde ok, para a Hotmart reenviar.
+      console.error('[hotmart-webhook] createUser falhou:', createErr.message)
+      return NextResponse.json({ error: 'Falha ao criar acesso do comprador' }, { status: 500 })
+    }
+
+    // Garante o id mesmo numa corrida (outro evento criou primeiro)
+    const userId = created?.user?.id ?? (await findUser(email))?.id
+
+    const emailOk = await enviarLinkSenha()
+    if (userId) {
+      await supabase.auth.admin.updateUserById(userId, {
+        app_metadata: { subscription_status: 'active', plan, welcome_sent: emailOk },
+      })
+    }
+    return NextResponse.json({ ok: true, action: 'created', emailSent: emailOk })
   }
 
-  // Eventos que CORTAM acesso: reembolso, chargeback, cancelamento da assinatura
+  // CORTA acesso: reembolso, chargeback, cancelamento — NÃO deleta, só bane +
+  // marca inativo (dados preservados; reassinar reativa).
   if (
     event === 'PURCHASE_REFUNDED' ||
-    event === 'PURCHASE_CANCELLED' ||   // grafia BR usada em alguns planos
-    event === 'PURCHASE_CANCELED' ||    // grafia EN usada em outros eventos Hotmart
+    event === 'PURCHASE_CANCELLED' ||
+    event === 'PURCHASE_CANCELED' ||
     event === 'PURCHASE_CHARGEBACK' ||
     event === 'SUBSCRIPTION_CANCELLATION'
   ) {
-    const user = await findUser(buyer.email)
+    const user = await findUser(email)
     if (user) {
-      // Marca como inativo (a ferramenta bloqueia na hora) E bane a conta
-      // (~10 anos) para impedir refresh/login até reassinar.
       await supabase.auth.admin.updateUserById(user.id, {
         ban_duration: '87600h',
         app_metadata: {
@@ -204,7 +174,8 @@ export async function POST(req: NextRequest) {
         },
       })
     }
+    return NextResponse.json({ ok: true, action: 'revoked' })
   }
 
-  return NextResponse.json({ ok: true })
+  return NextResponse.json({ ok: true, action: 'ignored', event })
 }
