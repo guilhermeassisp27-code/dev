@@ -240,12 +240,49 @@ input[type=color]{opacity:0;width:0;height:0;position:absolute}
 .hist-actions{display:flex;gap:6px;flex-shrink:0}
 
 /* ── HISTORY SEARCH ── */
-.hist-search-wrap{position:relative;margin-bottom:16px}
+.hist-search-wrap{position:relative;margin-bottom:10px}
 .hist-search-ico{position:absolute;left:11px;top:50%;transform:translateY(-50%);color:var(--t3);pointer-events:none}
 .hist-search{width:100%;background:var(--s2);border:1px solid rgba(255,255,255,.09);border-radius:var(--rad);padding:9px 13px 9px 36px;font-size:14px;color:var(--t);font-family:var(--font);outline:none;transition:border-color .15s,box-shadow .15s}
 .hist-search:focus{border-color:rgba(77,126,255,.5);box-shadow:0 0 0 3px rgba(77,126,255,.08)}
 .hist-search::placeholder{color:var(--t3)}
 .hist-count{font-size:12px;color:var(--t3);margin-bottom:12px}
+
+/* ── CRM STATUS ── */
+.crm-painel{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-bottom:14px}
+@media(max-width:560px){.crm-painel{grid-template-columns:repeat(2,1fr)}}
+.crm-stat{background:var(--s1);border:1px solid var(--b);border-radius:var(--rad);padding:10px 12px;cursor:pointer;transition:border-color .15s,background .15s;text-align:left}
+.crm-stat:hover{border-color:var(--bm)}
+.crm-stat.ativo{border-color:var(--crm-cor,var(--p))}
+.crm-stat-num{font-size:20px;font-weight:800;letter-spacing:-.5px;color:var(--crm-cor,var(--t))}
+.crm-stat-label{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:var(--t3);margin-top:2px}
+.crm-filtros{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:14px;align-items:center}
+.crm-filtro-btn{display:inline-flex;align-items:center;gap:5px;padding:5px 11px;border-radius:100px;font-size:11px;font-weight:700;border:1px solid var(--b);background:none;color:var(--t2);cursor:pointer;font-family:var(--font);transition:all .15s}
+.crm-filtro-btn:hover{border-color:var(--bm);color:var(--t)}
+.crm-filtro-btn.ativo{color:#fff}
+
+/* Status badges no card */
+.hist-status{display:inline-flex;align-items:center;gap:4px;padding:3px 8px;border-radius:5px;font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.06em;cursor:pointer;border:none;font-family:var(--font);transition:opacity .15s;flex-shrink:0}
+.hist-status:hover{opacity:.8}
+.hist-status[data-s="nova"]      {background:rgba(77,126,255,.15);color:#7BA3FF}
+.hist-status[data-s="enviada"]   {background:rgba(234,179,8,.13);color:#EAB308}
+.hist-status[data-s="negociando"]{background:rgba(249,115,22,.13);color:#F97316}
+.hist-status[data-s="fechada"]   {background:rgba(34,197,94,.13);color:#22C55E}
+.hist-status[data-s="perdida"]   {background:rgba(239,68,68,.1);color:#EF4444}
+
+/* Dropdown de status */
+.status-menu{position:absolute;background:var(--s2);border:1px solid var(--bm);border-radius:var(--rad);padding:4px;z-index:50;min-width:160px;box-shadow:0 8px 24px rgba(0,0,0,.4)}
+.status-opt{display:flex;align-items:center;gap:8px;padding:7px 10px;border-radius:5px;font-size:12px;font-weight:600;cursor:pointer;color:var(--t2);border:none;background:none;width:100%;text-align:left;font-family:var(--font);transition:background .1s}
+.status-opt:hover{background:rgba(255,255,255,.06);color:var(--t)}
+.status-opt-dot{width:7px;height:7px;border-radius:50%;flex-shrink:0}
+
+/* Hist-card: ajuste para acomodar status */
+.hist-card{position:relative}
+.hist-main-row{display:flex;align-items:center;gap:14px;width:100%}
+.hist-bottom-row{display:flex;align-items:center;gap:8px;margin-top:8px;padding-top:8px;border-top:1px solid var(--b)}
+.hist-bottom-row .hist-meta{margin-top:0;flex:1}
+
+/* Painel vazio de filtro */
+.crm-vazio-filtro{text-align:center;padding:40px 20px;color:var(--t3);font-size:13px}
 
 /* ── CONFIG VIEW ── */
 .cfg-preview{background:var(--s2);border:1px solid var(--b);border-radius:var(--radl);padding:14px 18px;margin-bottom:14px;display:flex;align-items:center;gap:12px}
@@ -639,8 +676,15 @@ input[type=color]{opacity:0;width:0;height:0;position:absolute}
     <div class="view" id="view-history">
       <div class="ph">
         <h1>Minhas Propostas</h1>
-        <p>Histórico das suas últimas propostas geradas.</p>
+        <p>Acompanhe o andamento de cada negociação — do primeiro contato ao fechamento.</p>
       </div>
+
+      <!-- CRM: painel de status (só aparece quando há propostas) -->
+      <div id="crm-painel" style="display:none">
+        <div class="crm-painel" id="crm-cards"></div>
+        <div class="crm-filtros" id="crm-filtros"></div>
+      </div>
+
       <div class="hist-search-wrap" id="hist-search-wrap" style="display:none">
         <svg class="hist-search-ico" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
         <input id="hist-search" class="hist-search" type="search" placeholder="Buscar por cliente, imóvel ou endereço..." oninput="filtrarHistory()" autocomplete="off">
@@ -844,6 +888,8 @@ let perfil = JSON.parse(localStorage.getItem('cpr_perfil') || 'null') || { nome:
 let historico = JSON.parse(localStorage.getItem('cpr_hist') || '[]')
 let snapProposta = null
 let _toastT = null
+let _crmFiltro = null  // filtro ativo por status no histórico
+let _menuAberto = null // referência ao dropdown de status aberto
 
 /* ── INIT ── */
 function initApp() {
@@ -919,9 +965,10 @@ function showView(name) {
   const btnEx = document.getElementById('btn-exemplo')
   if (btnEx) btnEx.style.display = name === 'form' ? '' : 'none'
   if (name === 'history') {
-    // Limpa busca ao abrir a aba para sempre mostrar o histórico completo
+    // Limpa busca e filtro de status ao abrir a aba para sempre mostrar o histórico completo
     const srch = document.getElementById('hist-search')
     if (srch) srch.value = ''
+    _crmFiltro = null
     renderHistory()
   }
   closeSidebar()
@@ -1346,11 +1393,85 @@ function atualizarBadgeHist() {
   }
 }
 
+/* ── CRM: CONFIG DE STATUS ── */
+const CRM_STATUS = [
+  { key:'nova',       label:'Nova',          cor:'#7BA3FF', rgb:'77,126,255' },
+  { key:'enviada',    label:'Enviada',        cor:'#EAB308', rgb:'234,179,8'  },
+  { key:'negociando', label:'Em negociação',  cor:'#F97316', rgb:'249,115,22' },
+  { key:'fechada',    label:'Fechada',        cor:'#22C55E', rgb:'34,197,94'  },
+  { key:'perdida',    label:'Perdida',        cor:'#EF4444', rgb:'239,68,68'  },
+]
+
+function getStatusInfo(key) {
+  return CRM_STATUS.find(s => s.key === (key || 'nova')) || CRM_STATUS[0]
+}
+
+function renderCrmPainel() {
+  const painel = document.getElementById('crm-painel')
+  const cardsEl = document.getElementById('crm-cards')
+  const filtrosEl = document.getElementById('crm-filtros')
+  if (!painel || historico.length === 0) {
+    if (painel) painel.style.display = 'none'
+    return
+  }
+  painel.style.display = ''
+
+  // Contagem por status
+  const counts = {}
+  CRM_STATUS.forEach(s => { counts[s.key] = 0 })
+  historico.forEach(h => {
+    const k = h.status || 'nova'
+    counts[k] = (counts[k] || 0) + 1
+  })
+
+  // Cards de contagem
+  cardsEl.innerHTML = CRM_STATUS.map(s => {
+    const isAtivo = _crmFiltro === s.key
+    const bgAtivo = s.cor + '12' // hex com ~7% opacidade
+    return `<button class="crm-stat${isAtivo ? ' ativo' : ''}"
+      style="--crm-cor:${s.cor}${isAtivo ? `;background:${bgAtivo};border-color:${s.cor}` : ''}"
+      onclick="filtrarPorStatus('${s.key}')" title="Filtrar por '${s.label}'">
+      <div class="crm-stat-num" style="color:${s.cor}">${counts[s.key]}</div>
+      <div class="crm-stat-label">${escH(s.label)}</div>
+    </button>`
+  }).join('')
+
+  // Botões de filtro
+  filtrosEl.innerHTML =
+    `<button class="crm-filtro-btn${_crmFiltro === null ? ' ativo' : ''}"
+      style="${_crmFiltro === null ? 'background:var(--p);border-color:var(--p)' : ''}"
+      onclick="filtrarPorStatus(null)">Todas</button>` +
+    CRM_STATUS.map(s => {
+      const at = _crmFiltro === s.key
+      return `<button class="crm-filtro-btn${at ? ' ativo' : ''}"
+        style="${at ? `background:${s.cor};border-color:${s.cor}` : `border-color:${s.cor}33;color:${s.cor}`}"
+        onclick="filtrarPorStatus('${s.key}')">
+        ${escH(s.label)} ${counts[s.key] > 0 ? `(${counts[s.key]})` : ''}
+      </button>`
+    }).join('')
+}
+
+function filtrarPorStatus(key) {
+  _crmFiltro = key
+  // Limpa busca ao trocar filtro de status
+  const srch = document.getElementById('hist-search')
+  if (srch) srch.value = ''
+  renderCrmPainel()
+  renderHistory()
+}
+
 function renderHistory(filtrados) {
   const el = document.getElementById('history-content')
   const wrap = document.getElementById('hist-search-wrap')
   const countEl = document.getElementById('hist-count')
-  const lista = filtrados !== undefined ? filtrados : historico
+
+  // Aplica filtro de status antes de qualquer outro filtro
+  let base = historico
+  if (_crmFiltro !== null) {
+    base = historico.filter(h => (h.status || 'nova') === _crmFiltro)
+  }
+
+  const lista = filtrados !== undefined ? filtrados : base
 
   // Mostra barra de busca somente quando há propostas
   if (historico.length > 0) {
@@ -1359,6 +1480,9 @@ function renderHistory(filtrados) {
     wrap.style.display = 'none'
     countEl.style.display = 'none'
   }
+
+  // Painel CRM
+  renderCrmPainel()
 
   if (historico.length === 0) {
     el.innerHTML = `<div class="hist-empty">
@@ -1371,40 +1495,101 @@ function renderHistory(filtrados) {
 
   if (lista.length === 0) {
     countEl.style.display = ''
-    countEl.textContent = 'Nenhuma proposta encontrada para essa busca.'
+    countEl.textContent = _crmFiltro
+      ? `Nenhuma proposta com status "${getStatusInfo(_crmFiltro).label}".`
+      : 'Nenhuma proposta encontrada para essa busca.'
     el.innerHTML = ''
     return
   }
 
-  if (filtrados !== undefined && historico.length !== lista.length) {
+  const total = historico.length
+  if (base.length !== total || (filtrados !== undefined && filtrados.length !== base.length)) {
     countEl.style.display = ''
-    countEl.textContent = `${lista.length} de ${historico.length} proposta${historico.length > 1 ? 's' : ''}`
+    countEl.textContent = `${lista.length} de ${total} proposta${total > 1 ? 's' : ''}`
   } else {
     countEl.style.display = 'none'
   }
 
   el.innerHTML = `<div class="hist-list">${lista.map((h) => {
-    // Índice real no array historico (necessário para excluir/duplicar)
     const realIdx = historico.indexOf(h)
+    const st = getStatusInfo(h.status)
     return `
     <div class="hist-card">
-      <span class="hist-tipo">${escH(h.tipoNeg||'—')}</span>
-      <div class="hist-info">
-        <div class="hist-cliente">${escH(h.cliente||'—')}</div>
-        <div class="hist-imovel">${escH(h.tipoImovel||'')} · ${escH((h.end||'').split(',')[0])}</div>
-        <div class="hist-meta">${escH(h.data||'')}</div>
+      <div class="hist-main-row">
+        <span class="hist-tipo">${escH(h.tipoNeg||'—')}</span>
+        <div class="hist-info">
+          <div class="hist-cliente">${escH(h.cliente||'—')}</div>
+          <div class="hist-imovel">${escH(h.tipoImovel||'')} · ${escH((h.end||'').split(',')[0])}</div>
+        </div>
+        <div class="hist-valor">${h.valor ? 'R$ ' + escH(h.valor) : '—'}</div>
+        <div class="hist-actions">
+          <button class="btn btn-ghost btn-sm" onclick="duplicarProposta(${realIdx})" title="Duplicar proposta">
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1"/></svg>
+          </button>
+          <button class="btn btn-ghost btn-sm" onclick="excluirProposta(${realIdx})" aria-label="Excluir">
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 01-2 2H8a2 2 0 01-2-2L5 6"/><path d="M10 11v6M14 11v6"/><path d="M9 6V4h6v2"/></svg>
+          </button>
+        </div>
       </div>
-      <div class="hist-valor">${h.valor ? 'R$ ' + escH(h.valor) : '—'}</div>
-      <div class="hist-actions">
-        <button class="btn btn-ghost btn-sm" onclick="duplicarProposta(${realIdx})" title="Duplicar — abre o formulário preenchido com os dados desta proposta">
-          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1"/></svg>
-        </button>
-        <button class="btn btn-ghost btn-sm" onclick="excluirProposta(${realIdx})" aria-label="Excluir">
-          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 01-2 2H8a2 2 0 01-2-2L5 6"/><path d="M10 11v6M14 11v6"/><path d="M9 6V4h6v2"/></svg>
-        </button>
+      <div class="hist-bottom-row">
+        <div class="hist-meta">${escH(h.data||'')}</div>
+        <div style="position:relative;display:inline-block">
+          <button class="hist-status" data-s="${escH(h.status||'nova')}"
+            onclick="abrirMenuStatus(event,${realIdx})"
+            title="Alterar status da negociação"
+            style="background:${st.cor}22;color:${st.cor}">
+            <span style="width:6px;height:6px;border-radius:50%;background:${st.cor};flex-shrink:0;display:inline-block"></span>
+            ${escH(st.label)}
+            <svg width="9" height="9" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="6 9 12 15 18 9"/></svg>
+          </button>
+        </div>
       </div>
     </div>`
   }).join('')}</div>`
+}
+
+/* ── MENU DE STATUS (dropdown inline) ── */
+function abrirMenuStatus(ev, idx) {
+  ev.stopPropagation()
+  fecharMenuStatus()
+
+  const btn = ev.currentTarget
+  const menu = document.createElement('div')
+  menu.className = 'status-menu'
+  menu.id = 'status-menu-ativo'
+
+  menu.innerHTML = CRM_STATUS.map(s => `
+    <button class="status-opt" onclick="definirStatus(${idx},'${s.key}')">
+      <span class="status-opt-dot" style="background:${s.cor}"></span>
+      ${escH(s.label)}
+    </button>
+  `).join('')
+
+  // Posiciona abaixo do botão
+  const wrap = btn.closest('[style*="position:relative"]') || btn.parentElement
+  wrap.appendChild(menu)
+  _menuAberto = menu
+
+  // Fecha ao clicar fora
+  setTimeout(() => document.addEventListener('click', fecharMenuStatus, { once: true }), 0)
+}
+
+function fecharMenuStatus() {
+  if (_menuAberto) { _menuAberto.remove(); _menuAberto = null }
+}
+
+function definirStatus(idx, statusKey) {
+  fecharMenuStatus()
+  if (!historico[idx]) return
+  historico[idx].status = statusKey
+  localStorage.setItem('cpr_hist', JSON.stringify(historico))
+  salvarRemoto().catch(() => {})
+  const st = getStatusInfo(statusKey)
+  // Re-renderiza mantendo filtros
+  const q = (document.getElementById('hist-search')?.value || '').trim()
+  let base = _crmFiltro ? historico.filter(h => (h.status || 'nova') === _crmFiltro) : historico
+  renderHistory(q ? base.filter(h => matchFiltro(h, q)) : undefined)
+  toast(`Status atualizado: ${st.label}`)
 }
 
 function excluirProposta(i) {
@@ -1414,7 +1599,8 @@ function excluirProposta(i) {
   atualizarBadgeHist()
   // Mantém o filtro ativo ao excluir
   const q = (document.getElementById('hist-search')?.value || '').trim()
-  renderHistory(q ? historico.filter(h => matchFiltro(h, q)) : undefined)
+  let base = _crmFiltro ? historico.filter(h => (h.status || 'nova') === _crmFiltro) : historico
+  renderHistory(q ? base.filter(h => matchFiltro(h, q)) : undefined)
   toast('Proposta removida')
 }
 
@@ -1431,11 +1617,13 @@ function matchFiltro(h, q) {
 
 function filtrarHistory() {
   const q = (document.getElementById('hist-search')?.value || '').trim()
+  // Base do filtro: respeita o filtro de status ativo
+  const base = _crmFiltro ? historico.filter(h => (h.status || 'nova') === _crmFiltro) : historico
   if (!q) {
     renderHistory(undefined)
     return
   }
-  const filtrados = historico.filter(h => matchFiltro(h, q))
+  const filtrados = base.filter(h => matchFiltro(h, q))
   renderHistory(filtrados)
 }
 
