@@ -11,9 +11,8 @@ name: Evolução do Produto CorretorPRO
 
 on:
   schedule:
-    # Toda 2ª sexta 09:00 BRT (12:00 UTC) — o cron roda toda sexta; o agente
-    # decide se há melhoria de impacto a propor naquela semana.
-    - cron: '0 12 * * 5'
+    # Quinzenal: 1ª e 3ª sexta do mês, 09:00 BRT (12:00 UTC) — economiza token.
+    - cron: '0 12 1-7,15-21 * 5'
   pull_request:
     # Quando um PR de melhoria (branch feat/*) é mergeado, dispara o anúncio.
     # A action do Claude não aceita evento 'push', por isso usamos pull_request.
@@ -50,11 +49,17 @@ jobs:
             --max-turns 25
             --allowedTools "Read,Edit,Write,Glob,Grep,Bash(git:*),Bash(gh:*),Bash(npx tsc:*)"
           prompt: |
-            Use o agente "produto". Leia docs/roadmap.md (crie se não existir),
-            escolha UMA melhoria de alto impacto e baixo risco para a ferramenta
-            (tool.html), implemente a menor versão que entrega valor, registre a
-            novidade no topo de docs/novidades.md e abra um PR. Não faça merge.
-            Garanta que o fluxo salvar→sair→entrar→persiste continua funcionando.
+            Use o agente "produto". PRIMEIRO pesquise na internet (WebSearch)
+            dores reais de corretores de imóveis no Brasil — o que eles
+            reclamam, o que pedem, onde perdem tempo/venda. Escolha UMA dor que
+            faça sentido resolver na ferramenta (tool.html) e que seja
+            AMBICIOSA (uma funcionalidade de verdade que diferencie o produto,
+            não um ajuste cosmético) — mas sem quebrar o fluxo crítico.
+            Implemente a versão mais enxuta que entrega esse valor. No PR e no
+            topo de docs/novidades.md, documente: qual dor do corretor isso
+            resolve e a fonte/evidência que você encontrou. Abra o PR (branch
+            feat/*) e NÃO faça merge. Garanta que salvar→sair→entrar→persiste
+            continua funcionando e rode `npx tsc --noEmit` se mexer em TS.
 
   anunciar-novidade:
     # Roda quando um PR de melhoria (branch feat/*) é mergeado OU no disparo manual.
