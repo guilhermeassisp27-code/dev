@@ -18,7 +18,6 @@ import { chromium } from 'playwright'
 const APP = process.env.APP_URL || 'https://usecorretorpro.vercel.app'
 const EMAIL = process.env.DEMO_EMAIL
 const PASS = process.env.DEMO_PASSWORD
-const OUT = process.env.OUT || 'public/print-ferramenta.png'
 
 if (!EMAIL || !PASS) {
   console.error('ERRO: defina os secrets DEMO_EMAIL e DEMO_PASSWORD.')
@@ -92,13 +91,24 @@ try {
   await page.waitForSelector('#proposta.show', { timeout: 15000 }).catch(() => {})
   await beat(2500)
 
-  // 7) Screenshot da proposta gerada (captura o elemento inteiro)
-  console.log('Capturando o print...')
+  // 7) Screenshots da proposta gerada — duas versões:
+  //    - celular: viewport estreito (layout mobile da ferramenta)
+  //    - computador: reflow para viewport largo (layout desktop)
   const prop = page.locator('#proposta')
+
+  console.log('Capturando o print (celular)...')
   await prop.scrollIntoViewIfNeeded()
   await beat(400)
-  await prop.screenshot({ path: OUT })
-  console.log('Print salvo em', OUT)
+  await prop.screenshot({ path: 'public/print-ferramenta-mobile.png' })
+
+  console.log('Capturando o print (computador)...')
+  await page.setViewportSize({ width: 1280, height: 900 })
+  await beat(900)
+  await prop.scrollIntoViewIfNeeded()
+  await beat(300)
+  await prop.screenshot({ path: 'public/print-ferramenta-desktop.png' })
+
+  console.log('Prints salvos em public/print-ferramenta-{mobile,desktop}.png')
 } catch (err) {
   console.error('Falha ao gerar o print:', err)
   process.exitCode = 1
