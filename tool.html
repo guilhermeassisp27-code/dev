@@ -209,6 +209,18 @@ input[type=color]{opacity:0;width:0;height:0;position:absolute}
 .mod-note{font-size:11px;color:var(--t3);line-height:1.4}
 .mod-parcela{font-size:12px;font-weight:700;color:var(--p);margin-top:4px}
 
+/* ── SIMULAÇÃO SAC × PRICE ── */
+.sim{display:grid;grid-template-columns:1fr 1fr;gap:9px}
+@media(max-width:560px){.sim{grid-template-columns:1fr}}
+.sim-col{background:var(--s2);border:1px solid var(--b);border-radius:var(--rad);padding:13px}
+.sim-col-head{font-size:12px;font-weight:800;color:var(--t);margin-bottom:8px;display:flex;align-items:baseline;gap:6px;flex-wrap:wrap}
+.sim-col-head span{font-size:9px;font-weight:600;text-transform:uppercase;letter-spacing:.06em;color:var(--t3)}
+.sim-row{display:flex;justify-content:space-between;align-items:center;gap:10px;font-size:12px;color:var(--t2);padding:6px 0;border-top:1px solid var(--b)}
+.sim-row:first-of-type{border-top:none}
+.sim-row b{font-size:13px;font-weight:800;color:var(--t);letter-spacing:-.3px;white-space:nowrap}
+.sim-row.tot b{color:var(--p)}
+.sim-note{font-size:10.5px;color:var(--t3);margin-top:8px;line-height:1.55}
+
 .prop-foot{padding:14px 24px;border-top:1px solid var(--b);display:flex;flex-wrap:wrap;gap:7px;align-items:center}
 
 /* ── HISTORY VIEW ── */
@@ -283,6 +295,10 @@ input[type=color]{opacity:0;width:0;height:0;position:absolute}
   .mod{background:#f9fafb!important;border-color:#e5e7eb!important}
   .mod.hl{border-color:#3b82f6!important;background:#eff6ff!important}
   .mod-val{color:#1d40ae!important}
+  .sim-col{background:#f9fafb!important;border-color:#e5e7eb!important}
+  .sim-col-head,.sim-row b{color:#000!important}
+  .sim-row,.sim-note{color:#444!important}
+  .sim-row.tot b{color:#1d40ae!important}
   .prop-badge{background:#eff6ff!important;color:#1d40ae!important}
   .prop-head{background:linear-gradient(135deg,#eff6ff,#f0fdf4)!important;border-bottom-color:#bfdbfe!important}
 }
@@ -577,6 +593,11 @@ input[type=color]{opacity:0;width:0;height:0;position:absolute}
           <div>
             <div class="prop-sec-title" id="p-mods-title">Condições de Pagamento</div>
             <div class="mods" id="p-mods"></div>
+          </div>
+          <div id="p-sim-sec">
+            <div class="prop-sec-title">Simulação de Financiamento · SAC × Price</div>
+            <div class="sim" id="p-simulacao"></div>
+            <p class="sim-note" id="p-sim-note"></p>
           </div>
           <div>
             <div class="prop-sec-title">Sobre o Imóvel</div>
@@ -952,6 +973,16 @@ function calcParcela(pv, taxaAnual, meses) {
   return pv * (i * Math.pow(1+i,meses)) / (Math.pow(1+i,meses) - 1)
 }
 
+/* SAC: amortização constante — 1ª parcela maior, decrescente até a última */
+function calcSAC(pv, taxaAnual, meses) {
+  const i = Math.pow(1 + taxaAnual/100, 1/12) - 1
+  const amort = pv / meses
+  const primeira = amort + pv * i          // amortização + juros sobre saldo total
+  const ultima   = amort + amort * i       // último mês: juros só sobre a última amortização
+  const totalJuros = i * pv * (meses + 1) / 2
+  return { primeira, ultima, total: pv + totalJuros }
+}
+
 /* ── GERAR PROPOSTA ── */
 function gerarProposta(ev) {
   ev.preventDefault()
@@ -1119,6 +1150,37 @@ function construirProposta(d) {
     })
   }
 
+  /* ── Simulação de financiamento (SAC × Price) — só Compra ── */
+  const simSec = document.getElementById('p-sim-sec')
+  if (d.tipoNeg === 'Compra' && valNum && d.prazo && d.taxa) {
+    const vFin = Math.round(valNum * 0.80)
+    const sac = calcSAC(vFin, d.taxa, d.prazo)
+    const priceParc = calcParcela(vFin, d.taxa, d.prazo)
+    const priceTotal = priceParc * d.prazo
+    const fmt = n => 'R$ ' + Math.round(n).toLocaleString('pt-BR')
+    const anos = Math.round(d.prazo / 12)
+    document.getElementById('p-simulacao').innerHTML =
+      `<div class="sim-col">` +
+        `<div class="sim-col-head">Tabela SAC <span>parcela decrescente</span></div>` +
+        `<div class="sim-row"><span>1ª parcela</span><b>${fmt(sac.primeira)}</b></div>` +
+        `<div class="sim-row"><span>Última parcela</span><b>${fmt(sac.ultima)}</b></div>` +
+        `<div class="sim-row tot"><span>Total pago</span><b>${fmt(sac.total)}</b></div>` +
+      `</div>` +
+      `<div class="sim-col">` +
+        `<div class="sim-col-head">Tabela Price <span>parcela fixa</span></div>` +
+        `<div class="sim-row"><span>Parcela fixa</span><b>${fmt(priceParc)}</b></div>` +
+        `<div class="sim-row"><span>Parcelas</span><b>${d.prazo}x</b></div>` +
+        `<div class="sim-row tot"><span>Total pago</span><b>${fmt(priceTotal)}</b></div>` +
+      `</div>`
+    document.getElementById('p-sim-note').textContent =
+      `Simulação sobre ${fmt(vFin)} (financiamento de 80% do valor) em ${anos} anos à taxa de ${d.taxa}% a.a. ` +
+      `No SAC a parcela começa maior e diminui mês a mês; na Price ela é fixa do início ao fim. ` +
+      `Valores estimados — sujeitos à análise e às condições do banco.`
+    simSec.style.display = ''
+  } else {
+    simSec.style.display = 'none'
+  }
+
   /* ── Sobre o imóvel ── */
   const extras = d.cond
     ? `Considerando as observações: <em>${escH(d.cond)}</em>. `
@@ -1158,6 +1220,18 @@ function copiar() {
     return `${label}: ${val} — ${note}${parc ? ' · ' + parc : ''}`
   }).join('\n')
 
+  // Simulação de financiamento (se visível para esta proposta)
+  let simTexto = ''
+  const simSecEl = document.getElementById('p-sim-sec')
+  if (simSecEl && simSecEl.style.display !== 'none') {
+    simTexto = Array.from(document.querySelectorAll('#p-simulacao .sim-col')).map(col => {
+      const head = (col.querySelector('.sim-col-head')?.firstChild?.textContent || '').trim()
+      const rows = Array.from(col.querySelectorAll('.sim-row')).map(r =>
+        `  ${r.querySelector('span')?.textContent || ''}: ${r.querySelector('b')?.textContent || ''}`).join('\n')
+      return `${head}\n${rows}`
+    }).join('\n\n')
+  }
+
   const sobre   = document.getElementById('p-sobre').innerText
   const proximos= document.getElementById('p-proximos').innerText
 
@@ -1172,6 +1246,7 @@ function copiar() {
     '',
     '── Condições ──',
     modsTexto,
+    ...(simTexto ? ['', '── Simulação de financiamento (SAC × Price) ──', simTexto] : []),
     '',
     sobre,
     '',
@@ -1200,7 +1275,18 @@ function compartilharWA() {
   if (d.tipoNeg === 'Compra') {
     const valNum = parseFloat(d.valor.replace(/\./g,'').replace(',','.')) || 0
     const vAvista = valNum ? Math.round(valNum * 0.97).toLocaleString('pt-BR') : '—'
-    cond = `• À Vista: R$ ${vAvista} (desc. 3%)\n• Financiamento: ${valFmt} + parcelas\n• FGTS: entrada de 20% + financiamento`
+    let simLine = '• Financiamento: entrada de 20% + saldo financiado'
+    if (valNum && d.prazo && d.taxa) {
+      const vFin = Math.round(valNum * 0.80)
+      const sac = calcSAC(vFin, d.taxa, d.prazo)
+      const price = calcParcela(vFin, d.taxa, d.prazo)
+      const anos = Math.round(d.prazo / 12)
+      simLine =
+        `• Financiamento (${anos} anos, ${d.taxa}% a.a.):\n` +
+        `   SAC: 1ª parcela R$ ${Math.round(sac.primeira).toLocaleString('pt-BR')} (vai diminuindo)\n` +
+        `   Price: R$ ${Math.round(price).toLocaleString('pt-BR')}/mês fixo`
+    }
+    cond = `• À Vista: R$ ${vAvista} (desc. 3%)\n${simLine}\n• FGTS: entrada de 20% + financiamento`
   } else if (d.tipoNeg === 'Locação') {
     cond = `• Aluguel: ${valFmt}/mês\n• Garantia: ${d.garantia}`
   } else {
