@@ -11,10 +11,10 @@ name: Agentes Automáticos CorretorPRO
 
 on:
   schedule:
-    # Segunda 09:00 BRT (12:00 UTC) — relatório de dados da semana
-    - cron: '0 12 * * 1'
-    # Quarta 09:00 BRT (12:00 UTC) — lote de conteúdo de marketing
-    - cron: '0 12 * * 3'
+    # Quinzenal — 1ª e 3ª segunda do mês 09:00 BRT: relatório de dados
+    - cron: '0 12 1-7,15-21 * 1'
+    # Quinzenal — 1ª e 3ª quarta do mês 09:00 BRT: lote de conteúdo de marketing
+    - cron: '0 12 1-7,15-21 * 3'
   workflow_dispatch:
     inputs:
       agente:
@@ -35,7 +35,7 @@ permissions:
 jobs:
   relatorio-dados:
     # Roda na segunda agendada OU quando disparado manualmente escolhendo "dados"
-    if: github.event.schedule == '0 12 * * 1' || github.event.inputs.agente == 'dados'
+    if: github.event.schedule == '0 12 1-7,15-21 * 1' || github.event.inputs.agente == 'dados'
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -55,7 +55,7 @@ jobs:
             Não exponha emails nem PII; use apenas agregados.
 
   conteudo-marketing:
-    if: github.event.schedule == '0 12 * * 3' || github.event.inputs.agente == 'marketing'
+    if: github.event.schedule == '0 12 1-7,15-21 * 3' || github.event.inputs.agente == 'marketing'
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
