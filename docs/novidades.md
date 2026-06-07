@@ -15,6 +15,13 @@ Formato de cada entrada:
 
 ---
 
+## [2026-06-07] CRM leve — status por proposta e painel de negociações
+**Para o corretor:** saiba exatamente em qual fase cada negociação está — do primeiro envio até o fechamento — sem precisar lembrar de cabeca ou manter planilha separada.
+**O que mudou:** cada proposta salva ganha um badge de status clicavel (Nova / Enviada / Em negociacao / Fechada / Perdida). O topo de "Minhas Propostas" exibe um painel com a contagem em cada fase e botoes de filtro para o corretor focar no que precisa de atencao. O status persiste no Supabase junto com o restante dos dados.
+**Status:** em PR
+
+---
+
 ## [2026-06-06] Busca no histórico e duplicar proposta
 **Para o corretor:** encontre qualquer proposta salva em segundos e reutilize ela como ponto de partida para um novo cliente — sem redigitar tudo do zero.
 **O que mudou:** adicionada barra de busca em "Minhas Propostas" que filtra por cliente, tipo de imóvel, endereço ou tipo de negociação em tempo real; adicionado botão "Duplicar" em cada proposta salva que pré-preenche o formulário com os dados daquela proposta para edição imediata.
