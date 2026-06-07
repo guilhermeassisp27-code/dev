@@ -1,0 +1,61 @@
+name: Print Real da Ferramenta
+
+# Gera um screenshot real da ferramenta (proposta de Compra com a simulação
+# SAC × Price) e commita em public/print-ferramenta.png, para o landing usar
+# uma imagem de verdade em vez do mockup em CSS.
+#
+# Não usa a API da Anthropic — é só Playwright fazendo login no app.
+#
+# PRÉ-REQUISITO: secrets DEMO_EMAIL e DEMO_PASSWORD (conta demo com assinatura
+# ativa), os mesmos usados pela gravação de demo.
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  print:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Instalar Playwright
+        run: |
+          npm init -y >/dev/null 2>&1 || true
+          npm install playwright@latest
+          npx playwright install --with-deps chromium
+
+      - name: Gerar o print
+        env:
+          DEMO_EMAIL: ${{ secrets.DEMO_EMAIL }}
+          DEMO_PASSWORD: ${{ secrets.DEMO_PASSWORD }}
+          APP_URL: https://usecorretorpro.vercel.app
+        run: node scripts/print-ferramenta.mjs
+
+      - name: Publicar como artifact (para conferência)
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: print-ferramenta
+          path: public/print-ferramenta.png
+          if-no-files-found: warn
+          retention-days: 30
+
+      - name: Commitar o print no repositório
+        if: success()
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add public/print-ferramenta.png
+          if git diff --cached --quiet; then
+            echo "Sem mudanças no print."
+          else
+            git commit -m "chore: atualiza print real da ferramenta para o landing"
+            git push
+          fi
