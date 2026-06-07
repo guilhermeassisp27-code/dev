@@ -29,8 +29,8 @@ const beat = (ms) => new Promise((r) => setTimeout(r, ms))
 
 const browser = await chromium.launch()
 const context = await browser.newContext({
-  viewport: { width: 1200, height: 1700 },
-  deviceScaleFactor: 2,
+  viewport: { width: 430, height: 932 },   // proporção de celular (combina com o hero)
+  deviceScaleFactor: 3,
 })
 const page = await context.newPage()
 

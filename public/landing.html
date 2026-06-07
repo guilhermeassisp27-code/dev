@@ -125,6 +125,13 @@
   .hero .sub{font-size:19px;max-width:560px;margin:0 auto 32px;color:var(--t2)}
   .hero .sub strong{color:var(--t);font-weight:600}
 
+  /* ---------- hero screenshot (print real) ---------- */
+  .hero-shot{
+    display:block;width:100%;max-width:400px;margin:48px auto 0;
+    border-radius:var(--rad-xl);box-shadow:var(--shadow);
+    border:1px solid var(--line-2);
+  }
+
   /* ---------- mockup card ---------- */
   .mock{
     max-width:380px;margin:48px auto 0;
@@ -392,8 +399,10 @@ src="https://www.facebook.com/tr?id=2015826029060952&ev=PageView&noscript=1"/></
     </a>
     <span class="cta-note"><strong>A partir de R$ 41/mês.</strong> Garantia de 7 dias · Sem instalar nada.</span>
 
-    <!-- tool UI mockup (pure CSS, sem foto de banco de imagens) -->
-    <div class="mock">
+    <!-- print real da ferramenta (gerado pelo workflow); se ainda não existir, cai no mockup CSS abaixo -->
+    <img class="hero-shot" src="/print-ferramenta.png" alt="Exemplo de proposta gerada no CorretorPRO — com a marca do corretor e simulação de financiamento SAC e Price" onerror="this.remove();var m=document.getElementById('hero-mock');if(m)m.style.display=''">
+    <!-- tool UI mockup (pure CSS) — fallback enquanto o print real não é gerado -->
+    <div class="mock" id="hero-mock" style="display:none">
       <div class="mock-glow"></div>
       <div class="mock-head">
         <div class="mock-avatar">
