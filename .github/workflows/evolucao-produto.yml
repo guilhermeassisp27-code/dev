@@ -11,8 +11,10 @@ name: Evolução do Produto CorretorPRO
 
 on:
   schedule:
-    # Quinzenal: 1ª e 3ª sexta do mês, 09:00 BRT (12:00 UTC) — economiza token.
-    - cron: '0 12 1-7,15-21 * 5'
+    # Quinzenal: dia 1 e 15 de cada mês, 09:00 BRT (12:00 UTC) — econômico.
+    # OBS: não combinar dia-do-mês + dia-da-semana num mesmo cron; o padrão
+    # cron trata como "OU" e dispararia muito mais vezes que o esperado.
+    - cron: '0 12 1,15 * *'
   pull_request:
     # Quando um PR de melhoria (branch feat/*) é mergeado, dispara o anúncio.
     # A action do Claude não aceita evento 'push', por isso usamos pull_request.
