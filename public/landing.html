@@ -131,6 +131,10 @@
     border-radius:var(--rad-xl);box-shadow:var(--shadow);
     border:1px solid var(--line-2);
   }
+  /* no computador, mostra a versão larga (mais baixa) */
+  @media(min-width:760px){
+    .hero-shot{max-width:560px}
+  }
 
   /* ---------- mockup card ---------- */
   .mock{
@@ -400,7 +404,9 @@ src="https://www.facebook.com/tr?id=2015826029060952&ev=PageView&noscript=1"/></
     <span class="cta-note"><strong>A partir de R$ 41/mês.</strong> Garantia de 7 dias · Sem instalar nada.</span>
 
     <!-- print real da ferramenta (gerado pelo workflow); se ainda não existir, cai no mockup CSS abaixo -->
-    <img class="hero-shot" src="/print-ferramenta.png" alt="Exemplo de proposta gerada no CorretorPRO — com a marca do corretor e simulação de financiamento SAC e Price" onerror="this.remove();var m=document.getElementById('hero-mock');if(m)m.style.display=''">
+    <picture class="hero-pic">
+      <source media="(min-width:760px)" srcset="/print-ferramenta-desktop.png">
+      <img class="hero-shot" src="/print-ferramenta-mobile.png" alt="Exemplo de proposta gerada no CorretorPRO — com a marca do corretor e simulação de financiamento SAC e Price" onerror="var p=this.closest('.hero-pic');if(p)p.remove();var m=document.getElementById('hero-mock');if(m)m.style.display=''">
     <!-- tool UI mockup (pure CSS) — fallback enquanto o print real não é gerado -->
     <div class="mock" id="hero-mock" style="display:none">
       <div class="mock-glow"></div>
