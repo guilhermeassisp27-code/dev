@@ -47,7 +47,9 @@ try {
   await page.waitForURL(/tool\.html/, { timeout: 40000 })
   await page.waitForLoadState('networkidle')
   await page.waitForSelector('#f-cliente', { state: 'visible', timeout: 30000 })
-  await beat(1500)
+  // Espera o carregamento do perfil remoto da conta demo assentar ANTES de
+  // sobrescrevê-lo (evita corrida que deixava o cabeçalho inconsistente).
+  await beat(3500)
 
   // 3) Define um perfil de exemplo para a proposta sair com marca
   //    (resiliente: se algo falhar, segue para o print mesmo assim)
@@ -61,7 +63,8 @@ try {
     await page.fill('#c-email', 'marcos@imobiliariaalmeida.com.br')
     await beat(400)
     await page.click('#form-config button[type="submit"]')
-    await beat(1500)
+    await page.waitForLoadState('networkidle').catch(() => {})
+    await beat(2500)
   } catch (e) {
     console.warn('Não consegui definir o perfil (segue sem):', e.message)
   }
@@ -91,6 +94,19 @@ try {
   await page.waitForSelector('#proposta.show', { timeout: 15000 }).catch(() => {})
   await beat(2500)
 
+  // Esconde o "chrome" do app (barra lateral, topo, barra mobile, toasts) para
+  // o print sair limpo — só a proposta, sem botões/abas de navegação.
+  await page.addStyleTag({
+    content: '.sidebar,.topbar,.mob-bar,.overlay,.toast{display:none!important}',
+  })
+
+  // Confirma que o cabeçalho já está com o perfil definido (consistência entre
+  // as duas versões). Se não confirmar, segue mesmo assim.
+  await page.waitForFunction(
+    () => { const e = document.getElementById('pc-nome'); return e && /Marcos/.test(e.textContent) },
+    { timeout: 10000 },
+  ).catch(() => console.warn('Cabeçalho não confirmou o nome esperado.'))
+
   // 7) Screenshots da proposta gerada — duas versões:
   //    - celular: viewport estreito (layout mobile da ferramenta)
   //    - computador: reflow para viewport largo (layout desktop)
@@ -98,12 +114,13 @@ try {
 
   console.log('Capturando o print (celular)...')
   await prop.scrollIntoViewIfNeeded()
-  await beat(400)
+  await beat(500)
   await prop.screenshot({ path: 'public/print-ferramenta-mobile.png' })
 
   console.log('Capturando o print (computador)...')
   await page.setViewportSize({ width: 1280, height: 900 })
-  await beat(900)
+  await page.waitForLoadState('networkidle').catch(() => {})
+  await beat(1200)
   await prop.scrollIntoViewIfNeeded()
   await beat(300)
   await prop.screenshot({ path: 'public/print-ferramenta-desktop.png' })
