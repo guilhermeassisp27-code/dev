@@ -125,6 +125,13 @@
   .hero .sub{font-size:19px;max-width:560px;margin:0 auto 32px;color:var(--t2)}
   .hero .sub strong{color:var(--t);font-weight:600}
 
+  /* ---------- hero screenshot (print real) ---------- */
+  .hero-shot{
+    display:block;width:100%;max-width:400px;margin:48px auto 0;
+    border-radius:var(--rad-xl);box-shadow:var(--shadow);
+    border:1px solid var(--line-2);
+  }
+
   /* ---------- mockup card ---------- */
   .mock{
     max-width:380px;margin:48px auto 0;
@@ -392,8 +399,10 @@ src="https://www.facebook.com/tr?id=2015826029060952&ev=PageView&noscript=1"/></
     </a>
     <span class="cta-note"><strong>A partir de R$ 41/mês.</strong> Garantia de 7 dias · Sem instalar nada.</span>
 
-    <!-- tool UI mockup (pure CSS, sem foto de banco de imagens) -->
-    <div class="mock">
+    <!-- print real da ferramenta (gerado pelo workflow); se ainda não existir, cai no mockup CSS abaixo -->
+    <img class="hero-shot" src="/print-ferramenta.png" alt="Exemplo de proposta gerada no CorretorPRO — com a marca do corretor e simulação de financiamento SAC e Price" onerror="this.remove();var m=document.getElementById('hero-mock');if(m)m.style.display=''">
+    <!-- tool UI mockup (pure CSS) — fallback enquanto o print real não é gerado -->
+    <div class="mock" id="hero-mock" style="display:none">
       <div class="mock-glow"></div>
       <div class="mock-head">
         <div class="mock-avatar">
@@ -430,14 +439,11 @@ src="https://www.facebook.com/tr?id=2015826029060952&ev=PageView&noscript=1"/></
 <!-- ===================== 2. SOCIAL PROOF BAR ===================== -->
 <section class="proof">
   <div class="wrap proof-inner">
-    <div class="stars">
-      <svg viewBox="0 0 24 24" fill="currentColor"><path d="m12 2 3 6.6 7.3.7-5.4 4.9 1.6 7.1L12 17.8 5.5 21.3l1.6-7.1L1.7 9.3 9 8.6z"/></svg>
-      <svg viewBox="0 0 24 24" fill="currentColor"><path d="m12 2 3 6.6 7.3.7-5.4 4.9 1.6 7.1L12 17.8 5.5 21.3l1.6-7.1L1.7 9.3 9 8.6z"/></svg>
-      <svg viewBox="0 0 24 24" fill="currentColor"><path d="m12 2 3 6.6 7.3.7-5.4 4.9 1.6 7.1L12 17.8 5.5 21.3l1.6-7.1L1.7 9.3 9 8.6z"/></svg>
-      <svg viewBox="0 0 24 24" fill="currentColor"><path d="m12 2 3 6.6 7.3.7-5.4 4.9 1.6 7.1L12 17.8 5.5 21.3l1.6-7.1L1.7 9.3 9 8.6z"/></svg>
-      <svg viewBox="0 0 24 24" fill="currentColor"><path d="m12 2 3 6.6 7.3.7-5.4 4.9 1.6 7.1L12 17.8 5.5 21.3l1.6-7.1L1.7 9.3 9 8.6z"/></svg>
+    <div class="badge" style="margin:0 auto 16px">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="m12 3 1.9 5.8H20l-4.9 3.6 1.9 5.8L12 14.6 7 18.2l1.9-5.8L4 8.8h6.1z"/></svg>
+      Novidade · Lançamento 2026
     </div>
-    <div class="proof-line">A ferramenta de propostas que faz o corretor solo parecer uma imobiliária inteira.</div>
+    <div class="proof-line">Ferramenta nova, feita por quem vive o mercado imobiliário — para o corretor solo parecer uma imobiliária inteira. <strong>Seja um dos primeiros a usar.</strong></div>
     <div class="proof-grid">
       <div class="proof-item"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg> Sua marca em cada proposta</div>
       <div class="proof-item"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg> Pronta em menos de 60s</div>
