@@ -80,4 +80,20 @@ Enquanto não encontrarmos algo que escale, repetir:
 - _(continuar coletando mais conversas antes de decidir — uma amostra não é
   sinal; é hipótese a testar contra outras respostas)_
 
+**[2026-06-08] Kono Corretor — apartamentos em SP**
+- **Maior dor relatada:** "Cliente que não passa informações exatas e acaba
+  perdendo bons negócios" — e, ao ser explorado, ele apontou que considera
+  **mais importante ainda** ter uma forma de **encontrar/filtrar clientes em
+  potencial**, separando quem está realmente interessado de quem é só
+  "curioso" (perde tempo com gente sem intenção real de compra).
+- **Pagaria?** Resposta vaga ("Ok") diante da hipótese de uma ferramenta de
+  qualificação de lead + montagem rápida de proposta — não deu sinal claro de
+  "sim" nem objeção; conversa terminou sem dado de preço/decisão.
+- **Insight de produto — Qualificação/triagem de lead:** dor é diferente da
+  do Isaac (que falava de burocracia/proposta). Aqui o gargalo apontado é
+  **antes** da proposta: identificar quem vale a pena investir tempo, e não
+  perder negócio bom por estar ocupado com "curioso".
+- _(2 conversas, 2 dores diferentes — ainda é cedo pra apontar padrão; mas já
+  vale acompanhar se "achar cliente qualificado" volta a aparecer nas próximas)_
+
 - _(aguardando primeira leitura da campanha — ~14/06/2026)_
