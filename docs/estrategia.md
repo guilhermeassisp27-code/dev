@@ -107,3 +107,33 @@ Enquanto não encontrarmos algo que escale, repetir:
   vale acompanhar se "achar cliente qualificado" volta a aparecer nas próximas)_
 
 - _(aguardando primeira leitura da campanha — ~14/06/2026)_
+
+---
+
+## Decisões técnicas pendentes
+
+### Migração de infraestrutura — quando tornar o repositório privado
+
+**Situação atual:** repositório público no GitHub. Os segredos reais (chaves
+de API, tokens) estão protegidos no Vercel e GitHub Secrets. O que está
+visível é o código-fonte, a estratégia de negócio e materiais de marketing.
+
+**Por que ainda não migramos:** a ferramenta (`tool.html`) é servida pelo
+GitHub Pages, que exige repositório público no plano gratuito. Tornar privado
+desativa o Pages e derruba a ferramenta para os usuários.
+
+**Quando revisar esta decisão (sinais de alerta):**
+1. Base de usuários pagantes crescendo e o código vira vantagem competitiva
+   real (concorrente pode copiar funcionalidades facilmente)
+2. `docs/estrategia.md` passa a conter informações sensíveis de clientes,
+   parceiros ou dados financeiros relevantes
+3. Qualquer chave, token ou credencial for commitada acidentalmente — agir
+   imediatamente nesse caso
+4. Produto escala a ponto de justificar ~R$22/mês do GitHub Pro
+
+**O que fazer quando chegar o momento:**
+- Opção 1 (mais simples): assinar GitHub Pro → repositório privado com
+  GitHub Pages funcionando
+- Opção 2 (mais robusta): mover `tool.html` para Vercel (mesmo domínio do
+  Next.js) e remover dependência do GitHub Pages — repositório privado sem
+  custo adicional
