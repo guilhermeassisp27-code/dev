@@ -54,4 +54,56 @@ Enquanto não encontrarmos algo que escale, repetir:
 
 > Anotar aqui cada ciclo: hipótese testada → resultado → decisão.
 
+### Conversas no orgânico (Messenger — perguntando dor + disposição de pagar)
+
+**[2026-06-08] Isaac Mesquita — corretor (compra e venda)**
+- **Maiores dores relatadas:** tarefas burocráticas tomam grande parte do tempo
+  — termo de autorização de venda, registro de visita com cliente, montagem de
+  propostas e gestão de agenda. Boa parte do dia também vai para follow-up e
+  contato com novos clientes para marcar agenda.
+- **Pagaria?** Sim, "dependendo da funcionalidade da ferramenta".
+- **Insight de produto #1 — Registro de visita:** ele considera isso
+  "mega importante", pois protege o corretor juridicamente — comprova que foi
+  ele quem visitou o imóvel com aquele cliente (proteção contra cliente que
+  tenta "atravessar" o corretor ou proprietário que vende por fora).
+- **Insight de produto #2 — Proposta preenchida pelo cliente, não pelo corretor:**
+  ele relatou conhecer uma operação com +1000 corretores onde, após a visita,
+  o corretor envia um **link** para o próprio cliente formalizar a proposta.
+  Segundo ele isso (a) agiliza o ciclo em vez de alongar, (b) evita que o
+  corretor "condicione a proposta sem perceber" ao preenchê-la, e (c) deixa o
+  cliente mais à vontade para abrir valores reais.
+- **Follow-up (pergunta: "se tivesse o registro de visita, assinaria?"):**
+  Respondeu **"Sim.. claro que um BI e a organização desses dados ajudaria
+  muito tmb"** — ou seja, confirmou que **registro de visita é suficiente pra
+  fechar**, e adicionou espontaneamente um terceiro desejo: dashboard/BI com
+  os dados coletados (visitas, propostas, negociações).
+- **Insight de produto #3 — BI e organização dos dados:** quem usa a
+  ferramenta quer não só gerar documentos, mas **enxergar os dados**
+  (funil, histórico de visitas, negócios abertos/fechados).
+- **Possíveis direções de produto sugeridas por essa conversa:**
+  1. Função de **"termo/registro de visita"** gerável pela ferramenta
+     (proteção jurídica do corretor).
+  2. **Link de proposta para o cliente preencher** diretamente.
+  3. **Painel/dashboard** com organização dos dados (visitas, propostas,
+     status de negociações) — correlaciona com branch não mergeado
+     `feat/crm-status-proposta` que já existe no repositório.
+- _(continuar coletando mais conversas antes de decidir — uma amostra não é
+  sinal; é hipótese a testar contra outras respostas)_
+
+**[2026-06-08] Kono Corretor — apartamentos em SP**
+- **Maior dor relatada:** "Cliente que não passa informações exatas e acaba
+  perdendo bons negócios" — e, ao ser explorado, ele apontou que considera
+  **mais importante ainda** ter uma forma de **encontrar/filtrar clientes em
+  potencial**, separando quem está realmente interessado de quem é só
+  "curioso" (perde tempo com gente sem intenção real de compra).
+- **Pagaria?** Resposta vaga ("Ok") diante da hipótese de uma ferramenta de
+  qualificação de lead + montagem rápida de proposta — não deu sinal claro de
+  "sim" nem objeção; conversa terminou sem dado de preço/decisão.
+- **Insight de produto — Qualificação/triagem de lead:** dor é diferente da
+  do Isaac (que falava de burocracia/proposta). Aqui o gargalo apontado é
+  **antes** da proposta: identificar quem vale a pena investir tempo, e não
+  perder negócio bom por estar ocupado com "curioso".
+- _(2 conversas, 2 dores diferentes — ainda é cedo pra apontar padrão; mas já
+  vale acompanhar se "achar cliente qualificado" volta a aparecer nas próximas)_
+
 - _(aguardando primeira leitura da campanha — ~14/06/2026)_
