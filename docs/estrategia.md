@@ -72,11 +72,21 @@ Enquanto não encontrarmos algo que escale, repetir:
   Segundo ele isso (a) agiliza o ciclo em vez de alongar, (b) evita que o
   corretor "condicione a proposta sem perceber" ao preenchê-la, e (c) deixa o
   cliente mais à vontade para abrir valores reais.
+- **Follow-up (pergunta: "se tivesse o registro de visita, assinaria?"):**
+  Respondeu **"Sim.. claro que um BI e a organização desses dados ajudaria
+  muito tmb"** — ou seja, confirmou que **registro de visita é suficiente pra
+  fechar**, e adicionou espontaneamente um terceiro desejo: dashboard/BI com
+  os dados coletados (visitas, propostas, negociações).
+- **Insight de produto #3 — BI e organização dos dados:** quem usa a
+  ferramenta quer não só gerar documentos, mas **enxergar os dados**
+  (funil, histórico de visitas, negócios abertos/fechados).
 - **Possíveis direções de produto sugeridas por essa conversa:**
   1. Função de **"termo/registro de visita"** gerável pela ferramenta
      (proteção jurídica do corretor).
-  2. **Link de proposta para o cliente preencher** diretamente — inverte o
-     fluxo atual (hoje o corretor monta a proposta sozinho).
+  2. **Link de proposta para o cliente preencher** diretamente.
+  3. **Painel/dashboard** com organização dos dados (visitas, propostas,
+     status de negociações) — correlaciona com branch não mergeado
+     `feat/crm-status-proposta` que já existe no repositório.
 - _(continuar coletando mais conversas antes de decidir — uma amostra não é
   sinal; é hipótese a testar contra outras respostas)_
 
