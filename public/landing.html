@@ -453,6 +453,39 @@
   .demo-skel .bar{height:11px;border-radius:6px;background:var(--navy-3);margin-bottom:12px;animation:pulse 1.1s ease-in-out infinite}
   @keyframes pulse{0%,100%{opacity:.45}50%{opacity:1}}
 
+  /* seção proteção jurídica */
+  .legal{background:var(--navy-2);border-top:1px solid var(--line);border-bottom:1px solid var(--line)}
+  .legal .wrap{max-width:1020px}
+  .legal-head{text-align:center;max-width:640px;margin:0 auto 40px}
+  .legal-head h2{font-size:32px;margin-bottom:14px}
+  .legal-head h2 em{font-style:normal;color:var(--amber)}
+  .legal-head p{font-size:17px}
+  .legal-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:14px}
+  @media(max-width:860px){.legal-grid{grid-template-columns:1fr}}
+  .legal-card{
+    padding:26px 24px;border-radius:var(--rad-l);
+    background:var(--card);border:1px solid var(--line);
+  }
+  .legal-ref{
+    display:inline-flex;align-items:center;gap:7px;
+    font-family:var(--font-h);font-size:12px;font-weight:800;letter-spacing:.06em;
+    color:var(--green);background:var(--green-soft);
+    padding:6px 12px;border-radius:8px;margin-bottom:14px;
+  }
+  .legal-ref svg{width:14px;height:14px}
+  .legal-card h3{font-size:16.5px;font-family:var(--font);font-weight:700;color:var(--white);margin-bottom:8px}
+  .legal-card p{font-size:14px;line-height:1.65}
+  .legal-doc{
+    max-width:640px;margin:36px auto 0;
+    background:var(--card);border:1px solid var(--line-2);border-radius:var(--rad-l);
+    padding:22px 24px;display:flex;gap:16px;align-items:flex-start;
+  }
+  .legal-doc-ico{width:46px;height:46px;border-radius:12px;flex-shrink:0;background:var(--amber-soft);display:flex;align-items:center;justify-content:center}
+  .legal-doc-ico svg{width:24px;height:24px;color:var(--amber)}
+  .legal-doc h3{font-size:16px;font-family:var(--font);font-weight:700;color:var(--white);margin-bottom:5px}
+  .legal-doc p{font-size:13.5px;line-height:1.6}
+  .legal-note{text-align:center;font-size:12px;color:var(--t3);max-width:560px;margin:24px auto 0;line-height:1.6}
+
   /* barra fixa mobile */
   .stickbar{
     position:fixed;left:0;right:0;bottom:0;z-index:60;
@@ -511,7 +544,7 @@ src="https://www.facebook.com/tr?id=2015826029060952&ev=PageView&noscript=1"/></
     <h1>Enquanto você formata a proposta, o concorrente <em>já fechou a venda</em>.</h1>
     <p class="sub">O CorretorPRO gera a sua proposta profissional — com <strong>seu logo, CRECI e cor</strong> — em menos de 60 segundos. Direto do celular, pronta pra enviar no WhatsApp.</p>
     <a class="cta" href="#planos">
-      Quero fechar mais
+      Começar agora
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
     </a>
     <span class="cta-note"><strong>A partir de R$ 41/mês.</strong> Garantia de 7 dias · Sem instalar nada.</span>
@@ -630,8 +663,8 @@ src="https://www.facebook.com/tr?id=2015826029060952&ev=PageView&noscript=1"/></
 <!-- ===================== 4.5 DEMO INTERATIVO ===================== -->
 <section class="section demo" id="demo">
   <div class="wrap">
-    <h2>Não acredite em mim. <em style="font-style:normal;color:var(--amber)">Teste agora.</em></h2>
-    <p class="lead">Preencha 3 campos e veja a proposta nascer na sua frente — sem cadastro, sem cartão.</p>
+    <h2>Veja funcionando <em style="font-style:normal;color:var(--amber)">antes de assinar</em>.</h2>
+    <p class="lead">Preencha 3 campos e veja uma proposta de exemplo ser gerada na hora — sem cadastro e sem cartão.</p>
 
     <div class="demo-box">
       <div class="demo-fields">
@@ -718,7 +751,7 @@ src="https://www.facebook.com/tr?id=2015826029060952&ev=PageView&noscript=1"/></
       <div class="feat-card">
         <div class="feat-ico" style="background:var(--green-soft)"><svg viewBox="0 0 24 24" fill="none" stroke="var(--green)" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg></div>
         <h3>Registro de Visita <span class="feat-new">NOVO</span></h3>
-        <p>O termo com amparo legal (arts. 722–729 CC) que protege a sua comissão se o negócio fechar por fora.</p>
+        <p>O termo que documenta a sua intermediação e protege a sua comissão. <a href="#protecao" style="color:var(--amber);font-weight:600">Entenda a base legal ↓</a></p>
       </div>
       <div class="feat-card">
         <div class="feat-ico" style="background:rgba(124,92,252,.13)"><svg viewBox="0 0 24 24" fill="none" stroke="var(--purple)" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg></div>
@@ -736,6 +769,50 @@ src="https://www.facebook.com/tr?id=2015826029060952&ev=PageView&noscript=1"/></
         <p>Histórico de propostas e visitas sempre à mão — troque de celular sem perder nada.</p>
       </div>
     </div>
+  </div>
+</section>
+
+<!-- ===================== 5.5 PROTEÇÃO JURÍDICA ===================== -->
+<section class="section legal" id="protecao">
+  <div class="wrap">
+    <div class="legal-head">
+      <div class="eyebrow" style="justify-content:center;display:flex">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+        Proteção da comissão
+      </div>
+      <h2>O cliente fechou direto com o proprietário? <em>Você tem o documento.</em></h2>
+      <p>Toda visita que você faz sem registro é uma comissão desprotegida. O Registro de Visita do CorretorPRO documenta a sua intermediação com os elementos que a Justiça considera na hora de decidir.</p>
+    </div>
+
+    <div class="legal-grid">
+      <div class="legal-card">
+        <span class="legal-ref"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg>Art. 727 · Código Civil</span>
+        <h3>Negócio fruto da sua mediação = comissão devida</h3>
+        <p>Se o negócio se realizar como fruto do seu trabalho de aproximação — mesmo depois do fim da mediação e mesmo direto entre as partes — a corretagem é sua por lei.</p>
+      </div>
+      <div class="legal-card">
+        <span class="legal-ref"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg>Art. 408 · CPC</span>
+        <h3>Declaração assinada presume-se verdadeira</h3>
+        <p>O documento particular assinado pelo visitante tem presunção legal de veracidade em relação a quem assinou — é prova documental, não palavra contra palavra.</p>
+      </div>
+      <div class="legal-card">
+        <span class="legal-ref"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg>Entendimento do STJ</span>
+        <h3>Quem aproxima as partes tem direito à comissão</h3>
+        <p>O STJ já reconheceu a comissão de corretores que fizeram a aproximação mesmo quando o negócio foi concluído sem a sua participação. A chave é provar a intermediação — e prova se faz com documento.</p>
+      </div>
+    </div>
+
+    <div class="legal-doc">
+      <div class="legal-doc-ico">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><path d="M14 2v6h6"/><path d="M16 13H8M16 17H8M10 9H8"/></svg>
+      </div>
+      <div>
+        <h3>O termo gerado já vem completo para assinar</h3>
+        <p>Identificação das partes (nome, CPF, RG e CRECI), endereço e matrícula do imóvel, data e hora da visita, declaração com fundamentação legal, prazo de proteção de 180 dias, local e data, e campos de assinatura para as partes e duas testemunhas. Imprima ou envie em PDF — em segundos.</p>
+      </div>
+    </div>
+
+    <p class="legal-note">O CorretorPRO gera o documento com os elementos reconhecidos pela legislação e pela jurisprudência. A força probatória em cada caso depende do preenchimento correto e das assinaturas. Este conteúdo não substitui aconselhamento jurídico.</p>
   </div>
 </section>
 
@@ -774,7 +851,7 @@ src="https://www.facebook.com/tr?id=2015826029060952&ev=PageView&noscript=1"/></
 <section class="section pricing" id="planos">
   <div class="wrap">
     <h2>Escolha o seu plano</h2>
-    <p class="lead">Menos que um lanche por mês — e se paga na primeira venda que você fechar.</p>
+    <p class="lead">Investimento que se paga na primeira comissão — e que protege todas as outras.</p>
 
     <div class="plans">
       <!-- Mensal -->
@@ -830,7 +907,7 @@ src="https://www.facebook.com/tr?id=2015826029060952&ev=PageView&noscript=1"/></
 <!-- ===================== 8. OBJECTION BLOCK ===================== -->
 <section class="section obj">
   <div class="wrap">
-    <h2>Ainda na dúvida?</h2>
+    <h2>Perguntas frequentes</h2>
 
     <div class="obj-card">
       <div class="obj-q">
@@ -877,10 +954,10 @@ src="https://www.facebook.com/tr?id=2015826029060952&ev=PageView&noscript=1"/></
 <!-- ===================== 9. FINAL CTA + URGENCY ===================== -->
 <section class="section final">
   <div class="wrap">
-    <h2>O próximo cliente que você perder <em>pode ser o último</em>.</h2>
-    <p>Cada proposta lenta é uma comissão na mão do concorrente. Vire esse jogo agora.</p>
+    <h2>Sua próxima visita merece uma proposta — <em>e uma proteção</em> — à altura.</h2>
+    <p>Proposta profissional em 60 segundos e comissão documentada em cada visita. É assim que o corretor moderno trabalha.</p>
     <a class="cta" href="#planos">
-      Quero começar agora
+      Começar agora
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
     </a>
     <span class="cta-note"><strong>Garantia de 7 dias.</strong> Não gostou, devolvemos 100%.</span>

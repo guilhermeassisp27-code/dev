@@ -293,6 +293,10 @@ input[type=color]{opacity:0;width:0;height:0;position:absolute}
 .sig-line{border-top:1px solid var(--bm);padding-top:8px}
 .sig-nome{font-size:13px;font-weight:700;color:var(--t)}
 .sig-papel{font-size:11px;color:var(--t3);margin-top:2px}
+.sig-localdata{text-align:right;font-size:13px;color:var(--t2);margin-top:26px}
+.sig-test-title{font-size:10px;font-weight:700;letter-spacing:.09em;text-transform:uppercase;color:var(--t3);margin-top:30px}
+.sig-area.test .sig-box{padding-top:36px}
+.sig-area.test .sig-nome{font-weight:500;color:var(--t3);font-size:11px}
 .visita-info-banner{display:flex;gap:10px;align-items:flex-start;background:rgba(34,197,94,.07);border:1px solid rgba(34,197,94,.2);border-radius:var(--rad);padding:12px 14px;margin-bottom:18px;font-size:12.5px;color:var(--t2);line-height:1.6}
 .visita-info-banner svg{flex-shrink:0;color:var(--g,#22C55E);margin-top:2px}
 
@@ -338,6 +342,9 @@ input[type=color]{opacity:0;width:0;height:0;position:absolute}
   .sig-line{border-top-color:#999!important}
   .sig-nome{color:#000!important}
   .sig-papel{color:#666!important}
+  .sig-localdata{color:#333!important}
+  .sig-test-title{color:#666!important}
+  .sig-area.test .sig-nome{color:#444!important}
   body,html{background:#fff!important;color:#000!important}
   .main{margin-left:0!important;padding-top:0!important}
   .page{padding:0!important;max-width:100%!important}
@@ -741,6 +748,10 @@ input[type=color]{opacity:0;width:0;height:0;position:absolute}
               <input id="v-cpf" type="text" class="inp" placeholder="000.000.000-00" inputmode="numeric">
             </div>
             <div class="field">
+              <label class="lbl" for="v-rg">RG (opcional)</label>
+              <input id="v-rg" type="text" class="inp" placeholder="00.000.000-0">
+            </div>
+            <div class="field">
               <label class="lbl" for="v-tel">Telefone (opcional)</label>
               <input id="v-tel" type="tel" class="inp" placeholder="(11) 99999-9999">
             </div>
@@ -767,6 +778,10 @@ input[type=color]{opacity:0;width:0;height:0;position:absolute}
                 <option>Flat / Studio</option>
               </select>
             </div>
+            <div class="field">
+              <label class="lbl" for="v-matricula">Matrícula do imóvel (recomendado)</label>
+              <input id="v-matricula" type="text" class="inp" placeholder="Ex: 123.456 — 4º CRI de São Paulo">
+            </div>
           </div>
         </div>
 
@@ -780,6 +795,10 @@ input[type=color]{opacity:0;width:0;height:0;position:absolute}
             <div class="field">
               <label class="lbl" for="v-hora">Horário (opcional)</label>
               <input id="v-hora" type="time" class="inp">
+            </div>
+            <div class="field">
+              <label class="lbl" for="v-cidade">Cidade/UF (para o fecho do termo)</label>
+              <input id="v-cidade" type="text" class="inp" placeholder="Ex: São Paulo/SP">
             </div>
             <div class="field f2">
               <label class="lbl" for="v-obs">Observações (opcional)</label>
@@ -829,17 +848,33 @@ input[type=color]{opacity:0;width:0;height:0;position:absolute}
             <div class="prop-sec-title">Observações</div>
             <p class="prop-text" id="t-obs"></p>
           </div>
+          <p class="sig-localdata" id="t-localdata"></p>
           <div class="sig-area">
             <div class="sig-box">
               <div class="sig-line">
                 <div class="sig-nome" id="t-sig-cliente">—</div>
-                <div class="sig-papel">Visitante</div>
+                <div class="sig-papel" id="t-sig-cliente-doc">Visitante</div>
               </div>
             </div>
             <div class="sig-box">
               <div class="sig-line">
                 <div class="sig-nome" id="t-sig-corretor">—</div>
                 <div class="sig-papel" id="t-sig-creci">Corretor(a) de Imóveis</div>
+              </div>
+            </div>
+          </div>
+          <div class="sig-test-title">Testemunhas (recomendado — fortalece a prova)</div>
+          <div class="sig-area test">
+            <div class="sig-box">
+              <div class="sig-line">
+                <div class="sig-nome">Nome: ______________________ CPF: ____________</div>
+                <div class="sig-papel">Testemunha 1</div>
+              </div>
+            </div>
+            <div class="sig-box">
+              <div class="sig-line">
+                <div class="sig-nome">Nome: ______________________ CPF: ____________</div>
+                <div class="sig-papel">Testemunha 2</div>
               </div>
             </div>
           </div>
@@ -1898,11 +1933,14 @@ function gerarTermo(ev) {
   const d = {
     cliente:    document.getElementById('v-cliente').value.trim(),
     cpf:        document.getElementById('v-cpf').value.trim(),
+    rg:         document.getElementById('v-rg').value.trim(),
     tel:        document.getElementById('v-tel').value.trim(),
     end:        document.getElementById('v-end').value.trim(),
     tipoImovel: document.getElementById('v-tipo').value,
+    matricula:  document.getElementById('v-matricula').value.trim(),
     dataVisita: document.getElementById('v-data').value,
     hora:       document.getElementById('v-hora').value,
+    cidade:     document.getElementById('v-cidade').value.trim(),
     obs:        document.getElementById('v-obs').value.trim(),
   }
   snapVisita = d
@@ -1946,8 +1984,10 @@ function construirTermo(d) {
   const items = [
     { label:'Visitante', val:d.cliente },
     d.cpf ? { label:'CPF', val:d.cpf } : null,
+    d.rg ? { label:'RG', val:d.rg } : null,
     d.tel ? { label:'Telefone', val:d.tel } : null,
     d.tipoImovel ? { label:'Tipo do imóvel', val:d.tipoImovel } : null,
+    d.matricula ? { label:'Matrícula', val:d.matricula } : null,
     { label:'Data da visita', val: fmtDataBR(d.dataVisita) + (d.hora ? ' · ' + d.hora : '') },
   ].filter(Boolean)
   items.forEach(item => {
@@ -1957,18 +1997,30 @@ function construirTermo(d) {
     grid.appendChild(div)
   })
 
-  // Declaração com amparo legal (arts. 722–729 do Código Civil)
-  const idCliente = d.cliente + (d.cpf ? `, inscrito(a) no CPF sob o nº ${d.cpf}` : '')
-  const idCorretor = nomeCorretor + (creci ? `, CRECI ${creci}` : '')
+  // Declaração com amparo legal: CC arts. 722-729 (esp. 727), CPC art. 408,
+  // identificação completa das partes/imóvel e prazo de proteção — elementos
+  // que a jurisprudência considera na prova da intermediação útil.
+  const docs = [d.cpf ? `CPF nº ${d.cpf}` : null, d.rg ? `RG nº ${d.rg}` : null].filter(Boolean).join(', ')
+  const idCliente = d.cliente + (docs ? `, portador(a) do ${docs}` : '')
+  const idCorretor = nomeCorretor + (creci ? `, inscrito(a) no CRECI sob o nº ${creci}` : '')
+  const idImovel = `${d.tipoImovel ? escH(d.tipoImovel.toLowerCase()) + ' ' : 'imóvel '}situado em <b>${escH(d.end)}</b>` +
+    (d.matricula ? `, matrícula nº <b>${escH(d.matricula)}</b>` : '')
   const quando = fmtDataBR(d.dataVisita) + (d.hora ? `, às ${d.hora}` : '')
   document.getElementById('t-decl').innerHTML =
-    `Eu, <b>${escH(idCliente)}</b>, declaro para os devidos fins que em <b>${escH(quando)}</b> ` +
-    `visitei o imóvel${d.tipoImovel ? ' (' + escH(d.tipoImovel.toLowerCase()) + ')' : ''} situado em ` +
-    `<b>${escH(d.end)}</b>, apresentado por intermédio do(a) corretor(a) <b>${escH(idCorretor)}</b>. ` +
-    `Reconheço que tomei conhecimento deste imóvel e tive acesso a ele por meio do trabalho de aproximação ` +
-    `realizado pelo(a) referido(a) profissional, nos termos dos artigos 722 a 729 do Código Civil, ` +
-    `fazendo jus à remuneração de corretagem caso a negociação deste imóvel venha a se concretizar, ` +
-    `ainda que diretamente entre as partes.`
+    `<b>DECLARO</b>, para os devidos fins de direito, eu, <b>${escH(idCliente)}</b>, que em <b>${escH(quando)}</b> ` +
+    `visitei o ${idImovel}, sendo-me este apresentado por intermédio do(a) corretor(a) de imóveis ` +
+    `<b>${escH(idCorretor)}</b>, a quem reconheço como responsável pela aproximação entre mim e o referido imóvel.<br><br>` +
+    `Declaro estar ciente de que, nos termos dos <b>artigos 722 a 729 do Código Civil</b> — em especial o ` +
+    `<b>art. 727</b> —, caso a aquisição, locação ou qualquer negociação deste imóvel venha a se concretizar, ` +
+    `por mim ou por pessoa a mim vinculada, <b>ainda que diretamente com o proprietário ou após o término da ` +
+    `mediação</b>, será devida ao(à) corretor(a) acima identificado(a) a respectiva remuneração de corretagem, ` +
+    `por ser o negócio fruto do seu trabalho de aproximação.<br><br>` +
+    `Esta declaração permanece eficaz pelo prazo de <b>180 (cento e oitenta) dias</b> contados da data da visita ` +
+    `e, uma vez assinada, goza da presunção de veracidade prevista no <b>art. 408 do Código de Processo Civil</b>.`
+
+  // Local e data por extenso (fecho formal do documento)
+  const hoje = new Date().toLocaleDateString('pt-BR', { day:'numeric', month:'long', year:'numeric' })
+  document.getElementById('t-localdata').textContent = (d.cidade ? d.cidade + ', ' : '') + hoje + '.'
 
   // Observações (só aparece se preenchidas)
   const obsSec = document.getElementById('t-obs-sec')
@@ -1981,6 +2033,7 @@ function construirTermo(d) {
 
   // Assinaturas
   document.getElementById('t-sig-cliente').textContent = d.cliente
+  document.getElementById('t-sig-cliente-doc').textContent = 'Visitante' + (d.cpf ? ' · CPF ' + d.cpf : '')
   document.getElementById('t-sig-corretor').textContent = nomeCorretor
   document.getElementById('t-sig-creci').textContent = creci ? `Corretor(a) de Imóveis · CRECI ${creci}` : 'Corretor(a) de Imóveis'
 }
@@ -2069,17 +2122,23 @@ function textoTermo() {
   if (!d) return ''
   const nomeCorretor = perfil.nome || 'Corretor(a)'
   const creci = perfil.creci ? ' — CRECI ' + perfil.creci : ''
+  const hoje = new Date().toLocaleDateString('pt-BR', { day:'numeric', month:'long', year:'numeric' })
   return [
-    'TERMO DE REGISTRO DE VISITA',
+    'TERMO DE REGISTRO DE VISITA A IMÓVEL',
     '',
     document.getElementById('t-decl').innerText,
     d.obs ? '\nObservações: ' + d.obs : '',
     '',
+    (d.cidade ? d.cidade + ', ' : '') + hoje + '.',
+    '',
     '_______________________________',
-    d.cliente + ' (Visitante)',
+    d.cliente + ' (Visitante' + (d.cpf ? ' · CPF ' + d.cpf : '') + ')',
     '',
     '_______________________________',
     nomeCorretor + creci,
+    '',
+    'Testemunha 1: Nome __________________ CPF __________ Ass. __________________',
+    'Testemunha 2: Nome __________________ CPF __________ Ass. __________________',
   ].filter(s => s !== '').join('\n')
 }
 
