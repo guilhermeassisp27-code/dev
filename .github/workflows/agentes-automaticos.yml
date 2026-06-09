@@ -10,11 +10,13 @@ name: Agentes Automáticos CorretorPRO
 # Sem esse secret os jobs falham de propósito (não há como rodar o agente).
 
 on:
-  schedule:
-    # Segunda 09:00 BRT (12:00 UTC) — relatório de dados da semana
-    - cron: '0 12 * * 1'
-    # Quarta 09:00 BRT (12:00 UTC) — lote de conteúdo de marketing
-    - cron: '0 12 * * 3'
+  # AGENDAMENTO PAUSADO na fase inicial para economizar créditos.
+  # Dados e Marketing rodam apenas sob demanda (workflow_dispatch, abaixo).
+  # Para reativar o automático quinzenal, descomente os 2 crons abaixo
+  # (já no formato correto: dia-do-mês apenas, sem combinar com dia-da-semana).
+  # schedule:
+  #   - cron: '0 12 1,15 * *'   # relatório de dados — dia 1 e 15, 09h BRT
+  #   - cron: '0 12 2,16 * *'   # conteúdo de marketing — dia 2 e 16, 09h BRT
   workflow_dispatch:
     inputs:
       agente:
@@ -34,8 +36,8 @@ permissions:
 
 jobs:
   relatorio-dados:
-    # Roda na segunda agendada OU quando disparado manualmente escolhendo "dados"
-    if: github.event.schedule == '0 12 * * 1' || github.event.inputs.agente == 'dados'
+    # Roda no agendamento quinzenal OU quando disparado manualmente escolhendo "dados"
+    if: github.event.schedule == '0 12 1,15 * *' || github.event.inputs.agente == 'dados'
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -43,6 +45,10 @@ jobs:
         uses: anthropics/claude-code-action@v1
         with:
           anthropic_api_key: ${{ secrets.ANTHROPIC_API_KEY }}
+          claude_args: |
+            --model claude-sonnet-4-6
+            --max-turns 25
+            --allowedTools "Read,Edit,Write,Glob,Grep,Bash(git:*),Bash(gh:*),Bash(npx tsc:*)"
           prompt: |
             Use o agente "dados". Gere o relatório semanal de assinantes do
             CorretorPRO: ativos, cancelados/churn, taxa de ativação, mix de
@@ -51,7 +57,7 @@ jobs:
             Não exponha emails nem PII; use apenas agregados.
 
   conteudo-marketing:
-    if: github.event.schedule == '0 12 * * 3' || github.event.inputs.agente == 'marketing'
+    if: github.event.schedule == '0 12 2,16 * *' || github.event.inputs.agente == 'marketing'
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -59,6 +65,10 @@ jobs:
         uses: anthropics/claude-code-action@v1
         with:
           anthropic_api_key: ${{ secrets.ANTHROPIC_API_KEY }}
+          claude_args: |
+            --model claude-sonnet-4-6
+            --max-turns 25
+            --allowedTools "Read,Edit,Write,Glob,Grep,Bash(git:*),Bash(gh:*),Bash(npx tsc:*)"
           prompt: |
             Use o agente "marketing". Crie o lote de conteúdo da semana: 5
             roteiros de Reels/Shorts (gancho + desenvolvimento + CTA) e 3 copies
@@ -75,6 +85,10 @@ jobs:
         uses: anthropics/claude-code-action@v1
         with:
           anthropic_api_key: ${{ secrets.ANTHROPIC_API_KEY }}
+          claude_args: |
+            --model claude-sonnet-4-6
+            --max-turns 25
+            --allowedTools "Read,Edit,Write,Glob,Grep,Bash(git:*),Bash(gh:*),Bash(npx tsc:*)"
           prompt: |
             Use o agente "trafego". Revise marketing/plano-trafego.md e proponha
             ajustes de estrutura, públicos e verba para a próxima semana, com
