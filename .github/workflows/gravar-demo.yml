@@ -1,0 +1,72 @@
+name: Gravar Demo da Ferramenta
+
+# Grava automaticamente um vídeo (MP4) da ferramenta demonstrando as
+# funcionalidades novas. Roda no GitHub Actions (grátis em repo público).
+# O vídeo fica disponível como "Artifact" para download na própria execução.
+#
+# PRÉ-REQUISITO: secrets DEMO_EMAIL e DEMO_PASSWORD configurados em
+#   Settings → Secrets and variables → Actions
+#   (uma conta de demonstração no CorretorPRO com assinatura ativa).
+
+on:
+  workflow_dispatch:
+  pull_request:
+    # Ao publicar uma melhoria (PR feat/* mergeado), grava o vídeo junto com
+    # o anúncio do agente de marketing — os dois saem no mesmo momento.
+    types: [closed]
+
+jobs:
+  gravar:
+    # Roda no disparo manual OU quando um PR feat/* é mergeado
+    if: >-
+      github.event_name == 'workflow_dispatch' ||
+      (github.event.pull_request.merged == true &&
+       startsWith(github.event.pull_request.head.ref, 'feat/'))
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Instalar Playwright
+        run: |
+          npm init -y >/dev/null 2>&1 || true
+          npm install playwright@latest
+          npx playwright install --with-deps chromium
+
+      - name: Gravar a demo
+        env:
+          DEMO_EMAIL: ${{ secrets.DEMO_EMAIL }}
+          DEMO_PASSWORD: ${{ secrets.DEMO_PASSWORD }}
+          APP_URL: https://usecorretorpro.vercel.app
+          TOOL_URL: https://guilhermeassisp27-code.github.io/dev/tool.html
+        run: node scripts/gravar-demo.mjs
+
+      - name: Converter para MP4 (vertical, pronto para Reels)
+        if: always()
+        run: |
+          sudo apt-get update -qq && sudo apt-get install -y -qq ffmpeg
+          mkdir -p saida
+          VIDEO=$(ls video/*.webm 2>/dev/null | head -1)
+          if [ -n "$VIDEO" ]; then
+            ffmpeg -y -i "$VIDEO" \
+              -vf "scale=1080:1920:force_original_aspect_ratio=decrease:flags=lanczos,pad=1080:1920:(ow-iw)/2:(oh-ih)/2:black,setsar=1" \
+              -c:v libx264 -pix_fmt yuv420p -r 30 saida/corretorpro-demo.mp4
+            echo "MP4 gerado em saida/corretorpro-demo.mp4"
+          else
+            echo "Nenhum vídeo .webm encontrado — a gravação pode ter falhado."
+            exit 1
+          fi
+
+      - name: Publicar o vídeo como artifact
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: corretorpro-demo-video
+          path: |
+            saida/corretorpro-demo.mp4
+            video/*.webm
+          if-no-files-found: warn
+          retention-days: 30

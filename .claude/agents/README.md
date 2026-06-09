@@ -11,6 +11,8 @@ numa sessão do Claude Code) e **automático** (rodam agendados via GitHub Actio
 | `dev` | Engenheiro: bugs, manutenção, build, webhook, tool.html | Sim — gera PR para revisão (não faz merge) |
 | `produto` | Evolução: novas funcionalidades, UX, novidades na ferramenta | Sim — implementa, registra novidade e abre PR |
 | `marketing` | Conteúdo e vídeo: roteiros, copy, calendário, anúncios | Sim — escreve material pronto (não grava vídeo) |
+| `revisor` | Avalia se a melhoria proposta é boa para o corretor | Sim — posta parecer (✅/⚠️/❌) no PR de melhoria |
+| `seo` | Otimiza a landing para ranquear no Google | Sim — abre PR com melhorias de SEO (manual) |
 | `suporte` | Diagnóstico de problemas de usuário e logs | Sim — entrega causa raiz + correção |
 | `dados` | Relatórios de assinantes, churn, uso, conversão | Sim — read-only, nunca altera produção |
 | `trafego` | Tráfego pago: campanhas, públicos, verba, análise | Plano/recomendação — NÃO gasta nem sobe campanha sozinho |

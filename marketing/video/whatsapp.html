@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="pt-BR"><head><meta charset="utf-8">
+<style>
+  * { margin:0; padding:0; box-sizing:border-box }
+  body { width:1080px; height:1920px; overflow:hidden;
+         font-family:'Inter','Segoe UI',Arial,sans-serif;
+         background:#0b141a; display:flex; flex-direction:column }
+  .top { background:#1f2c34; padding:44px 48px; display:flex; align-items:center; gap:28px }
+  .avatar { width:96px; height:96px; border-radius:50%; background:#54656f;
+            display:flex; align-items:center; justify-content:center;
+            font-size:44px; font-weight:700; color:#cfd9df }
+  .nome { font-size:42px; font-weight:600; color:#e9edef }
+  .visto { font-size:30px; color:#8696a0; margin-top:6px }
+  .chat { flex:1; padding:60px 48px;
+          background:#0b141a;
+          display:flex; flex-direction:column; gap:28px }
+  .msg { max-width:78%; padding:30px 36px; border-radius:24px;
+         font-size:38px; line-height:1.45; color:#e9edef;
+         opacity:0; transform:translateY(24px); animation:in .4s ease-out forwards }
+  .eu   { background:#005c4b; align-self:flex-end; border-bottom-right-radius:6px }
+  .ele  { background:#1f2c34; align-self:flex-start; border-bottom-left-radius:6px }
+  .hora { display:block; font-size:24px; color:#ffffff77; margin-top:12px; text-align:right }
+  .dia  { align-self:center; background:#1c272e; color:#8696a0; font-size:27px;
+          padding:12px 28px; border-radius:14px;
+          opacity:0; animation:in .4s ease-out forwards }
+  .m1 { animation-delay:.3s } .m2 { animation-delay:1.1s }
+  .d1 { animation-delay:2.2s } .m3 { animation-delay:2.8s }
+  .d2 { animation-delay:3.8s } .m4 { animation-delay:4.4s }
+  .selo { position:fixed; left:0; right:0; bottom:170px; text-align:center;
+          opacity:0; animation:in .5s ease-out 5.2s forwards }
+  .selo span { display:inline-block; background:#E53E3E; color:#fff;
+               font-size:46px; font-weight:900; padding:28px 48px;
+               border-radius:20px; line-height:1.35;
+               box-shadow:0 16px 50px rgba(229,62,62,.45) }
+  @keyframes in { to { opacity:1; transform:translateY(0) } }
+</style></head>
+<body>
+  <div class="top">
+    <div class="avatar">C</div>
+    <div><div class="nome">Cliente — Apto Bela Vista</div>
+    <div class="visto">visto por último hoje às 09:12</div></div>
+  </div>
+  <div class="chat">
+    <div class="msg eu m1">Bom dia! Conseguiu pensar na proposta do apartamento? 😊<span class="hora">09:04</span></div>
+    <div class="msg ele m2">Oi! Então… obrigado, mas vou pensar mais um pouco<span class="hora">09:12</span></div>
+    <div class="dia d1">3 DIAS DEPOIS</div>
+    <div class="msg eu m3">Olá! Tudo bem? Alguma novidade sobre o apartamento?<span class="hora">14:30</span></div>
+    <div class="dia d2">7 DIAS DEPOIS</div>
+    <div class="msg eu m4">Oi! Ainda tem interesse no imóvel?<span class="hora">11:15</span></div>
+  </div>
+  <div class="selo"><span>Sem documento. Sem prova.<br>SEM COMISSÃO.</span></div>
+</body></html>
