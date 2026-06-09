@@ -18,7 +18,7 @@ Formato de cada entrada:
 ## [2026-06-09] Registro de Visita — proteção jurídica da corretagem
 **Para o corretor:** gere em segundos o termo que comprova que foi você quem apresentou o imóvel — sua garantia de receber a comissão caso o negócio feche por fora (arts. 722 a 729 do Código Civil).
 **O que mudou:** nova aba "Registro de Visita" gera um termo profissional com a marca do corretor: dados do visitante (nome, CPF), imóvel, data/hora, declaração com amparo legal e campos de assinatura para cliente e corretor. Dá pra copiar, baixar em PDF, enviar por WhatsApp e salvar na nuvem junto com as propostas.
-**Status:** em PR
+**Status:** publicado
 
 ## [2026-06-09] CRM leve — status por proposta e painel de negociações
 **Para o corretor:** saiba exatamente em qual fase cada negociação está — do primeiro envio até o fechamento — sem precisar lembrar de cabeça ou manter planilha separada.
