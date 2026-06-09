@@ -359,6 +359,119 @@
     .plans{grid-template-columns:1fr;gap:26px}
     .plan.feat{order:-1}
   }
+
+  /* ════════ UPGRADE: visual de agência ════════ */
+
+  /* moldura de navegador no print real */
+  .shot-frame{
+    max-width:420px;margin:48px auto 0;border-radius:18px;overflow:hidden;
+    border:1px solid var(--line-2);box-shadow:var(--shadow),0 0 80px rgba(245,158,11,.07);
+    background:var(--navy-3);
+  }
+  @media(min-width:760px){.shot-frame{max-width:580px}}
+  .shot-frame-bar{display:flex;align-items:center;gap:6px;padding:10px 14px;background:var(--navy-2);border-bottom:1px solid var(--line)}
+  .shot-frame-bar i{width:10px;height:10px;border-radius:50%;display:block}
+  .shot-frame-bar i:nth-child(1){background:#F87171}
+  .shot-frame-bar i:nth-child(2){background:#FBBF24}
+  .shot-frame-bar i:nth-child(3){background:#34D399}
+  .shot-frame-url{margin-left:10px;flex:1;height:18px;border-radius:6px;background:var(--navy-3);display:flex;align-items:center;padding:0 10px;font-size:10px;color:var(--t3);letter-spacing:.02em}
+  .shot-frame .hero-shot,.shot-frame img{margin:0;border:none;border-radius:0;box-shadow:none;max-width:100%;display:block;width:100%}
+
+  /* grid de features (bento) */
+  .feat-wrap{max-width:1020px}
+  .feat-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:14px}
+  @media(max-width:860px){.feat-grid{grid-template-columns:repeat(2,1fr)}}
+  @media(max-width:560px){.feat-grid{grid-template-columns:1fr}}
+  .feat-card{
+    position:relative;padding:24px 22px;border-radius:var(--rad-l);
+    background:var(--card);border:1px solid var(--line);
+    transition:border-color .2s ease,transform .2s ease,box-shadow .2s ease;
+  }
+  .feat-card:hover{border-color:rgba(245,158,11,.35);transform:translateY(-3px);box-shadow:0 18px 44px rgba(0,0,0,.35)}
+  .feat-ico{width:42px;height:42px;border-radius:12px;display:flex;align-items:center;justify-content:center;margin-bottom:14px}
+  .feat-ico svg{width:22px;height:22px}
+  .feat-card h3{font-size:16.5px;font-family:var(--font);font-weight:700;color:var(--white);margin-bottom:6px;display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+  .feat-card p{font-size:14px;line-height:1.6}
+  .feat-new{font-size:10px;font-weight:800;letter-spacing:.08em;background:var(--amber);color:#1A1205;padding:3px 8px;border-radius:6px}
+
+  /* demo interativo */
+  .demo{background:var(--navy);border-top:1px solid var(--line);border-bottom:1px solid var(--line)}
+  .demo h2{font-size:32px;text-align:center;margin-bottom:8px}
+  .demo .lead{text-align:center;max-width:520px;margin:0 auto 34px;font-size:17px}
+  .demo-box{
+    max-width:560px;margin:0 auto;background:var(--card);
+    border:1px solid var(--line-2);border-radius:var(--rad-xl);
+    padding:26px 24px;box-shadow:var(--shadow);
+  }
+  .demo-fields{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:14px}
+  .demo-fields .full{grid-column:1/-1}
+  @media(max-width:560px){.demo-fields{grid-template-columns:1fr}}
+  .demo-lbl{display:block;font-size:11px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--t3);margin-bottom:6px}
+  .demo-inp{
+    width:100%;background:var(--navy-2);border:1px solid var(--line-2);border-radius:10px;
+    padding:12px 14px;font-size:15px;color:var(--t);font-family:var(--font);outline:none;
+    transition:border-color .15s ease,box-shadow .15s ease;
+  }
+  .demo-inp:focus{border-color:var(--amber);box-shadow:0 0 0 3px rgba(245,158,11,.12)}
+  .demo-inp::placeholder{color:var(--t3)}
+  .demo-btn{width:100%;min-height:52px;font-size:16.5px}
+  .demo-note{text-align:center;font-size:12.5px;color:var(--t3);margin-top:12px}
+
+  /* resultado do demo */
+  .demo-out{display:none;max-width:560px;margin:26px auto 0}
+  .demo-out.show{display:block;animation:demoIn .5s ease both}
+  @keyframes demoIn{from{opacity:0;transform:translateY(18px)}to{opacity:1;transform:none}}
+  .dp{
+    background:#fff;border-radius:var(--rad-l);overflow:hidden;
+    box-shadow:0 30px 70px rgba(0,0,0,.5);text-align:left;
+  }
+  .dp-head{display:flex;align-items:center;gap:12px;padding:16px 20px;background:linear-gradient(135deg,#1E3A8A,#3556C7)}
+  .dp-av{width:40px;height:40px;border-radius:11px;background:rgba(255,255,255,.95);display:flex;align-items:center;justify-content:center;font-family:var(--font-h);font-weight:800;font-size:18px;color:#1E3A8A;flex-shrink:0}
+  .dp-nome{font-size:15px;font-weight:800;color:#fff;line-height:1.25}
+  .dp-creci{font-size:11px;color:rgba(255,255,255,.75)}
+  .dp-tag{margin-left:auto;background:rgba(0,0,0,.22);color:#fff;font-size:10.5px;font-weight:700;padding:5px 11px;border-radius:999px;white-space:nowrap}
+  .dp-body{padding:20px}
+  .dp-title{font-family:var(--font-h);font-size:18px;font-weight:800;color:#0F172A;margin-bottom:2px}
+  .dp-sub{font-size:12.5px;color:#64748B;margin-bottom:16px}
+  .dp-val{background:#FFF7E8;border:1px solid #FDE6BC;border-radius:12px;padding:12px 16px;margin-bottom:14px}
+  .dp-val .cap{font-size:10px;font-weight:800;letter-spacing:.1em;text-transform:uppercase;color:#B45309}
+  .dp-val .big{font-family:var(--font-h);font-size:24px;font-weight:800;color:#92400E}
+  .dp-rows{display:flex;flex-direction:column;gap:8px}
+  .dp-row{display:flex;align-items:center;gap:10px;background:#F8FAFC;border:1px solid #E2E8F0;border-radius:10px;padding:10px 13px}
+  .dp-dot{width:9px;height:9px;border-radius:50%;flex-shrink:0}
+  .dp-row .l{font-size:12.5px;color:#475569;font-weight:600}
+  .dp-row .v{margin-left:auto;font-size:13px;color:#0F172A;font-weight:700;text-align:right}
+  .dp-row .v small{display:block;font-size:10.5px;color:#64748B;font-weight:500}
+  .dp-water{padding:10px 20px;background:#F1F5F9;text-align:center;font-size:10.5px;letter-spacing:.08em;text-transform:uppercase;color:#94A3B8;font-weight:700}
+  .demo-after{text-align:center;margin-top:22px}
+  .demo-after p{font-size:16px;color:var(--t);margin-bottom:16px}
+  .demo-after p b{color:var(--amber)}
+
+  /* skeleton do demo */
+  .demo-skel{display:none;max-width:560px;margin:26px auto 0;background:var(--card);border:1px solid var(--line);border-radius:var(--rad-l);padding:22px}
+  .demo-skel.show{display:block}
+  .demo-skel .bar{height:11px;border-radius:6px;background:var(--navy-3);margin-bottom:12px;animation:pulse 1.1s ease-in-out infinite}
+  @keyframes pulse{0%,100%{opacity:.45}50%{opacity:1}}
+
+  /* barra fixa mobile */
+  .stickbar{
+    position:fixed;left:0;right:0;bottom:0;z-index:60;
+    display:none;align-items:center;gap:12px;
+    padding:10px 14px calc(10px + env(safe-area-inset-bottom));
+    background:rgba(15,23,42,.92);backdrop-filter:blur(14px);
+    border-top:1px solid var(--line-2);
+    transform:translateY(110%);transition:transform .3s ease;
+  }
+  .stickbar.on{transform:none}
+  .stickbar-txt{font-size:12.5px;color:var(--t2);line-height:1.35}
+  .stickbar-txt b{display:block;color:var(--white);font-size:14px}
+  .stickbar .cta{min-height:44px;padding:0 18px;font-size:14.5px;margin-left:auto;flex-shrink:0;width:auto}
+  @media(max-width:760px){.stickbar{display:flex}}
+
+  /* reveal on scroll */
+  .reveal{opacity:0;transform:translateY(22px);transition:opacity .6s ease,transform .6s ease}
+  .reveal.in{opacity:1;transform:none}
+  @media(prefers-reduced-motion:reduce){.reveal{opacity:1;transform:none;transition:none}}
 </style>
 </head>
 <body>
@@ -404,9 +517,13 @@ src="https://www.facebook.com/tr?id=2015826029060952&ev=PageView&noscript=1"/></
     <span class="cta-note"><strong>A partir de R$ 41/mês.</strong> Garantia de 7 dias · Sem instalar nada.</span>
 
     <!-- print real da ferramenta (gerado pelo workflow); se ainda não existir, cai no mockup CSS abaixo -->
+    <div class="shot-frame" id="shot-frame">
+      <div class="shot-frame-bar"><i></i><i></i><i></i><span class="shot-frame-url">corretorpro · sua proposta em 60s</span></div>
     <picture class="hero-pic">
       <source media="(min-width:760px)" srcset="/print-ferramenta-desktop.png">
-      <img class="hero-shot" src="/print-ferramenta-mobile.png" alt="Exemplo de proposta gerada no CorretorPRO — com a marca do corretor e simulação de financiamento SAC e Price" onerror="var p=this.closest('.hero-pic');if(p)p.remove();var m=document.getElementById('hero-mock');if(m)m.style.display=''">
+      <img class="hero-shot" src="/print-ferramenta-mobile.png" alt="Exemplo de proposta gerada no CorretorPRO — com a marca do corretor e simulação de financiamento SAC e Price" onerror="var f=document.getElementById('shot-frame');if(f)f.remove();var m=document.getElementById('hero-mock');if(m)m.style.display=''">
+    </picture>
+    </div>
     <!-- tool UI mockup (pure CSS) — fallback enquanto o print real não é gerado -->
     <div class="mock" id="hero-mock" style="display:none">
       <div class="mock-glow"></div>
@@ -510,18 +627,115 @@ src="https://www.facebook.com/tr?id=2015826029060952&ev=PageView&noscript=1"/></
   </div>
 </section>
 
-<!-- ===================== 5. BENEFITS ===================== -->
-<section class="section benefits">
+<!-- ===================== 4.5 DEMO INTERATIVO ===================== -->
+<section class="section demo" id="demo">
   <div class="wrap">
-    <h2>O que muda no seu dia</h2>
+    <h2>Não acredite em mim. <em style="font-style:normal;color:var(--amber)">Teste agora.</em></h2>
+    <p class="lead">Preencha 3 campos e veja a proposta nascer na sua frente — sem cadastro, sem cartão.</p>
 
-    <div class="ben"><div class="ben-check"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg></div><span>Proposta com a <b>sua marca em menos de 60 segundos</b></span></div>
-    <div class="ben"><div class="ben-check"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg></div><span><b>Impressione o cliente</b> antes do concorrente aparecer</span></div>
-    <div class="ben"><div class="ben-check"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg></div><span><b>Simulação de financiamento SAC e Price</b> na própria proposta — responda "quanto fica a parcela?" na hora</span></div>
-    <div class="ben"><div class="ben-check"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg></div><span>Seu <b>CRECI e logo em toda proposta</b>, automaticamente</span></div>
-    <div class="ben"><div class="ben-check"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg></div><span>Envie <b>direto no WhatsApp</b> com 1 clique</span></div>
-    <div class="ben"><div class="ben-check"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg></div><span><b>Pareça maior do que você é</b> — mesmo trabalhando solo</span></div>
-    <div class="ben"><div class="ben-check"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg></div><span><b>Histórico de propostas salvo</b>, sempre à mão</span></div>
+    <div class="demo-box">
+      <div class="demo-fields">
+        <div class="full">
+          <label class="demo-lbl" for="dm-corretor">Seu nome (o corretor)</label>
+          <input class="demo-inp" id="dm-corretor" type="text" placeholder="Ex: Carlos Andrade" maxlength="40">
+        </div>
+        <div>
+          <label class="demo-lbl" for="dm-cliente">Nome do cliente</label>
+          <input class="demo-inp" id="dm-cliente" type="text" placeholder="Ex: João Silva" maxlength="40">
+        </div>
+        <div>
+          <label class="demo-lbl" for="dm-valor">Valor do imóvel (R$)</label>
+          <input class="demo-inp" id="dm-valor" type="text" inputmode="numeric" placeholder="450.000">
+        </div>
+      </div>
+      <button class="cta demo-btn" onclick="gerarDemo()">
+        Gerar proposta de exemplo
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>
+      </button>
+      <p class="demo-note">Demonstração no navegador — nada é enviado nem salvo.</p>
+    </div>
+
+    <div class="demo-skel" id="demo-skel">
+      <div class="bar" style="width:45%"></div>
+      <div class="bar" style="width:70%"></div>
+      <div class="bar" style="width:100%"></div>
+      <div class="bar" style="width:60%;margin-bottom:0"></div>
+    </div>
+
+    <div class="demo-out" id="demo-out">
+      <div class="dp">
+        <div class="dp-head">
+          <div class="dp-av" id="dp-av">C</div>
+          <div>
+            <div class="dp-nome" id="dp-nome">—</div>
+            <div class="dp-creci">CRECI 00000-SP · (11) 99999-9999</div>
+          </div>
+          <div class="dp-tag">Proposta Comercial</div>
+        </div>
+        <div class="dp-body">
+          <div class="dp-title" id="dp-titulo">—</div>
+          <div class="dp-sub" id="dp-sub">—</div>
+          <div class="dp-val">
+            <div class="cap">Valor do imóvel</div>
+            <div class="big" id="dp-valor">—</div>
+          </div>
+          <div class="dp-rows">
+            <div class="dp-row"><span class="dp-dot" style="background:#4D7EFF"></span><span class="l">À vista com desconto</span><span class="v" id="dp-avista">—<small>3% de desconto</small></span></div>
+            <div class="dp-row"><span class="dp-dot" style="background:#22C55E"></span><span class="l">Entrada + FGTS</span><span class="v" id="dp-fgts">—<small>20% de entrada</small></span></div>
+            <div class="dp-row"><span class="dp-dot" style="background:#7C5CFC"></span><span class="l">Financiado</span><span class="v" id="dp-financ">—<small id="dp-parcela">parcela estimada</small></span></div>
+          </div>
+        </div>
+        <div class="dp-water">Exemplo gerado no navegador · a versão completa sai com o seu logo e cor</div>
+      </div>
+
+      <div class="demo-after">
+        <p>Isso levou <b>segundos</b> — e nem é a versão completa. Imagina com o <b>seu logo, sua cor e seu CRECI</b>, mais simulação SAC × Price, PDF e WhatsApp.</p>
+        <a class="cta" href="#planos" onclick="if(typeof fbq==='function')fbq('trackCustom','DemoParaPlanos')">
+          Quero a versão completa
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
+        </a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ===================== 5. FEATURES (bento) ===================== -->
+<section class="section benefits">
+  <div class="wrap feat-wrap">
+    <h2>Tudo que o corretor solo precisa pra parecer uma imobiliária inteira</h2>
+
+    <div class="feat-grid" style="margin-top:38px">
+      <div class="feat-card">
+        <div class="feat-ico" style="background:var(--amber-soft)"><svg viewBox="0 0 24 24" fill="none" stroke="var(--amber)" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg></div>
+        <h3>Proposta em 60 segundos</h3>
+        <p>Com seu logo, CRECI e cor — direto do celular, pronta antes do concorrente abrir o Word.</p>
+      </div>
+      <div class="feat-card">
+        <div class="feat-ico" style="background:rgba(77,126,255,.13)"><svg viewBox="0 0 24 24" fill="none" stroke="var(--blue)" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg></div>
+        <h3>Simulação SAC × Price</h3>
+        <p>"Quanto fica a parcela?" respondido na própria proposta — primeira, última e total, lado a lado.</p>
+      </div>
+      <div class="feat-card">
+        <div class="feat-ico" style="background:var(--green-soft)"><svg viewBox="0 0 24 24" fill="none" stroke="var(--green)" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg></div>
+        <h3>Registro de Visita <span class="feat-new">NOVO</span></h3>
+        <p>O termo com amparo legal (arts. 722–729 CC) que protege a sua comissão se o negócio fechar por fora.</p>
+      </div>
+      <div class="feat-card">
+        <div class="feat-ico" style="background:rgba(124,92,252,.13)"><svg viewBox="0 0 24 24" fill="none" stroke="var(--purple)" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg></div>
+        <h3>Painel de negociações <span class="feat-new">NOVO</span></h3>
+        <p>Status de cada proposta — do envio ao fechamento — sem planilha e sem perder follow-up.</p>
+      </div>
+      <div class="feat-card">
+        <div class="feat-ico" style="background:var(--green-soft)"><svg viewBox="0 0 24 24" fill="none" stroke="var(--green)" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 11.5a8.38 8.38 0 01-.9 3.8 8.5 8.5 0 01-7.6 4.7 8.38 8.38 0 01-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 01-.9-3.8 8.5 8.5 0 014.7-7.6 8.38 8.38 0 013.8-.9h.5a8.48 8.48 0 018 8v.5z"/></svg></div>
+        <h3>WhatsApp e PDF com 1 clique</h3>
+        <p>O cliente recebe na hora, no canal onde a venda acontece. Sem anexo pesado, sem fricção.</p>
+      </div>
+      <div class="feat-card">
+        <div class="feat-ico" style="background:rgba(77,126,255,.13)"><svg viewBox="0 0 24 24" fill="none" stroke="var(--blue)" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M17.5 19a4.5 4.5 0 1 0-1.6-8.7 6 6 0 1 0-11.3 2.4A4 4 0 0 0 6 19z"/></svg></div>
+        <h3>Tudo salvo na nuvem</h3>
+        <p>Histórico de propostas e visitas sempre à mão — troque de celular sem perder nada.</p>
+      </div>
+    </div>
   </div>
 </section>
 
@@ -574,6 +788,8 @@ src="https://www.facebook.com/tr?id=2015826029060952&ev=PageView&noscript=1"/></
           <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg> Propostas ilimitadas com a sua marca</li>
           <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg> 3 modalidades de pagamento calculadas</li>
           <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg> Simulação de financiamento SAC e Price</li>
+          <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg> Registro de Visita com amparo legal</li>
+          <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg> Painel de negociações (CRM)</li>
           <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg> Compra, locação e permuta</li>
           <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg> Exportação em PDF e envio no WhatsApp</li>
           <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg> Histórico salvo na nuvem</li>
@@ -594,6 +810,8 @@ src="https://www.facebook.com/tr?id=2015826029060952&ev=PageView&noscript=1"/></
           <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg> Propostas ilimitadas com a sua marca</li>
           <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg> 3 modalidades de pagamento calculadas</li>
           <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg> Simulação de financiamento SAC e Price</li>
+          <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg> Registro de Visita com amparo legal</li>
+          <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg> Painel de negociações (CRM)</li>
           <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg> Compra, locação e permuta</li>
           <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg> Exportação em PDF e envio no WhatsApp</li>
           <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg> Histórico salvo na nuvem</li>
@@ -637,6 +855,22 @@ src="https://www.facebook.com/tr?id=2015826029060952&ev=PageView&noscript=1"/></
       </div>
       <p><b>Zero configuração.</b> Entra, preenche, envia. Pronto. E se precisar, a gente responde.</p>
     </div>
+
+    <div class="obj-card">
+      <div class="obj-q">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M9.1 9a3 3 0 0 1 5.8 1c0 2-3 3-3 3"/><path d="M12 17h.01"/></svg>
+        <h3>O que é o Registro de Visita?</h3>
+      </div>
+      <p><b>A proteção da sua comissão.</b> É o termo que comprova que foi você quem apresentou o imóvel ao cliente (arts. 722 a 729 do Código Civil). Se o cliente tentar fechar direto com o proprietário, você tem o documento que garante a sua corretagem — gerado em segundos, com assinatura.</p>
+    </div>
+
+    <div class="obj-card">
+      <div class="obj-q">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M9.1 9a3 3 0 0 1 5.8 1c0 2-3 3-3 3"/><path d="M12 17h.01"/></svg>
+        <h3>Como recebo o acesso?</h3>
+      </div>
+      <p><b>Na hora.</b> Pagou, chega um email pra você criar a senha e já entrar. Em menos de 5 minutos você gera a primeira proposta. E tem garantia de 7 dias: não gostou, devolvemos 100%.</p>
+    </div>
   </div>
 </section>
 
@@ -674,6 +908,12 @@ src="https://www.facebook.com/tr?id=2015826029060952&ev=PageView&noscript=1"/></
   </div>
 </footer>
 
+<!-- Barra fixa de CTA no celular (aparece depois do hero) -->
+<div class="stickbar" id="stickbar">
+  <div class="stickbar-txt"><b>A partir de R$ 41/mês</b>Garantia de 7 dias</div>
+  <a class="cta" href="#planos">Começar</a>
+</div>
+
 <!-- Dispara InitiateCheckout no Pixel ao clicar para o checkout da Hotmart -->
 <script>
 (function(){
@@ -689,6 +929,79 @@ src="https://www.facebook.com/tr?id=2015826029060952&ev=PageView&noscript=1"/></
       }
     });
   }
+})();
+</script>
+
+<!-- Demo interativo + animações + barra fixa -->
+<script>
+(function(){
+  /* máscara de milhar no campo de valor do demo */
+  var valInp = document.getElementById('dm-valor');
+  if (valInp) valInp.addEventListener('input', function(){
+    var raw = this.value.replace(/\D/g,'').slice(0,9);
+    this.value = raw ? parseInt(raw,10).toLocaleString('pt-BR') : '';
+  });
+
+  var fmt = function(n){ return 'R$ ' + Math.round(n).toLocaleString('pt-BR'); };
+
+  window.gerarDemo = function(){
+    var corretor = (document.getElementById('dm-corretor').value || '').trim() || 'Carlos Andrade';
+    var cliente  = (document.getElementById('dm-cliente').value || '').trim() || 'João Silva';
+    var raw      = (document.getElementById('dm-valor').value || '').replace(/\D/g,'');
+    var valor    = parseInt(raw,10) || 450000;
+
+    var out  = document.getElementById('demo-out');
+    var skel = document.getElementById('demo-skel');
+    out.classList.remove('show');
+    skel.classList.add('show');
+    skel.scrollIntoView({behavior:'smooth', block:'center'});
+
+    setTimeout(function(){
+      document.getElementById('dp-av').textContent   = corretor.charAt(0).toUpperCase();
+      document.getElementById('dp-nome').textContent = corretor;
+      document.getElementById('dp-titulo').textContent = 'Proposta para ' + cliente;
+      document.getElementById('dp-sub').textContent = 'Apartamento · ' + new Date().toLocaleDateString('pt-BR');
+      document.getElementById('dp-valor').textContent  = fmt(valor);
+      document.getElementById('dp-avista').firstChild.textContent = fmt(valor * 0.97);
+      document.getElementById('dp-fgts').firstChild.textContent   = fmt(valor * 0.20) + ' entrada';
+      var vFin = valor * 0.80;
+      var i = Math.pow(1.105, 1/12) - 1;                      // 10,5% a.a.
+      var parc = vFin * i / (1 - Math.pow(1 + i, -360));      // Price 360 meses
+      document.getElementById('dp-financ').firstChild.textContent = fmt(vFin);
+      document.getElementById('dp-parcela').textContent = '~' + fmt(parc) + '/mês (360x)';
+
+      skel.classList.remove('show');
+      out.classList.add('show');
+      out.scrollIntoView({behavior:'smooth', block:'center'});
+      if (typeof fbq === 'function') fbq('trackCustom', 'DemoGerada', { valor: valor });
+    }, 1100);
+  };
+
+  /* revela as seções conforme o scroll */
+  var secs = document.querySelectorAll('section .wrap, .proof-inner');
+  if ('IntersectionObserver' in window) {
+    var obs = new IntersectionObserver(function(entries){
+      entries.forEach(function(e){
+        if (e.isIntersecting) { e.target.classList.add('in'); obs.unobserve(e.target); }
+      });
+    }, { threshold: 0.12 });
+    secs.forEach(function(s){ s.classList.add('reveal'); obs.observe(s); });
+  }
+
+  /* barra fixa no celular após passar do hero */
+  var bar = document.getElementById('stickbar');
+  var shown = false;
+  window.addEventListener('scroll', function(){
+    var past = window.scrollY > 560;
+    var nearPlans = false;
+    var planos = document.getElementById('planos');
+    if (planos) {
+      var r = planos.getBoundingClientRect();
+      nearPlans = r.top < window.innerHeight && r.bottom > 0;
+    }
+    var want = past && !nearPlans;
+    if (want !== shown) { shown = want; bar.classList.toggle('on', want); }
+  }, { passive: true });
 })();
 </script>
 
