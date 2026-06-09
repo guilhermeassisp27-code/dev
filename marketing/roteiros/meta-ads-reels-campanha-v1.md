@@ -1,200 +1,259 @@
 # Roteiro de Vídeo — Meta Ads · Reels/Stories · CorretorPRO
 ## Campanha: Diferenciais Completos (Proposta + Registro de Visita + CRM)
 
-> Formato: vertical **9:16** (1080×1920) — Reels, Stories, Feed  
-> Duração: **35–45 segundos**  
-> Otimização da campanha: **InitiateCheckout**  
-> Orçamento: R$20/dia  
-> Público: corretores de imóveis ativos no Brasil  
-> Destino do clique: https://usecorretorpro.vercel.app  
-> Tool para gravar a tela: https://guilhermeassisp27-code.github.io/dev/tool.html
+> Formato: vertical **9:16** (1080×1920) — Reels, Stories, Feed
+> Duração alvo: **35–45 segundos**
+> Otimização da campanha: **InitiateCheckout**
+> Orçamento: R$20/dia
+> Público: corretores de imóveis ativos no Brasil
+> Destino do clique: https://usecorretorpro.vercel.app
+> Tool para gravar tela: https://guilhermeassisp27-code.github.io/dev/tool.html
 
 ---
 
-## Diretrizes de produção (leia antes de gravar)
+## Diretrizes de produção — leia antes de gravar
 
-- **Grave no celular, vertical, boa iluminação.** Nada de fundo bagunçado.
-- **Voz firme, ritmo rápido.** Fala de corretor pra corretor — não de vendedor de curso.
-- **85% das pessoas assiste sem som.** Todo texto falado aparece também como legenda queimada no vídeo.
-- **Legendas no terço superior** da tela (o rodapé fica coberto pela UI do Reels).
-- **Fonte das legendas:** branca, negrito, contorno preto fino — legível em qualquer fundo.
-- **Gravação de tela:** use a gravação nativa do celular (iPhone: Central de Controle → Gravar Tela / Android: menu de gravação de tela). Acesse tool.html, faça login e grave o fluxo real.
-- **Edição:** CapCut (gratuito). Cortes secos, sem transições elaboradas. Música de fundo baixa (trilha CapCut sem direitos).
-- **Não aparece rosto?** Tudo bem — os Criativos B e C funcionam 100% como screen recording com voz over.
+**Equipamento e ambiente**
+- Grave no celular, formato vertical, câmera frontal ou traseira.
+- Fundo limpo: parede lisa, escritório arrumado ou fundo navy com iluminação frontal.
+- Iluminação: natural de frente (janela) ou ring light. Sombra no rosto = corte imediato.
+- Roupas: social ou polo. Nada com estampa miúda (vibra na câmera).
+
+**Ritmo e voz**
+- Fala de corretor pra corretor. Sem script de apresentador de TV.
+- Ritmo rápido, pausas curtas entre os pontos principais.
+- Grave em ambiente silencioso. Voz sobre a trilha, não abaixo.
+
+**Legendas (obrigatório)**
+- 85% das pessoas assiste sem som. Todo texto falado vira legenda queimada no vídeo.
+- Posicione legendas no terço SUPERIOR da tela. O rodapé fica coberto pela UI do Reels.
+- Fonte: branca, negrito, contorno preto fino. Legível em qualquer fundo.
+- No CapCut: Auto Legenda → revise erros → mude posição para topo.
+
+**Gravação de tela (screen recording)**
+- iPhone: Central de Controle → ícone de gravação de tela.
+- Android: menu de gravação de tela (varia por fabricante, geralmente no painel rápido).
+- Acesse tool.html, faça login, grave o fluxo real em tempo real.
+- Antes de gravar: configure o perfil com seu logo e cor, tenha um imóvel fictício preenchido (ex: "Apto 3 dorm, R$480.000, cliente João Silva") para não travar na hora.
+
+**Edição**
+- CapCut (gratuito, disponível no iOS e Android).
+- Cortes secos entre cenas. Sem transições elaboradas.
+- Trilha instrumental baixa (CapCut Library: busque "corporate" ou "upbeat"). Volume: 15–20% do canal de voz.
+- Não aparece rosto? As duas variações funcionam 100% como screen recording com voz over.
+
+**Checklist pré-upload (conferir antes de subir no Meta Ads)**
+- [ ] Duração: 35–45s
+- [ ] Resolução: 1080×1920 (9:16)
+- [ ] Legendas queimadas em todas as cenas
+- [ ] Assisti SEM som — entendo tudo pela legenda?
+- [ ] Assisti SEM imagem — entendo tudo pela voz?
+- [ ] Tela final com URL visível (usecorretorpro.vercel.app)
+- [ ] Fundo navy ou branco na tela final (sem fundo bagunçado)
 
 ---
 
 ## VARIACAO A — Hook: DOR DA BUROCRACIA
-**Ângulo:** Isaac Mesquita tinha razão. O inimigo não é a concorrência — é o tempo perdido com papel.  
-**Duração:** ~38 segundos
-
----
-
-### CENA 1 — GANCHO (0s a 3s)
-**Objetivo:** parar o dedo em 3 segundos.
-
-| | Detalhe |
-|---|---|
-| **VISUAL** | Fundo escuro (navy #0A2540). Texto centralizado surgindo letra a letra. Nenhuma logomarca ainda. |
-| **TEXTO ON-SCREEN** | `"Corretor, quanto tempo você perdeu hoje com burocracia?"` (fonte grande, branca, ocupa 60% da tela) |
-| **ÁUDIO/VOZ** | Guilherme fala com naturalidade, olhando pra câmera: *"Corretor — quanto tempo você perdeu hoje com burocracia?"* |
-| **MÚSICA** | Trilha começa baixa, instrumental leve |
-
-> **Nota de produção:** Grave direto olhando pro celular inclinado na sua frente. Tom: pergunta sincera, não acusatória. Pausa de 0,5s depois da pergunta.
-
----
-
-### CENA 2 — DOR (3s a 9s)
-
-| | Detalhe |
-|---|---|
-| **VISUAL** | Corte seco. Gravação de tela mostrando um documento Word (pode ser um arquivo Word real ou simular no celular) com formatação quebrada, texto desalinhado, sem logo. Movimento lento de scroll pra mostrar a bagunça. |
-| **TEXTO ON-SCREEN** | `"Proposta no Word. Sem logo. Sem padrão. Cliente esperando."` |
-| **ÁUDIO/VOZ** | *"A proposta ainda no Word, sem identidade, cliente esperando resposta..."* |
-| **MÚSICA** | Trilha continua, tom neutro |
-
-> **Nota de produção:** Se não tiver um Word ruim gravado, mostre apenas texto na tela com fundo cinza simples simulando um documento. O contraste com a próxima cena é o que importa.
-
----
-
-### CENA 3 — VIRADA / PRODUTO (9s a 22s)
-**Esta é a cena mais importante. Grave com calma.**
-
-| | Detalhe |
-|---|---|
-| **VISUAL** | Corte seco para gravação de tela do CorretorPRO (tool.html logado). Mostre em sequência rápida mas legível: (1) campo de nome do cliente sendo preenchido, (2) campo do imóvel e valor, (3) toque no botão "Gerar Proposta", (4) PDF profissional aparecendo com logo e cores. Cada etapa dura ~2–3 segundos. |
-| **TEXTO ON-SCREEN** | Sequência de legendas trocando a cada etapa: `"Preenche o imóvel e o valor"` → `"Toca em Gerar"` → `"Proposta pronta. Com a sua marca."` |
-| **ÁUDIO/VOZ** | *"Com o CorretorPRO você preenche o imóvel, o valor... toca em Gerar... e a proposta sai com o seu logo, seu CRECI e suas cores. Em menos de 60 segundos."* |
-| **MÚSICA** | Sobe levemente quando a proposta aparece (momento de "aha") |
-
-> **Nota de produção:** Antes de gravar, configure o perfil com seu logo e uma cor. Tenha um imóvel fictício preenchido de antemão (ex: "Apartamento 3 dorm, R$480.000, cliente João Silva") para não gaguejar. Grave o fluxo completo uma vez sem parar.
-
----
-
-### CENA 4 — DIFERENCIAL JURÍDICO (22s a 30s)
-**Este é o diferencial que nenhum concorrente tem. Destaque.**
-
-| | Detalhe |
-|---|---|
-| **VISUAL** | Corte para tela do CorretorPRO mostrando a seção de Registro de Visita. Destaque visual (zoom ou borda pulsante) na funcionalidade. |
-| **TEXTO ON-SCREEN** | `"Registro de Visita com força jurídica"` (fonte grande) + abaixo em menor: `"Art. 727 do Código Civil — 180 dias de proteção da sua comissão"` |
-| **ÁUDIO/VOZ** | *"E tem mais: o Registro de Visita com força jurídica. Se o cliente fechar direto com o dono depois, você ainda tem direito à sua comissão. 180 dias de proteção."* |
-| **MÚSICA** | Tom sobe levemente — este é um momento de surpresa positiva |
-
-> **Nota de produção:** Fale com convicção. Este argumento é concreto e diferente. Não acelere essa fala — deixe o corretor absorver.
-
----
-
-### CENA 5 — CTA (30s a 38s)
-
-| | Detalhe |
-|---|---|
-| **VISUAL** | Corte para tela final com fundo navy. Logo CorretorPRO centralizado no topo. Abaixo: preço, garantia e URL. Efeito de entrada suave (fade ou slide). |
-| **TEXTO ON-SCREEN** | `"CorretorPRO"` (logo) + `"R$67/mês"` + `"7 dias de garantia"` + `"usecorretorpro.vercel.app"` |
-| **ÁUDIO/VOZ** | *"Teste por 7 dias sem risco. Se não gostar, devolvemos tudo. Link aqui embaixo."* |
-| **MÚSICA** | Trilha termina junto com o vídeo |
-
-> **Nota de produção:** Aponte o dedo pra baixo na última frase (gesto intuitivo de "clica aqui"). Mantenha a tela estática por 1–2s depois da fala para o algoritmo do Meta ter tempo de exibir o CTA.
-
----
-
-## VARIACAO B — Hook: MEDO DE PERDER A COMISSÃO
-**Ângulo:** Kono tinha razão — o problema não é só qualificar lead. É não perder o que já ganhou.  
+**Ângulo:** Tempo perdido com papelada é o inimigo invisível do corretor.
+Baseado na dor real do Isaac Mesquita: "burocracia" e falta de organização dos dados.
 **Duração:** ~40 segundos
 
 ---
 
-### CENA 1 — GANCHO (0s a 3s)
+### CENA 1 — GANCHO · 0s a 3s
 
-| | Detalhe |
+| Campo | Detalhe |
 |---|---|
-| **VISUAL** | Fundo branco. Texto em preto e vermelho surgindo rápido. Sem logomarca. |
-| **TEXTO ON-SCREEN** | `"O cliente visitou o imóvel com você. Fechou direto com o dono."` (primeira linha branca, segunda linha vermelha e maior: `"Sua comissão foi por água abaixo?"`) |
-| **ÁUDIO/VOZ** | Pode ser só a trilha — deixar o texto falar sozinho por 3s. OU: Guilherme fala sério: *"O cliente visitou o imóvel com você. Fechou direto com o dono. E agora?"* |
-| **MÚSICA** | Trilha tensa, sem batida. Silêncio dramático funciona bem aqui. |
+| **VISUAL** | Fundo escuro (navy #0A2540). Texto centralizado surgindo letra a letra. Nenhuma logomarca ainda. Câmera ou tela preta com texto animado. |
+| **TEXTO ON-SCREEN** | `Quanto tempo você perdeu hoje com burocracia, corretor?` Fonte grande, branca, ocupa 60% da tela. |
+| **AUDIO / VOZ** | Guilherme, direto, olhando pra câmera: *"Quanto tempo você perdeu hoje com burocracia, corretor?"* Pausa de 0,5s depois da pergunta. |
+| **MUSICA** | Trilha começa muito baixa. Quase silêncio. |
+| **TEMPO** | 3 segundos |
 
-> **Nota de produção:** Se for só texto sem voz, use animação de entrada letra a letra — cria suspense. Teste os dois (com voz e sem voz) como sub-variação A/B dentro desta versão.
+Nota de producao: Tom de pergunta sincera, não acusatória. Não acelere. Esse segundo e meio de pausa é intencional — cria a sensação de que você espera a resposta do corretor.
 
 ---
 
-### CENA 2 — CONTEXTO / DOR (3s a 10s)
+### CENA 2 — DOR · 3s a 8s
 
-| | Detalhe |
+| Campo | Detalhe |
 |---|---|
-| **VISUAL** | Gravação de tela ou texto animado mostrando uma simulação de conversa de WhatsApp: cliente some após visita, sem resposta por 3 dias, depois mensagem genérica "obrigado mas vou pensar". |
-| **TEXTO ON-SCREEN** | `"Sem documento. Sem prova. Sem comissão."` |
-| **ÁUDIO/VOZ** | *"Isso acontece todo dia. O corretor faz o trabalho, leva o cliente, explica tudo — e não tem nada que prove que foi ele quem originou a venda."* |
-| **MÚSICA** | Trilha continua tensa |
+| **VISUAL** | Corte seco. Gravação de tela de um documento Word com formatação quebrada: texto desalinhado, sem logo, sem identidade. Scroll lento pra mostrar a bagunça. Se não tiver um Word ruim, use tela com fundo cinza e fonte courier simulando um documento. |
+| **TEXTO ON-SCREEN** | `Proposta no Word. Sem logo. Sem padrão. Cliente esperando.` |
+| **AUDIO / VOZ** | *"A proposta ainda no Word, sem identidade. O cliente esperando resposta. E você formatando manualmente."* |
+| **MUSICA** | Trilha neutra, sem batida. |
+| **TEMPO** | 5 segundos |
 
-> **Nota de produção:** A simulação de WhatsApp pode ser feita no próprio celular com um contato fictício. Grave a tela rolando as mensagens. Não precisa ser real — precisa parecer real.
+Nota de producao: O contraste com a próxima cena é o que converte. Quanto mais "feia" essa cena parecer, mais forte é a virada.
 
 ---
 
-### CENA 3 — SOLUÇÃO JURÍDICA (10s a 22s)
+### CENA 3 — VIRADA / PRODUTO · 8s a 21s
+Esta e a cena mais importante. Grave com calma. Faça pelo menos 3 takes.
 
-| | Detalhe |
+| Campo | Detalhe |
 |---|---|
-| **VISUAL** | Corte para gravação de tela do CorretorPRO, seção Registro de Visita. Mostre: (1) campo de nome do cliente sendo preenchido, (2) imóvel, (3) data da visita, (4) geração do documento. |
-| **TEXTO ON-SCREEN** | `"Registro de Visita"` → `"Com força jurídica"` → `"Art. 727 do Código Civil"` → `"180 dias de proteção"` |
-| **ÁUDIO/VOZ** | *"O CorretorPRO gera o Registro de Visita com força jurídica. Você documenta a visita na hora, com data, imóvel e assinatura digital. Se o negócio fechar sem você, o documento prova que você originou — e protege sua comissão por 180 dias."* |
-| **MÚSICA** | Tom vira positivo — problema tem solução |
+| **VISUAL** | Corte seco para screen recording do CorretorPRO (tool.html logado). Mostre em sequência: (1) campo de nome do cliente sendo preenchido — 2s, (2) campo do imóvel e valor — 2s, (3) toque no botão "Gerar Proposta" — 1s, (4) PDF profissional aparecendo na tela com logo, cores e dados formatados — 4s. Cada etapa em tela cheia, sem zoom exagerado que dificulte leitura. |
+| **TEXTO ON-SCREEN** | Troca de legenda a cada etapa: `Preenche o imóvel e o valor` → `Toca em Gerar` → `Proposta pronta. Com a sua marca.` |
+| **AUDIO / VOZ** | *"Com o CorretorPRO você preenche o imóvel, o valor... toca em Gerar... e a proposta sai com o seu logo, seu CRECI e suas cores. Em menos de 60 segundos."* |
+| **MUSICA** | Sobe levemente quando a proposta aparece. Momento de "aha". |
+| **TEMPO** | 13 segundos |
 
-> **Nota de produção:** Fale com ritmo firme e seguro. Esse argumento é técnico mas o corretor entende — ele já perdeu comissão antes ou conhece quem perdeu.
+Nota de producao: Configure o perfil com logo e cor antes de gravar. Tenha os dados do imóvel fictício já digitados. Grave o fluxo completo sem pausar — edição vai cortar os momentos de espera de carregamento se houver.
 
 ---
 
-### CENA 4 — PROPOSTA (22s a 30s)
-**Transição natural: "e tem mais"**
+### CENA 4 — DIFERENCIAL JURIDICO · 21s a 29s
+Este e o diferencial que nenhum concorrente tem. Nao acelere essa fala.
 
-| | Detalhe |
+| Campo | Detalhe |
 |---|---|
-| **VISUAL** | Corte rápido para a proposta sendo gerada — 3 segundos mostrando o PDF pronto com logo e dados. |
-| **TEXTO ON-SCREEN** | `"Proposta profissional em 60 segundos"` + `"Com seu logo e CRECI"` |
-| **ÁUDIO/VOZ** | *"E ainda gera propostas profissionais em 60 segundos, com a sua marca, direto do celular."* |
-| **MÚSICA** | Ritmo sobe — energia positiva |
+| **VISUAL** | Corte para screen recording do CorretorPRO, seção Registro de Visita. Mostre os campos principais: nome do cliente, imóvel, data. Em seguida, mostre o documento gerado. Se quiser dar ênfase, grave seu rosto aqui com a tela ao fundo (modo picture-in-picture no CapCut). |
+| **TEXTO ON-SCREEN** | Linha 1 grande: `Registro de Visita com força jurídica` Linha 2 menor: `Art. 727 do Código Civil — 180 dias` |
+| **AUDIO / VOZ** | *"E tem mais: o Registro de Visita com força jurídica. Se o cliente fechar direto com o dono depois, o documento prova que foi você quem originou. Sua comissão protegida por 180 dias."* |
+| **MUSICA** | Tom sobe. Momento de surpresa positiva. |
+| **TEMPO** | 8 segundos |
+
+Nota de producao: Fale com convicção. Esse argumento é técnico mas o corretor entende — ele já perdeu ou conhece quem perdeu comissão assim. Não leia o texto, fale do jeito que você explicaria pra um colega.
 
 ---
 
-### CENA 5 — CTA (30s a 40s)
+### CENA 5 — CRM · 29s a 34s
+Cena rapida. Objetivo: mostrar que a ferramenta organiza tudo, nao so gera proposta.
 
-| | Detalhe |
+| Campo | Detalhe |
 |---|---|
-| **VISUAL** | Tela final navy. Logo CorretorPRO. Preço e garantia em destaque. |
-| **TEXTO ON-SCREEN** | `"Proteja sua comissão."` + `"Feche mais vendas."` + `"R$67/mês — 7 dias de garantia"` + `"usecorretorpro.vercel.app"` |
-| **ÁUDIO/VOZ** | *"Teste 7 dias sem risco. Se não servir, devolvemos tudo. Clica no link."* |
-| **MÚSICA** | Acorde final limpo |
+| **VISUAL** | Corte rápido para screen recording do painel CRM do CorretorPRO. Scroll rápido mostrando os cards de negociação com os status: Novo Lead, Proposta Enviada, Em Negociação, Fechado. Basta 1 scroll vertical de 3 segundos. |
+| **TEXTO ON-SCREEN** | `Painel de negociações` + abaixo: `Novo Lead → Proposta Enviada → Fechado` |
+| **AUDIO / VOZ** | *"E ainda tem o painel pra você saber exatamente onde tá cada negócio. Sem planilha, sem caos."* |
+| **MUSICA** | Ritmo leve, energia positiva. |
+| **TEMPO** | 5 segundos |
 
-> **Nota de produção:** Pausa de 1s depois de "Clica no link" com o dedo apontando pra baixo. Isso aumenta a taxa de clique.
-
----
-
-## Checklist antes de subir no Meta Ads
-
-- [ ] Variacao A gravada (38s ou menos)
-- [ ] Variacao B gravada (40s ou menos)
-- [ ] Legendas queimadas no vídeo em todas as cenas (CapCut: auto-legenda ou manual)
-- [ ] Testou assistir SEM som — dá pra entender tudo pela legenda?
-- [ ] Testou assistir SEM imagem — dá pra entender tudo pela voz?
-- [ ] Fundo navy na tela final com URL visível
-- [ ] Resolução: 1080x1920 (9:16)
-- [ ] Duração: 35–45s
+Nota de producao: Cena rápida mesmo. Não precisa explicar cada status. O scroll já comunica "organização".
 
 ---
 
-## Copy do anúncio (texto acima do vídeo no Meta)
+### CENA 6 — CTA · 34s a 40s
 
-### Copy para Variacao A (Burocracia)
+| Campo | Detalhe |
+|---|---|
+| **VISUAL** | Corte para tela final com fundo navy (#0A2540). Logo CorretorPRO centralizado no topo. Abaixo: preço, garantia e URL. Efeito de entrada suave (fade ou slide — CapCut tem template). |
+| **TEXTO ON-SCREEN** | `CorretorPRO` (logo ou texto grande) + `R$67/mês` + `7 dias de garantia` + `usecorretorpro.vercel.app` |
+| **AUDIO / VOZ** | *"Teste por 7 dias sem risco. Se não gostar, devolvemos tudo. Link aqui embaixo."* |
+| **MUSICA** | Trilha termina junto com o vídeo. |
+| **TEMPO** | 6 segundos |
+
+Nota de producao: Aponte o dedo pra baixo na última frase. Esse gesto aumenta o clique porque é um instinto visual. Mantenha a tela estática por 1s depois da fala — o algoritmo do Meta exibe o botão de CTA sobre o frame final.
+
+---
+
+## VARIACAO B — Hook: MEDO DE PERDER A COMISSAO
+**Ângulo:** O cliente foi embora e fechou direto com o dono. Isso tem solução.
+Baseado na dor do Kono Corretor: separar curioso de comprador real, e proteger o que já ganhou.
+**Duração:** ~42 segundos
+
+---
+
+### CENA 1 — GANCHO · 0s a 3s
+
+| Campo | Detalhe |
+|---|---|
+| **VISUAL** | Fundo branco ou cinza claro. Dois blocos de texto surgindo em sequência: primeira linha normal, segunda linha em vermelho e maior. Sem logomarca. |
+| **TEXTO ON-SCREEN** | Linha 1 (preta, normal): `O cliente visitou o imóvel com você.` Linha 2 (vermelha, grande): `Fechou direto com o dono.` |
+| **AUDIO / VOZ** | Duas opcoes — teste as duas como sub-variacao: (A) Apenas trilha tensa, sem voz. Deixa o texto falar. (B) Guilherme sério: *"O cliente visitou o imóvel com você. Fechou direto com o dono. E agora?"* |
+| **MUSICA** | Trilha tensa, sem batida forte. Pode ser silêncio com só um som grave. |
+| **TEMPO** | 3 segundos |
+
+Nota de producao: Se for só texto (opção A), use animação de entrada letra a letra ou palavra a palavra — cria suspense. Teste os dois dentro desta variação como sub-teste A1 e A2. O hook sem voz frequentemente performa melhor em mobile mudo.
+
+---
+
+### CENA 2 — CONTEXTO DA DOR · 3s a 10s
+
+| Campo | Detalhe |
+|---|---|
+| **VISUAL** | Simulação de conversa de WhatsApp (grave a tela com um contato fictício): cliente some após visita, 3 dias sem resposta, depois uma mensagem genérica "obrigado mas vou pensar". Scroll lento mostrando a conversa. Não precisa ser real — precisa parecer real. |
+| **TEXTO ON-SCREEN** | `Sem documento. Sem prova. Sem comissão.` |
+| **AUDIO / VOZ** | *"Isso acontece todo dia. O corretor faz o trabalho, leva o cliente, explica tudo — e não tem nada que prove que foi ele quem originou a venda."* |
+| **MUSICA** | Trilha continua tensa. |
+| **TEMPO** | 7 segundos |
+
+Nota de producao: Para a simulação de WhatsApp, crie um contato fictício chamado "João" ou "Cliente" e troque mensagens com seu próprio número. Grave a tela rolando devagar. Corte antes de aparecer qualquer informação pessoal real.
+
+---
+
+### CENA 3 — SOLUCAO JURIDICA · 10s a 22s
+
+| Campo | Detalhe |
+|---|---|
+| **VISUAL** | Corte seco para screen recording do CorretorPRO, seção Registro de Visita. Mostre em sequência: (1) campo nome do cliente sendo preenchido — 2s, (2) campo imóvel e data da visita — 2s, (3) toque para gerar o documento — 1s, (4) documento gerado com campos preenchidos, data e identificação do corretor — 5s. |
+| **TEXTO ON-SCREEN** | Sequência trocando: `Registro de Visita` → `Com força jurídica` → `Art. 727 do Código Civil` → `180 dias de proteção` |
+| **AUDIO / VOZ** | *"O CorretorPRO gera o Registro de Visita com força jurídica. Você documenta a visita na hora, com data e imóvel. Se o negócio fechar sem você, o documento prova que você originou — e protege sua comissão por 180 dias."* |
+| **MUSICA** | Tom vira positivo. Problema tem solução. |
+| **TEMPO** | 12 segundos |
+
+Nota de producao: Fale com ritmo firme. Esse argumento é técnico mas o corretor entende porque já perdeu ou quase perdeu. Não leia o roteiro — explique como se fosse para um colega de trabalho.
+
+---
+
+### CENA 4 — PROPOSTA EM 60 SEGUNDOS · 22s a 29s
+Transicao natural com "e alem disso".
+
+| Campo | Detalhe |
+|---|---|
+| **VISUAL** | Corte para screen recording do fluxo de proposta: (1) preenchimento rápido do imóvel — 2s, (2) proposta gerada com logo e CRECI — 5s. Não precisa mostrar o fluxo inteiro — só o início e o resultado. |
+| **TEXTO ON-SCREEN** | `Proposta profissional em 60 segundos` + `Com seu logo e CRECI` |
+| **AUDIO / VOZ** | *"E além disso, gera propostas profissionais em 60 segundos, com a sua marca, direto do celular."* |
+| **MUSICA** | Ritmo sobe. Energia positiva. |
+| **TEMPO** | 7 segundos |
+
+---
+
+### CENA 5 — CRM · 29s a 34s
+Mesma cena da Variacao A. Pode reaproveitar o take.
+
+| Campo | Detalhe |
+|---|---|
+| **VISUAL** | Screen recording do painel CRM. Scroll rápido pelos cards de negociação com os status visíveis. |
+| **TEXTO ON-SCREEN** | `Painel de negociações` + `Sabe onde tá cada negócio, sempre.` |
+| **AUDIO / VOZ** | *"E o painel mostra onde tá cada negociação. Nada se perde."* |
+| **MUSICA** | Leve, positivo. |
+| **TEMPO** | 5 segundos |
+
+---
+
+### CENA 6 — CTA · 34s a 42s
+
+| Campo | Detalhe |
+|---|---|
+| **VISUAL** | Tela final navy. Logo CorretorPRO. Preço, garantia e URL em destaque. |
+| **TEXTO ON-SCREEN** | `Proteja sua comissão.` + `Feche mais vendas.` + `R$67/mês — 7 dias de garantia` + `usecorretorpro.vercel.app` |
+| **AUDIO / VOZ** | *"Teste 7 dias sem risco. Se não servir, devolvemos tudo. Clica no link."* |
+| **MUSICA** | Acorde final limpo. |
+| **TEMPO** | 8 segundos |
+
+Nota de producao: Pausa de 1s depois de "Clica no link" com o dedo apontando pra baixo. Frame final estático por 1–2s.
+
+---
+
+## Copy do anuncio (texto acima do vídeo no Meta Ads)
+
+Cole o texto abaixo no campo "Texto Principal" ao criar o anúncio no Gerenciador de Anúncios.
+
+### Copy A — Burocracia
 ```
 Corretor, você ainda perde horas com proposta no Word?
 
-O CorretorPRO resolve em 60 segundos. Preenche o imóvel, o valor — e a proposta sai com o seu logo, CRECI e cores. Pronta pra mandar no WhatsApp.
+Com o CorretorPRO você preenche o imóvel e o valor — a proposta sai com o seu logo, CRECI e cores. Em 60 segundos. Pronta pra mandar no WhatsApp.
 
-E tem mais: Registro de Visita com força jurídica (Art. 727 do Código Civil). Se o cliente fechar direto com o dono, você ainda tem direito à sua comissão.
+Registro de Visita com força jurídica (Art. 727 do Código Civil): se o cliente fechar direto com o dono, você ainda tem direito à sua comissão. 180 dias de proteção.
 
-→ 7 dias de garantia. Cancela quando quiser.
+Painel de negociações incluso: você sabe em que etapa está cada lead, sem planilha.
+
+7 dias de garantia. Cancela quando quiser.
 ```
 
-### Copy para Variacao B (Comissão)
+### Copy B — Comissao
 ```
 Você levou o cliente, mostrou o imóvel, explicou tudo.
 
@@ -202,30 +261,53 @@ Depois ele fechou direto com o dono.
 
 Isso não precisa acontecer mais. O Registro de Visita do CorretorPRO documenta a visita com força jurídica — e protege sua comissão por 180 dias (Art. 727 do Código Civil).
 
-Além disso: propostas profissionais em 60 segundos, com a sua marca.
+Também gera propostas profissionais em 60 segundos com a sua marca, e tem painel de negociações pra você nunca perder o fio da meada.
 
-→ Teste 7 dias sem risco: usecorretorpro.vercel.app
+Teste 7 dias sem risco: usecorretorpro.vercel.app
 ```
 
 ---
 
-## Estratégia de teste A/B
+## Estrategia de teste A/B no Meta Ads
 
-Suba as duas variações no **mesmo conjunto de anúncios**. Deixe rodar pelo menos 3 dias sem mexer.
+**Configuração recomendada:**
+- 1 campanha com objetivo Vendas, evento InitiateCheckout
+- 1 conjunto de anúncios, público aberto (Brasil, 25–55, sem interesses manuais)
+- Posicionamento Advantage+ (automático)
+- Suba Variacao A e Variacao B no mesmo conjunto
 
-| O que medir | Meta | Ação |
+**Deixe rodar no mínimo 3 dias sem mexer.** O algoritmo precisa de dados.
+
+| O que medir | Meta saudavel | Quando pausar |
 |---|---|---|
-| CTR do link | > 1,5% | Abaixo de 0,8% após R$40 gastos = pause |
-| Custo por InitiateCheckout | < R$15 | Acima de R$30 = reveja a landing ou o hook |
-| Taxa de retenção do vídeo (75%) | > 35% | Abaixo = o hook não está prendendo |
+| CTR do link | acima de 1,5% | abaixo de 0,8% após R$40 gastos |
+| Custo por InitiateCheckout | abaixo de R$15 | acima de R$30 sem conversão |
+| Taxa de retenção do vídeo (75%) | acima de 35% | abaixo de 20% = hook não prende |
 
-A variação que gerar mais InitiateCheckout com menor custo vence. Pause a outra. Crie 2 novas variações do vencedor mudando só o hook (primeiros 3s).
+A variação que gerar mais InitiateCheckout com menor custo vence. Pause a outra. Crie 2 novas versões do vencedor mudando APENAS o hook (primeiros 3s) — é o que mais impacta o resultado.
 
 ---
 
-## Próximo criativo sugerido (após validar este)
+## Ordem de gravacao sugerida
 
-**Ângulo: CRM / Painel de Negociações**  
-Dor: "você sabe quantas negociações estão abertas agora? Em que etapa cada uma tá?"  
-Formato: screen recording do painel mostrando os status (Novo Lead → Proposta Enviada → Em Negociação → Fechado).  
-Este ângulo responde diretamente à dor de organização do Isaac Mesquita e converte bem para corretores com volume maior de leads.
+Grave nessa sequência para aproveitar melhor o setup:
+
+1. Grava a tela do CorretorPRO de uma vez: fluxo de proposta + Registro de Visita + painel CRM. Salva como um único arquivo longo. Você vai recortar nas edições.
+2. Grava a fachada/frente da câmera para os hooks das duas variações (rosto ou só voz off-screen).
+3. Grava a simulação de WhatsApp (Variacao B, cena 2).
+4. Edita Variacao A no CapCut.
+5. Edita Variacao B no CapCut reaproveitando os clipes de tela já cortados.
+
+---
+
+## Proximo criativo sugerido (após validar este)
+
+**Angulo: Antes e depois — Word vs CorretorPRO**
+Dor: "Sua proposta hoje vs a proposta do seu concorrente que usa o CorretorPRO."
+Formato: tela dividida ou corte brusco entre um Word mal formatado e a proposta gerada pela ferramenta.
+Este ângulo é o terceiro dos quatro ângulos validados no plano de tráfego e costuma converter bem para corretores que ainda não enxergam o problema como urgente.
+
+**Angulo seguinte: CRM como protagonista**
+Dor: "Você sabe quantas negociações estão abertas agora? Em que etapa cada uma está?"
+Formato: screen recording do painel, voz over explicando os status (Novo Lead → Proposta Enviada → Em Negociação → Fechado → Perdido).
+Converte bem para corretores com volume maior de leads — responde diretamente à dor de organização do Isaac Mesquita.
