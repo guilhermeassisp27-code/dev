@@ -31,8 +31,9 @@ pesquisadas na internet, e implementa um por vez.
 
 ## Ideias (a avaliar)
 
-- **CRM leve / status do cliente** — marcar cada proposta como "enviada / em negociação / fechada / perdida" para o corretor não perder o follow-up. _Dor: corretor perde venda por esquecer de dar retorno._
 - **Lembrete de follow-up** — aviso para retomar contato com o cliente em X dias. _Dor: o dinheiro está no follow-up, e ele esquece._
+- **Link de proposta para o cliente preencher** — corretor envia um link e o próprio cliente formaliza a proposta. _Dor (validada na conversa com Isaac, 2026-06-08): cliente fica mais à vontade para abrir valores reais; corretor não "condiciona" a proposta sem perceber._
+- **Qualificação/triagem de lead** — separar interessado real de "curioso". _Dor (validada na conversa com Kono, 2026-06-08): perder tempo com quem não vai fechar._
 - **Logo/cores aplicados automaticamente** em toda proposta a partir do perfil.
 - **Campo de observações livres** por proposta.
 - **Comparativo de imóveis** — montar uma proposta com 2–3 opções para o mesmo cliente.
@@ -40,6 +41,7 @@ pesquisadas na internet, e implementa um por vez.
 - **Histórico por cliente** — agrupar todas as propostas de um mesmo cliente.
 
 ## Já entregue
-- **CRM leve / status da negociação** — badge de status por proposta (Nova / Enviada / Em negociação / Fechada / Perdida) com painel de contagem e filtro rápido por fase. (2026-06-07)
+- **Registro de Visita** — termo com amparo legal (arts. 722–729 CC) que comprova a intermediação do corretor, com assinaturas, PDF e WhatsApp. _Gatilho de assinatura validado na conversa com Isaac (2026-06-08)._ (2026-06-09)
+- **CRM leve / status da negociação** — badge de status por proposta (Nova / Enviada / Em negociação / Fechada / Perdida) com painel de contagem e filtro rápido por fase. _Atende o desejo de "BI/organização dos dados" do Isaac._ (2026-06-09)
 - **Busca/filtro no histórico** — campo de busca em "Minhas Propostas" para encontrar propostas antigas por cliente, tipo de imóvel ou endereço. (2026-06-06)
 - **Duplicar proposta** — botão nas propostas salvas que pré-preenche o formulário para agilizar uma nova proposta similar. (2026-06-06)

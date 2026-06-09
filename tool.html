@@ -284,6 +284,18 @@ input[type=color]{opacity:0;width:0;height:0;position:absolute}
 /* Painel vazio de filtro */
 .crm-vazio-filtro{text-align:center;padding:40px 20px;color:var(--t3);font-size:13px}
 
+/* ── REGISTRO DE VISITA ── */
+.termo-decl{font-size:14px;line-height:1.85;color:var(--t2);text-align:justify}
+.termo-decl b{color:var(--t)}
+.sig-area{margin-top:34px;display:grid;grid-template-columns:1fr 1fr;gap:28px}
+@media(max-width:560px){.sig-area{grid-template-columns:1fr;gap:34px}}
+.sig-box{text-align:center;padding-top:46px}
+.sig-line{border-top:1px solid var(--bm);padding-top:8px}
+.sig-nome{font-size:13px;font-weight:700;color:var(--t)}
+.sig-papel{font-size:11px;color:var(--t3);margin-top:2px}
+.visita-info-banner{display:flex;gap:10px;align-items:flex-start;background:rgba(34,197,94,.07);border:1px solid rgba(34,197,94,.2);border-radius:var(--rad);padding:12px 14px;margin-bottom:18px;font-size:12.5px;color:var(--t2);line-height:1.6}
+.visita-info-banner svg{flex-shrink:0;color:var(--g,#22C55E);margin-top:2px}
+
 /* ── CONFIG VIEW ── */
 .cfg-preview{background:var(--s2);border:1px solid var(--b);border-radius:var(--radl);padding:14px 18px;margin-bottom:14px;display:flex;align-items:center;gap:12px}
 .cfg-preview-logo{width:40px;height:40px;border-radius:var(--rad);background:var(--s3);display:flex;align-items:center;justify-content:center;overflow:hidden;flex-shrink:0}
@@ -320,7 +332,12 @@ input[type=color]{opacity:0;width:0;height:0;position:absolute}
 
 /* ── PRINT: proposal only ── */
 @media print{
-  .sidebar,.mob-bar,.topbar,.card,.gen-btn,.skel,.prop-foot,.toast,.demo-row,.banner,#view-history,#view-config,.view:not(.active){display:none!important}
+  .sidebar,.mob-bar,.topbar,.card,.gen-btn,.skel,.prop-foot,.toast,.demo-row,.banner,#view-history,#view-config,.view:not(.active),.no-print,.visita-info-banner,.ph{display:none!important}
+  .termo-decl{color:#333!important}
+  .termo-decl b{color:#000!important}
+  .sig-line{border-top-color:#999!important}
+  .sig-nome{color:#000!important}
+  .sig-papel{color:#666!important}
   body,html{background:#fff!important;color:#000!important}
   .main{margin-left:0!important;padding-top:0!important}
   .page{padding:0!important;max-width:100%!important}
@@ -371,6 +388,12 @@ input[type=color]{opacity:0;width:0;height:0;position:absolute}
       <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
       Minhas Propostas
       <span class="sb-badge" id="sb-count" style="margin-left:auto;background:var(--ps);color:var(--p);font-size:10px;font-weight:700;padding:2px 7px;border-radius:100px;display:none"></span>
+    </button>
+    <div class="sb-sec">Documentos</div>
+    <button class="sb-item" data-view="visita" onclick="showView('visita')">
+      <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 01-2 2H5a2 2 0 01-2-2V5a2 2 0 012-2h11"/></svg>
+      Registro de Visita
+      <span class="sb-badge" id="sb-count-visita" style="margin-left:auto;background:var(--ps);color:var(--p);font-size:10px;font-weight:700;padding:2px 7px;border-radius:100px;display:none"></span>
     </button>
     <div class="sb-sec">Conta</div>
     <button class="sb-item" data-view="config" onclick="showView('config')">
@@ -693,6 +716,166 @@ input[type=color]{opacity:0;width:0;height:0;position:absolute}
       <div id="history-content"></div>
     </div>
 
+    <!-- ══════════════════ VIEW: REGISTRO DE VISITA ══════════════════ -->
+    <div class="view" id="view-visita">
+      <div class="ph">
+        <h1>Registro de Visita</h1>
+        <p>Gere o termo que comprova que foi você quem apresentou o imóvel ao cliente.</p>
+      </div>
+
+      <div class="visita-info-banner">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+        <span><b style="color:var(--t)">Proteção jurídica da sua corretagem.</b> O termo registra que a aproximação entre cliente e imóvel se deu por seu intermédio (arts. 722 a 729 do Código Civil) — sua garantia caso a negociação se concretize por fora.</span>
+      </div>
+
+      <form id="form-visita" onsubmit="gerarTermo(event)" novalidate>
+        <div class="card">
+          <div class="card-t">Visitante</div>
+          <div class="fg">
+            <div class="field">
+              <label class="lbl" for="v-cliente">Nome completo <span class="req">*</span></label>
+              <input id="v-cliente" type="text" class="inp" placeholder="Ex: João Silva" required autocomplete="name">
+            </div>
+            <div class="field">
+              <label class="lbl" for="v-cpf">CPF (recomendado)</label>
+              <input id="v-cpf" type="text" class="inp" placeholder="000.000.000-00" inputmode="numeric">
+            </div>
+            <div class="field">
+              <label class="lbl" for="v-tel">Telefone (opcional)</label>
+              <input id="v-tel" type="tel" class="inp" placeholder="(11) 99999-9999">
+            </div>
+          </div>
+        </div>
+
+        <div class="card">
+          <div class="card-t">Imóvel visitado</div>
+          <div class="fg">
+            <div class="field f2">
+              <label class="lbl" for="v-end">Endereço completo <span class="req">*</span></label>
+              <input id="v-end" type="text" class="inp" placeholder="Ex: Av. Paulista, 1000, ap 72 — Bela Vista, São Paulo, SP" required>
+            </div>
+            <div class="field">
+              <label class="lbl" for="v-tipo">Tipo do imóvel</label>
+              <select id="v-tipo" class="sel">
+                <option value="" selected>Não informar</option>
+                <option>Apartamento</option>
+                <option>Casa</option>
+                <option>Terreno</option>
+                <option>Sala Comercial</option>
+                <option>Galpão</option>
+                <option>Cobertura</option>
+                <option>Flat / Studio</option>
+              </select>
+            </div>
+          </div>
+        </div>
+
+        <div class="card">
+          <div class="card-t">Visita</div>
+          <div class="fg">
+            <div class="field">
+              <label class="lbl" for="v-data">Data da visita <span class="req">*</span></label>
+              <input id="v-data" type="date" class="inp" required>
+            </div>
+            <div class="field">
+              <label class="lbl" for="v-hora">Horário (opcional)</label>
+              <input id="v-hora" type="time" class="inp">
+            </div>
+            <div class="field f2">
+              <label class="lbl" for="v-obs">Observações (opcional)</label>
+              <textarea id="v-obs" class="txa inp" placeholder="Ex: visita acompanhada do cônjuge; cliente demonstrou interesse e pediu simulação de financiamento..."></textarea>
+            </div>
+          </div>
+        </div>
+
+        <button type="submit" class="gen-btn">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 01-2 2H5a2 2 0 01-2-2V5a2 2 0 012-2h11"/></svg>
+          Gerar Termo de Visita
+        </button>
+      </form>
+
+      <!-- TERMO GERADO -->
+      <div class="proposta" id="termo">
+        <div class="prop-corretor">
+          <div class="prop-corretor-logo" id="tv-logo">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>
+          </div>
+          <div class="prop-corretor-info">
+            <div class="prop-corretor-nome" id="tv-nome">—</div>
+            <div class="prop-corretor-creci" id="tv-creci"></div>
+            <div class="prop-corretor-contato" id="tv-contato"></div>
+          </div>
+        </div>
+
+        <div class="prop-head">
+          <div>
+            <div class="prop-badge"><div class="prop-badge-dot"></div>Termo de Registro de Visita</div>
+            <h2 class="prop-h2" id="t-titulo">Registro de Visita ao Imóvel</h2>
+            <p class="prop-sub" id="t-sub"></p>
+          </div>
+          <div class="prop-tags">
+            <span class="prop-tag" id="t-tag-data"></span>
+          </div>
+        </div>
+
+        <div class="prop-imovel" id="t-grid"></div>
+
+        <div class="prop-body">
+          <div>
+            <div class="prop-sec-title">Declaração</div>
+            <p class="termo-decl" id="t-decl"></p>
+          </div>
+          <div id="t-obs-sec" style="display:none">
+            <div class="prop-sec-title">Observações</div>
+            <p class="prop-text" id="t-obs"></p>
+          </div>
+          <div class="sig-area">
+            <div class="sig-box">
+              <div class="sig-line">
+                <div class="sig-nome" id="t-sig-cliente">—</div>
+                <div class="sig-papel">Visitante</div>
+              </div>
+            </div>
+            <div class="sig-box">
+              <div class="sig-line">
+                <div class="sig-nome" id="t-sig-corretor">—</div>
+                <div class="sig-papel" id="t-sig-creci">Corretor(a) de Imóveis</div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="prop-foot">
+          <button class="btn btn-ghost" onclick="copiarTermo()">
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1"/></svg>
+            Copiar texto
+          </button>
+          <button class="btn btn-ghost" onclick="baixarTermoPDF()">
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+            Baixar PDF
+          </button>
+          <button class="btn btn-ghost" onclick="compartilharTermoWA()">
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 11.5a8.38 8.38 0 01-.9 3.8 8.5 8.5 0 01-7.6 4.7 8.38 8.38 0 01-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 01-.9-3.8 8.5 8.5 0 014.7-7.6 8.38 8.38 0 013.8-.9h.5a8.48 8.48 0 018 8v.5z"/></svg>
+            WhatsApp
+          </button>
+          <button class="btn btn-green" onclick="salvarVisita()">
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 21H5a2 2 0 01-2-2V5a2 2 0 012-2h11l5 5v11a2 2 0 01-2 2z"/><polyline points="17 21 17 13 7 13 7 21"/><polyline points="7 3 7 8 15 8"/></svg>
+            Salvar registro
+          </button>
+          <button class="btn btn-primary" onclick="novoTermo()">
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+            Novo registro
+          </button>
+        </div>
+      </div>
+
+      <!-- VISITAS SALVAS -->
+      <div class="no-print" id="visitas-salvas" style="margin-top:28px;display:none">
+        <div class="card-t" style="margin-bottom:12px">Visitas registradas</div>
+        <div id="visitas-lista"></div>
+      </div>
+    </div><!-- /view-visita -->
+
     <!-- ══════════════════ VIEW: CONFIGURAÇÕES ══════════════════ -->
     <div class="view" id="view-config">
       <div class="ph">
@@ -890,6 +1073,20 @@ let snapProposta = null
 let _toastT = null
 let _crmFiltro = null  // filtro ativo por status no histórico
 let _menuAberto = null // referência ao dropdown de status aberto
+let snapVisita = null  // termo de visita gerado, ainda não salvo
+
+// Propostas e registros de visita compartilham o mesmo array `historico`
+// (coluna jsonb única no Supabase — sem migração de schema); o campo
+// docTipo separa os dois mundos nas telas.
+const soPropostas = () => historico.filter(h => h.docTipo !== 'visita')
+const soVisitas   = () => historico.filter(h => h.docTipo === 'visita')
+
+// Mantém as mais recentes de cada tipo sem uma expulsar a outra do limite
+function capHistorico() {
+  const props = soPropostas().slice(0, 20)
+  const vis   = soVisitas().slice(0, 30)
+  historico = props.concat(vis).sort((a, b) => (b.id || 0) - (a.id || 0))
+}
 
 /* ── INIT ── */
 function initApp() {
@@ -957,8 +1154,8 @@ function showView(name) {
   document.querySelectorAll('.view').forEach(v => v.classList.remove('active'))
   document.getElementById('view-' + name).classList.add('active')
   document.querySelectorAll('.sb-item[data-view]').forEach(i => i.classList.toggle('active', i.dataset.view === name))
-  const labels = { form:'Nova Proposta', history:'Minhas Propostas', config:'Configurações' }
-  const roots  = { form:'Propostas', history:'Propostas', config:'Conta' }
+  const labels = { form:'Nova Proposta', history:'Minhas Propostas', visita:'Registro de Visita', config:'Configurações' }
+  const roots  = { form:'Propostas', history:'Propostas', visita:'Documentos', config:'Conta' }
   document.getElementById('crumb-page').textContent = labels[name] || name
   document.getElementById('crumb-root').textContent = roots[name] || name
   // topbar buttons only for form
@@ -970,6 +1167,11 @@ function showView(name) {
     if (srch) srch.value = ''
     _crmFiltro = null
     renderHistory()
+  }
+  if (name === 'visita') {
+    const dt = document.getElementById('v-data')
+    if (dt && !dt.value) dt.value = new Date().toISOString().slice(0, 10)
+    renderVisitas()
   }
   closeSidebar()
   window.scrollTo({ top: 0, behavior: 'smooth' })
@@ -1359,7 +1561,7 @@ async function salvarProposta() {
     tituloGerado: document.getElementById('p-titulo').textContent,
   }
   historico.unshift(item)
-  if (historico.length > 20) historico = historico.slice(0, 20)
+  capHistorico()
   localStorage.setItem('cpr_hist', JSON.stringify(historico))
   atualizarBadgeHist()
   try {
@@ -1385,11 +1587,18 @@ function resetForm() { novaProposta() }
 /* ── HISTORY ── */
 function atualizarBadgeHist() {
   const badge = document.getElementById('sb-count')
-  if (historico.length > 0) {
-    badge.textContent = historico.length
+  const nProp = soPropostas().length
+  if (nProp > 0) {
+    badge.textContent = nProp
     badge.style.display = 'inline'
   } else {
     badge.style.display = 'none'
+  }
+  const badgeV = document.getElementById('sb-count-visita')
+  if (badgeV) {
+    const nVis = soVisitas().length
+    badgeV.textContent = nVis
+    badgeV.style.display = nVis > 0 ? 'inline' : 'none'
   }
 }
 
@@ -1410,7 +1619,8 @@ function renderCrmPainel() {
   const painel = document.getElementById('crm-painel')
   const cardsEl = document.getElementById('crm-cards')
   const filtrosEl = document.getElementById('crm-filtros')
-  if (!painel || historico.length === 0) {
+  const propostas = soPropostas()
+  if (!painel || propostas.length === 0) {
     if (painel) painel.style.display = 'none'
     return
   }
@@ -1419,7 +1629,7 @@ function renderCrmPainel() {
   // Contagem por status
   const counts = {}
   CRM_STATUS.forEach(s => { counts[s.key] = 0 })
-  historico.forEach(h => {
+  propostas.forEach(h => {
     const k = h.status || 'nova'
     counts[k] = (counts[k] || 0) + 1
   })
@@ -1465,16 +1675,19 @@ function renderHistory(filtrados) {
   const wrap = document.getElementById('hist-search-wrap')
   const countEl = document.getElementById('hist-count')
 
+  // Registros de visita vivem em outra tela; aqui só propostas
+  const propostas = soPropostas()
+
   // Aplica filtro de status antes de qualquer outro filtro
-  let base = historico
+  let base = propostas
   if (_crmFiltro !== null) {
-    base = historico.filter(h => (h.status || 'nova') === _crmFiltro)
+    base = propostas.filter(h => (h.status || 'nova') === _crmFiltro)
   }
 
   const lista = filtrados !== undefined ? filtrados : base
 
   // Mostra barra de busca somente quando há propostas
-  if (historico.length > 0) {
+  if (propostas.length > 0) {
     wrap.style.display = ''
   } else {
     wrap.style.display = 'none'
@@ -1484,7 +1697,7 @@ function renderHistory(filtrados) {
   // Painel CRM
   renderCrmPainel()
 
-  if (historico.length === 0) {
+  if (propostas.length === 0) {
     el.innerHTML = `<div class="hist-empty">
       <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
       <h3>Nenhuma proposta salva</h3>
@@ -1502,7 +1715,7 @@ function renderHistory(filtrados) {
     return
   }
 
-  const total = historico.length
+  const total = propostas.length
   if (base.length !== total || (filtrados !== undefined && filtrados.length !== base.length)) {
     countEl.style.display = ''
     countEl.textContent = `${lista.length} de ${total} proposta${total > 1 ? 's' : ''}`
@@ -1587,7 +1800,7 @@ function definirStatus(idx, statusKey) {
   const st = getStatusInfo(statusKey)
   // Re-renderiza mantendo filtros
   const q = (document.getElementById('hist-search')?.value || '').trim()
-  let base = _crmFiltro ? historico.filter(h => (h.status || 'nova') === _crmFiltro) : historico
+  let base = _crmFiltro ? soPropostas().filter(h => (h.status || 'nova') === _crmFiltro) : soPropostas()
   renderHistory(q ? base.filter(h => matchFiltro(h, q)) : undefined)
   toast(`Status atualizado: ${st.label}`)
 }
@@ -1599,7 +1812,7 @@ function excluirProposta(i) {
   atualizarBadgeHist()
   // Mantém o filtro ativo ao excluir
   const q = (document.getElementById('hist-search')?.value || '').trim()
-  let base = _crmFiltro ? historico.filter(h => (h.status || 'nova') === _crmFiltro) : historico
+  let base = _crmFiltro ? soPropostas().filter(h => (h.status || 'nova') === _crmFiltro) : soPropostas()
   renderHistory(q ? base.filter(h => matchFiltro(h, q)) : undefined)
   toast('Proposta removida')
 }
@@ -1618,7 +1831,7 @@ function matchFiltro(h, q) {
 function filtrarHistory() {
   const q = (document.getElementById('hist-search')?.value || '').trim()
   // Base do filtro: respeita o filtro de status ativo
-  const base = _crmFiltro ? historico.filter(h => (h.status || 'nova') === _crmFiltro) : historico
+  const base = _crmFiltro ? soPropostas().filter(h => (h.status || 'nova') === _crmFiltro) : soPropostas()
   if (!q) {
     renderHistory(undefined)
     return
@@ -1667,6 +1880,226 @@ function duplicarProposta(i) {
     document.getElementById('f-cliente').focus()
     toast('Proposta duplicada — edite e gere uma nova versão')
   }, 80)
+}
+
+/* ══════════════ REGISTRO DE VISITA ══════════════ */
+
+function fmtDataBR(iso) {
+  if (!iso) return ''
+  const [a, m, d] = iso.split('-')
+  return `${d}/${m}/${a}`
+}
+
+function gerarTermo(ev) {
+  ev.preventDefault()
+  const form = document.getElementById('form-visita')
+  if (!form.checkValidity()) { form.reportValidity(); return }
+
+  const d = {
+    cliente:    document.getElementById('v-cliente').value.trim(),
+    cpf:        document.getElementById('v-cpf').value.trim(),
+    tel:        document.getElementById('v-tel').value.trim(),
+    end:        document.getElementById('v-end').value.trim(),
+    tipoImovel: document.getElementById('v-tipo').value,
+    dataVisita: document.getElementById('v-data').value,
+    hora:       document.getElementById('v-hora').value,
+    obs:        document.getElementById('v-obs').value.trim(),
+  }
+  snapVisita = d
+  construirTermo(d)
+  const termo = document.getElementById('termo')
+  termo.classList.add('show')
+  termo.scrollIntoView({ behavior:'smooth', block:'start' })
+}
+
+function construirTermo(d) {
+  const nomeCorretor = perfil.nome || 'Corretor(a)'
+  const creci = perfil.creci || ''
+
+  // Cabeçalho com a marca do corretor (mesmo padrão da proposta)
+  document.getElementById('tv-nome').textContent = nomeCorretor
+  document.getElementById('tv-creci').textContent = creci ? 'CRECI ' + creci : ''
+  document.getElementById('tv-contato').textContent = [perfil.tel, perfil.email].filter(Boolean).join(' · ')
+  const logoEl = document.getElementById('tv-logo')
+  logoEl.innerHTML = ''
+  if (perfil.logo) {
+    const img = document.createElement('img')
+    img.src = perfil.logo
+    img.alt = 'Logo'
+    img.style.cssText = 'width:100%;height:100%;object-fit:contain'
+    logoEl.appendChild(img)
+  } else {
+    const cor = perfil.cor || '#4D7EFF'
+    logoEl.style.background = cor + '22'
+    const letra = document.createElement('span')
+    letra.textContent = (nomeCorretor[0] || 'C').toUpperCase()
+    letra.style.cssText = `font-weight:800;font-size:18px;color:${cor}`
+    logoEl.appendChild(letra)
+  }
+
+  document.getElementById('t-sub').textContent = d.end
+  document.getElementById('t-tag-data').textContent = fmtDataBR(d.dataVisita) + (d.hora ? ' às ' + d.hora : '')
+
+  // Grid de dados (mesmo visual do grid do imóvel na proposta)
+  const grid = document.getElementById('t-grid')
+  grid.innerHTML = ''
+  const items = [
+    { label:'Visitante', val:d.cliente },
+    d.cpf ? { label:'CPF', val:d.cpf } : null,
+    d.tel ? { label:'Telefone', val:d.tel } : null,
+    d.tipoImovel ? { label:'Tipo do imóvel', val:d.tipoImovel } : null,
+    { label:'Data da visita', val: fmtDataBR(d.dataVisita) + (d.hora ? ' · ' + d.hora : '') },
+  ].filter(Boolean)
+  items.forEach(item => {
+    const div = document.createElement('div')
+    div.className = 'prop-imovel-item'
+    div.innerHTML = `<div class="pii-label">${escH(item.label)}</div><div class="pii-val">${escH(item.val)}</div>`
+    grid.appendChild(div)
+  })
+
+  // Declaração com amparo legal (arts. 722–729 do Código Civil)
+  const idCliente = d.cliente + (d.cpf ? `, inscrito(a) no CPF sob o nº ${d.cpf}` : '')
+  const idCorretor = nomeCorretor + (creci ? `, CRECI ${creci}` : '')
+  const quando = fmtDataBR(d.dataVisita) + (d.hora ? `, às ${d.hora}` : '')
+  document.getElementById('t-decl').innerHTML =
+    `Eu, <b>${escH(idCliente)}</b>, declaro para os devidos fins que em <b>${escH(quando)}</b> ` +
+    `visitei o imóvel${d.tipoImovel ? ' (' + escH(d.tipoImovel.toLowerCase()) + ')' : ''} situado em ` +
+    `<b>${escH(d.end)}</b>, apresentado por intermédio do(a) corretor(a) <b>${escH(idCorretor)}</b>. ` +
+    `Reconheço que tomei conhecimento deste imóvel e tive acesso a ele por meio do trabalho de aproximação ` +
+    `realizado pelo(a) referido(a) profissional, nos termos dos artigos 722 a 729 do Código Civil, ` +
+    `fazendo jus à remuneração de corretagem caso a negociação deste imóvel venha a se concretizar, ` +
+    `ainda que diretamente entre as partes.`
+
+  // Observações (só aparece se preenchidas)
+  const obsSec = document.getElementById('t-obs-sec')
+  if (d.obs) {
+    obsSec.style.display = ''
+    document.getElementById('t-obs').textContent = d.obs
+  } else {
+    obsSec.style.display = 'none'
+  }
+
+  // Assinaturas
+  document.getElementById('t-sig-cliente').textContent = d.cliente
+  document.getElementById('t-sig-corretor').textContent = nomeCorretor
+  document.getElementById('t-sig-creci').textContent = creci ? `Corretor(a) de Imóveis · CRECI ${creci}` : 'Corretor(a) de Imóveis'
+}
+
+async function salvarVisita() {
+  if (!snapVisita) return
+  const item = {
+    id: Date.now(),
+    docTipo: 'visita',
+    data: new Date().toLocaleDateString('pt-BR'),
+    ...snapVisita,
+  }
+  historico.unshift(item)
+  capHistorico()
+  localStorage.setItem('cpr_hist', JSON.stringify(historico))
+  atualizarBadgeHist()
+  renderVisitas()
+  try {
+    await salvarRemoto()
+    toast('Registro de visita salvo!')
+  } catch(_) {
+    toast('Salvo localmente — verifique sua conexão', true)
+  }
+}
+
+function renderVisitas() {
+  const wrap = document.getElementById('visitas-salvas')
+  const el = document.getElementById('visitas-lista')
+  if (!wrap || !el) return
+  const vis = soVisitas()
+  if (vis.length === 0) { wrap.style.display = 'none'; return }
+  wrap.style.display = ''
+  el.innerHTML = `<div class="hist-list">${vis.map(v => `
+    <div class="hist-card">
+      <div class="hist-main-row">
+        <span class="hist-tipo">Visita</span>
+        <div class="hist-info">
+          <div class="hist-cliente">${escH(v.cliente||'—')}</div>
+          <div class="hist-imovel">${escH((v.end||'').split(',')[0])} · ${escH(fmtDataBR(v.dataVisita))}</div>
+        </div>
+        <div class="hist-actions">
+          <button class="btn btn-ghost btn-sm" onclick="reabrirVisita(${v.id})" title="Reabrir termo">
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+          </button>
+          <button class="btn btn-ghost btn-sm" onclick="excluirVisita(${v.id})" aria-label="Excluir">
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 01-2 2H8a2 2 0 01-2-2L5 6"/><path d="M10 11v6M14 11v6"/><path d="M9 6V4h6v2"/></svg>
+          </button>
+        </div>
+      </div>
+    </div>`).join('')}</div>`
+}
+
+function reabrirVisita(id) {
+  const v = historico.find(h => h.id === id && h.docTipo === 'visita')
+  if (!v) return
+  snapVisita = v
+  construirTermo(v)
+  const termo = document.getElementById('termo')
+  termo.classList.add('show')
+  termo.scrollIntoView({ behavior:'smooth', block:'start' })
+}
+
+function excluirVisita(id) {
+  const i = historico.findIndex(h => h.id === id && h.docTipo === 'visita')
+  if (i === -1) return
+  historico.splice(i, 1)
+  localStorage.setItem('cpr_hist', JSON.stringify(historico))
+  salvarRemoto().catch(() => {})
+  atualizarBadgeHist()
+  renderVisitas()
+  toast('Registro removido')
+}
+
+function novoTermo() {
+  document.getElementById('termo').classList.remove('show')
+  document.getElementById('form-visita').reset()
+  const dt = document.getElementById('v-data')
+  if (dt) dt.value = new Date().toISOString().slice(0, 10)
+  snapVisita = null
+  window.scrollTo({ top:0, behavior:'smooth' })
+  setTimeout(() => document.getElementById('v-cliente').focus(), 350)
+}
+
+function textoTermo() {
+  const d = snapVisita
+  if (!d) return ''
+  const nomeCorretor = perfil.nome || 'Corretor(a)'
+  const creci = perfil.creci ? ' — CRECI ' + perfil.creci : ''
+  return [
+    'TERMO DE REGISTRO DE VISITA',
+    '',
+    document.getElementById('t-decl').innerText,
+    d.obs ? '\nObservações: ' + d.obs : '',
+    '',
+    '_______________________________',
+    d.cliente + ' (Visitante)',
+    '',
+    '_______________________________',
+    nomeCorretor + creci,
+  ].filter(s => s !== '').join('\n')
+}
+
+function copiarTermo() {
+  if (!snapVisita) return
+  navigator.clipboard.writeText(textoTermo())
+    .then(() => toast('Termo copiado!'))
+    .catch(() => toast('Selecione o texto e use Ctrl+C'))
+}
+
+function baixarTermoPDF() {
+  if (!document.getElementById('termo').classList.contains('show')) return
+  toast('Abrindo impressão — salve como PDF...')
+  setTimeout(() => window.print(), 400)
+}
+
+function compartilharTermoWA() {
+  if (!snapVisita) return
+  const msg = textoTermo() + '\n\nPor favor, confirme o recebimento deste registro de visita. Obrigado!'
+  window.open('https://wa.me/?text=' + encodeURIComponent(msg), '_blank')
 }
 
 /* ── CONFIG / PERFIL ── */
