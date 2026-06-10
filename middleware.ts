@@ -24,6 +24,13 @@ const PUBLIC_PATHS = new Set([
 export async function middleware(req: NextRequest) {
   const { pathname } = req.nextUrl
 
+  // Arquivos estáticos (imagens, css, js, fontes etc.) são servidos direto,
+  // sem redirecionar para o login. Evita que assets do public/ (ex.: prints
+  // da landing) caiam na regra de auth e sejam mandados para /acesso.
+  if (/\.(png|jpe?g|gif|svg|webp|ico|css|js|txt|xml|woff2?|ttf)$/i.test(pathname)) {
+    return NextResponse.next()
+  }
+
   // Landing e páginas legais: liberadas para qualquer visitante (inclusive sem sessão).
   if (PUBLIC_PATHS.has(pathname)) {
     return NextResponse.next()

@@ -1,0 +1,35 @@
+name: SEO da Landing (agente seo)
+
+# Roda o agente de SEO para avaliar e melhorar a landing page (ranqueamento no
+# Google). Abre um PR com as melhorias para você revisar.
+#
+# Manual por padrão (você dispara quando quiser) para controlar custo.
+# Custo: ~US$0,40 por execução (Sonnet). PRÉ-REQUISITO: ANTHROPIC_API_KEY.
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: write
+  pull-requests: write
+  id-token: write
+
+jobs:
+  seo:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Rodar agente de SEO
+        uses: anthropics/claude-code-action@v1
+        with:
+          anthropic_api_key: ${{ secrets.ANTHROPIC_API_KEY }}
+          claude_args: |
+            --model claude-sonnet-4-6
+            --max-turns 25
+            --allowedTools "Read,Edit,Write,Glob,Grep,Bash(git:*),Bash(gh:*),WebSearch"
+          prompt: |
+            Use o agente "seo". Avalie a landing page (landing/index.html) e
+            aplique as 3–5 melhorias de SEO de maior impacto (title, meta
+            description, headings, palavras-chave que corretores buscam, dados
+            estruturados se agregar). Preserve a copy de vendas que já converte.
+            Abra um PR com um resumo "antes → depois" e por quê. Não faça merge.

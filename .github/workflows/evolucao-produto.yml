@@ -11,14 +11,14 @@ name: Evolução do Produto CorretorPRO
 
 on:
   schedule:
-    # Toda 2ª sexta 09:00 BRT (12:00 UTC) — o cron roda toda sexta; o agente
-    # decide se há melhoria de impacto a propor naquela semana.
-    - cron: '0 12 * * 5'
-  push:
-    branches:
-      - main
-    paths:
-      - 'tool.html'
+    # Quinzenal: dia 1 e 15 de cada mês, 09:00 BRT (12:00 UTC) — econômico.
+    # OBS: não combinar dia-do-mês + dia-da-semana num mesmo cron; o padrão
+    # cron trata como "OU" e dispararia muito mais vezes que o esperado.
+    - cron: '0 12 1,15 * *'
+  pull_request:
+    # Quando um PR de melhoria (branch feat/*) é mergeado, dispara o anúncio.
+    # A action do Claude não aceita evento 'push', por isso usamos pull_request.
+    types: [closed]
   workflow_dispatch:
     inputs:
       acao:
@@ -46,16 +46,31 @@ jobs:
         uses: anthropics/claude-code-action@v1
         with:
           anthropic_api_key: ${{ secrets.ANTHROPIC_API_KEY }}
+          claude_args: |
+            --model claude-sonnet-4-6
+            --max-turns 25
+            --allowedTools "Read,Edit,Write,Glob,Grep,Bash(git:*),Bash(gh:*),Bash(npx tsc:*)"
           prompt: |
-            Use o agente "produto". Leia docs/roadmap.md (crie se não existir),
-            escolha UMA melhoria de alto impacto e baixo risco para a ferramenta
-            (tool.html), implemente a menor versão que entrega valor, registre a
-            novidade no topo de docs/novidades.md e abra um PR. Não faça merge.
-            Garanta que o fluxo salvar→sair→entrar→persiste continua funcionando.
+            Use o agente "produto". PRIMEIRO pesquise na internet (WebSearch)
+            dores reais de corretores de imóveis no Brasil — o que eles
+            reclamam, o que pedem, onde perdem tempo/venda. Escolha UMA dor que
+            faça sentido resolver na ferramenta (tool.html) e que seja
+            AMBICIOSA (uma funcionalidade de verdade que diferencie o produto,
+            não um ajuste cosmético) — mas sem quebrar o fluxo crítico.
+            Implemente a versão mais enxuta que entrega esse valor. No PR e no
+            topo de docs/novidades.md, documente: qual dor do corretor isso
+            resolve e a fonte/evidência que você encontrou. Abra o PR (branch
+            feat/*) e NÃO faça merge. Garanta que salvar→sair→entrar→persiste
+            continua funcionando e rode `npx tsc --noEmit` se mexer em TS.
 
   anunciar-novidade:
-    # Roda quando tool.html muda no main (melhoria publicada) OU disparo manual
-    if: github.event_name == 'push' || github.event.inputs.acao == 'anunciar-novidade'
+    # Roda quando um PR de melhoria (branch feat/*) é mergeado OU no disparo manual.
+    # O filtro feat/* evita disparar no merge dos próprios PRs de anúncio (evita loop).
+    if: >-
+      (github.event_name == 'pull_request' &&
+       github.event.pull_request.merged == true &&
+       startsWith(github.event.pull_request.head.ref, 'feat/'))
+      || github.event.inputs.acao == 'anunciar-novidade'
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -63,6 +78,10 @@ jobs:
         uses: anthropics/claude-code-action@v1
         with:
           anthropic_api_key: ${{ secrets.ANTHROPIC_API_KEY }}
+          claude_args: |
+            --model claude-sonnet-4-6
+            --max-turns 25
+            --allowedTools "Read,Edit,Write,Glob,Grep,Bash(git:*),Bash(gh:*),Bash(npx tsc:*)"
           prompt: |
             Use o agente "marketing". Leia a entrada mais recente de
             docs/novidades.md (a novidade que acabou de entrar no ar). Crie o
