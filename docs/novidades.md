@@ -15,6 +15,11 @@ Formato de cada entrada:
 
 ---
 
+## [2026-06-15] Lembrete de follow-up — nunca mais esquecer de retomar o contato
+**Para o corretor:** defina em um clique quando quer ser lembrado de ligar para o cliente — e o CorretorPRO avisa quando chegar a hora, com destaque visual em vermelho para os atrasados.
+**O que mudou:** cada proposta salva ganha um botão de follow-up. O corretor escolhe a data (com sugestão de D+3) e uma nota opcional (ex: "ligar sobre simulação"). O sistema exibe um pill colorido em cada card: cinza (sem lembrete), verde (agendado), laranja (hoje!) e vermelho (atrasado). Ao abrir o app, um toast avisa automaticamente sobre lembretes do dia ou atrasados. Badge vermelho no menu lateral mostra quantos follow-ups estão pendentes.
+**Status:** em PR
+
 ## [2026-06-09] Registro de Visita — proteção jurídica da corretagem
 **Para o corretor:** gere em segundos o termo que comprova que foi você quem apresentou o imóvel — sua garantia de receber a comissão caso o negócio feche por fora (arts. 722 a 729 do Código Civil).
 **O que mudou:** nova aba "Registro de Visita" gera um termo profissional com a marca do corretor: dados do visitante (nome, CPF), imóvel, data/hora, declaração com amparo legal e campos de assinatura para cliente e corretor. Dá pra copiar, baixar em PDF, enviar por WhatsApp e salvar na nuvem junto com as propostas.
