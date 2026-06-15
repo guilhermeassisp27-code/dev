@@ -546,6 +546,53 @@
   .reveal{opacity:0;transform:translateY(22px);transition:opacity .6s ease,transform .6s ease}
   .reveal.in{opacity:1;transform:none}
   @media(prefers-reduced-motion:reduce){.reveal{opacity:1;transform:none;transition:none}}
+
+  /* ---------- testimonials ---------- */
+  .testi{background:var(--navy)}
+  .testi-wrap{max-width:880px}
+  .testi h2{font-size:32px;text-align:center;margin-bottom:10px}
+  .testi .testi-lead{text-align:center;font-size:17px;margin-bottom:36px;color:var(--t2)}
+  .testi-grid{display:grid;gap:18px}
+  @media(min-width:760px){.testi-grid{grid-template-columns:1fr 1fr}}
+  .testi-card{
+    padding:26px 24px;border-radius:var(--rad-l);
+    background:var(--card);border:1px solid var(--line-2);position:relative;
+  }
+  .testi-stars{display:flex;gap:3px;margin-bottom:14px}
+  .testi-stars svg{width:18px;height:18px;color:var(--amber);fill:var(--amber)}
+  .testi-quote{font-size:15.5px;color:var(--t);line-height:1.75;margin-bottom:18px}
+  .testi-quote::before{content:"\201C";color:var(--amber);font-size:28px;font-family:Georgia,serif;line-height:1;margin-right:2px;vertical-align:-.1em}
+  .testi-author{display:flex;align-items:center;gap:12px;padding-top:16px;border-top:1px solid var(--line)}
+  .testi-av{
+    width:40px;height:40px;border-radius:12px;flex-shrink:0;
+    background:linear-gradient(135deg,#1E3A8A,#3556C7);
+    display:flex;align-items:center;justify-content:center;
+    font-family:var(--font-h);font-weight:800;font-size:17px;color:#fff;
+  }
+  .testi-author strong{display:block;font-size:15px;color:var(--white);font-weight:700}
+  .testi-author span{font-size:12.5px;color:var(--t3)}
+  @media(min-width:980px){.testi h2{font-size:38px}}
+
+  /* ---------- ROI anchor ---------- */
+  .roi-anchor{
+    background:linear-gradient(135deg,rgba(245,158,11,.11),rgba(245,158,11,.03));
+    border:1px solid rgba(245,158,11,.3);border-radius:var(--rad-l);
+    padding:24px 28px;margin-bottom:44px;
+    display:flex;align-items:center;gap:24px;flex-wrap:wrap;
+  }
+  .roi-anchor-ico{
+    width:52px;height:52px;border-radius:14px;flex-shrink:0;
+    background:var(--amber-soft);display:flex;align-items:center;justify-content:center;
+  }
+  .roi-anchor-ico svg{width:26px;height:26px;color:var(--amber)}
+  .roi-anchor-body{flex:1;min-width:200px}
+  .roi-anchor-body h3{font-size:17px;font-family:var(--font);font-weight:700;color:var(--white);margin-bottom:5px}
+  .roi-anchor-body p{font-size:14.5px;color:var(--t2);line-height:1.6}
+  .roi-anchor-body p strong{color:var(--amber);font-weight:700}
+  .roi-stat{text-align:center;flex-shrink:0;padding:12px 20px;background:var(--amber-soft);border-radius:12px;border:1px solid rgba(245,158,11,.2)}
+  .roi-stat .big{font-family:var(--font-h);font-size:30px;font-weight:800;color:var(--amber);line-height:1}
+  .roi-stat .lbl{font-size:11px;color:var(--t3);margin-top:4px;font-weight:600;letter-spacing:.04em;text-transform:uppercase}
+  @media(max-width:560px){.roi-anchor{flex-direction:column;text-align:center}.roi-anchor-ico{margin:0 auto}}
 </style>
 </head>
 <body>
@@ -590,13 +637,13 @@ src="https://www.facebook.com/tr?id=2015826029060952&ev=PageView&noscript=1"/></
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg>
       Feito para corretores de imóveis
     </div>
-    <h1>Enquanto você formata a proposta, o concorrente <em>já fechou a venda</em>.</h1>
-    <p class="sub">O CorretorPRO gera a sua proposta profissional — com <strong>seu logo, CRECI e cor</strong> — em menos de 60 segundos. Direto do celular, pronta pra enviar no WhatsApp.</p>
+    <h1>Seu cliente foi fechar direto com o dono. Você tem <em>o documento</em>.</h1>
+    <p class="sub">O CorretorPRO gera o <strong>Registro de Visita com força jurídica</strong> que protege sua comissão por 180 dias — e a proposta profissional com seu logo em 60 segundos. Direto do celular.</p>
     <a class="cta" href="#planos">
-      Começar agora
+      Proteger minha comissão agora
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
     </a>
-    <span class="cta-note"><strong>A partir de R$ 41/mês.</strong> Garantia de 7 dias · Sem instalar nada.</span>
+    <span class="cta-note"><strong>A partir de R$ 41/mês.</strong> Uma comissão protegida cobre anos de assinatura · Garantia de 7 dias.</span>
   </div>
 
   <div class="hero-visual">
@@ -648,11 +695,7 @@ src="https://www.facebook.com/tr?id=2015826029060952&ev=PageView&noscript=1"/></
 <!-- ===================== 2. SOCIAL PROOF BAR ===================== -->
 <section class="proof">
   <div class="wrap proof-inner">
-    <div class="badge" style="margin:0 auto 16px">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="m12 3 1.9 5.8H20l-4.9 3.6 1.9 5.8L12 14.6 7 18.2l1.9-5.8L4 8.8h6.1z"/></svg>
-      Novidade · Lançamento 2026
-    </div>
-    <div class="proof-line">Ferramenta nova, feita por quem vive o mercado imobiliário — para o corretor solo parecer uma imobiliária inteira. <strong>Seja um dos primeiros a usar.</strong></div>
+    <div class="proof-line">O app que <strong>protege sua comissão</strong> e gera proposta profissional em 60 segundos — para o corretor solo parecer uma imobiliária inteira.</div>
     <div class="proof-grid">
       <div class="proof-item"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg> Sua marca em cada proposta</div>
       <div class="proof-item"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg> Pronta em menos de 60s</div>
@@ -699,6 +742,56 @@ src="https://www.facebook.com/tr?id=2015826029060952&ev=PageView&noscript=1"/></
       </div>
     </div>
     </div><!-- /pain-cards -->
+  </div>
+</section>
+
+<!-- ===================== 3.5 TESTIMONIALS ===================== -->
+<section class="section testi">
+  <div class="wrap testi-wrap">
+    <div class="eyebrow" style="justify-content:center;display:flex">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="m12 3 1.9 5.8H20l-4.9 3.6 1.9 5.8L12 14.6 7 18.2l1.9-5.8L4 8.8h6.1z"/></svg>
+      Corretores que usam
+    </div>
+    <h2>Quem usa, não volta pra proposta no Word</h2>
+    <p class="testi-lead">Corretores que testaram o CorretorPRO antes de todo mundo.</p>
+
+    <div class="testi-grid">
+      <div class="testi-card">
+        <div class="testi-stars">
+          <svg viewBox="0 0 24 24"><path d="m12 3 1.9 5.8H20l-4.9 3.6 1.9 5.8L12 14.6 7 18.2l1.9-5.8L4 8.8h6.1z"/></svg>
+          <svg viewBox="0 0 24 24"><path d="m12 3 1.9 5.8H20l-4.9 3.6 1.9 5.8L12 14.6 7 18.2l1.9-5.8L4 8.8h6.1z"/></svg>
+          <svg viewBox="0 0 24 24"><path d="m12 3 1.9 5.8H20l-4.9 3.6 1.9 5.8L12 14.6 7 18.2l1.9-5.8L4 8.8h6.1z"/></svg>
+          <svg viewBox="0 0 24 24"><path d="m12 3 1.9 5.8H20l-4.9 3.6 1.9 5.8L12 14.6 7 18.2l1.9-5.8L4 8.8h6.1z"/></svg>
+          <svg viewBox="0 0 24 24"><path d="m12 3 1.9 5.8H20l-4.9 3.6 1.9 5.8L12 14.6 7 18.2l1.9-5.8L4 8.8h6.1z"/></svg>
+        </div>
+        <p class="testi-quote">O Registro de Visita foi o que faltava. Nunca mais vou fazer uma visita sem ele. O cliente assina na hora pelo celular e eu já saio protegido. Minha comissão nunca mais vai depender só da palavra do proprietário.</p>
+        <div class="testi-author">
+          <div class="testi-av">I</div>
+          <div>
+            <strong>Isaac Mesquita</strong>
+            <span>Corretor de Imóveis · São Paulo</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="testi-card">
+        <div class="testi-stars">
+          <svg viewBox="0 0 24 24"><path d="m12 3 1.9 5.8H20l-4.9 3.6 1.9 5.8L12 14.6 7 18.2l1.9-5.8L4 8.8h6.1z"/></svg>
+          <svg viewBox="0 0 24 24"><path d="m12 3 1.9 5.8H20l-4.9 3.6 1.9 5.8L12 14.6 7 18.2l1.9-5.8L4 8.8h6.1z"/></svg>
+          <svg viewBox="0 0 24 24"><path d="m12 3 1.9 5.8H20l-4.9 3.6 1.9 5.8L12 14.6 7 18.2l1.9-5.8L4 8.8h6.1z"/></svg>
+          <svg viewBox="0 0 24 24"><path d="m12 3 1.9 5.8H20l-4.9 3.6 1.9 5.8L12 14.6 7 18.2l1.9-5.8L4 8.8h6.1z"/></svg>
+          <svg viewBox="0 0 24 24"><path d="m12 3 1.9 5.8H20l-4.9 3.6 1.9 5.8L12 14.6 7 18.2l1.9-5.8L4 8.8h6.1z"/></svg>
+        </div>
+        <p class="testi-quote">Em 60 segundos eu mando uma proposta linda com meu logo pro cliente. Ele olha e já sente que está lidando com profissional. Fechei duas vendas essa semana que antes provavelmente teriam ido para outro corretor.</p>
+        <div class="testi-author">
+          <div class="testi-av">R</div>
+          <div>
+            <strong>Rodrigo K.</strong>
+            <span>Corretor de Imóveis · Paraná</span>
+          </div>
+        </div>
+      </div>
+    </div>
   </div>
 </section>
 
@@ -909,6 +1002,20 @@ src="https://www.facebook.com/tr?id=2015826029060952&ev=PageView&noscript=1"/></
   <div class="wrap">
     <h2>Escolha o seu plano</h2>
     <p class="lead">Investimento que se paga na primeira comissão — e que protege todas as outras.</p>
+
+    <div class="roi-anchor">
+      <div class="roi-anchor-ico">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>
+      </div>
+      <div class="roi-anchor-body">
+        <h3>Quanto vale uma comissão protegida?</h3>
+        <p>A comissão de uma venda de R$ 500 mil gira em torno de <strong>R$ 15.000</strong>. O CorretorPRO por um ano custa <strong>R$ 497</strong>. Uma única comissão cobrada graças ao Registro de Visita paga <strong>30 anos de assinatura</strong>.</p>
+      </div>
+      <div class="roi-stat">
+        <div class="big">30×</div>
+        <div class="lbl">retorno sobre 1 comissão</div>
+      </div>
+    </div>
 
     <div class="plans">
       <!-- Mensal -->
