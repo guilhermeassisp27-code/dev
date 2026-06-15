@@ -378,3 +378,31 @@ Regra: nenhuma edição significativa (criativo/público/posicionamento) durante
 - 05/07 → leitura CP3 (decisão final de escala)
 
 Sugestão de relatório: filtrar período 15/06 em diante (isolar efeito das mudanças), não o histórico completo.
+
+---
+
+## Expectativa de vendas registrada (cenário conservador — 15/06/2026)
+
+Base: investimento de referência ~R$975 em ~3 semanas (rampa R$25→R$50/dia).
+
+| Premissa | Valor conservador |
+|---|---|
+| Custo por clique no checkout (InitiateCheckout) | ~R$30 (hoje R$36) |
+| Cliques de checkout esperados no período | ~32 |
+| Conversão checkout → compra | 10-15% (8% no piso) |
+| **Vendas esperadas** | **3 a 5** (piso pessimista: 2-3) |
+| **CPA conservador** | **~R$200-325 por venda** |
+
+**Implicação econômica (honesta):**
+- Plano mensal (R$67): NÃO se paga na 1ª compra — só com retenção 3-4+ meses.
+- Plano anual (R$497): positivo de imediato — 1 venda anual cobre ~1,5-2 CPAs.
+- O teste serve para DESCOBRIR se vende e a que custo, não para lucrar de cara.
+
+**Ajuste no CP1 (21/06):** custo por venda conservador (~R$300) ≈ stop-loss (~R$300),
+então pode não haver venda fechada ainda no CP1 mesmo com funil saudável. No CP1 avaliar
+SINAIS DE AVANÇO (volume de checkout subindo, eventos add-payment, CTR e custo/checkout
+melhorando vs. baseline 09/06), não apenas vendas concluídas. Pausar só se tudo estiver parado.
+
+**Baseline para comparação (relatório 16/05-14/06):**
+4 InitiateCheckout · R$36,25 cada · R$145 gastos · 2.989 impressões · 1.825 alcance ·
+engajamento e conversão acima da média · 0 vendas.
