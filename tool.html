@@ -334,6 +334,25 @@ input[type=color]{opacity:0;width:0;height:0;position:absolute}
 .toast.err .tok{stroke:#EF4444}
 .tok{color:var(--g)}
 
+/* ── FOLLOW-UP PILLS ── */
+.fu-pill{display:inline-flex;align-items:center;gap:4px;padding:3px 8px;border-radius:5px;font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.05em;white-space:nowrap;cursor:pointer;border:none;font-family:var(--font);transition:opacity .15s}
+.fu-pill:hover{opacity:.8}
+.fu-pill.ok      {background:rgba(34,197,94,.13);color:#22C55E}
+.fu-pill.hoje    {background:rgba(249,115,22,.18);color:#F97316}
+.fu-pill.vencido {background:rgba(239,68,68,.14);color:#EF4444}
+.fu-pill.sem     {background:rgba(255,255,255,.06);color:var(--t3)}
+
+/* ── MODAL FOLLOW-UP ── */
+.modal-backdrop{position:fixed;inset:0;background:rgba(0,0,0,.6);z-index:300;display:flex;align-items:center;justify-content:center;padding:16px;backdrop-filter:blur(4px)}
+.modal-backdrop.hidden{display:none}
+.modal{background:var(--s1);border:1px solid var(--bm);border-radius:var(--radl);padding:24px;width:100%;max-width:420px;box-shadow:0 16px 48px rgba(0,0,0,.5)}
+.modal-title{font-size:16px;font-weight:800;letter-spacing:-.4px;margin-bottom:6px}
+.modal-sub{font-size:13px;color:var(--t2);margin-bottom:20px;line-height:1.5}
+.modal-actions{display:flex;gap:8px;margin-top:20px;justify-content:flex-end;flex-wrap:wrap}
+
+/* Badge vencidos na sidebar */
+.sb-badge-fu{margin-left:auto;background:rgba(239,68,68,.18);color:#EF4444;font-size:10px;font-weight:700;padding:2px 7px;border-radius:100px}
+
 /* ── PRINT: proposal only ── */
 @media print{
   .sidebar,.mob-bar,.topbar,.card,.gen-btn,.skel,.prop-foot,.toast,.demo-row,.banner,#view-history,#view-config,.view:not(.active),.no-print,.visita-info-banner,.ph{display:none!important}
@@ -395,6 +414,7 @@ input[type=color]{opacity:0;width:0;height:0;position:absolute}
       <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
       Minhas Propostas
       <span class="sb-badge" id="sb-count" style="margin-left:auto;background:var(--ps);color:var(--p);font-size:10px;font-weight:700;padding:2px 7px;border-radius:100px;display:none"></span>
+      <span class="sb-badge-fu" id="sb-fu-badge" style="display:none" title="Follow-ups vencidos"></span>
     </button>
     <div class="sb-sec">Documentos</div>
     <button class="sb-item" data-view="visita" onclick="showView('visita')">
@@ -1004,6 +1024,31 @@ input[type=color]{opacity:0;width:0;height:0;position:absolute}
   </main>
 </div>
 
+<!-- ── MODAL FOLLOW-UP ── -->
+<div class="modal-backdrop hidden" id="fu-modal" onclick="fecharModalFU(event)">
+  <div class="modal" onclick="event.stopPropagation()">
+    <div class="modal-title">Lembrete de follow-up</div>
+    <div class="modal-sub" id="fu-modal-sub">Defina quando quer ser lembrado de retomar contato com este cliente.</div>
+    <input type="hidden" id="fu-idx">
+    <div class="field" style="margin-bottom:12px">
+      <label class="lbl" for="fu-date">Data do follow-up <span class="req">*</span></label>
+      <input id="fu-date" type="date" class="inp">
+    </div>
+    <div class="field">
+      <label class="lbl" for="fu-note">Lembrete (opcional)</label>
+      <input id="fu-note" type="text" class="inp" placeholder="Ex: ligar para confirmar visita, enviar simulação atualizada...">
+    </div>
+    <div class="modal-actions">
+      <button class="btn btn-danger btn-sm" id="fu-remover-btn" onclick="removerFollowUp()" style="display:none">Remover lembrete</button>
+      <button class="btn btn-ghost btn-sm" onclick="fecharModalFU()">Cancelar</button>
+      <button class="btn btn-primary btn-sm" onclick="salvarFollowUp()">
+        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>
+        Salvar lembrete
+      </button>
+    </div>
+  </div>
+</div>
+
 <div class="toast" id="toast">
   <svg class="tok" id="toast-ico-ok" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>
   <svg class="tok" id="toast-ico-err" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#EF4444" stroke-width="2.5" style="display:none"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
@@ -1134,6 +1179,8 @@ function initApp() {
   carregarFormConfig()
   atualizarPreview()
   atualizarCor(perfil.cor || '#4D7EFF')
+  // Notifica follow-ups urgentes assim que o app carrega
+  setTimeout(verificarFollowUps, 1200)
 }
 
 async function sair() {
@@ -1635,6 +1682,7 @@ function atualizarBadgeHist() {
     badgeV.textContent = nVis
     badgeV.style.display = nVis > 0 ? 'inline' : 'none'
   }
+  atualizarBadgeFU()
 }
 
 /* ── CRM: CONFIG DE STATUS ── */
@@ -1781,6 +1829,10 @@ function renderHistory(filtrados) {
       </div>
       <div class="hist-bottom-row">
         <div class="hist-meta">${escH(h.data||'')}</div>
+        <button class="fu-pill ${fuClasse(h)}" onclick="abrirModalFU(${realIdx})" title="${fuTitulo(h)}">
+          <svg width="9" height="9" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="12" cy="12" r="9"/><polyline points="12 7 12 12 15 15"/></svg>
+          ${fuLabel(h)}
+        </button>
         <div style="position:relative;display:inline-block">
           <button class="hist-status" data-s="${escH(h.status||'nova')}"
             onclick="abrirMenuStatus(event,${realIdx})"
@@ -2298,6 +2350,146 @@ function removerLogo() {
   document.getElementById('logo-prev').innerHTML = `<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>`
   document.getElementById('cfg-prev-logo').innerHTML = `<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>`
   renderSidebarUser()
+}
+
+/* ══════════════ FOLLOW-UP / LEMBRETE ══════════════
+   Cada proposta pode ter: followUp: { date: 'YYYY-MM-DD', note: '' }
+   - 'vencido': data < hoje
+   - 'hoje'   : data === hoje
+   - 'ok'     : data > hoje
+   - 'sem'    : sem lembrete definido
+*/
+
+function fuDataHoje() {
+  return new Date().toISOString().slice(0, 10)
+}
+
+function fuEstado(h) {
+  if (!h.followUp || !h.followUp.date) return 'sem'
+  const hoje = fuDataHoje()
+  if (h.followUp.date < hoje) return 'vencido'
+  if (h.followUp.date === hoje) return 'hoje'
+  return 'ok'
+}
+
+function fuClasse(h) { return fuEstado(h) }
+
+function fuLabel(h) {
+  const est = fuEstado(h)
+  if (est === 'sem') return 'Follow-up'
+  if (est === 'vencido') return 'Atrasado · ' + fmtDataBR(h.followUp.date)
+  if (est === 'hoje') return 'Hoje · follow-up'
+  // ok: mostra data formatada
+  return fmtDataBR(h.followUp.date)
+}
+
+function fuTitulo(h) {
+  const est = fuEstado(h)
+  if (est === 'sem') return 'Definir lembrete de follow-up'
+  const base = 'Follow-up: ' + fmtDataBR(h.followUp.date)
+  return h.followUp.note ? base + ' — ' + h.followUp.note : base
+}
+
+/* Abre o modal para definir/editar o follow-up da proposta no índice `idx` */
+function abrirModalFU(idx) {
+  const h = historico[idx]
+  if (!h) return
+  document.getElementById('fu-idx').value = idx
+  document.getElementById('fu-modal-sub').textContent =
+    `Defina quando quer ser lembrado de retomar contato com ${h.cliente || 'o cliente'}.`
+  // Pré-preenche com o valor existente ou sugere D+3
+  if (h.followUp && h.followUp.date) {
+    document.getElementById('fu-date').value = h.followUp.date
+    document.getElementById('fu-note').value = h.followUp.note || ''
+    document.getElementById('fu-remover-btn').style.display = ''
+  } else {
+    const d = new Date()
+    d.setDate(d.getDate() + 3)
+    document.getElementById('fu-date').value = d.toISOString().slice(0, 10)
+    document.getElementById('fu-note').value = ''
+    document.getElementById('fu-remover-btn').style.display = 'none'
+  }
+  document.getElementById('fu-modal').classList.remove('hidden')
+}
+
+function fecharModalFU(ev) {
+  if (ev && ev.target !== document.getElementById('fu-modal')) return
+  document.getElementById('fu-modal').classList.add('hidden')
+}
+
+function salvarFollowUp() {
+  const idx = parseInt(document.getElementById('fu-idx').value, 10)
+  const date = document.getElementById('fu-date').value
+  const note = document.getElementById('fu-note').value.trim()
+  if (!date) { document.getElementById('fu-date').focus(); return }
+  if (!historico[idx]) return
+  historico[idx].followUp = { date, note }
+  persistirEReRenderHistory()
+  document.getElementById('fu-modal').classList.add('hidden')
+  const est = fuEstado(historico[idx])
+  if (est === 'hoje') toast('Lembrete salvo para hoje!')
+  else if (est === 'vencido') toast('Lembrete salvo (data já passou — atualize se quiser)', true)
+  else toast('Lembrete salvo para ' + fmtDataBR(date))
+  pedirPermissaoNotificacao()
+}
+
+function removerFollowUp() {
+  const idx = parseInt(document.getElementById('fu-idx').value, 10)
+  if (!historico[idx]) return
+  delete historico[idx].followUp
+  persistirEReRenderHistory()
+  document.getElementById('fu-modal').classList.add('hidden')
+  toast('Lembrete removido')
+}
+
+function persistirEReRenderHistory() {
+  localStorage.setItem('cpr_hist', JSON.stringify(historico))
+  salvarRemoto().catch(() => {})
+  atualizarBadgeFU()
+  renderHistory()
+}
+
+/* Conta propostas com follow-up vencido ou para hoje */
+function contarFusUrgentes() {
+  return soPropostas().filter(h => {
+    const est = fuEstado(h)
+    return est === 'vencido' || est === 'hoje'
+  }).length
+}
+
+function atualizarBadgeFU() {
+  const badge = document.getElementById('sb-fu-badge')
+  if (!badge) return
+  const n = contarFusUrgentes()
+  if (n > 0) {
+    badge.textContent = n
+    badge.style.display = 'inline'
+    badge.title = n + ' follow-up' + (n > 1 ? 's' : '') + ' pendente' + (n > 1 ? 's' : '')
+  } else {
+    badge.style.display = 'none'
+  }
+}
+
+/* Notificação do browser (se o usuário concedeu permissão) */
+function pedirPermissaoNotificacao() {
+  if (!('Notification' in window)) return
+  if (Notification.permission === 'default') {
+    Notification.requestPermission()
+  }
+}
+
+/* Ao abrir o app: se há follow-ups urgentes, mostra toast */
+function verificarFollowUps() {
+  atualizarBadgeFU()
+  const urgentes = soPropostas().filter(h => fuEstado(h) === 'hoje')
+  const vencidos = soPropostas().filter(h => fuEstado(h) === 'vencido')
+  if (urgentes.length > 0) {
+    const plural = urgentes.length > 1
+    toast(`${urgentes.length} follow-up${plural?'s':''} para hoje — veja em Minhas Propostas`)
+  } else if (vencidos.length > 0) {
+    const plural = vencidos.length > 1
+    toast(`${vencidos.length} follow-up${plural?'s':''} atrasado${plural?'s':''} — veja em Minhas Propostas`, true)
+  }
 }
 
 /* ── TOAST ── */
