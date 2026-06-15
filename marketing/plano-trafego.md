@@ -356,3 +356,25 @@ Auditoria do Gerenciador de Eventos + ajustes de checkout e verba executados.
 ### Próxima leitura: 22/06/2026
 Reler CTR, custo por InitiateCheckout, CPM e primeiras vendas com a landing nova rodando.
 Critério de corte: pausar se CPA > R$150 após 5 compras registradas.
+
+---
+
+## Checkpoints do teste de validação (definidos 15/06/2026)
+
+Rampa de verba: 15/06 R$25 → 16/06 R$30 → 17/06 R$35 → 18/06 R$40 → 19/06 R$45 → 20/06+ R$50/dia.
+Regra: nenhuma edição significativa (criativo/público/posicionamento) durante o teste. Só sobe verba.
+
+| Checkpoint | Data | Gasto acum. aprox. | Decisão |
+|---|---|---|---|
+| 🚦 CP1 — Sinal de vida | 21/06 | ~R$275-300 | 1+ venda OU início de pagamento → segue. **Zero sinal → PAUSA e diagnostica (stop-loss).** |
+| 🚦 CP2 — Resposta parcial | 28/06 | ~R$625 | Calcular CPA real. CPA < R$134 → saudável, continua. CPA > R$150 com 5+ vendas → mata. |
+| ✅ CP3 — Resposta confiável | 05/07 | ~R$975 | CPA estável → decidir escalar forte ou encerrar com diagnóstico. |
+
+**Stop-loss absoluto:** não passar de ~R$300 sem NENHUM sinal (venda ou add-payment) no CP1.
+
+**Lembretes (sessão sem agendador automático — Guilherme deve acionar):**
+- 22/06 → leitura CP1 + CTR/custo por checkout/CPM com landing nova
+- 28/06 → leitura CP2 (CPA)
+- 05/07 → leitura CP3 (decisão final de escala)
+
+Sugestão de relatório: filtrar período 15/06 em diante (isolar efeito das mudanças), não o histórico completo.
