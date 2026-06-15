@@ -318,3 +318,91 @@ c) **Aumentar o orçamento diário para no mínimo R$30/dia (R$900/mês).** Abai
 1. Abrir Gerenciador de Eventos do Meta → verificar se o evento `Purchase` está chegando com dados da Hotmart. Se não estiver, esse é o problema número 1 a resolver.
 2. Subir o orçamento diário da campanha para R$30/dia (mínimo) ou R$50/dia (recomendado). Não fazer nenhuma outra edição além dessa — deixar o algoritmo correr por 7 dias sem interrupção.
 3. Confirmar aprovação antes de qualquer mudança no evento de otimização ou criação de novo conjunto.
+
+---
+
+## Log de execução — 15/06/2026
+
+Auditoria do Gerenciador de Eventos + ajustes de checkout e verba executados.
+
+### Rastreamento (Gerenciador de Eventos) — RESOLVIDO/ESCLARECIDO
+- 426 eventos nos últimos 28 dias; dados fluindo normalmente.
+- Domínios enviando eventos, todos "Permitido": `usecorretorpro.vercel.app` (376),
+  `guilhermeassisp27-code.github.io` (16), `pay.hotmart.com` (7).
+- **Purchase ESTÁ sendo rastreado** (fonte: pay.hotmart.com). O alerta do Meta é de
+  *qualidade* dos dados de preço do Purchase (falta value/currency corretos), não de ausência.
+- Decisão: NÃO mudar otimização para Purchase ainda — volume insuficiente (~50 compras/sem
+  exigidas). Manter otimização em InitiateCheckout por ora. Arrumar preço do Purchase na
+  Hotmart é higiene de baixa prioridade.
+
+### Checkout Hotmart — OTIMIZADO
+- Pix confirmado ativo.
+- Campos: Nome + Email + Celular (mantido, fricção baixa).
+- Suporte: Email + WhatsApp ligados (sinal de confiança).
+- Pagamento híbrido (recuperador de vendas) ligado.
+- Cupom de desconto desligado (remove fricção de "procurar código").
+- Preço parcelado em destaque mantido ligado.
+- Página de obrigado: mantida na Hotmart (não quebrar fluxo webhook → Supabase).
+
+### Landing — OTIMIZADA (PR #31 mergeada, em produção)
+- Message match com o anúncio, prova social honesta, vídeo demo, âncora de ROI, bloco de confiança.
+
+### Verba — EM ESCALONAMENTO
+- 15/06: R$20 → **R$25/dia** (feito).
+- 16/06: subir para R$30/dia.
+- Meta: chegar a R$50/dia em degraus de ~20-30% (não resetar aprendizado).
+- NÃO fazer nenhuma outra edição significativa por 7 dias.
+
+### Próxima leitura: 22/06/2026
+Reler CTR, custo por InitiateCheckout, CPM e primeiras vendas com a landing nova rodando.
+Critério de corte: pausar se CPA > R$150 após 5 compras registradas.
+
+---
+
+## Checkpoints do teste de validação (definidos 15/06/2026)
+
+Rampa de verba: 15/06 R$25 → 16/06 R$30 → 17/06 R$35 → 18/06 R$40 → 19/06 R$45 → 20/06+ R$50/dia.
+Regra: nenhuma edição significativa (criativo/público/posicionamento) durante o teste. Só sobe verba.
+
+| Checkpoint | Data | Gasto acum. aprox. | Decisão |
+|---|---|---|---|
+| 🚦 CP1 — Sinal de vida | 21/06 | ~R$275-300 | 1+ venda OU início de pagamento → segue. **Zero sinal → PAUSA e diagnostica (stop-loss).** |
+| 🚦 CP2 — Resposta parcial | 28/06 | ~R$625 | Calcular CPA real. CPA < R$134 → saudável, continua. CPA > R$150 com 5+ vendas → mata. |
+| ✅ CP3 — Resposta confiável | 05/07 | ~R$975 | CPA estável → decidir escalar forte ou encerrar com diagnóstico. |
+
+**Stop-loss absoluto:** não passar de ~R$300 sem NENHUM sinal (venda ou add-payment) no CP1.
+
+**Lembretes (sessão sem agendador automático — Guilherme deve acionar):**
+- 22/06 → leitura CP1 + CTR/custo por checkout/CPM com landing nova
+- 28/06 → leitura CP2 (CPA)
+- 05/07 → leitura CP3 (decisão final de escala)
+
+Sugestão de relatório: filtrar período 15/06 em diante (isolar efeito das mudanças), não o histórico completo.
+
+---
+
+## Expectativa de vendas registrada (cenário conservador — 15/06/2026)
+
+Base: investimento de referência ~R$975 em ~3 semanas (rampa R$25→R$50/dia).
+
+| Premissa | Valor conservador |
+|---|---|
+| Custo por clique no checkout (InitiateCheckout) | ~R$30 (hoje R$36) |
+| Cliques de checkout esperados no período | ~32 |
+| Conversão checkout → compra | 10-15% (8% no piso) |
+| **Vendas esperadas** | **3 a 5** (piso pessimista: 2-3) |
+| **CPA conservador** | **~R$200-325 por venda** |
+
+**Implicação econômica (honesta):**
+- Plano mensal (R$67): NÃO se paga na 1ª compra — só com retenção 3-4+ meses.
+- Plano anual (R$497): positivo de imediato — 1 venda anual cobre ~1,5-2 CPAs.
+- O teste serve para DESCOBRIR se vende e a que custo, não para lucrar de cara.
+
+**Ajuste no CP1 (21/06):** custo por venda conservador (~R$300) ≈ stop-loss (~R$300),
+então pode não haver venda fechada ainda no CP1 mesmo com funil saudável. No CP1 avaliar
+SINAIS DE AVANÇO (volume de checkout subindo, eventos add-payment, CTR e custo/checkout
+melhorando vs. baseline 09/06), não apenas vendas concluídas. Pausar só se tudo estiver parado.
+
+**Baseline para comparação (relatório 16/05-14/06):**
+4 InitiateCheckout · R$36,25 cada · R$145 gastos · 2.989 impressões · 1.825 alcance ·
+engajamento e conversão acima da média · 0 vendas.
