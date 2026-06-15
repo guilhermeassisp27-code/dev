@@ -1,0 +1,2333 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>CorretorPRO — Gerador de Propostas Imobiliárias</title>
+<meta name="description" content="Gere propostas imobiliárias profissionais em segundos. Personalizado com sua marca, CRECI e condições do imóvel. Para corretores que fecham mais.">
+<meta property="og:title" content="CorretorPRO — Propostas Imobiliárias Profissionais">
+<meta property="og:description" content="Propostas personalizadas com sua marca em menos de 60 segundos.">
+<meta property="og:type" content="website">
+<meta property="og:image" content="https://guilhermeassisp27-code.github.io/dev/og-image.png">
+<meta property="og:url" content="https://guilhermeassisp27-code.github.io/dev/tool.html">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:image" content="https://guilhermeassisp27-code.github.io/dev/og-image.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --bg:#040D1C; --sb:#050E1B; --s1:#081526; --s2:#0E1E34; --s3:#132540;
+  --b:rgba(255,255,255,.07); --bm:rgba(255,255,255,.13);
+  --p:#4D7EFF; --ph:#3567E8; --ps:rgba(77,126,255,.12);
+  --t:#EEF2FF; --t2:#7B93B8; --t3:#3D5470;
+  --g:#22C55E; --gs:rgba(34,197,94,.12); --r:#EF4444;
+  --sw:240px; --th:60px; --rad:8px; --radl:12px;
+  --font:'Inter',sans-serif;
+}
+html{scroll-behavior:smooth}
+body{font-family:var(--font);background:var(--bg);color:var(--t);-webkit-font-smoothing:antialiased;min-height:100vh}
+
+/* ── SIDEBAR ── */
+.sidebar{position:fixed;left:0;top:0;width:var(--sw);height:100vh;background:var(--sb);border-right:1px solid var(--b);display:flex;flex-direction:column;z-index:100;transition:transform .25s ease}
+.sb-head{height:var(--th);padding:0 20px;display:flex;align-items:center;border-bottom:1px solid var(--b);flex-shrink:0}
+.sb-logo{font-size:17px;font-weight:800;letter-spacing:-.5px;color:var(--t);text-decoration:none}
+.sb-logo em{color:var(--p);font-style:normal}
+.sb-nav{flex:1;padding:10px 8px;overflow-y:auto;display:flex;flex-direction:column;gap:1px}
+.sb-sec{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.1em;color:var(--t3);padding:10px 10px 5px}
+.sb-item{display:flex;align-items:center;gap:10px;padding:9px 12px;border-radius:var(--rad);font-size:13px;font-weight:500;color:var(--t2);cursor:pointer;transition:background .15s,color .15s;border:none;background:none;width:100%;text-align:left;font-family:var(--font)}
+.sb-item:hover{background:rgba(255,255,255,.04);color:var(--t)}
+.sb-item.active{background:var(--ps);color:var(--p)}
+.sb-item.active svg{color:var(--p)}
+.sb-item svg{flex-shrink:0;color:var(--t3)}
+.sb-foot{padding:10px;border-top:1px solid var(--b);flex-shrink:0}
+.sb-user{display:flex;align-items:center;gap:10px;padding:8px 10px;border-radius:var(--rad);cursor:pointer;transition:background .15s;background:none;border:none;width:100%;text-align:left}
+.sb-user:hover{background:rgba(255,255,255,.04)}
+.u-av{width:32px;height:32px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:700;color:#fff;flex-shrink:0;overflow:hidden}
+.u-av img{width:100%;height:100%;object-fit:cover;border-radius:50%}
+.u-name{font-size:13px;font-weight:600;color:var(--t);line-height:1.2;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:140px}
+.u-plan{font-size:11px;color:var(--t3)}
+
+/* ── MAIN ── */
+.main{margin-left:var(--sw);min-height:100vh;display:flex;flex-direction:column}
+.topbar{position:sticky;top:0;z-index:50;background:rgba(4,13,28,.93);backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px);border-bottom:1px solid var(--b);height:var(--th);display:flex;align-items:center;padding:0 32px;gap:12px;flex-shrink:0}
+.crumb{display:flex;align-items:center;gap:6px;font-size:13px;color:var(--t3)}
+.crumb b{color:var(--t2);font-weight:500}
+.crumb svg{color:var(--t3)}
+.topbar-right{margin-left:auto;display:flex;gap:8px}
+
+/* ── PAGE ── */
+.page{padding:32px 40px;max-width:880px;width:100%}
+.ph{margin-bottom:28px}
+.ph h1{font-size:22px;font-weight:800;letter-spacing:-.6px;margin-bottom:6px}
+.ph p{font-size:14px;color:var(--t2)}
+
+/* ── VIEWS ── */
+.view{display:none}
+.view.active{display:block}
+
+/* ── BANNER ONBOARDING ── */
+.banner{
+  background:linear-gradient(135deg,rgba(77,126,255,.12),rgba(77,126,255,.05));
+  border:1px solid rgba(77,126,255,.25);
+  border-radius:var(--radl);padding:18px 22px;margin-bottom:20px;
+  display:flex;align-items:center;gap:14px;
+}
+.banner svg{flex-shrink:0;color:var(--p)}
+.banner p{font-size:13px;color:var(--t2);line-height:1.5}
+.banner b{color:var(--t)}
+.banner a{color:var(--p);cursor:pointer;font-weight:600;text-decoration:none}
+.banner a:hover{text-decoration:underline}
+#banner-profile{display:none}
+#banner-profile.show{display:flex}
+
+/* ── CARD ── */
+.card{background:var(--s1);border:1px solid var(--b);border-radius:var(--radl);padding:22px;margin-bottom:14px}
+.card-t{font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.09em;color:var(--t3);margin-bottom:16px;display:flex;align-items:center;gap:8px}
+.card-t::after{content:'';flex:1;height:1px;background:var(--b)}
+
+/* ── FORM GRID ── */
+.fg{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.fg1{grid-template-columns:1fr}
+.fg3{grid-template-columns:1fr 1fr 1fr}
+@media(max-width:600px){.fg,.fg3{grid-template-columns:1fr}}
+.f2{grid-column:span 2}
+.f3{grid-column:span 3}
+@media(max-width:600px){.f2,.f3{grid-column:span 1}}
+.field{display:flex;flex-direction:column;gap:5px}
+.lbl{font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.07em;color:var(--t2)}
+.req{color:var(--r);margin-left:2px}
+.hint{font-size:11px;color:var(--t3);margin-top:2px}
+
+.inp,.sel,.txa{width:100%;background:var(--s2);border:1px solid rgba(255,255,255,.09);border-radius:var(--rad);padding:9px 13px;font-size:14px;color:var(--t);font-family:var(--font);outline:none;transition:border-color .15s,box-shadow .15s;-webkit-appearance:none}
+.inp:focus,.sel:focus,.txa:focus{border-color:rgba(77,126,255,.5);box-shadow:0 0 0 3px rgba(77,126,255,.08)}
+.inp::placeholder,.txa::placeholder{color:var(--t3)}
+.sel{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='11' height='11' viewBox='0 0 24 24' fill='none' stroke='%233D5470' stroke-width='2'%3E%3Cpolyline points='6 9 12 15 18 9'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 11px center;padding-right:32px;cursor:pointer}
+.sel option{background:var(--s2);color:var(--t)}
+.txa{resize:vertical;min-height:80px;line-height:1.6}
+.pfx{position:relative}
+.pfx-l{position:absolute;left:11px;top:50%;transform:translateY(-50%);font-size:13px;color:var(--t3);pointer-events:none;font-weight:500}
+.pfx .inp{padding-left:28px}
+
+/* type-specific blocks */
+.type-block{display:none;margin-top:12px;padding-top:12px;border-top:1px solid var(--b)}
+.type-block.show{display:block}
+
+/* color picker */
+.color-row{display:flex;align-items:center;gap:10px}
+.color-swatch{width:36px;height:36px;border-radius:var(--rad);border:2px solid var(--bm);cursor:pointer;flex-shrink:0;transition:border-color .15s}
+.color-swatch:hover{border-color:var(--p)}
+input[type=color]{opacity:0;width:0;height:0;position:absolute}
+.color-presets{display:flex;gap:6px;flex-wrap:wrap}
+.preset{width:24px;height:24px;border-radius:50%;cursor:pointer;border:2px solid transparent;transition:border-color .15s,transform .15s}
+.preset:hover{transform:scale(1.15)}
+.preset.sel-p{border-color:var(--t)}
+
+/* logo upload */
+.logo-upload{display:flex;align-items:center;gap:12px}
+.logo-preview{width:52px;height:52px;border-radius:var(--rad);background:var(--s2);border:1px solid var(--b);display:flex;align-items:center;justify-content:center;overflow:hidden;flex-shrink:0}
+.logo-preview img{width:100%;height:100%;object-fit:contain}
+.logo-preview svg{color:var(--t3)}
+.logo-actions{display:flex;flex-direction:column;gap:6px}
+
+/* ── BUTTONS ── */
+.btn{display:inline-flex;align-items:center;gap:7px;padding:9px 16px;border-radius:var(--rad);font-size:13px;font-weight:600;font-family:var(--font);border:none;cursor:pointer;text-decoration:none;transition:all .15s;white-space:nowrap}
+.btn-primary{background:var(--p);color:#fff}
+.btn-primary:hover{background:var(--ph);box-shadow:0 4px 14px rgba(77,126,255,.3)}
+.btn-green{background:var(--g);color:#fff}
+.btn-green:hover{background:#16a34a;box-shadow:0 4px 14px rgba(34,197,94,.3)}
+.btn-ghost{background:rgba(255,255,255,.06);color:var(--t2)}
+.btn-ghost:hover{background:rgba(255,255,255,.1);color:var(--t)}
+.btn-danger{background:rgba(239,68,68,.12);color:var(--r);border:1px solid rgba(239,68,68,.2)}
+.btn-danger:hover{background:rgba(239,68,68,.2)}
+.btn-sm{padding:6px 12px;font-size:12px}
+.btn-full{width:100%;justify-content:center}
+.btn:disabled{opacity:.4;cursor:not-allowed;pointer-events:none}
+
+.gen-btn{width:100%;padding:14px;background:linear-gradient(135deg,var(--p) 0%,#7C5CFC 100%);color:#fff;border:none;border-radius:var(--rad);font-size:15px;font-weight:700;font-family:var(--font);cursor:pointer;display:flex;align-items:center;justify-content:center;gap:10px;transition:opacity .2s,transform .15s;margin-top:4px}
+.gen-btn:hover{opacity:.88;transform:translateY(-1px)}
+.gen-btn:active{transform:translateY(0)}
+.gen-btn:disabled{opacity:.45;cursor:not-allowed;transform:none}
+
+/* ── DEMO HINT ── */
+.demo-row{display:flex;justify-content:flex-end;margin-bottom:8px}
+
+/* ── SKELETON ── */
+.skel{background:var(--s1);border:1px solid var(--b);border-radius:var(--radl);padding:24px;margin-top:20px;display:none}
+.skel.show{display:block}
+.skel-tag{font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.1em;color:var(--p);display:flex;align-items:center;gap:8px;margin-bottom:18px}
+.skel-dot{width:6px;height:6px;border-radius:50%;background:var(--p);animation:blink 1s infinite}
+@keyframes blink{0%,100%{opacity:1}50%{opacity:.2}}
+.skel-bar{height:11px;border-radius:5px;background:linear-gradient(90deg,var(--s2) 25%,var(--s3) 50%,var(--s2) 75%);background-size:200% 100%;animation:shimmer 1.4s linear infinite}
+@keyframes shimmer{0%{background-position:200% 0}100%{background-position:-200% 0}}
+.skel-group{display:flex;flex-direction:column;gap:8px;margin-bottom:14px}
+
+/* ── PROPOSTA OUTPUT ── */
+.proposta{background:var(--s1);border:1px solid var(--b);border-radius:var(--radl);overflow:hidden;margin-top:20px;display:none}
+.proposta.show{display:block}
+
+.prop-corretor{
+  display:flex;align-items:center;gap:16px;
+  padding:18px 24px;
+  background:var(--s2);
+  border-bottom:1px solid var(--b);
+}
+.prop-corretor-logo{width:48px;height:48px;border-radius:var(--rad);background:var(--s3);display:flex;align-items:center;justify-content:center;overflow:hidden;flex-shrink:0}
+.prop-corretor-logo img{width:100%;height:100%;object-fit:contain}
+.prop-corretor-info{flex:1}
+.prop-corretor-nome{font-size:14px;font-weight:700;margin-bottom:2px}
+.prop-corretor-creci{font-size:12px;color:var(--t2)}
+.prop-corretor-contato{font-size:12px;color:var(--t3);margin-top:2px}
+
+.prop-head{background:linear-gradient(135deg,rgba(77,126,255,.13),rgba(124,92,252,.06));border-bottom:1px solid rgba(77,126,255,.13);padding:20px 24px;display:flex;align-items:flex-start;justify-content:space-between;gap:12px}
+.prop-badge{display:inline-flex;align-items:center;gap:5px;font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.12em;color:var(--p);background:var(--ps);padding:3px 9px;border-radius:100px;margin-bottom:8px}
+.prop-badge-dot{width:5px;height:5px;border-radius:50%;background:var(--p)}
+.prop-h2{font-size:18px;font-weight:800;letter-spacing:-.4px;margin-bottom:3px}
+.prop-sub{font-size:12px;color:var(--t2)}
+.prop-tags{display:flex;gap:5px;flex-wrap:wrap;align-items:flex-start}
+.prop-tag{background:rgba(255,255,255,.06);border:1px solid var(--b);border-radius:5px;padding:3px 9px;font-size:11px;font-weight:600;color:var(--t2);white-space:nowrap}
+
+.prop-imovel{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;padding:16px 24px;border-bottom:1px solid var(--b);background:rgba(255,255,255,.01)}
+@media(max-width:560px){.prop-imovel{grid-template-columns:1fr 1fr}}
+.prop-imovel-item{display:flex;flex-direction:column;gap:2px}
+.pii-label{font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:.09em;color:var(--t3)}
+.pii-val{font-size:13px;font-weight:600;color:var(--t2)}
+
+.prop-body{padding:20px 24px;display:flex;flex-direction:column;gap:18px}
+.prop-sec-title{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.1em;color:var(--t3);margin-bottom:8px;display:flex;align-items:center;gap:8px}
+.prop-sec-title::after{content:'';flex:1;height:1px;background:var(--b)}
+.prop-text{font-size:14px;color:var(--t2);line-height:1.8}
+
+.mods{display:grid;grid-template-columns:repeat(3,1fr);gap:9px}
+@media(max-width:560px){.mods{grid-template-columns:1fr}}
+.mod{background:var(--s2);border:1px solid var(--b);border-radius:var(--rad);padding:13px}
+.mod.hl{border-color:rgba(77,126,255,.3);background:linear-gradient(135deg,rgba(77,126,255,.08),rgba(77,126,255,.02))}
+.mod-label{font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:.09em;color:var(--t3);margin-bottom:5px}
+.mod-val{font-size:15px;font-weight:800;letter-spacing:-.4px;color:var(--t);margin-bottom:2px}
+.mod-note{font-size:11px;color:var(--t3);line-height:1.4}
+.mod-parcela{font-size:12px;font-weight:700;color:var(--p);margin-top:4px}
+
+/* ── SIMULAÇÃO SAC × PRICE ── */
+.sim{display:grid;grid-template-columns:1fr 1fr;gap:9px}
+@media(max-width:560px){.sim{grid-template-columns:1fr}}
+.sim-col{background:var(--s2);border:1px solid var(--b);border-radius:var(--rad);padding:13px}
+.sim-col-head{font-size:12px;font-weight:800;color:var(--t);margin-bottom:8px;display:flex;align-items:baseline;gap:6px;flex-wrap:wrap}
+.sim-col-head span{font-size:9px;font-weight:600;text-transform:uppercase;letter-spacing:.06em;color:var(--t3)}
+.sim-row{display:flex;justify-content:space-between;align-items:center;gap:10px;font-size:12px;color:var(--t2);padding:6px 0;border-top:1px solid var(--b)}
+.sim-row:first-of-type{border-top:none}
+.sim-row b{font-size:13px;font-weight:800;color:var(--t);letter-spacing:-.3px;white-space:nowrap}
+.sim-row.tot b{color:var(--p)}
+.sim-note{font-size:10.5px;color:var(--t3);margin-top:8px;line-height:1.55}
+
+.prop-foot{padding:14px 24px;border-top:1px solid var(--b);display:flex;flex-wrap:wrap;gap:7px;align-items:center}
+
+/* ── HISTORY VIEW ── */
+.hist-empty{text-align:center;padding:60px 20px}
+.hist-empty svg{color:var(--t3);margin-bottom:16px}
+.hist-empty h3{font-size:17px;font-weight:700;margin-bottom:8px;color:var(--t2)}
+.hist-empty p{font-size:14px;color:var(--t3)}
+.hist-list{display:flex;flex-direction:column;gap:10px}
+.hist-card{background:var(--s1);border:1px solid var(--b);border-radius:var(--radl);padding:16px 20px;display:flex;align-items:center;gap:14px;transition:border-color .15s}
+.hist-card:hover{border-color:var(--bm)}
+.hist-tipo{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:var(--p);background:var(--ps);padding:3px 8px;border-radius:5px;flex-shrink:0}
+.hist-info{flex:1;min-width:0}
+.hist-cliente{font-size:14px;font-weight:700;margin-bottom:2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.hist-imovel{font-size:12px;color:var(--t2);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.hist-meta{font-size:11px;color:var(--t3);margin-top:3px}
+.hist-valor{font-size:14px;font-weight:700;color:var(--t);flex-shrink:0;text-align:right}
+.hist-actions{display:flex;gap:6px;flex-shrink:0}
+
+/* ── HISTORY SEARCH ── */
+.hist-search-wrap{position:relative;margin-bottom:10px}
+.hist-search-ico{position:absolute;left:11px;top:50%;transform:translateY(-50%);color:var(--t3);pointer-events:none}
+.hist-search{width:100%;background:var(--s2);border:1px solid rgba(255,255,255,.09);border-radius:var(--rad);padding:9px 13px 9px 36px;font-size:14px;color:var(--t);font-family:var(--font);outline:none;transition:border-color .15s,box-shadow .15s}
+.hist-search:focus{border-color:rgba(77,126,255,.5);box-shadow:0 0 0 3px rgba(77,126,255,.08)}
+.hist-search::placeholder{color:var(--t3)}
+.hist-count{font-size:12px;color:var(--t3);margin-bottom:12px}
+
+/* ── CRM STATUS ── */
+.crm-painel{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-bottom:14px}
+@media(max-width:560px){.crm-painel{grid-template-columns:repeat(2,1fr)}}
+.crm-stat{background:var(--s1);border:1px solid var(--b);border-radius:var(--rad);padding:10px 12px;cursor:pointer;transition:border-color .15s,background .15s;text-align:left}
+.crm-stat:hover{border-color:var(--bm)}
+.crm-stat.ativo{border-color:var(--crm-cor,var(--p))}
+.crm-stat-num{font-size:20px;font-weight:800;letter-spacing:-.5px;color:var(--crm-cor,var(--t))}
+.crm-stat-label{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:var(--t3);margin-top:2px}
+.crm-filtros{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:14px;align-items:center}
+.crm-filtro-btn{display:inline-flex;align-items:center;gap:5px;padding:5px 11px;border-radius:100px;font-size:11px;font-weight:700;border:1px solid var(--b);background:none;color:var(--t2);cursor:pointer;font-family:var(--font);transition:all .15s}
+.crm-filtro-btn:hover{border-color:var(--bm);color:var(--t)}
+.crm-filtro-btn.ativo{color:#fff}
+
+/* Status badges no card */
+.hist-status{display:inline-flex;align-items:center;gap:4px;padding:3px 8px;border-radius:5px;font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.06em;cursor:pointer;border:none;font-family:var(--font);transition:opacity .15s;flex-shrink:0}
+.hist-status:hover{opacity:.8}
+.hist-status[data-s="nova"]      {background:rgba(77,126,255,.15);color:#7BA3FF}
+.hist-status[data-s="enviada"]   {background:rgba(234,179,8,.13);color:#EAB308}
+.hist-status[data-s="negociando"]{background:rgba(249,115,22,.13);color:#F97316}
+.hist-status[data-s="fechada"]   {background:rgba(34,197,94,.13);color:#22C55E}
+.hist-status[data-s="perdida"]   {background:rgba(239,68,68,.1);color:#EF4444}
+
+/* Dropdown de status */
+.status-menu{position:absolute;background:var(--s2);border:1px solid var(--bm);border-radius:var(--rad);padding:4px;z-index:50;min-width:160px;box-shadow:0 8px 24px rgba(0,0,0,.4)}
+.status-opt{display:flex;align-items:center;gap:8px;padding:7px 10px;border-radius:5px;font-size:12px;font-weight:600;cursor:pointer;color:var(--t2);border:none;background:none;width:100%;text-align:left;font-family:var(--font);transition:background .1s}
+.status-opt:hover{background:rgba(255,255,255,.06);color:var(--t)}
+.status-opt-dot{width:7px;height:7px;border-radius:50%;flex-shrink:0}
+
+/* Hist-card: ajuste para acomodar status */
+.hist-card{position:relative}
+.hist-main-row{display:flex;align-items:center;gap:14px;width:100%}
+.hist-bottom-row{display:flex;align-items:center;gap:8px;margin-top:8px;padding-top:8px;border-top:1px solid var(--b)}
+.hist-bottom-row .hist-meta{margin-top:0;flex:1}
+
+/* Painel vazio de filtro */
+.crm-vazio-filtro{text-align:center;padding:40px 20px;color:var(--t3);font-size:13px}
+
+/* ── REGISTRO DE VISITA ── */
+.termo-decl{font-size:14px;line-height:1.85;color:var(--t2);text-align:justify}
+.termo-decl b{color:var(--t)}
+.sig-area{margin-top:34px;display:grid;grid-template-columns:1fr 1fr;gap:28px}
+@media(max-width:560px){.sig-area{grid-template-columns:1fr;gap:34px}}
+.sig-box{text-align:center;padding-top:46px}
+.sig-line{border-top:1px solid var(--bm);padding-top:8px}
+.sig-nome{font-size:13px;font-weight:700;color:var(--t)}
+.sig-papel{font-size:11px;color:var(--t3);margin-top:2px}
+.sig-localdata{text-align:right;font-size:13px;color:var(--t2);margin-top:26px}
+.sig-test-title{font-size:10px;font-weight:700;letter-spacing:.09em;text-transform:uppercase;color:var(--t3);margin-top:30px}
+.sig-area.test .sig-box{padding-top:36px}
+.sig-area.test .sig-nome{font-weight:500;color:var(--t3);font-size:11px}
+.visita-info-banner{display:flex;gap:10px;align-items:flex-start;background:rgba(34,197,94,.07);border:1px solid rgba(34,197,94,.2);border-radius:var(--rad);padding:12px 14px;margin-bottom:18px;font-size:12.5px;color:var(--t2);line-height:1.6}
+.visita-info-banner svg{flex-shrink:0;color:var(--g,#22C55E);margin-top:2px}
+
+/* ── CONFIG VIEW ── */
+.cfg-preview{background:var(--s2);border:1px solid var(--b);border-radius:var(--radl);padding:14px 18px;margin-bottom:14px;display:flex;align-items:center;gap:12px}
+.cfg-preview-logo{width:40px;height:40px;border-radius:var(--rad);background:var(--s3);display:flex;align-items:center;justify-content:center;overflow:hidden;flex-shrink:0}
+.cfg-preview-logo img{width:100%;height:100%;object-fit:contain}
+.cfg-preview-name{font-size:14px;font-weight:700}
+.cfg-preview-creci{font-size:11px;color:var(--t2)}
+
+/* ── MOBILE ── */
+.mob-bar{display:none;position:fixed;top:0;left:0;right:0;z-index:110;height:56px;background:var(--sb);border-bottom:1px solid var(--b);padding:0 14px;align-items:center;gap:10px}
+.mob-logo{font-size:16px;font-weight:800;letter-spacing:-.4px}
+.mob-logo em{color:var(--p);font-style:normal}
+.ham{background:none;border:none;cursor:pointer;color:var(--t2);padding:6px;display:flex;align-items:center;border-radius:var(--rad)}
+.ham:hover{background:rgba(255,255,255,.06)}
+.overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.65);z-index:95;backdrop-filter:blur(4px)}
+.overlay.on{display:block}
+
+@media(max-width:900px){
+  .sidebar{transform:translateX(-100%)}
+  .sidebar.open{transform:translateX(0)}
+  .main{margin-left:0;padding-top:56px}
+  .topbar{display:none}
+  .mob-bar{display:flex}
+  .page{padding:18px 14px}
+  .prop-corretor{padding:14px}
+  .prop-head,.prop-body,.prop-foot,.prop-imovel{padding-left:14px;padding-right:14px}
+}
+
+/* ── TOAST ── */
+.toast{position:fixed;bottom:18px;right:18px;z-index:200;background:var(--s3);border:1px solid var(--bm);border-radius:var(--rad);padding:10px 16px;font-size:13px;font-weight:500;color:var(--t);box-shadow:0 4px 20px rgba(0,0,0,.4);display:flex;align-items:center;gap:8px;opacity:0;transform:translateY(6px);transition:all .22s ease;pointer-events:none}
+.toast.on{opacity:1;transform:translateY(0)}
+.toast.err{background:#3d0c0c;border-color:rgba(239,68,68,.35)}
+.toast.err .tok{stroke:#EF4444}
+.tok{color:var(--g)}
+
+/* ── PRINT: proposal only ── */
+@media print{
+  .sidebar,.mob-bar,.topbar,.card,.gen-btn,.skel,.prop-foot,.toast,.demo-row,.banner,#view-history,#view-config,.view:not(.active),.no-print,.visita-info-banner,.ph{display:none!important}
+  .termo-decl{color:#333!important}
+  .termo-decl b{color:#000!important}
+  .sig-line{border-top-color:#999!important}
+  .sig-nome{color:#000!important}
+  .sig-papel{color:#666!important}
+  .sig-localdata{color:#333!important}
+  .sig-test-title{color:#666!important}
+  .sig-area.test .sig-nome{color:#444!important}
+  body,html{background:#fff!important;color:#000!important}
+  .main{margin-left:0!important;padding-top:0!important}
+  .page{padding:0!important;max-width:100%!important}
+  .proposta{display:block!important;border:none!important;box-shadow:none!important}
+  .prop-corretor,.prop-head,.prop-body,.prop-imovel{background:#fff!important;border-color:#e5e7eb!important}
+  .prop-corretor-nome,.prop-h2,.pii-val,.mod-val,.prop-h2{color:#000!important}
+  .prop-corretor-creci,.prop-corretor-contato,.pii-label,.mod-label,.prop-sec-title,.prop-sub,.prop-tag{color:#666!important}
+  .prop-text,.mod-note{color:#333!important}
+  .mod{background:#f9fafb!important;border-color:#e5e7eb!important}
+  .mod.hl{border-color:#3b82f6!important;background:#eff6ff!important}
+  .mod-val{color:#1d40ae!important}
+  .sim-col{background:#f9fafb!important;border-color:#e5e7eb!important}
+  .sim-col-head,.sim-row b{color:#000!important}
+  .sim-row,.sim-note{color:#444!important}
+  .sim-row.tot b{color:#1d40ae!important}
+  .prop-badge{background:#eff6ff!important;color:#1d40ae!important}
+  .prop-head{background:linear-gradient(135deg,#eff6ff,#f0fdf4)!important;border-bottom-color:#bfdbfe!important}
+}
+</style>
+</head>
+<body>
+
+<div id="auth-loading" style="position:fixed;inset:0;background:#040D1C;z-index:9999;display:flex;align-items:center;justify-content:center;flex-direction:column;gap:12px">
+  <div style="font-size:19px;font-weight:800;letter-spacing:-.5px;color:#EEF2FF">Corretor<span style="color:#4D7EFF">PRO</span></div>
+  <div style="font-size:12px;color:#3D5470;letter-spacing:.05em">Verificando acesso...</div>
+</div>
+
+<div class="overlay" id="overlay" onclick="closeSidebar()"></div>
+
+<div class="mob-bar" role="banner">
+  <button class="ham" onclick="openSidebar()" aria-label="Abrir menu">
+    <svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
+  </button>
+  <div class="mob-logo">Corretor<em>PRO</em></div>
+</div>
+
+<aside class="sidebar" id="sidebar" aria-label="Menu lateral">
+  <div class="sb-head">
+    <a href="#" class="sb-logo" onclick="showView('form');return false">Corretor<em>PRO</em></a>
+  </div>
+  <nav class="sb-nav" aria-label="Navegação">
+    <div class="sb-sec">Propostas</div>
+    <button class="sb-item active" data-view="form" onclick="showView('form')">
+      <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+      Nova Proposta
+    </button>
+    <button class="sb-item" data-view="history" onclick="showView('history')">
+      <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
+      Minhas Propostas
+      <span class="sb-badge" id="sb-count" style="margin-left:auto;background:var(--ps);color:var(--p);font-size:10px;font-weight:700;padding:2px 7px;border-radius:100px;display:none"></span>
+    </button>
+    <div class="sb-sec">Documentos</div>
+    <button class="sb-item" data-view="visita" onclick="showView('visita')">
+      <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 01-2 2H5a2 2 0 01-2-2V5a2 2 0 012-2h11"/></svg>
+      Registro de Visita
+      <span class="sb-badge" id="sb-count-visita" style="margin-left:auto;background:var(--ps);color:var(--p);font-size:10px;font-weight:700;padding:2px 7px;border-radius:100px;display:none"></span>
+    </button>
+    <div class="sb-sec">Conta</div>
+    <button class="sb-item" data-view="config" onclick="showView('config')">
+      <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 00.33 1.82l.06.06a2 2 0 010 2.83 2 2 0 01-2.83 0l-.06-.06a1.65 1.65 0 00-1.82-.33 1.65 1.65 0 00-1 1.51V21a2 2 0 01-2 2 2 2 0 01-2-2v-.09A1.65 1.65 0 009 19.4a1.65 1.65 0 00-1.82.33l-.06.06a2 2 0 01-2.83 0 2 2 0 010-2.83l.06-.06A1.65 1.65 0 004.68 15a1.65 1.65 0 00-1.51-1H3a2 2 0 01-2-2 2 2 0 012-2h.09A1.65 1.65 0 004.6 9a1.65 1.65 0 00-.33-1.82l-.06-.06a2 2 0 010-2.83 2 2 0 012.83 0l.06.06A1.65 1.65 0 009 4.68a1.65 1.65 0 001-1.51V3a2 2 0 012-2 2 2 0 012 2v.09a1.65 1.65 0 001 1.51 1.65 1.65 0 001.82-.33l.06-.06a2 2 0 012.83 0 2 2 0 010 2.83l-.06.06A1.65 1.65 0 0019.4 9a1.65 1.65 0 001.51 1H21a2 2 0 012 2 2 2 0 01-2 2h-.09a1.65 1.65 0 00-1.51 1z"/></svg>
+      Configurações
+    </button>
+  </nav>
+  <div class="sb-foot">
+    <button class="sb-user" onclick="showView('config')" aria-label="Ir para configurações">
+      <div class="u-av" id="sb-av" style="background:var(--p)">C</div>
+      <div style="min-width:0">
+        <div class="u-name" id="sb-nome">Configure seu perfil</div>
+        <div class="u-plan" id="sb-plan">CorretorPRO</div>
+      </div>
+    </button>
+    <button class="sb-item" onclick="sair()" style="margin-top:2px" title="Sair da conta">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 21H5a2 2 0 01-2-2V5a2 2 0 012-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
+      Sair
+    </button>
+  </div>
+</aside>
+
+<div class="main">
+  <div class="topbar">
+    <div class="crumb">
+      <span id="crumb-root">Propostas</span>
+      <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 18 15 12 9 6"/></svg>
+      <b id="crumb-page">Nova Proposta</b>
+    </div>
+    <div class="topbar-right">
+      <button class="btn btn-ghost btn-sm" onclick="carregarExemplo()" id="btn-exemplo" title="Preencher com dados de exemplo">
+        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="5 3 19 12 5 21 5 3"/></svg>
+        Carregar exemplo
+      </button>
+      <button class="btn btn-ghost btn-sm" onclick="resetForm()">
+        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="1 4 1 10 7 10"/><path d="M3.51 15a9 9 0 102.13-9.36L1 10"/></svg>
+        Limpar
+      </button>
+    </div>
+  </div>
+
+  <main class="page">
+
+    <!-- ── BANNER PROFILE ── -->
+    <div class="banner" id="banner-profile">
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+      <p><b>Seu perfil ainda não está configurado.</b> Configure seu nome, CRECI e logo para que a proposta saia com a sua marca. <a onclick="showView('config')">Configurar agora</a></p>
+    </div>
+
+    <!-- ══════════════════ VIEW: NOVA PROPOSTA ══════════════════ -->
+    <div class="view active" id="view-form">
+      <div class="ph">
+        <h1>Nova Proposta Comercial</h1>
+        <p>Preencha os dados do cliente e do imóvel para gerar a proposta com sua marca.</p>
+      </div>
+
+      <div class="demo-row">
+        <button class="btn btn-ghost btn-sm" onclick="carregarExemplo()">
+          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="5 3 19 12 5 21 5 3"/></svg>
+          Ver exemplo preenchido
+        </button>
+      </div>
+
+      <form id="form" onsubmit="gerarProposta(event)" novalidate>
+
+        <div class="card">
+          <div class="card-t">Cliente</div>
+          <div class="fg fg1">
+            <div class="field">
+              <label class="lbl" for="f-cliente">Nome do cliente <span class="req">*</span></label>
+              <input id="f-cliente" type="text" class="inp" placeholder="Ex: João Silva" required autocomplete="name">
+            </div>
+          </div>
+        </div>
+
+        <div class="card">
+          <div class="card-t">Imóvel</div>
+          <div class="fg">
+            <div class="field">
+              <label class="lbl" for="f-tipo-imovel">Tipo do imóvel <span class="req">*</span></label>
+              <select id="f-tipo-imovel" class="sel" required>
+                <option value="" disabled selected>Selecione</option>
+                <option>Apartamento</option>
+                <option>Casa</option>
+                <option>Terreno</option>
+                <option>Sala Comercial</option>
+                <option>Galpão</option>
+                <option>Cobertura</option>
+                <option>Flat / Studio</option>
+              </select>
+            </div>
+            <div class="field">
+              <label class="lbl" for="f-tipo-neg">Tipo de negociação <span class="req">*</span></label>
+              <select id="f-tipo-neg" class="sel" required onchange="atualizarTipoNeg()">
+                <option value="" disabled selected>Selecione</option>
+                <option>Compra</option>
+                <option>Locação</option>
+                <option>Permuta</option>
+              </select>
+            </div>
+            <div class="field f2">
+              <label class="lbl" for="f-end">Endereço <span class="req">*</span></label>
+              <input id="f-end" type="text" class="inp" placeholder="Ex: Av. Paulista, 1000 — Bela Vista, São Paulo, SP" required>
+            </div>
+            <div class="field">
+              <label class="lbl" for="f-area">Área (m²)</label>
+              <input id="f-area" type="number" class="inp" placeholder="78" min="1" step="0.5">
+            </div>
+            <div class="field">
+              <label class="lbl" for="f-dorms">Dormitórios</label>
+              <select id="f-dorms" class="sel">
+                <option value="">—</option>
+                <option>Studio</option>
+                <option>1</option><option>2</option><option>3</option>
+                <option>4</option><option>5+</option>
+              </select>
+            </div>
+            <div class="field">
+              <label class="lbl" for="f-vagas">Vagas de garagem</label>
+              <select id="f-vagas" class="sel">
+                <option value="">—</option>
+                <option>0</option><option>1</option><option>2</option>
+                <option>3</option><option>4+</option>
+              </select>
+            </div>
+            <div class="field">
+              <label class="lbl" for="f-valor">Valor <span class="req">*</span></label>
+              <div class="pfx">
+                <span class="pfx-l">R$</span>
+                <input id="f-valor" type="text" class="inp" placeholder="450.000" required inputmode="numeric">
+              </div>
+            </div>
+          </div>
+
+          <!-- COMPRA específico -->
+          <div class="type-block" id="blk-compra">
+            <div class="fg">
+              <div class="field">
+                <label class="lbl" for="f-prazo">Prazo financiamento</label>
+                <select id="f-prazo" class="sel">
+                  <option value="120">10 anos (120 meses)</option>
+                  <option value="180">15 anos (180 meses)</option>
+                  <option value="240">20 anos (240 meses)</option>
+                  <option value="300" selected>25 anos (300 meses)</option>
+                  <option value="360">30 anos (360 meses)</option>
+                </select>
+              </div>
+              <div class="field">
+                <label class="lbl" for="f-taxa">Taxa de juros (% a.a.)</label>
+                <input id="f-taxa" type="number" class="inp" placeholder="10.5" value="10.5" min="1" max="30" step="0.1">
+                <span class="hint">Ref: Caixa ~10,5% a.a. (SBPE/2025)</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- LOCAÇÃO específico -->
+          <div class="type-block" id="blk-locacao">
+            <div class="fg">
+              <div class="field">
+                <label class="lbl" for="f-garantia">Tipo de garantia</label>
+                <select id="f-garantia" class="sel">
+                  <option value="Fiador">Fiador</option>
+                  <option value="Depósito caução (3 meses)">Depósito caução (3 meses)</option>
+                  <option value="Seguro fiança">Seguro fiança</option>
+                  <option value="Título de capitalização">Título de capitalização</option>
+                </select>
+              </div>
+            </div>
+          </div>
+
+          <!-- PERMUTA específico -->
+          <div class="type-block" id="blk-permuta">
+            <div class="fg">
+              <div class="field">
+                <label class="lbl" for="f-complem">Complemento em dinheiro (opcional)</label>
+                <div class="pfx">
+                  <span class="pfx-l">R$</span>
+                  <input id="f-complem" type="text" class="inp" placeholder="50.000" inputmode="numeric">
+                </div>
+                <span class="hint">Deixe vazio para permuta total</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="card">
+          <div class="card-t">Condições e Observações</div>
+          <div class="fg fg1">
+            <div class="field">
+              <label class="lbl" for="f-cond">Condições especiais (opcional)</label>
+              <textarea id="f-cond" class="txa inp" placeholder="Ex: cliente tem FGTS disponível, aceita financiamento, documentação em dia, disponível para visita nos finais de semana..."></textarea>
+            </div>
+          </div>
+        </div>
+
+        <button type="submit" class="gen-btn" id="gen-btn">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>
+          Gerar Proposta
+        </button>
+      </form>
+
+      <!-- SKELETON -->
+      <div class="skel" id="skel">
+        <div class="skel-tag"><div class="skel-dot"></div>Gerando proposta...</div>
+        <div class="skel-group">
+          <div class="skel-bar" style="width:40%"></div>
+          <div class="skel-bar" style="width:65%"></div>
+        </div>
+        <div class="skel-group">
+          <div class="skel-bar" style="width:100%"></div>
+          <div class="skel-bar" style="width:88%"></div>
+          <div class="skel-bar" style="width:75%"></div>
+        </div>
+        <div class="skel-group">
+          <div class="skel-bar" style="width:100%"></div>
+          <div class="skel-bar" style="width:60%"></div>
+        </div>
+      </div>
+
+      <!-- PROPOSTA GERADA -->
+      <div class="proposta" id="proposta">
+
+        <!-- Cabeçalho do corretor -->
+        <div class="prop-corretor" id="pc-corretor">
+          <div class="prop-corretor-logo" id="pc-logo">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>
+          </div>
+          <div class="prop-corretor-info">
+            <div class="prop-corretor-nome" id="pc-nome">—</div>
+            <div class="prop-corretor-creci" id="pc-creci"></div>
+            <div class="prop-corretor-contato" id="pc-contato"></div>
+          </div>
+        </div>
+
+        <!-- Header da proposta -->
+        <div class="prop-head">
+          <div>
+            <div class="prop-badge"><div class="prop-badge-dot"></div>Proposta Comercial</div>
+            <h2 class="prop-h2" id="p-titulo"></h2>
+            <p class="prop-sub" id="p-sub"></p>
+          </div>
+          <div class="prop-tags">
+            <span class="prop-tag" id="p-tag-tipo"></span>
+            <span class="prop-tag" id="p-tag-data"></span>
+          </div>
+        </div>
+
+        <!-- Grid do imóvel -->
+        <div class="prop-imovel" id="p-imovel-grid"></div>
+
+        <!-- Corpo -->
+        <div class="prop-body">
+          <div>
+            <div class="prop-sec-title">Apresentação</div>
+            <p class="prop-text" id="p-intro"></p>
+          </div>
+          <div>
+            <div class="prop-sec-title" id="p-mods-title">Condições de Pagamento</div>
+            <div class="mods" id="p-mods"></div>
+          </div>
+          <div id="p-sim-sec">
+            <div class="prop-sec-title">Simulação de Financiamento · SAC × Price</div>
+            <div class="sim" id="p-simulacao"></div>
+            <p class="sim-note" id="p-sim-note"></p>
+          </div>
+          <div>
+            <div class="prop-sec-title">Sobre o Imóvel</div>
+            <p class="prop-text" id="p-sobre"></p>
+          </div>
+          <div>
+            <div class="prop-sec-title">Próximos Passos</div>
+            <p class="prop-text" id="p-proximos"></p>
+          </div>
+        </div>
+
+        <!-- Ações -->
+        <div class="prop-foot">
+          <button class="btn btn-ghost" onclick="copiar()">
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1"/></svg>
+            Copiar texto
+          </button>
+          <button class="btn btn-ghost" onclick="baixarPDF()">
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+            Baixar PDF
+          </button>
+          <button class="btn btn-ghost" onclick="compartilharWA()">
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 11.5a8.38 8.38 0 01-.9 3.8 8.5 8.5 0 01-7.6 4.7 8.38 8.38 0 01-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 01-.9-3.8 8.5 8.5 0 014.7-7.6 8.38 8.38 0 013.8-.9h.5a8.48 8.48 0 018 8v.5z"/></svg>
+            WhatsApp
+          </button>
+          <button class="btn btn-green" onclick="salvarProposta()">
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 21H5a2 2 0 01-2-2V5a2 2 0 012-2h11l5 5v11a2 2 0 01-2 2z"/><polyline points="17 21 17 13 7 13 7 21"/><polyline points="7 3 7 8 15 8"/></svg>
+            Salvar
+          </button>
+          <button class="btn btn-primary" onclick="novaProposta()">
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+            Nova proposta
+          </button>
+        </div>
+      </div>
+    </div><!-- /view-form -->
+
+    <!-- ══════════════════ VIEW: MINHAS PROPOSTAS ══════════════════ -->
+    <div class="view" id="view-history">
+      <div class="ph">
+        <h1>Minhas Propostas</h1>
+        <p>Acompanhe o andamento de cada negociação — do primeiro contato ao fechamento.</p>
+      </div>
+
+      <!-- CRM: painel de status (só aparece quando há propostas) -->
+      <div id="crm-painel" style="display:none">
+        <div class="crm-painel" id="crm-cards"></div>
+        <div class="crm-filtros" id="crm-filtros"></div>
+      </div>
+
+      <div class="hist-search-wrap" id="hist-search-wrap" style="display:none">
+        <svg class="hist-search-ico" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+        <input id="hist-search" class="hist-search" type="search" placeholder="Buscar por cliente, imóvel ou endereço..." oninput="filtrarHistory()" autocomplete="off">
+      </div>
+      <div class="hist-count" id="hist-count" style="display:none"></div>
+      <div id="history-content"></div>
+    </div>
+
+    <!-- ══════════════════ VIEW: REGISTRO DE VISITA ══════════════════ -->
+    <div class="view" id="view-visita">
+      <div class="ph">
+        <h1>Registro de Visita</h1>
+        <p>Gere o termo que comprova que foi você quem apresentou o imóvel ao cliente.</p>
+      </div>
+
+      <div class="visita-info-banner">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+        <span><b style="color:var(--t)">Proteção jurídica da sua corretagem.</b> O termo registra que a aproximação entre cliente e imóvel se deu por seu intermédio (arts. 722 a 729 do Código Civil) — sua garantia caso a negociação se concretize por fora.</span>
+      </div>
+
+      <form id="form-visita" onsubmit="gerarTermo(event)" novalidate>
+        <div class="card">
+          <div class="card-t">Visitante</div>
+          <div class="fg">
+            <div class="field">
+              <label class="lbl" for="v-cliente">Nome completo <span class="req">*</span></label>
+              <input id="v-cliente" type="text" class="inp" placeholder="Ex: João Silva" required autocomplete="name">
+            </div>
+            <div class="field">
+              <label class="lbl" for="v-cpf">CPF (recomendado)</label>
+              <input id="v-cpf" type="text" class="inp" placeholder="000.000.000-00" inputmode="numeric">
+            </div>
+            <div class="field">
+              <label class="lbl" for="v-rg">RG (opcional)</label>
+              <input id="v-rg" type="text" class="inp" placeholder="00.000.000-0">
+            </div>
+            <div class="field">
+              <label class="lbl" for="v-tel">Telefone (opcional)</label>
+              <input id="v-tel" type="tel" class="inp" placeholder="(11) 99999-9999">
+            </div>
+          </div>
+        </div>
+
+        <div class="card">
+          <div class="card-t">Imóvel visitado</div>
+          <div class="fg">
+            <div class="field f2">
+              <label class="lbl" for="v-end">Endereço completo <span class="req">*</span></label>
+              <input id="v-end" type="text" class="inp" placeholder="Ex: Av. Paulista, 1000, ap 72 — Bela Vista, São Paulo, SP" required>
+            </div>
+            <div class="field">
+              <label class="lbl" for="v-tipo">Tipo do imóvel</label>
+              <select id="v-tipo" class="sel">
+                <option value="" selected>Não informar</option>
+                <option>Apartamento</option>
+                <option>Casa</option>
+                <option>Terreno</option>
+                <option>Sala Comercial</option>
+                <option>Galpão</option>
+                <option>Cobertura</option>
+                <option>Flat / Studio</option>
+              </select>
+            </div>
+            <div class="field">
+              <label class="lbl" for="v-matricula">Matrícula do imóvel (recomendado)</label>
+              <input id="v-matricula" type="text" class="inp" placeholder="Ex: 123.456 — 4º CRI de São Paulo">
+            </div>
+          </div>
+        </div>
+
+        <div class="card">
+          <div class="card-t">Visita</div>
+          <div class="fg">
+            <div class="field">
+              <label class="lbl" for="v-data">Data da visita <span class="req">*</span></label>
+              <input id="v-data" type="date" class="inp" required>
+            </div>
+            <div class="field">
+              <label class="lbl" for="v-hora">Horário (opcional)</label>
+              <input id="v-hora" type="time" class="inp">
+            </div>
+            <div class="field">
+              <label class="lbl" for="v-cidade">Cidade/UF (para o fecho do termo)</label>
+              <input id="v-cidade" type="text" class="inp" placeholder="Ex: São Paulo/SP">
+            </div>
+            <div class="field f2">
+              <label class="lbl" for="v-obs">Observações (opcional)</label>
+              <textarea id="v-obs" class="txa inp" placeholder="Ex: visita acompanhada do cônjuge; cliente demonstrou interesse e pediu simulação de financiamento..."></textarea>
+            </div>
+          </div>
+        </div>
+
+        <button type="submit" class="gen-btn">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 01-2 2H5a2 2 0 01-2-2V5a2 2 0 012-2h11"/></svg>
+          Gerar Termo de Visita
+        </button>
+      </form>
+
+      <!-- TERMO GERADO -->
+      <div class="proposta" id="termo">
+        <div class="prop-corretor">
+          <div class="prop-corretor-logo" id="tv-logo">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>
+          </div>
+          <div class="prop-corretor-info">
+            <div class="prop-corretor-nome" id="tv-nome">—</div>
+            <div class="prop-corretor-creci" id="tv-creci"></div>
+            <div class="prop-corretor-contato" id="tv-contato"></div>
+          </div>
+        </div>
+
+        <div class="prop-head">
+          <div>
+            <div class="prop-badge"><div class="prop-badge-dot"></div>Termo de Registro de Visita</div>
+            <h2 class="prop-h2" id="t-titulo">Registro de Visita ao Imóvel</h2>
+            <p class="prop-sub" id="t-sub"></p>
+          </div>
+          <div class="prop-tags">
+            <span class="prop-tag" id="t-tag-data"></span>
+          </div>
+        </div>
+
+        <div class="prop-imovel" id="t-grid"></div>
+
+        <div class="prop-body">
+          <div>
+            <div class="prop-sec-title">Declaração</div>
+            <p class="termo-decl" id="t-decl"></p>
+          </div>
+          <div id="t-obs-sec" style="display:none">
+            <div class="prop-sec-title">Observações</div>
+            <p class="prop-text" id="t-obs"></p>
+          </div>
+          <p class="sig-localdata" id="t-localdata"></p>
+          <div class="sig-area">
+            <div class="sig-box">
+              <div class="sig-line">
+                <div class="sig-nome" id="t-sig-cliente">—</div>
+                <div class="sig-papel" id="t-sig-cliente-doc">Visitante</div>
+              </div>
+            </div>
+            <div class="sig-box">
+              <div class="sig-line">
+                <div class="sig-nome" id="t-sig-corretor">—</div>
+                <div class="sig-papel" id="t-sig-creci">Corretor(a) de Imóveis</div>
+              </div>
+            </div>
+          </div>
+          <div class="sig-test-title">Testemunhas (recomendado — fortalece a prova)</div>
+          <div class="sig-area test">
+            <div class="sig-box">
+              <div class="sig-line">
+                <div class="sig-nome">Nome: ______________________ CPF: ____________</div>
+                <div class="sig-papel">Testemunha 1</div>
+              </div>
+            </div>
+            <div class="sig-box">
+              <div class="sig-line">
+                <div class="sig-nome">Nome: ______________________ CPF: ____________</div>
+                <div class="sig-papel">Testemunha 2</div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="prop-foot">
+          <button class="btn btn-ghost" onclick="copiarTermo()">
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1"/></svg>
+            Copiar texto
+          </button>
+          <button class="btn btn-ghost" onclick="baixarTermoPDF()">
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+            Baixar PDF
+          </button>
+          <button class="btn btn-ghost" onclick="compartilharTermoWA()">
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 11.5a8.38 8.38 0 01-.9 3.8 8.5 8.5 0 01-7.6 4.7 8.38 8.38 0 01-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 01-.9-3.8 8.5 8.5 0 014.7-7.6 8.38 8.38 0 013.8-.9h.5a8.48 8.48 0 018 8v.5z"/></svg>
+            WhatsApp
+          </button>
+          <button class="btn btn-green" onclick="salvarVisita()">
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 21H5a2 2 0 01-2-2V5a2 2 0 012-2h11l5 5v11a2 2 0 01-2 2z"/><polyline points="17 21 17 13 7 13 7 21"/><polyline points="7 3 7 8 15 8"/></svg>
+            Salvar registro
+          </button>
+          <button class="btn btn-primary" onclick="novoTermo()">
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+            Novo registro
+          </button>
+        </div>
+      </div>
+
+      <!-- VISITAS SALVAS -->
+      <div class="no-print" id="visitas-salvas" style="margin-top:28px;display:none">
+        <div class="card-t" style="margin-bottom:12px">Visitas registradas</div>
+        <div id="visitas-lista"></div>
+      </div>
+    </div><!-- /view-visita -->
+
+    <!-- ══════════════════ VIEW: CONFIGURAÇÕES ══════════════════ -->
+    <div class="view" id="view-config">
+      <div class="ph">
+        <h1>Configurações do Perfil</h1>
+        <p>Sua marca aparecerá em todas as propostas geradas.</p>
+      </div>
+
+      <!-- Preview -->
+      <div class="cfg-preview" id="cfg-preview">
+        <div class="cfg-preview-logo" id="cfg-prev-logo">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>
+        </div>
+        <div>
+          <div class="cfg-preview-name" id="cfg-prev-nome">Seu Nome Aqui</div>
+          <div class="cfg-preview-creci" id="cfg-prev-creci">CRECI 00000-SP</div>
+        </div>
+      </div>
+
+      <form id="form-config" onsubmit="salvarConfig(event)" novalidate>
+        <div class="card">
+          <div class="card-t">Identidade Profissional</div>
+          <div class="fg">
+            <div class="field">
+              <label class="lbl" for="c-nome">Seu nome completo <span class="req">*</span></label>
+              <input id="c-nome" type="text" class="inp" placeholder="Ex: Marcos Oliveira" required oninput="atualizarPreview()">
+            </div>
+            <div class="field">
+              <label class="lbl" for="c-creci">CRECI</label>
+              <input id="c-creci" type="text" class="inp" placeholder="Ex: 87432-SP" oninput="atualizarPreview()">
+            </div>
+            <div class="field">
+              <label class="lbl" for="c-tel">Telefone / WhatsApp</label>
+              <input id="c-tel" type="tel" class="inp" placeholder="(11) 99999-9999">
+            </div>
+            <div class="field">
+              <label class="lbl" for="c-email">E-mail</label>
+              <input id="c-email" type="email" class="inp" placeholder="marcos@imobiliaria.com.br">
+            </div>
+          </div>
+        </div>
+
+        <div class="card">
+          <div class="card-t">Identidade Visual</div>
+          <div class="fg">
+            <div class="field f2">
+              <label class="lbl">Logo</label>
+              <div class="logo-upload">
+                <div class="logo-preview" id="logo-prev">
+                  <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>
+                </div>
+                <div class="logo-actions">
+                  <label class="btn btn-ghost btn-sm" style="cursor:pointer">
+                    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
+                    Enviar logo
+                    <input type="file" id="c-logo" accept="image/*" style="display:none" onchange="carregarLogo(event)">
+                  </label>
+                  <button type="button" class="btn btn-ghost btn-sm" onclick="removerLogo()">Remover</button>
+                </div>
+              </div>
+              <span class="hint">PNG ou JPG recomendado. Máx 1MB.</span>
+            </div>
+            <div class="field f2">
+              <label class="lbl">Cor da marca</label>
+              <div class="color-row">
+                <div class="color-swatch" id="color-swatch" onclick="document.getElementById('c-cor').click()" style="background:var(--p)"></div>
+                <input type="color" id="c-cor" value="#4D7EFF" oninput="atualizarCor(this.value)">
+                <div class="color-presets">
+                  <div class="preset" data-cor="#4D7EFF" style="background:#4D7EFF" onclick="atualizarCor('#4D7EFF')" title="Azul"></div>
+                  <div class="preset" data-cor="#7C5CFC" style="background:#7C5CFC" onclick="atualizarCor('#7C5CFC')" title="Roxo"></div>
+                  <div class="preset" data-cor="#22C55E" style="background:#22C55E" onclick="atualizarCor('#22C55E')" title="Verde"></div>
+                  <div class="preset" data-cor="#F59E0B" style="background:#F59E0B" onclick="atualizarCor('#F59E0B')" title="Âmbar"></div>
+                  <div class="preset" data-cor="#EF4444" style="background:#EF4444" onclick="atualizarCor('#EF4444')" title="Vermelho"></div>
+                  <div class="preset" data-cor="#0EA5E9" style="background:#0EA5E9" onclick="atualizarCor('#0EA5E9')" title="Celeste"></div>
+                  <div class="preset" data-cor="#6B7280" style="background:#6B7280" onclick="atualizarCor('#6B7280')" title="Cinza"></div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div style="display:flex;gap:10px;align-items:center">
+          <button type="submit" class="btn btn-primary">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 21H5a2 2 0 01-2-2V5a2 2 0 012-2h11l5 5v11a2 2 0 01-2 2z"/><polyline points="17 21 17 13 7 13 7 21"/><polyline points="7 3 7 8 15 8"/></svg>
+            Salvar configurações
+          </button>
+          <button type="button" class="btn btn-ghost" onclick="showView('form')">Cancelar</button>
+        </div>
+      </form>
+    </div><!-- /view-config -->
+
+  </main>
+</div>
+
+<div class="toast" id="toast">
+  <svg class="tok" id="toast-ico-ok" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>
+  <svg class="tok" id="toast-ico-err" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#EF4444" stroke-width="2.5" style="display:none"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+  <span id="toast-txt"></span>
+</div>
+
+<script>
+/* ── AUTH CONFIG ─────────────────────────────────────────────────────────
+   Preencha após criar seu projeto no Supabase e fazer deploy no Vercel.
+   Estas são chaves públicas (anon key) — seguro expor no cliente.
+──────────────────────────────────────────────────────────────────────── */
+const _SUPA_URL    = 'https://kdudodqmijlzqwnkxpjo.supabase.co'
+const _SUPA_KEY    = 'sb_publishable_ADIRZ2I6Eu9S8_CwCt6RSQ_rrRlIqq9'
+const _LOGIN_URL   = 'https://usecorretorpro.vercel.app/acesso'
+// Link de (re)assinatura — usado quando a assinatura está inativa
+const _CHECKOUT_URL = 'https://pay.hotmart.com/L106145948O'
+
+/* ── AUTH GATE ── */
+;(async function authGate() {
+  try {
+    const _sb = supabase.createClient(_SUPA_URL, _SUPA_KEY, {
+      auth: { flowType: 'implicit', detectSessionInUrl: true }
+    })
+    window._sb = _sb
+
+    // Tenta estabelecer sessão a partir dos tokens no hash fragment
+    // (passados pelo app Next.js no formato #access_token=...&refresh_token=...)
+    let session = null
+    const hash = location.hash.slice(1)
+    if (hash) {
+      const p = new URLSearchParams(hash)
+      const at = p.get('access_token')
+      const rt = p.get('refresh_token')
+      if (at && rt) {
+        const { data, error } = await _sb.auth.setSession({ access_token: at, refresh_token: rt })
+        if (!error) session = data.session
+      }
+    }
+
+    // Se não veio pelo hash, verifica sessão existente (re-visita / refresh)
+    if (!session) {
+      const { data } = await _sb.auth.getSession()
+      session = data.session
+    }
+
+    if (!session) {
+      location.replace(_LOGIN_URL + '?redirect_to=' + encodeURIComponent(location.href))
+      return
+    }
+
+    // Trava de assinatura: o webhook da Hotmart grava o status em app_metadata
+    // (não editável pelo usuário). Se a assinatura foi cancelada/reembolsada,
+    // bloqueia o acesso imediatamente — sem esperar o token expirar.
+    const subStatus = session.user.app_metadata && session.user.app_metadata.subscription_status
+    if (subStatus === 'inactive') {
+      mostrarInativo()
+      return
+    }
+
+    window._uid = session.user.id
+
+    // Mostra email do usuário no rodapé da sidebar
+    const sp = document.getElementById('sb-plan')
+    if (sp) sp.textContent = session.user.email
+
+    // Carrega perfil + histórico da conta (sincroniza entre dispositivos)
+    await carregarRemoto()
+
+    document.getElementById('auth-loading').remove()
+    if (location.hash) history.replaceState(null, '', location.pathname + location.search)
+    initApp()
+  } catch(err) {
+    console.error('Auth error:', err)
+    // Fail-closed: em erro de autenticação, volta para o login em vez de liberar acesso
+    location.replace(_LOGIN_URL + '?redirect_to=' + encodeURIComponent(location.href))
+  }
+})()
+
+/* ── ASSINATURA INATIVA ── */
+function mostrarInativo() {
+  const el = document.getElementById('auth-loading')
+  el.innerHTML =
+    '<div style="max-width:380px;text-align:center;padding:24px">' +
+      '<div style="font-size:19px;font-weight:800;letter-spacing:-.5px;color:#EEF2FF;margin-bottom:20px">Corretor<span style="color:#4D7EFF">PRO</span></div>' +
+      '<div style="width:52px;height:52px;border-radius:50%;background:rgba(239,68,68,.12);display:flex;align-items:center;justify-content:center;margin:0 auto 16px">' +
+        '<svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="#EF4444" stroke-width="2.2" stroke-linecap="round"><circle cx="12" cy="12" r="9"/><path d="M12 8v5M12 16h.01"/></svg>' +
+      '</div>' +
+      '<div style="font-size:16px;font-weight:700;color:#EEF2FF;margin-bottom:8px">Sua assinatura está inativa</div>' +
+      '<p style="font-size:13px;color:#7B93B8;line-height:1.6;margin-bottom:22px">Para voltar a gerar propostas, reative sua assinatura. Seus dados ficam guardados e voltam assim que o acesso for liberado.</p>' +
+      '<a href="' + _CHECKOUT_URL + '" style="display:block;background:#4D7EFF;color:#fff;text-decoration:none;border-radius:8px;padding:12px;font-size:14px;font-weight:600;margin-bottom:12px">Reativar assinatura</a>' +
+      '<a href="#" onclick="sair();return false" style="font-size:13px;color:#7B93B8;text-decoration:none">Sair</a>' +
+    '</div>'
+}
+
+/* ── ESC HTML ── */
+const escH = s => String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;')
+
+/* ── STATE ── */
+let perfil = JSON.parse(localStorage.getItem('cpr_perfil') || 'null') || { nome:'',creci:'',tel:'',email:'',cor:'#4D7EFF',logo:null }
+let historico = JSON.parse(localStorage.getItem('cpr_hist') || '[]')
+let snapProposta = null
+let _toastT = null
+let _crmFiltro = null  // filtro ativo por status no histórico
+let _menuAberto = null // referência ao dropdown de status aberto
+let snapVisita = null  // termo de visita gerado, ainda não salvo
+
+// Propostas e registros de visita compartilham o mesmo array `historico`
+// (coluna jsonb única no Supabase — sem migração de schema); o campo
+// docTipo separa os dois mundos nas telas.
+const soPropostas = () => historico.filter(h => h.docTipo !== 'visita')
+const soVisitas   = () => historico.filter(h => h.docTipo === 'visita')
+
+// Mantém as mais recentes de cada tipo sem uma expulsar a outra do limite
+function capHistorico() {
+  const props = soPropostas().slice(0, 20)
+  const vis   = soVisitas().slice(0, 30)
+  historico = props.concat(vis).sort((a, b) => (b.id || 0) - (a.id || 0))
+}
+
+/* ── INIT ── */
+function initApp() {
+  aplicarPerfil()
+  renderSidebarUser()
+  atualizarBadgeHist()
+  if (!perfil.nome) {
+    document.getElementById('banner-profile').classList.add('show')
+  }
+  carregarFormConfig()
+  atualizarPreview()
+  atualizarCor(perfil.cor || '#4D7EFF')
+}
+
+async function sair() {
+  if (window._sb) await window._sb.auth.signOut()
+  // Limpa o cache local para não deixar PII (perfil/histórico) no dispositivo
+  try { localStorage.removeItem('cpr_perfil'); localStorage.removeItem('cpr_hist') } catch(_) {}
+  location.replace(_LOGIN_URL)
+}
+
+/* ── SYNC SUPABASE: perfil + histórico ficam atrelados à conta ──
+   Persiste na tabela cpr_user_data (RLS por user_id). localStorage
+   funciona como cache offline; a nuvem é a fonte de verdade. */
+async function carregarRemoto() {
+  if (!window._sb || !window._uid) return
+  try {
+    const { data, error } = await window._sb
+      .from('cpr_user_data')
+      .select('perfil,historico')
+      .eq('user_id', window._uid)
+      .maybeSingle()
+    if (error) return
+    if (data) {
+      if (data.perfil && typeof data.perfil === 'object') {
+        perfil = Object.assign({ nome:'',creci:'',tel:'',email:'',cor:'#4D7EFF',logo:null }, data.perfil)
+        localStorage.setItem('cpr_perfil', JSON.stringify(perfil))
+      }
+      if (Array.isArray(data.historico)) {
+        historico = data.historico
+        localStorage.setItem('cpr_hist', JSON.stringify(historico))
+      }
+    } else if (perfil.nome || historico.length) {
+      // Primeiro acesso desta conta: migra os dados locais para a nuvem
+      await salvarRemoto()
+    }
+  } catch(e) { /* offline → segue com o cache local */ }
+}
+
+async function salvarRemoto() {
+  if (!window._sb || !window._uid) return
+  try {
+    const { error } = await window._sb.from('cpr_user_data').upsert(
+      { user_id: window._uid, perfil, historico, updated_at: new Date().toISOString() },
+      { onConflict: 'user_id' }
+    )
+    if (error) throw error
+  } catch(e) {
+    throw e  // propaga para quem chamou mostrar o erro ao usuário
+  }
+}
+
+/* ── VIEWS ── */
+function showView(name) {
+  document.querySelectorAll('.view').forEach(v => v.classList.remove('active'))
+  document.getElementById('view-' + name).classList.add('active')
+  document.querySelectorAll('.sb-item[data-view]').forEach(i => i.classList.toggle('active', i.dataset.view === name))
+  const labels = { form:'Nova Proposta', history:'Minhas Propostas', visita:'Registro de Visita', config:'Configurações' }
+  const roots  = { form:'Propostas', history:'Propostas', visita:'Documentos', config:'Conta' }
+  document.getElementById('crumb-page').textContent = labels[name] || name
+  document.getElementById('crumb-root').textContent = roots[name] || name
+  // topbar buttons only for form
+  const btnEx = document.getElementById('btn-exemplo')
+  if (btnEx) btnEx.style.display = name === 'form' ? '' : 'none'
+  if (name === 'history') {
+    // Limpa busca e filtro de status ao abrir a aba para sempre mostrar o histórico completo
+    const srch = document.getElementById('hist-search')
+    if (srch) srch.value = ''
+    _crmFiltro = null
+    renderHistory()
+  }
+  if (name === 'visita') {
+    const dt = document.getElementById('v-data')
+    if (dt && !dt.value) dt.value = new Date().toISOString().slice(0, 10)
+    renderVisitas()
+  }
+  closeSidebar()
+  window.scrollTo({ top: 0, behavior: 'smooth' })
+}
+
+/* ── VALOR FORMATTER ── */
+const fmtInput = id => {
+  const el = document.getElementById(id)
+  if (!el) return
+  el.addEventListener('input', e => {
+    const raw = e.target.value.replace(/\D/g,'')
+    e.target.value = raw ? parseInt(raw,10).toLocaleString('pt-BR') : ''
+  })
+}
+fmtInput('f-valor')
+fmtInput('f-complem')
+
+/* ── TIPO NEGOCIAÇÃO → mostrar bloco específico ── */
+function atualizarTipoNeg() {
+  const tipo = document.getElementById('f-tipo-neg').value
+  document.getElementById('blk-compra').classList.toggle('show', tipo === 'Compra')
+  document.getElementById('blk-locacao').classList.toggle('show', tipo === 'Locação')
+  document.getElementById('blk-permuta').classList.toggle('show', tipo === 'Permuta')
+}
+
+/* ── EXEMPLO ── */
+function carregarExemplo() {
+  document.getElementById('f-cliente').value   = 'João Silva'
+  document.getElementById('f-tipo-imovel').value = 'Apartamento'
+  document.getElementById('f-tipo-neg').value  = 'Compra'
+  document.getElementById('f-end').value       = 'Av. Paulista, 1000, Bela Vista — São Paulo, SP'
+  document.getElementById('f-area').value      = '78'
+  document.getElementById('f-dorms').value     = '3'
+  document.getElementById('f-vagas').value     = '2'
+  document.getElementById('f-valor').value     = '450.000'
+  document.getElementById('f-prazo').value     = '300'
+  document.getElementById('f-taxa').value      = '10.5'
+  document.getElementById('f-cond').value      = 'Cliente tem FGTS disponível e busca financiamento de longo prazo'
+  atualizarTipoNeg()
+  showView('form')
+  toast('Exemplo carregado — clique em Gerar Proposta')
+}
+
+/* ── CALCULAR PARCELA (Tabela Price) ── */
+function calcParcela(pv, taxaAnual, meses) {
+  const i = Math.pow(1 + taxaAnual/100, 1/12) - 1
+  if (i === 0) return pv / meses
+  return pv * (i * Math.pow(1+i,meses)) / (Math.pow(1+i,meses) - 1)
+}
+
+/* SAC: amortização constante — 1ª parcela maior, decrescente até a última */
+function calcSAC(pv, taxaAnual, meses) {
+  const i = Math.pow(1 + taxaAnual/100, 1/12) - 1
+  const amort = pv / meses
+  const primeira = amort + pv * i          // amortização + juros sobre saldo total
+  const ultima   = amort + amort * i       // último mês: juros só sobre a última amortização
+  const totalJuros = i * pv * (meses + 1) / 2
+  return { primeira, ultima, total: pv + totalJuros }
+}
+
+/* ── GERAR PROPOSTA ── */
+function gerarProposta(ev) {
+  ev.preventDefault()
+  const form = document.getElementById('form')
+  if (!form.checkValidity()) { form.reportValidity(); return }
+
+  const d = {
+    cliente:    document.getElementById('f-cliente').value.trim(),
+    tipoImovel: document.getElementById('f-tipo-imovel').value,
+    tipoNeg:    document.getElementById('f-tipo-neg').value,
+    end:        document.getElementById('f-end').value.trim(),
+    area:       document.getElementById('f-area').value,
+    dorms:      document.getElementById('f-dorms').value,
+    vagas:      document.getElementById('f-vagas').value,
+    valor:      document.getElementById('f-valor').value.trim(),
+    prazo:      parseInt(document.getElementById('f-prazo')?.value || '300'),
+    taxa:       parseFloat(document.getElementById('f-taxa')?.value || '10.5'),
+    garantia:   document.getElementById('f-garantia')?.value || 'Fiador',
+    complem:    document.getElementById('f-complem')?.value.trim() || '',
+    cond:       document.getElementById('f-cond').value.trim(),
+  }
+  snapProposta = d
+
+  const btn = document.getElementById('gen-btn')
+  btn.disabled = true
+  btn.innerHTML = '<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="animation:spin .8s linear infinite"><path d="M21 12a9 9 0 11-18 0 9 9 0 0118 0z" stroke-opacity=".3"/><path d="M21 12a9 9 0 00-9-9"/></svg> Gerando...'
+
+  const skel = document.getElementById('skel')
+  const prop = document.getElementById('proposta')
+  prop.classList.remove('show')
+  skel.classList.add('show')
+  setTimeout(() => skel.scrollIntoView({ behavior:'smooth', block:'start' }), 60)
+
+  setTimeout(() => {
+    construirProposta(d)
+    skel.classList.remove('show')
+    prop.classList.add('show')
+    btn.disabled = false
+    btn.innerHTML = '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg> Gerar Proposta'
+    setTimeout(() => prop.scrollIntoView({ behavior:'smooth', block:'start' }), 60)
+  }, 1700)
+}
+
+/* ── CONSTRUIR PROPOSTA ── */
+function construirProposta(d) {
+  const hoje = new Date().toLocaleDateString('pt-BR',{day:'2-digit',month:'long',year:'numeric'})
+  const valNum = parseFloat(d.valor.replace(/\./g,'').replace(',','.')) || 0
+  const valorFmt = valNum ? 'R$ ' + valNum.toLocaleString('pt-BR') : 'A confirmar'
+  const nomeCorretor = perfil.nome || 'Corretor(a)'
+
+  /* ── Cabeçalho corretor ── */
+  document.getElementById('pc-nome').textContent = perfil.nome || '—'
+  document.getElementById('pc-creci').textContent = perfil.creci ? 'CRECI ' + perfil.creci : ''
+  const contatos = [perfil.tel, perfil.email].filter(Boolean).join(' · ')
+  document.getElementById('pc-contato').textContent = contatos
+
+  const logoEl = document.getElementById('pc-logo')
+  logoEl.innerHTML = ''
+  if (perfil.logo) {
+    const img = document.createElement('img')
+    img.src = perfil.logo
+    img.alt = 'Logo ' + escH(perfil.nome)
+    logoEl.appendChild(img)
+  } else {
+    const cor = perfil.cor || '#4D7EFF'
+    logoEl.style.background = cor + '22'
+    const letra = document.createElement('span')
+    letra.style.cssText = `font-size:20px;font-weight:800;color:${cor}`
+    letra.textContent = (perfil.nome || 'C')[0].toUpperCase()
+    logoEl.appendChild(letra)
+  }
+
+  /* ── Header ── */
+  document.getElementById('p-titulo').textContent = `${d.tipoNeg} — ${d.tipoImovel} · ${d.end.split(',')[0].trim()}`
+  document.getElementById('p-sub').textContent = `Para ${d.cliente} · ${hoje}`
+  document.getElementById('p-tag-tipo').textContent = d.tipoNeg
+  document.getElementById('p-tag-data').textContent = hoje
+
+  /* ── Grid do imóvel ── */
+  const gridItems = [
+    { label:'Tipo', val: d.tipoImovel },
+    { label:'Valor', val: valorFmt },
+    d.area ? { label:'Área', val: d.area + ' m²' } : null,
+    d.dorms && d.dorms !== '—' ? { label:'Dormitórios', val: d.dorms } : null,
+    d.vagas && d.vagas !== '—' ? { label:'Vagas', val: d.vagas } : null,
+    { label:'Negociação', val: d.tipoNeg },
+  ].filter(Boolean)
+
+  const grid = document.getElementById('p-imovel-grid')
+  grid.innerHTML = ''
+  gridItems.forEach(item => {
+    const div = document.createElement('div')
+    div.className = 'prop-imovel-item'
+    div.innerHTML = `<div class="pii-label">${escH(item.label)}</div><div class="pii-val">${escH(item.val)}</div>`
+    grid.appendChild(div)
+  })
+
+  /* ── Intro ── */
+  const detalhes = [
+    d.area ? `${escH(d.area)} m²` : null,
+    d.dorms && d.dorms !== '—' ? `${escH(d.dorms)} dormitório${d.dorms === '1' ? '' : 's'}` : null,
+    d.vagas && d.vagas !== '—' ? `${escH(d.vagas)} vaga${d.vagas === '1' ? '' : 's'}` : null,
+  ].filter(Boolean).join(', ')
+
+  document.getElementById('p-intro').innerHTML =
+    `Prezado(a) <strong>${escH(d.cliente)}</strong>, é com prazer que apresento esta proposta para o <strong>${escH(d.tipoImovel)}</strong> localizado em <strong>${escH(d.end)}</strong>${detalhes ? ` (${detalhes})` : ''}. Elaborei as melhores condições disponíveis para que você tome uma decisão com segurança e clareza.`
+
+  /* ── Modalidades por tipo ── */
+  const modsEl = document.getElementById('p-mods')
+  modsEl.innerHTML = ''
+
+  if (d.tipoNeg === 'Compra') {
+    document.getElementById('p-mods-title').textContent = 'Condições de Pagamento'
+    const vAvista = valNum ? Math.round(valNum * 0.97) : 0
+    const vFgts20 = valNum ? Math.round(valNum * 0.20) : 0
+    const vFinanc = valNum ? Math.round(valNum * 0.80) : 0
+    let parcela = ''
+    if (valNum && d.prazo && d.taxa) {
+      const p = calcParcela(vFinanc, d.taxa, d.prazo)
+      parcela = 'R$ ' + Math.round(p).toLocaleString('pt-BR') + '/mês'
+    }
+    const prazoAnos = Math.round(d.prazo / 12)
+
+    const mods = [
+      { label:'À Vista', val: vAvista ? 'R$ ' + vAvista.toLocaleString('pt-BR') : valorFmt, note:`Desconto de 3% no valor anunciado`, parcela:'', hl:false },
+      { label:'Financiamento', val: valorFmt, note:`Entrada de 20% + saldo em ${prazoAnos} anos · taxa ${d.taxa}% a.a.`, parcela: parcela ? `Parcela estimada: ${parcela}` : '', hl:true },
+      { label:'FGTS', val: vFgts20 ? 'R$ ' + vFgts20.toLocaleString('pt-BR') : 'Consultar', note:'Entrada mínima de 20% via FGTS + financiamento do saldo', parcela: vFinanc ? `Saldo financiado: R$ ${vFinanc.toLocaleString('pt-BR')}` : '', hl:false },
+    ]
+    mods.forEach(m => {
+      const d2 = document.createElement('div')
+      d2.className = `mod${m.hl ? ' hl' : ''}`
+      d2.innerHTML = `<div class="mod-label">${escH(m.label)}</div><div class="mod-val">${escH(m.val)}</div><div class="mod-note">${escH(m.note)}</div>${m.parcela ? `<div class="mod-parcela">${escH(m.parcela)}</div>` : ''}`
+      modsEl.appendChild(d2)
+    })
+
+  } else if (d.tipoNeg === 'Locação') {
+    document.getElementById('p-mods-title').textContent = 'Condições de Locação'
+    const aluguel = valNum
+    const caucao  = aluguel ? Math.round(aluguel * 3) : 0
+    const mods = [
+      { label:'Aluguel mensal', val: valorFmt, note:'Valor mensal conforme anúncio', hl:true },
+      { label:'Caução', val: caucao ? 'R$ ' + caucao.toLocaleString('pt-BR') : '3x o aluguel', note:'3 meses de aluguel — devolvido ao fim do contrato', hl:false },
+      { label:'Garantia', val: d.garantia, note:'Modalidade de garantia exigida pelo proprietário', hl:false },
+    ]
+    mods.forEach(m => {
+      const d2 = document.createElement('div')
+      d2.className = `mod${m.hl ? ' hl' : ''}`
+      d2.innerHTML = `<div class="mod-label">${escH(m.label)}</div><div class="mod-val">${escH(m.val)}</div><div class="mod-note">${escH(m.note)}</div>`
+      modsEl.appendChild(d2)
+    })
+
+  } else if (d.tipoNeg === 'Permuta') {
+    document.getElementById('p-mods-title').textContent = 'Condições de Permuta'
+    const complemNum = parseFloat((d.complem||'').replace(/\./g,'').replace(',','.')) || 0
+    const mods = [
+      { label:'Permuta', val: complemNum ? 'Parcial' : 'Total', note: complemNum ? `Troca do imóvel + R$ ${complemNum.toLocaleString('pt-BR')} de complemento` : 'Troca integral de imóveis sem torna financeira', hl:true },
+      { label:'Avaliação', val: valorFmt, note:'Valor de referência do imóvel ofertado', hl:false },
+      { label:'Documentação', val: 'Verificação', note:'Análise jurídica de ambos os imóveis como condição', hl:false },
+    ]
+    mods.forEach(m => {
+      const d2 = document.createElement('div')
+      d2.className = `mod${m.hl ? ' hl' : ''}`
+      d2.innerHTML = `<div class="mod-label">${escH(m.label)}</div><div class="mod-val">${escH(m.val)}</div><div class="mod-note">${escH(m.note)}</div>`
+      modsEl.appendChild(d2)
+    })
+  }
+
+  /* ── Simulação de financiamento (SAC × Price) — só Compra ── */
+  const simSec = document.getElementById('p-sim-sec')
+  if (d.tipoNeg === 'Compra' && valNum && d.prazo && d.taxa) {
+    const vFin = Math.round(valNum * 0.80)
+    const sac = calcSAC(vFin, d.taxa, d.prazo)
+    const priceParc = calcParcela(vFin, d.taxa, d.prazo)
+    const priceTotal = priceParc * d.prazo
+    const fmt = n => 'R$ ' + Math.round(n).toLocaleString('pt-BR')
+    const anos = Math.round(d.prazo / 12)
+    document.getElementById('p-simulacao').innerHTML =
+      `<div class="sim-col">` +
+        `<div class="sim-col-head">Tabela SAC <span>parcela decrescente</span></div>` +
+        `<div class="sim-row"><span>1ª parcela</span><b>${fmt(sac.primeira)}</b></div>` +
+        `<div class="sim-row"><span>Última parcela</span><b>${fmt(sac.ultima)}</b></div>` +
+        `<div class="sim-row tot"><span>Total pago</span><b>${fmt(sac.total)}</b></div>` +
+      `</div>` +
+      `<div class="sim-col">` +
+        `<div class="sim-col-head">Tabela Price <span>parcela fixa</span></div>` +
+        `<div class="sim-row"><span>Parcela fixa</span><b>${fmt(priceParc)}</b></div>` +
+        `<div class="sim-row"><span>Parcelas</span><b>${d.prazo}x</b></div>` +
+        `<div class="sim-row tot"><span>Total pago</span><b>${fmt(priceTotal)}</b></div>` +
+      `</div>`
+    document.getElementById('p-sim-note').textContent =
+      `Simulação sobre ${fmt(vFin)} (financiamento de 80% do valor) em ${anos} anos à taxa de ${d.taxa}% a.a. ` +
+      `No SAC a parcela começa maior e diminui mês a mês; na Price ela é fixa do início ao fim. ` +
+      `Valores estimados — sujeitos à análise e às condições do banco.`
+    simSec.style.display = ''
+  } else {
+    simSec.style.display = 'none'
+  }
+
+  /* ── Sobre o imóvel ── */
+  const extras = d.cond
+    ? `Considerando as observações: <em>${escH(d.cond)}</em>. `
+    : ''
+  const tipoTexto = d.tipoNeg === 'Locação'
+    ? 'A localização e as condições de conservação fazem desta uma oportunidade de destaque no mercado de locação atual.'
+    : d.tipoNeg === 'Permuta'
+    ? 'O imóvel possui documentação em dia e apresenta excelente potencial para viabilizar uma permuta vantajosa para ambas as partes.'
+    : 'O imóvel apresenta documentação regularizada e disponibilidade imediata — fatores que agilizam todo o processo de aquisição.'
+  document.getElementById('p-sobre').innerHTML = extras + tipoTexto
+
+  /* ── Próximos passos ── */
+  const ps = d.tipoNeg === 'Locação'
+    ? `<strong>1.</strong> Confirme interesse e apresente a documentação para análise de cadastro. <strong>2.</strong> Agendamos a visita e assinatura do contrato. Estou disponível para esclarecer qualquer dúvida — fique à vontade para me ligar ou chamar no WhatsApp.`
+    : d.tipoNeg === 'Permuta'
+    ? `<strong>1.</strong> Apresente documentação do seu imóvel para análise jurídica. <strong>2.</strong> Realizamos vistoria dos dois imóveis para confirmar valores. <strong>3.</strong> Fechamos o contrato de permuta. Estou à disposição para conduzir todo o processo.`
+    : `<strong>1.</strong> Confirme interesse em até 48h para reservarmos o imóvel. <strong>2.</strong> Agende uma visita presencial para análise detalhada. <strong>3.</strong> Faço uma simulação de financiamento personalizada sem compromisso. Estou à disposição — entre em contato quando quiser.`
+  document.getElementById('p-proximos').innerHTML = ps
+}
+
+/* ── COPIAR TEXTO (inclui todas as seções) ── */
+function copiar() {
+  if (!document.getElementById('proposta').classList.contains('show')) return
+  const nome   = document.getElementById('pc-nome').textContent
+  const creci  = document.getElementById('pc-creci').textContent
+  const titulo = document.getElementById('p-titulo').textContent
+  const sub    = document.getElementById('p-sub').textContent
+  const intro  = document.getElementById('p-intro').innerText
+
+  // Modalidades (DOM → texto)
+  const modsEl = document.getElementById('p-mods')
+  const modsTexto = Array.from(modsEl.children).map(m => {
+    const label = m.querySelector('.mod-label')?.textContent || ''
+    const val   = m.querySelector('.mod-val')?.textContent || ''
+    const note  = m.querySelector('.mod-note')?.textContent || ''
+    const parc  = m.querySelector('.mod-parcela')?.textContent || ''
+    return `${label}: ${val} — ${note}${parc ? ' · ' + parc : ''}`
+  }).join('\n')
+
+  // Simulação de financiamento (se visível para esta proposta)
+  let simTexto = ''
+  const simSecEl = document.getElementById('p-sim-sec')
+  if (simSecEl && simSecEl.style.display !== 'none') {
+    simTexto = Array.from(document.querySelectorAll('#p-simulacao .sim-col')).map(col => {
+      const head = (col.querySelector('.sim-col-head')?.firstChild?.textContent || '').trim()
+      const rows = Array.from(col.querySelectorAll('.sim-row')).map(r =>
+        `  ${r.querySelector('span')?.textContent || ''}: ${r.querySelector('b')?.textContent || ''}`).join('\n')
+      return `${head}\n${rows}`
+    }).join('\n\n')
+  }
+
+  const sobre   = document.getElementById('p-sobre').innerText
+  const proximos= document.getElementById('p-proximos').innerText
+
+  const linhasCabecalho = [nome, creci ? 'CRECI ' + creci : null].filter(Boolean).join(' | ')
+  const txt = [
+    linhasCabecalho,
+    '━━━━━━━━━━━━━━━━━━━━━',
+    titulo,
+    sub,
+    '',
+    intro,
+    '',
+    '── Condições ──',
+    modsTexto,
+    ...(simTexto ? ['', '── Simulação de financiamento (SAC × Price) ──', simTexto] : []),
+    '',
+    sobre,
+    '',
+    proximos,
+  ].join('\n')
+
+  navigator.clipboard.writeText(txt)
+    .then(() => toast('Proposta copiada com todas as seções!'))
+    .catch(() => toast('Selecione o texto e use Ctrl+C'))
+}
+
+/* ── BAIXAR PDF (print CSS isola a proposta) ── */
+function baixarPDF() {
+  if (!document.getElementById('proposta').classList.contains('show')) return
+  toast('Abrindo impressão — salve como PDF...')
+  setTimeout(() => window.print(), 400)
+}
+
+/* ── WHATSAPP (mensagem completa) ── */
+function compartilharWA() {
+  if (!snapProposta) return
+  const d = snapProposta
+  const corretor = perfil.nome || 'seu corretor'
+  const valFmt = d.valor ? 'R$ ' + d.valor : 'valor a confirmar'
+  let cond = ''
+  if (d.tipoNeg === 'Compra') {
+    const valNum = parseFloat(d.valor.replace(/\./g,'').replace(',','.')) || 0
+    const vAvista = valNum ? Math.round(valNum * 0.97).toLocaleString('pt-BR') : '—'
+    let simLine = '• Financiamento: entrada de 20% + saldo financiado'
+    if (valNum && d.prazo && d.taxa) {
+      const vFin = Math.round(valNum * 0.80)
+      const sac = calcSAC(vFin, d.taxa, d.prazo)
+      const price = calcParcela(vFin, d.taxa, d.prazo)
+      const anos = Math.round(d.prazo / 12)
+      simLine =
+        `• Financiamento (${anos} anos, ${d.taxa}% a.a.):\n` +
+        `   SAC: 1ª parcela R$ ${Math.round(sac.primeira).toLocaleString('pt-BR')} (vai diminuindo)\n` +
+        `   Price: R$ ${Math.round(price).toLocaleString('pt-BR')}/mês fixo`
+    }
+    cond = `• À Vista: R$ ${vAvista} (desc. 3%)\n${simLine}\n• FGTS: entrada de 20% + financiamento`
+  } else if (d.tipoNeg === 'Locação') {
+    cond = `• Aluguel: ${valFmt}/mês\n• Garantia: ${d.garantia}`
+  } else {
+    cond = `• Permuta ${d.complem ? 'parcial (+ R$ ' + d.complem + ')' : 'total'}`
+  }
+  const msg =
+    `Olá ${d.cliente}! Aqui é ${corretor}${perfil.creci ? ' (CRECI ' + perfil.creci + ')' : ''}.\n\n` +
+    `Segue a proposta para o *${d.tipoImovel}* — ${d.end}:\n\n` +
+    `*Tipo:* ${d.tipoNeg}\n*Valor:* ${valFmt}\n\n` +
+    `*Condições:*\n${cond}\n\n` +
+    (d.cond ? `*Obs:* ${d.cond}\n\n` : '') +
+    `Estou à disposição para qualquer dúvida. Quando podemos conversar?`
+  window.open(`https://wa.me/?text=${encodeURIComponent(msg)}`, '_blank', 'noopener')
+}
+
+/* ── SALVAR PROPOSTA ── */
+async function salvarProposta() {
+  if (!snapProposta) return
+  const item = {
+    id: Date.now(),
+    data: new Date().toLocaleDateString('pt-BR'),
+    ...snapProposta,
+    tituloGerado: document.getElementById('p-titulo').textContent,
+  }
+  historico.unshift(item)
+  capHistorico()
+  localStorage.setItem('cpr_hist', JSON.stringify(historico))
+  atualizarBadgeHist()
+  try {
+    await salvarRemoto()
+    toast('Proposta salva em Minhas Propostas!')
+  } catch(_) {
+    toast('Salvo localmente — verifique sua conexão', true)
+  }
+}
+
+/* ── NOVA PROPOSTA ── */
+function novaProposta() {
+  document.getElementById('proposta').classList.remove('show')
+  document.getElementById('skel').classList.remove('show')
+  document.getElementById('form').reset()
+  atualizarTipoNeg()
+  snapProposta = null
+  window.scrollTo({ top:0, behavior:'smooth' })
+  setTimeout(() => document.getElementById('f-cliente').focus(), 350)
+}
+function resetForm() { novaProposta() }
+
+/* ── HISTORY ── */
+function atualizarBadgeHist() {
+  const badge = document.getElementById('sb-count')
+  const nProp = soPropostas().length
+  if (nProp > 0) {
+    badge.textContent = nProp
+    badge.style.display = 'inline'
+  } else {
+    badge.style.display = 'none'
+  }
+  const badgeV = document.getElementById('sb-count-visita')
+  if (badgeV) {
+    const nVis = soVisitas().length
+    badgeV.textContent = nVis
+    badgeV.style.display = nVis > 0 ? 'inline' : 'none'
+  }
+}
+
+/* ── CRM: CONFIG DE STATUS ── */
+const CRM_STATUS = [
+  { key:'nova',       label:'Nova',          cor:'#7BA3FF', rgb:'77,126,255' },
+  { key:'enviada',    label:'Enviada',        cor:'#EAB308', rgb:'234,179,8'  },
+  { key:'negociando', label:'Em negociação',  cor:'#F97316', rgb:'249,115,22' },
+  { key:'fechada',    label:'Fechada',        cor:'#22C55E', rgb:'34,197,94'  },
+  { key:'perdida',    label:'Perdida',        cor:'#EF4444', rgb:'239,68,68'  },
+]
+
+function getStatusInfo(key) {
+  return CRM_STATUS.find(s => s.key === (key || 'nova')) || CRM_STATUS[0]
+}
+
+function renderCrmPainel() {
+  const painel = document.getElementById('crm-painel')
+  const cardsEl = document.getElementById('crm-cards')
+  const filtrosEl = document.getElementById('crm-filtros')
+  const propostas = soPropostas()
+  if (!painel || propostas.length === 0) {
+    if (painel) painel.style.display = 'none'
+    return
+  }
+  painel.style.display = ''
+
+  // Contagem por status
+  const counts = {}
+  CRM_STATUS.forEach(s => { counts[s.key] = 0 })
+  propostas.forEach(h => {
+    const k = h.status || 'nova'
+    counts[k] = (counts[k] || 0) + 1
+  })
+
+  // Cards de contagem
+  cardsEl.innerHTML = CRM_STATUS.map(s => {
+    const isAtivo = _crmFiltro === s.key
+    const bgAtivo = s.cor + '12' // hex com ~7% opacidade
+    return `<button class="crm-stat${isAtivo ? ' ativo' : ''}"
+      style="--crm-cor:${s.cor}${isAtivo ? `;background:${bgAtivo};border-color:${s.cor}` : ''}"
+      onclick="filtrarPorStatus('${s.key}')" title="Filtrar por '${s.label}'">
+      <div class="crm-stat-num" style="color:${s.cor}">${counts[s.key]}</div>
+      <div class="crm-stat-label">${escH(s.label)}</div>
+    </button>`
+  }).join('')
+
+  // Botões de filtro
+  filtrosEl.innerHTML =
+    `<button class="crm-filtro-btn${_crmFiltro === null ? ' ativo' : ''}"
+      style="${_crmFiltro === null ? 'background:var(--p);border-color:var(--p)' : ''}"
+      onclick="filtrarPorStatus(null)">Todas</button>` +
+    CRM_STATUS.map(s => {
+      const at = _crmFiltro === s.key
+      return `<button class="crm-filtro-btn${at ? ' ativo' : ''}"
+        style="${at ? `background:${s.cor};border-color:${s.cor}` : `border-color:${s.cor}33;color:${s.cor}`}"
+        onclick="filtrarPorStatus('${s.key}')">
+        ${escH(s.label)} ${counts[s.key] > 0 ? `(${counts[s.key]})` : ''}
+      </button>`
+    }).join('')
+}
+
+function filtrarPorStatus(key) {
+  _crmFiltro = key
+  // Limpa busca ao trocar filtro de status
+  const srch = document.getElementById('hist-search')
+  if (srch) srch.value = ''
+  renderCrmPainel()
+  renderHistory()
+}
+
+function renderHistory(filtrados) {
+  const el = document.getElementById('history-content')
+  const wrap = document.getElementById('hist-search-wrap')
+  const countEl = document.getElementById('hist-count')
+
+  // Registros de visita vivem em outra tela; aqui só propostas
+  const propostas = soPropostas()
+
+  // Aplica filtro de status antes de qualquer outro filtro
+  let base = propostas
+  if (_crmFiltro !== null) {
+    base = propostas.filter(h => (h.status || 'nova') === _crmFiltro)
+  }
+
+  const lista = filtrados !== undefined ? filtrados : base
+
+  // Mostra barra de busca somente quando há propostas
+  if (propostas.length > 0) {
+    wrap.style.display = ''
+  } else {
+    wrap.style.display = 'none'
+    countEl.style.display = 'none'
+  }
+
+  // Painel CRM
+  renderCrmPainel()
+
+  if (propostas.length === 0) {
+    el.innerHTML = `<div class="hist-empty">
+      <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
+      <h3>Nenhuma proposta salva</h3>
+      <p>Gere sua primeira proposta e clique em "Salvar" para vê-la aqui.</p>
+    </div>`
+    return
+  }
+
+  if (lista.length === 0) {
+    countEl.style.display = ''
+    countEl.textContent = _crmFiltro
+      ? `Nenhuma proposta com status "${getStatusInfo(_crmFiltro).label}".`
+      : 'Nenhuma proposta encontrada para essa busca.'
+    el.innerHTML = ''
+    return
+  }
+
+  const total = propostas.length
+  if (base.length !== total || (filtrados !== undefined && filtrados.length !== base.length)) {
+    countEl.style.display = ''
+    countEl.textContent = `${lista.length} de ${total} proposta${total > 1 ? 's' : ''}`
+  } else {
+    countEl.style.display = 'none'
+  }
+
+  el.innerHTML = `<div class="hist-list">${lista.map((h) => {
+    const realIdx = historico.indexOf(h)
+    const st = getStatusInfo(h.status)
+    return `
+    <div class="hist-card">
+      <div class="hist-main-row">
+        <span class="hist-tipo">${escH(h.tipoNeg||'—')}</span>
+        <div class="hist-info">
+          <div class="hist-cliente">${escH(h.cliente||'—')}</div>
+          <div class="hist-imovel">${escH(h.tipoImovel||'')} · ${escH((h.end||'').split(',')[0])}</div>
+        </div>
+        <div class="hist-valor">${h.valor ? 'R$ ' + escH(h.valor) : '—'}</div>
+        <div class="hist-actions">
+          <button class="btn btn-ghost btn-sm" onclick="duplicarProposta(${realIdx})" title="Duplicar proposta">
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1"/></svg>
+          </button>
+          <button class="btn btn-ghost btn-sm" onclick="excluirProposta(${realIdx})" aria-label="Excluir">
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 01-2 2H8a2 2 0 01-2-2L5 6"/><path d="M10 11v6M14 11v6"/><path d="M9 6V4h6v2"/></svg>
+          </button>
+        </div>
+      </div>
+      <div class="hist-bottom-row">
+        <div class="hist-meta">${escH(h.data||'')}</div>
+        <div style="position:relative;display:inline-block">
+          <button class="hist-status" data-s="${escH(h.status||'nova')}"
+            onclick="abrirMenuStatus(event,${realIdx})"
+            title="Alterar status da negociação"
+            style="background:${st.cor}22;color:${st.cor}">
+            <span style="width:6px;height:6px;border-radius:50%;background:${st.cor};flex-shrink:0;display:inline-block"></span>
+            ${escH(st.label)}
+            <svg width="9" height="9" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="6 9 12 15 18 9"/></svg>
+          </button>
+        </div>
+      </div>
+    </div>`
+  }).join('')}</div>`
+}
+
+/* ── MENU DE STATUS (dropdown inline) ── */
+function abrirMenuStatus(ev, idx) {
+  ev.stopPropagation()
+  fecharMenuStatus()
+
+  const btn = ev.currentTarget
+  const menu = document.createElement('div')
+  menu.className = 'status-menu'
+  menu.id = 'status-menu-ativo'
+
+  menu.innerHTML = CRM_STATUS.map(s => `
+    <button class="status-opt" onclick="definirStatus(${idx},'${s.key}')">
+      <span class="status-opt-dot" style="background:${s.cor}"></span>
+      ${escH(s.label)}
+    </button>
+  `).join('')
+
+  // Posiciona abaixo do botão
+  const wrap = btn.closest('[style*="position:relative"]') || btn.parentElement
+  wrap.appendChild(menu)
+  _menuAberto = menu
+
+  // Fecha ao clicar fora
+  setTimeout(() => document.addEventListener('click', fecharMenuStatus, { once: true }), 0)
+}
+
+function fecharMenuStatus() {
+  if (_menuAberto) { _menuAberto.remove(); _menuAberto = null }
+}
+
+function definirStatus(idx, statusKey) {
+  fecharMenuStatus()
+  if (!historico[idx]) return
+  historico[idx].status = statusKey
+  localStorage.setItem('cpr_hist', JSON.stringify(historico))
+  salvarRemoto().catch(() => {})
+  const st = getStatusInfo(statusKey)
+  // Re-renderiza mantendo filtros
+  const q = (document.getElementById('hist-search')?.value || '').trim()
+  let base = _crmFiltro ? soPropostas().filter(h => (h.status || 'nova') === _crmFiltro) : soPropostas()
+  renderHistory(q ? base.filter(h => matchFiltro(h, q)) : undefined)
+  toast(`Status atualizado: ${st.label}`)
+}
+
+function excluirProposta(i) {
+  historico.splice(i, 1)
+  localStorage.setItem('cpr_hist', JSON.stringify(historico))
+  salvarRemoto()
+  atualizarBadgeHist()
+  // Mantém o filtro ativo ao excluir
+  const q = (document.getElementById('hist-search')?.value || '').trim()
+  let base = _crmFiltro ? soPropostas().filter(h => (h.status || 'nova') === _crmFiltro) : soPropostas()
+  renderHistory(q ? base.filter(h => matchFiltro(h, q)) : undefined)
+  toast('Proposta removida')
+}
+
+/* ── BUSCA NO HISTÓRICO ── */
+function matchFiltro(h, q) {
+  const needle = q.toLowerCase()
+  return (
+    (h.cliente || '').toLowerCase().includes(needle) ||
+    (h.tipoImovel || '').toLowerCase().includes(needle) ||
+    (h.end || '').toLowerCase().includes(needle) ||
+    (h.tipoNeg || '').toLowerCase().includes(needle)
+  )
+}
+
+function filtrarHistory() {
+  const q = (document.getElementById('hist-search')?.value || '').trim()
+  // Base do filtro: respeita o filtro de status ativo
+  const base = _crmFiltro ? soPropostas().filter(h => (h.status || 'nova') === _crmFiltro) : soPropostas()
+  if (!q) {
+    renderHistory(undefined)
+    return
+  }
+  const filtrados = base.filter(h => matchFiltro(h, q))
+  renderHistory(filtrados)
+}
+
+/* ── DUPLICAR PROPOSTA ── */
+function duplicarProposta(i) {
+  const h = historico[i]
+  if (!h) return
+
+  // Navega para o formulário e preenche os campos com os dados da proposta
+  showView('form')
+
+  // Aguarda a view estar visível antes de preencher
+  setTimeout(() => {
+    const set = (id, val) => {
+      const el = document.getElementById(id)
+      if (el && val !== undefined && val !== null) el.value = val
+    }
+
+    set('f-cliente',    h.cliente    || '')
+    set('f-tipo-imovel', h.tipoImovel || '')
+    set('f-tipo-neg',   h.tipoNeg    || '')
+    set('f-end',        h.end        || '')
+    set('f-area',       h.area       || '')
+    set('f-dorms',      h.dorms      || '')
+    set('f-vagas',      h.vagas      || '')
+    set('f-valor',      h.valor      || '')
+    set('f-cond',       h.cond       || '')
+
+    // Campos condicionais de compra
+    if (h.prazo)  set('f-prazo', String(h.prazo))
+    if (h.taxa)   set('f-taxa',  String(h.taxa))
+
+    // Campos condicionais de locação
+    if (h.garantia) set('f-garantia', h.garantia)
+
+    // Campos condicionais de permuta
+    if (h.complem) set('f-complem', h.complem)
+
+    atualizarTipoNeg()
+
+    document.getElementById('f-cliente').focus()
+    toast('Proposta duplicada — edite e gere uma nova versão')
+  }, 80)
+}
+
+/* ══════════════ REGISTRO DE VISITA ══════════════ */
+
+function fmtDataBR(iso) {
+  if (!iso) return ''
+  const [a, m, d] = iso.split('-')
+  return `${d}/${m}/${a}`
+}
+
+function gerarTermo(ev) {
+  ev.preventDefault()
+  const form = document.getElementById('form-visita')
+  if (!form.checkValidity()) { form.reportValidity(); return }
+
+  const d = {
+    cliente:    document.getElementById('v-cliente').value.trim(),
+    cpf:        document.getElementById('v-cpf').value.trim(),
+    rg:         document.getElementById('v-rg').value.trim(),
+    tel:        document.getElementById('v-tel').value.trim(),
+    end:        document.getElementById('v-end').value.trim(),
+    tipoImovel: document.getElementById('v-tipo').value,
+    matricula:  document.getElementById('v-matricula').value.trim(),
+    dataVisita: document.getElementById('v-data').value,
+    hora:       document.getElementById('v-hora').value,
+    cidade:     document.getElementById('v-cidade').value.trim(),
+    obs:        document.getElementById('v-obs').value.trim(),
+  }
+  snapVisita = d
+  construirTermo(d)
+  const termo = document.getElementById('termo')
+  termo.classList.add('show')
+  termo.scrollIntoView({ behavior:'smooth', block:'start' })
+}
+
+function construirTermo(d) {
+  const nomeCorretor = perfil.nome || 'Corretor(a)'
+  const creci = perfil.creci || ''
+
+  // Cabeçalho com a marca do corretor (mesmo padrão da proposta)
+  document.getElementById('tv-nome').textContent = nomeCorretor
+  document.getElementById('tv-creci').textContent = creci ? 'CRECI ' + creci : ''
+  document.getElementById('tv-contato').textContent = [perfil.tel, perfil.email].filter(Boolean).join(' · ')
+  const logoEl = document.getElementById('tv-logo')
+  logoEl.innerHTML = ''
+  if (perfil.logo) {
+    const img = document.createElement('img')
+    img.src = perfil.logo
+    img.alt = 'Logo'
+    img.style.cssText = 'width:100%;height:100%;object-fit:contain'
+    logoEl.appendChild(img)
+  } else {
+    const cor = perfil.cor || '#4D7EFF'
+    logoEl.style.background = cor + '22'
+    const letra = document.createElement('span')
+    letra.textContent = (nomeCorretor[0] || 'C').toUpperCase()
+    letra.style.cssText = `font-weight:800;font-size:18px;color:${cor}`
+    logoEl.appendChild(letra)
+  }
+
+  document.getElementById('t-sub').textContent = d.end
+  document.getElementById('t-tag-data').textContent = fmtDataBR(d.dataVisita) + (d.hora ? ' às ' + d.hora : '')
+
+  // Grid de dados (mesmo visual do grid do imóvel na proposta)
+  const grid = document.getElementById('t-grid')
+  grid.innerHTML = ''
+  const items = [
+    { label:'Visitante', val:d.cliente },
+    d.cpf ? { label:'CPF', val:d.cpf } : null,
+    d.rg ? { label:'RG', val:d.rg } : null,
+    d.tel ? { label:'Telefone', val:d.tel } : null,
+    d.tipoImovel ? { label:'Tipo do imóvel', val:d.tipoImovel } : null,
+    d.matricula ? { label:'Matrícula', val:d.matricula } : null,
+    { label:'Data da visita', val: fmtDataBR(d.dataVisita) + (d.hora ? ' · ' + d.hora : '') },
+  ].filter(Boolean)
+  items.forEach(item => {
+    const div = document.createElement('div')
+    div.className = 'prop-imovel-item'
+    div.innerHTML = `<div class="pii-label">${escH(item.label)}</div><div class="pii-val">${escH(item.val)}</div>`
+    grid.appendChild(div)
+  })
+
+  // Declaração com amparo legal: CC arts. 722-729 (esp. 727), CPC art. 408,
+  // identificação completa das partes/imóvel e prazo de proteção — elementos
+  // que a jurisprudência considera na prova da intermediação útil.
+  const docs = [d.cpf ? `CPF nº ${d.cpf}` : null, d.rg ? `RG nº ${d.rg}` : null].filter(Boolean).join(', ')
+  const idCliente = d.cliente + (docs ? `, portador(a) do ${docs}` : '')
+  const idCorretor = nomeCorretor + (creci ? `, inscrito(a) no CRECI sob o nº ${creci}` : '')
+  const idImovel = `${d.tipoImovel ? escH(d.tipoImovel.toLowerCase()) + ' ' : 'imóvel '}situado em <b>${escH(d.end)}</b>` +
+    (d.matricula ? `, matrícula nº <b>${escH(d.matricula)}</b>` : '')
+  const quando = fmtDataBR(d.dataVisita) + (d.hora ? `, às ${d.hora}` : '')
+  document.getElementById('t-decl').innerHTML =
+    `<b>DECLARO</b>, para os devidos fins de direito, eu, <b>${escH(idCliente)}</b>, que em <b>${escH(quando)}</b> ` +
+    `visitei o ${idImovel}, sendo-me este apresentado por intermédio do(a) corretor(a) de imóveis ` +
+    `<b>${escH(idCorretor)}</b>, a quem reconheço como responsável pela aproximação entre mim e o referido imóvel.<br><br>` +
+    `Declaro estar ciente de que, nos termos dos <b>artigos 722 a 729 do Código Civil</b> — em especial o ` +
+    `<b>art. 727</b> —, caso a aquisição, locação ou qualquer negociação deste imóvel venha a se concretizar, ` +
+    `por mim ou por pessoa a mim vinculada, <b>ainda que diretamente com o proprietário ou após o término da ` +
+    `mediação</b>, será devida ao(à) corretor(a) acima identificado(a) a respectiva remuneração de corretagem, ` +
+    `por ser o negócio fruto do seu trabalho de aproximação.<br><br>` +
+    `Esta declaração permanece eficaz pelo prazo de <b>180 (cento e oitenta) dias</b> contados da data da visita ` +
+    `e, uma vez assinada, goza da presunção de veracidade prevista no <b>art. 408 do Código de Processo Civil</b>.`
+
+  // Local e data por extenso (fecho formal do documento)
+  const hoje = new Date().toLocaleDateString('pt-BR', { day:'numeric', month:'long', year:'numeric' })
+  document.getElementById('t-localdata').textContent = (d.cidade ? d.cidade + ', ' : '') + hoje + '.'
+
+  // Observações (só aparece se preenchidas)
+  const obsSec = document.getElementById('t-obs-sec')
+  if (d.obs) {
+    obsSec.style.display = ''
+    document.getElementById('t-obs').textContent = d.obs
+  } else {
+    obsSec.style.display = 'none'
+  }
+
+  // Assinaturas
+  document.getElementById('t-sig-cliente').textContent = d.cliente
+  document.getElementById('t-sig-cliente-doc').textContent = 'Visitante' + (d.cpf ? ' · CPF ' + d.cpf : '')
+  document.getElementById('t-sig-corretor').textContent = nomeCorretor
+  document.getElementById('t-sig-creci').textContent = creci ? `Corretor(a) de Imóveis · CRECI ${creci}` : 'Corretor(a) de Imóveis'
+}
+
+async function salvarVisita() {
+  if (!snapVisita) return
+  const item = {
+    id: Date.now(),
+    docTipo: 'visita',
+    data: new Date().toLocaleDateString('pt-BR'),
+    ...snapVisita,
+  }
+  historico.unshift(item)
+  capHistorico()
+  localStorage.setItem('cpr_hist', JSON.stringify(historico))
+  atualizarBadgeHist()
+  renderVisitas()
+  try {
+    await salvarRemoto()
+    toast('Registro de visita salvo!')
+  } catch(_) {
+    toast('Salvo localmente — verifique sua conexão', true)
+  }
+}
+
+function renderVisitas() {
+  const wrap = document.getElementById('visitas-salvas')
+  const el = document.getElementById('visitas-lista')
+  if (!wrap || !el) return
+  const vis = soVisitas()
+  if (vis.length === 0) { wrap.style.display = 'none'; return }
+  wrap.style.display = ''
+  el.innerHTML = `<div class="hist-list">${vis.map(v => `
+    <div class="hist-card">
+      <div class="hist-main-row">
+        <span class="hist-tipo">Visita</span>
+        <div class="hist-info">
+          <div class="hist-cliente">${escH(v.cliente||'—')}</div>
+          <div class="hist-imovel">${escH((v.end||'').split(',')[0])} · ${escH(fmtDataBR(v.dataVisita))}</div>
+        </div>
+        <div class="hist-actions">
+          <button class="btn btn-ghost btn-sm" onclick="reabrirVisita(${v.id})" title="Reabrir termo">
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+          </button>
+          <button class="btn btn-ghost btn-sm" onclick="excluirVisita(${v.id})" aria-label="Excluir">
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 01-2 2H8a2 2 0 01-2-2L5 6"/><path d="M10 11v6M14 11v6"/><path d="M9 6V4h6v2"/></svg>
+          </button>
+        </div>
+      </div>
+    </div>`).join('')}</div>`
+}
+
+function reabrirVisita(id) {
+  const v = historico.find(h => h.id === id && h.docTipo === 'visita')
+  if (!v) return
+  snapVisita = v
+  construirTermo(v)
+  const termo = document.getElementById('termo')
+  termo.classList.add('show')
+  termo.scrollIntoView({ behavior:'smooth', block:'start' })
+}
+
+function excluirVisita(id) {
+  const i = historico.findIndex(h => h.id === id && h.docTipo === 'visita')
+  if (i === -1) return
+  historico.splice(i, 1)
+  localStorage.setItem('cpr_hist', JSON.stringify(historico))
+  salvarRemoto().catch(() => {})
+  atualizarBadgeHist()
+  renderVisitas()
+  toast('Registro removido')
+}
+
+function novoTermo() {
+  document.getElementById('termo').classList.remove('show')
+  document.getElementById('form-visita').reset()
+  const dt = document.getElementById('v-data')
+  if (dt) dt.value = new Date().toISOString().slice(0, 10)
+  snapVisita = null
+  window.scrollTo({ top:0, behavior:'smooth' })
+  setTimeout(() => document.getElementById('v-cliente').focus(), 350)
+}
+
+function textoTermo() {
+  const d = snapVisita
+  if (!d) return ''
+  const nomeCorretor = perfil.nome || 'Corretor(a)'
+  const creci = perfil.creci ? ' — CRECI ' + perfil.creci : ''
+  const hoje = new Date().toLocaleDateString('pt-BR', { day:'numeric', month:'long', year:'numeric' })
+  return [
+    'TERMO DE REGISTRO DE VISITA A IMÓVEL',
+    '',
+    document.getElementById('t-decl').innerText,
+    d.obs ? '\nObservações: ' + d.obs : '',
+    '',
+    (d.cidade ? d.cidade + ', ' : '') + hoje + '.',
+    '',
+    '_______________________________',
+    d.cliente + ' (Visitante' + (d.cpf ? ' · CPF ' + d.cpf : '') + ')',
+    '',
+    '_______________________________',
+    nomeCorretor + creci,
+    '',
+    'Testemunha 1: Nome __________________ CPF __________ Ass. __________________',
+    'Testemunha 2: Nome __________________ CPF __________ Ass. __________________',
+  ].filter(s => s !== '').join('\n')
+}
+
+function copiarTermo() {
+  if (!snapVisita) return
+  navigator.clipboard.writeText(textoTermo())
+    .then(() => toast('Termo copiado!'))
+    .catch(() => toast('Selecione o texto e use Ctrl+C'))
+}
+
+function baixarTermoPDF() {
+  if (!document.getElementById('termo').classList.contains('show')) return
+  toast('Abrindo impressão — salve como PDF...')
+  setTimeout(() => window.print(), 400)
+}
+
+function compartilharTermoWA() {
+  if (!snapVisita) return
+  const msg = textoTermo() + '\n\nPor favor, confirme o recebimento deste registro de visita. Obrigado!'
+  window.open('https://wa.me/?text=' + encodeURIComponent(msg), '_blank')
+}
+
+/* ── CONFIG / PERFIL ── */
+function carregarFormConfig() {
+  document.getElementById('c-nome').value  = perfil.nome  || ''
+  document.getElementById('c-creci').value = perfil.creci || ''
+  document.getElementById('c-tel').value   = perfil.tel   || ''
+  document.getElementById('c-email').value = perfil.email || ''
+  document.getElementById('c-cor').value   = perfil.cor   || '#4D7EFF'
+  atualizarCor(perfil.cor || '#4D7EFF')
+  if (perfil.logo) {
+    const prev = document.getElementById('logo-prev')
+    prev.innerHTML = `<img src="${perfil.logo}" alt="Logo">`
+  }
+}
+
+function atualizarPreview() {
+  const nome  = document.getElementById('c-nome')?.value.trim() || 'Seu Nome Aqui'
+  const creci = document.getElementById('c-creci')?.value.trim() || 'CRECI 00000-SP'
+  document.getElementById('cfg-prev-nome').textContent  = nome
+  document.getElementById('cfg-prev-creci').textContent = creci ? 'CRECI ' + creci : ''
+  // update sidebar too
+  renderSidebarUser()
+}
+
+async function salvarConfig(ev) {
+  ev.preventDefault()
+  const nome = document.getElementById('c-nome').value.trim()
+  if (!nome) { document.getElementById('c-nome').focus(); return }
+  perfil.nome  = nome
+  perfil.creci = document.getElementById('c-creci').value.trim()
+  perfil.tel   = document.getElementById('c-tel').value.trim()
+  perfil.email = document.getElementById('c-email').value.trim()
+  perfil.cor   = document.getElementById('c-cor').value
+  localStorage.setItem('cpr_perfil', JSON.stringify(perfil))
+  aplicarPerfil()
+  renderSidebarUser()
+  document.getElementById('banner-profile').classList.remove('show')
+  try {
+    await salvarRemoto()
+    toast('Perfil salvo! Suas propostas terão sua marca.')
+  } catch(_) {
+    toast('Salvo localmente — verifique sua conexão', true)
+  }
+  showView('form')
+}
+
+function escurecer(hex, amt) {
+  const h = String(hex || '').replace('#', '')
+  if (h.length !== 6) return hex
+  const ch = i => Math.max(0, Math.round(parseInt(h.slice(i, i+2), 16) * (1 - amt)))
+  return '#' + [ch(0), ch(2), ch(4)].map(x => x.toString(16).padStart(2, '0')).join('')
+}
+
+function aplicarPerfil() {
+  // aplica a cor da marca nas CSS vars
+  if (perfil.cor) {
+    document.documentElement.style.setProperty('--p', perfil.cor)
+    // hover é uma versão ~12% mais escura para dar feedback no clique
+    document.documentElement.style.setProperty('--ph', escurecer(perfil.cor, 0.12))
+    document.documentElement.style.setProperty('--ps', perfil.cor + '1F')
+  }
+}
+
+function renderSidebarUser() {
+  const av = document.getElementById('sb-av')
+  const nm = document.getElementById('sb-nome')
+  nm.textContent = perfil.nome || 'Configure seu perfil'
+  av.innerHTML = ''
+  av.style.background = perfil.cor || '#4D7EFF'
+  if (perfil.logo) {
+    const img = document.createElement('img')
+    img.src = perfil.logo
+    img.alt = ''
+    img.style.cssText = 'width:100%;height:100%;object-fit:cover;border-radius:50%'
+    av.appendChild(img)
+  } else {
+    av.textContent = (perfil.nome || 'C')[0].toUpperCase()
+  }
+}
+
+/* ── COR ── */
+function atualizarCor(hex) {
+  perfil.cor = hex
+  document.getElementById('c-cor').value = hex
+  document.getElementById('color-swatch').style.background = hex
+  // destaca o preset selecionado
+  document.querySelectorAll('.preset').forEach(p => {
+    const c = (p.getAttribute('data-cor') || '').toLowerCase()
+    p.classList.toggle('sel-p', c === String(hex).toLowerCase())
+  })
+  aplicarPerfil()
+}
+
+/* ── LOGO UPLOAD ── */
+// Redimensiona o logo para no máx 256px antes de salvar, evitando inflar a
+// linha no banco (o data URL fica leve em vez de 1MB+ em base64).
+function carregarLogo(ev) {
+  const file = ev.target.files[0]
+  if (!file) return
+  if (file.size > 4 * 1024 * 1024) { toast('Logo muito grande — máx 4MB', true); return }
+  const reader = new FileReader()
+  reader.onload = e => {
+    const img = new Image()
+    img.onload = () => {
+      const MAX = 256
+      let { width, height } = img
+      if (width > MAX || height > MAX) {
+        const escala = Math.min(MAX / width, MAX / height)
+        width = Math.round(width * escala)
+        height = Math.round(height * escala)
+      }
+      const canvas = document.createElement('canvas')
+      canvas.width = width; canvas.height = height
+      canvas.getContext('2d').drawImage(img, 0, 0, width, height)
+      // PNG preserva transparência (logos costumam ter fundo transparente)
+      perfil.logo = canvas.toDataURL('image/png')
+      aplicarLogoPreview()
+      toast('Logo carregado')
+    }
+    img.onerror = () => toast('Arquivo de imagem inválido', true)
+    img.src = e.target.result
+  }
+  reader.readAsDataURL(file)
+}
+
+function aplicarLogoPreview() {
+  const prev = document.getElementById('logo-prev')
+  prev.innerHTML = `<img src="${perfil.logo}" alt="Logo">`
+  const prevCfg = document.getElementById('cfg-prev-logo')
+  prevCfg.innerHTML = `<img src="${perfil.logo}" alt="Logo" style="width:100%;height:100%;object-fit:contain">`
+  renderSidebarUser()
+}
+
+function removerLogo() {
+  perfil.logo = null
+  document.getElementById('logo-prev').innerHTML = `<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>`
+  document.getElementById('cfg-prev-logo').innerHTML = `<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>`
+  renderSidebarUser()
+}
+
+/* ── TOAST ── */
+function toast(msg, isErr = false) {
+  const el = document.getElementById('toast')
+  document.getElementById('toast-txt').textContent = msg
+  document.getElementById('toast-ico-ok').style.display = isErr ? 'none' : ''
+  document.getElementById('toast-ico-err').style.display = isErr ? '' : 'none'
+  el.classList.toggle('err', isErr)
+  el.classList.add('on')
+  clearTimeout(_toastT)
+  _toastT = setTimeout(() => el.classList.remove('on'), 3400)
+}
+
+/* ── MOBILE SIDEBAR ── */
+function openSidebar() {
+  document.getElementById('sidebar').classList.add('open')
+  document.getElementById('overlay').classList.add('on')
+  document.body.style.overflow = 'hidden'
+}
+function closeSidebar() {
+  document.getElementById('sidebar').classList.remove('open')
+  document.getElementById('overlay').classList.remove('on')
+  document.body.style.overflow = ''
+}
+
+/* ── SPIN KEYFRAME ── */
+const _ks = document.createElement('style')
+_ks.textContent = '@keyframes spin{to{transform:rotate(360deg)}}'
+document.head.appendChild(_ks)
+</script>
+</body>
+</html>
