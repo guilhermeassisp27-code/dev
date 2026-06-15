@@ -27,7 +27,7 @@ export async function middleware(req: NextRequest) {
   // Arquivos estáticos (imagens, css, js, fontes etc.) são servidos direto,
   // sem redirecionar para o login. Evita que assets do public/ (ex.: prints
   // da landing) caiam na regra de auth e sejam mandados para /acesso.
-  if (/\.(png|jpe?g|gif|svg|webp|ico|css|js|txt|xml|woff2?|ttf)$/i.test(pathname)) {
+  if (/\.(png|jpe?g|gif|svg|webp|ico|css|js|txt|xml|woff2?|ttf|mp4|webm|mov|m4v|mp3|wav|pdf)$/i.test(pathname)) {
     return NextResponse.next()
   }
 
