@@ -592,6 +592,39 @@
   .roi-stat .big{font-family:var(--font-h);font-size:30px;font-weight:800;color:var(--amber);line-height:1}
   .roi-stat .lbl{font-size:11px;color:var(--t3);margin-top:4px;font-weight:600;letter-spacing:.04em;text-transform:uppercase}
   @media(max-width:560px){.roi-anchor{flex-direction:column;text-align:center}.roi-anchor-ico{margin:0 auto}}
+
+  /* ---------- video demo ---------- */
+  .vdemo{background:var(--navy-2);border-top:1px solid var(--line);border-bottom:1px solid var(--line)}
+  .vdemo h2{font-size:32px;text-align:center;margin-bottom:10px}
+  .vdemo h2 em{font-style:normal;color:var(--amber)}
+  .vdemo .vdemo-lead{text-align:center;max-width:520px;margin:0 auto 38px;font-size:17px;color:var(--t2)}
+  .vdemo-grid{display:grid;gap:40px;align-items:center;justify-items:center}
+  @media(min-width:860px){.vdemo-grid{grid-template-columns:minmax(0,300px) minmax(0,1fr);justify-items:start}}
+  .phone{
+    position:relative;width:100%;max-width:288px;border-radius:38px;
+    background:#0a0f1d;padding:11px;box-shadow:var(--shadow),0 0 70px rgba(245,158,11,.08);
+    border:1px solid var(--line-2);
+  }
+  .phone::before{content:"";position:absolute;top:18px;left:50%;transform:translateX(-50%);width:90px;height:6px;border-radius:99px;background:rgba(255,255,255,.18);z-index:2}
+  .phone video{display:block;width:100%;border-radius:28px;background:#000}
+  .vdemo-points{list-style:none;display:flex;flex-direction:column;gap:18px;max-width:420px}
+  .vdemo-points li{display:flex;align-items:flex-start;gap:14px}
+  .vdemo-pico{width:38px;height:38px;border-radius:11px;flex-shrink:0;background:var(--amber-soft);display:flex;align-items:center;justify-content:center}
+  .vdemo-pico svg{width:20px;height:20px;color:var(--amber)}
+  .vdemo-points h3{font-size:16.5px;font-family:var(--font);font-weight:700;color:var(--white);margin-bottom:3px}
+  .vdemo-points p{font-size:14.5px;line-height:1.55}
+  .vdemo-cta{margin-top:30px}
+  @media(min-width:860px){.vdemo-cta{margin-top:34px}}
+  @media(min-width:980px){.vdemo h2{font-size:38px}}
+
+  /* ---------- trust row (perto do checkout) ---------- */
+  .trust-row{
+    display:flex;flex-wrap:wrap;justify-content:center;gap:14px 28px;
+    margin:34px auto 0;max-width:760px;
+  }
+  .trust-item{display:flex;align-items:center;gap:9px;font-size:13.5px;color:var(--t2);font-weight:500}
+  .trust-item svg{width:19px;height:19px;color:var(--green);flex-shrink:0}
+  .trust-item b{color:var(--t);font-weight:700}
 </style>
 </head>
 <body>
@@ -800,6 +833,56 @@ src="https://www.facebook.com/tr?id=2015826029060952&ev=PageView&noscript=1"/></
     <h2>Apresento o <em>CorretorPRO</em></h2>
     <p class="big">Imagina só: você termina a visita, abre o celular, preenche os dados do imóvel e em segundos tem uma proposta linda, com a sua marca, pronta pra mandar no WhatsApp.</p>
     <p>É exatamente isso. Sem Word, sem complicação, sem parecer amador. Do jeito que você merece ser visto pelo cliente.</p>
+  </div>
+</section>
+
+<!-- ===================== 4.4 VIDEO DEMO ===================== -->
+<section class="section vdemo">
+  <div class="wrap">
+    <h2>Veja a ferramenta <em>funcionando de verdade</em></h2>
+    <p class="vdemo-lead">Da visita ao envio da proposta no WhatsApp — em segundos, direto do celular.</p>
+
+    <div class="vdemo-grid">
+      <div class="phone">
+        <video
+          src="/demo-corretorpro.mp4"
+          poster="/print-ferramenta-mobile.png"
+          controls playsinline preload="metadata"
+          onplay="if(typeof fbq==='function')fbq('trackCustom','DemoVideoPlay')">
+        </video>
+      </div>
+
+      <ul class="vdemo-points">
+        <li>
+          <div class="vdemo-pico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg></div>
+          <div>
+            <h3>Registro de Visita assinado na hora</h3>
+            <p>Termina a visita, gera o documento e o cliente assina pelo celular. Sua comissão protegida antes de sair do imóvel.</p>
+          </div>
+        </li>
+        <li>
+          <div class="vdemo-pico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg></div>
+          <div>
+            <h3>Proposta profissional em 60 segundos</h3>
+            <p>Com seu logo, CRECI e as condições de pagamento já calculadas. Pronta pra impressionar.</p>
+          </div>
+        </li>
+        <li>
+          <div class="vdemo-pico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 11.5a8.38 8.38 0 01-.9 3.8 8.5 8.5 0 01-7.6 4.7 8.38 8.38 0 01-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 01-.9-3.8 8.5 8.5 0 014.7-7.6 8.38 8.38 0 013.8-.9h.5a8.48 8.48 0 018 8v.5z"/></svg></div>
+          <div>
+            <h3>Enviada no WhatsApp com 1 clique</h3>
+            <p>No canal onde a venda realmente acontece — sem anexo pesado, sem fricção.</p>
+          </div>
+        </li>
+      </ul>
+    </div>
+
+    <div style="text-align:center">
+      <a class="cta vdemo-cta" href="#planos">
+        Quero usar agora
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
+      </a>
+    </div>
   </div>
 </section>
 
@@ -1059,6 +1142,25 @@ src="https://www.facebook.com/tr?id=2015826029060952&ev=PageView&noscript=1"/></
     <div class="guarantee">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3 5 6v6c0 4.5 3 7.5 7 9 4-1.5 7-4.5 7-9V6z"/><path d="m9 12 2 2 4-4"/></svg>
       Garantia incondicional de 7 dias. Não gostou, devolvemos 100%.
+    </div>
+
+    <div class="trust-row">
+      <div class="trust-item">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+        Pagamento <b>100% seguro</b> via Hotmart
+      </div>
+      <div class="trust-item">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg>
+        <b>Acesso na hora</b> após o pagamento
+      </div>
+      <div class="trust-item">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg>
+        <b>Cancele quando quiser</b>, sem multa
+      </div>
+      <div class="trust-item">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 7V4h16v3"/><path d="M9 20h6M12 4v16"/></svg>
+        Sem instalar nada · funciona no <b>celular</b>
+      </div>
     </div>
   </div>
 </section>
