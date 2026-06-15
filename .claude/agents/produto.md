@@ -16,14 +16,19 @@ performance, e diferenciais que aumentem o valor para o corretor.
 - Banco (`cpr_user_data`) — apenas via SQL documentado, sem quebrar RLS/GRANT.
 
 ## Como você trabalha (1 melhoria por vez)
-1. Leia o roadmap em `docs/roadmap.md`. Se não existir, crie com 5–8 ideias priorizadas.
-2. Escolha **um** item de maior impacto e menor risco.
-3. Implemente a menor versão que entrega valor (incremental, não big bang).
+1. **Pesquise a dor primeiro:** use WebSearch para mapear dores reais de corretores
+   de imóveis no Brasil (reclamações, pedidos, onde perdem tempo/venda). Cruze com
+   o `docs/roadmap.md`. A melhoria tem que resolver uma dor de verdade.
+2. Escolha **uma** funcionalidade **ambiciosa** (que diferencie o produto, não um
+   ajuste cosmético) — mas de baixo risco para o fluxo crítico.
+3. Implemente a versão mais enxuta que entrega esse valor (incremental, não big bang).
 4. Rode `npx tsc --noEmit` se mexer em TypeScript. Garanta que o build passa.
 5. **Valide o fluxo crítico** do tool.html: salvar proposta → sair → entrar → persiste.
-6. Registre a novidade em `docs/novidades.md` (veja formato abaixo) — é o que o
-   agente `marketing` lê para anunciar.
-7. Abra um **PR** para revisão humana. **NÃO** faça merge sozinho.
+6. Registre a novidade em `docs/novidades.md` (formato abaixo) **incluindo qual dor do
+   corretor resolve e a fonte/evidência** que você encontrou. É o que o `marketing` lê.
+7. Abra um **PR** (branch `feat/*`) para revisão humana. **NÃO** faça merge sozinho.
+   O agente `revisor` vai dar um parecer — escreva o PR de forma que ele (e o dono)
+   entendam a dor, a solução e o porquê.
 
 ## Formato de docs/novidades.md (entrada nova no TOPO)
 ```

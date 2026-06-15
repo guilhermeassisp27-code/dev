@@ -1,0 +1,42 @@
+name: Revisão de Melhoria (agente revisor)
+
+# Quando o agente produto (ou dev) abre um PR de melhoria numa branch feat/*,
+# o agente revisor avalia a melhoria e posta um parecer no PR
+# (✅ recomendo / ⚠️ ressalvas / ❌ não vale), pra ajudar você a decidir o merge.
+#
+# Custo: ~US$0,30 por PR avaliado (Sonnet). PRÉ-REQUISITO: ANTHROPIC_API_KEY.
+
+on:
+  pull_request:
+    types: [opened, reopened]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pull-requests: write
+  issues: write
+  id-token: write
+
+jobs:
+  revisar:
+    # Só avalia PRs vindos de branches feat/* (melhorias do produto/dev)
+    if: >-
+      github.event_name == 'workflow_dispatch' ||
+      startsWith(github.event.pull_request.head.ref, 'feat/')
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Rodar agente revisor
+        uses: anthropics/claude-code-action@v1
+        with:
+          anthropic_api_key: ${{ secrets.ANTHROPIC_API_KEY }}
+          claude_args: |
+            --model claude-sonnet-4-6
+            --max-turns 20
+            --allowedTools "Read,Grep,Glob,Bash(git:*),Bash(gh:*)"
+          prompt: |
+            Use o agente "revisor". Avalie a melhoria proposta neste Pull Request
+            (use `gh pr diff` e leia os arquivos alterados + o CLAUDE.md). Dê seu
+            parecer com o veredito no topo (✅ RECOMENDO / ⚠️ RESSALVAS / ❌ NÃO
+            VALE AGORA) e poste como comentário no PR com `gh pr comment`. Seja
+            específico e curto. Não altere código nem faça merge.
