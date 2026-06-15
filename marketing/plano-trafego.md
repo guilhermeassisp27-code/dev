@@ -318,3 +318,41 @@ c) **Aumentar o orçamento diário para no mínimo R$30/dia (R$900/mês).** Abai
 1. Abrir Gerenciador de Eventos do Meta → verificar se o evento `Purchase` está chegando com dados da Hotmart. Se não estiver, esse é o problema número 1 a resolver.
 2. Subir o orçamento diário da campanha para R$30/dia (mínimo) ou R$50/dia (recomendado). Não fazer nenhuma outra edição além dessa — deixar o algoritmo correr por 7 dias sem interrupção.
 3. Confirmar aprovação antes de qualquer mudança no evento de otimização ou criação de novo conjunto.
+
+---
+
+## Log de execução — 15/06/2026
+
+Auditoria do Gerenciador de Eventos + ajustes de checkout e verba executados.
+
+### Rastreamento (Gerenciador de Eventos) — RESOLVIDO/ESCLARECIDO
+- 426 eventos nos últimos 28 dias; dados fluindo normalmente.
+- Domínios enviando eventos, todos "Permitido": `usecorretorpro.vercel.app` (376),
+  `guilhermeassisp27-code.github.io` (16), `pay.hotmart.com` (7).
+- **Purchase ESTÁ sendo rastreado** (fonte: pay.hotmart.com). O alerta do Meta é de
+  *qualidade* dos dados de preço do Purchase (falta value/currency corretos), não de ausência.
+- Decisão: NÃO mudar otimização para Purchase ainda — volume insuficiente (~50 compras/sem
+  exigidas). Manter otimização em InitiateCheckout por ora. Arrumar preço do Purchase na
+  Hotmart é higiene de baixa prioridade.
+
+### Checkout Hotmart — OTIMIZADO
+- Pix confirmado ativo.
+- Campos: Nome + Email + Celular (mantido, fricção baixa).
+- Suporte: Email + WhatsApp ligados (sinal de confiança).
+- Pagamento híbrido (recuperador de vendas) ligado.
+- Cupom de desconto desligado (remove fricção de "procurar código").
+- Preço parcelado em destaque mantido ligado.
+- Página de obrigado: mantida na Hotmart (não quebrar fluxo webhook → Supabase).
+
+### Landing — OTIMIZADA (PR #31 mergeada, em produção)
+- Message match com o anúncio, prova social honesta, vídeo demo, âncora de ROI, bloco de confiança.
+
+### Verba — EM ESCALONAMENTO
+- 15/06: R$20 → **R$25/dia** (feito).
+- 16/06: subir para R$30/dia.
+- Meta: chegar a R$50/dia em degraus de ~20-30% (não resetar aprendizado).
+- NÃO fazer nenhuma outra edição significativa por 7 dias.
+
+### Próxima leitura: 22/06/2026
+Reler CTR, custo por InitiateCheckout, CPM e primeiras vendas com a landing nova rodando.
+Critério de corte: pausar se CPA > R$150 após 5 compras registradas.
