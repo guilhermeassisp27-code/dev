@@ -531,6 +531,29 @@
   .legal-doc p{font-size:13.5px;line-height:1.6}
   .legal-note{text-align:center;font-size:12px;color:var(--t3);max-width:560px;margin:24px auto 0;line-height:1.6}
 
+  /* demo interativo — Registro de Visita (documento jurídico) */
+  .rv-doc{background:#fff;border-radius:var(--rad-l);overflow:hidden;box-shadow:0 30px 70px rgba(0,0,0,.5);text-align:left}
+  .rv-head{display:flex;align-items:center;gap:12px;padding:16px 20px;border-bottom:1px solid #E2E8F0}
+  .rv-av{width:40px;height:40px;border-radius:11px;background:linear-gradient(135deg,#1E3A8A,#3556C7);display:flex;align-items:center;justify-content:center;font-family:var(--font-h);font-weight:800;font-size:18px;color:#fff;flex-shrink:0}
+  .rv-corretor .n{font-size:14px;font-weight:800;color:#0F172A;line-height:1.25}
+  .rv-corretor .c{font-size:11px;color:#64748B}
+  .rv-badge{margin-left:auto;display:inline-flex;align-items:center;gap:6px;background:#ECFDF3;color:#15803D;font-size:10.5px;font-weight:800;letter-spacing:.03em;padding:5px 11px;border-radius:999px;white-space:nowrap}
+  .rv-badge svg{width:12px;height:12px}
+  .rv-body{padding:20px}
+  .rv-title{font-family:var(--font-h);font-size:16.5px;font-weight:800;color:#0F172A;margin-bottom:14px}
+  .rv-grid{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:18px}
+  .rv-chip{background:#F8FAFC;border:1px solid #E2E8F0;border-radius:9px;padding:7px 12px;font-size:12.5px;color:#0F172A;font-weight:700}
+  .rv-chip b{color:#64748B;font-weight:600;display:block;font-size:9.5px;text-transform:uppercase;letter-spacing:.06em;margin-bottom:2px}
+  .rv-decl-t{font-size:10px;font-weight:800;letter-spacing:.1em;text-transform:uppercase;color:#B45309;margin-bottom:8px}
+  .rv-decl{font-size:13px;line-height:1.72;color:#1E293B}
+  .rv-decl b{color:#0F172A;font-weight:700}
+  .rv-sigs{display:grid;grid-template-columns:1fr 1fr;gap:20px;margin-top:24px}
+  @media(max-width:560px){.rv-sigs{grid-template-columns:1fr;gap:16px}}
+  .rv-sig{border-top:1px solid #94A3B8;padding-top:6px}
+  .rv-sig .nm{font-size:12.5px;font-weight:700;color:#0F172A}
+  .rv-sig .rl{font-size:11px;color:#64748B}
+  .rv-foot{padding:10px 20px;background:#F1F5F9;text-align:center;font-size:10.5px;letter-spacing:.06em;text-transform:uppercase;color:#94A3B8;font-weight:700}
+
   /* barra fixa mobile */
   .stickbar{
     position:fixed;left:0;right:0;bottom:0;z-index:60;
@@ -680,6 +703,7 @@ src="https://www.facebook.com/tr?id=2015826029060952&ev=PageView&noscript=1"/></
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
     </a>
     <span class="cta-note"><strong>A partir de R$ 41/mês.</strong> Uma comissão protegida cobre anos de assinatura · Garantia de 7 dias.</span>
+    <p style="margin-top:14px"><a href="#demo-visita" style="color:var(--amber);font-size:14.5px;font-weight:600;border-bottom:1px solid rgba(245,158,11,.4);padding-bottom:1px">Veja o documento sendo gerado com o seu nome ↓</a></p>
   </div>
 
   <div class="hero-visual">
@@ -1040,6 +1064,85 @@ src="https://www.facebook.com/tr?id=2015826029060952&ev=PageView&noscript=1"/></
   </div>
 </section>
 
+<!-- ===================== 5.6 DEMO INTERATIVO — REGISTRO DE VISITA ===================== -->
+<section class="section demo" id="demo-visita">
+  <div class="wrap">
+    <h2>Veja o <em style="font-style:normal;color:var(--amber)">Registro de Visita</em> com o seu nome — agora.</h2>
+    <p class="lead">Você acabou de ler a base legal. Preencha 3 campos e veja o documento que protege a sua comissão sendo gerado na hora — sem cadastro e sem cartão.</p>
+
+    <div class="demo-box">
+      <div class="demo-fields">
+        <div class="full">
+          <label class="demo-lbl" for="rv-corretor">Seu nome (o corretor)</label>
+          <input class="demo-inp" id="rv-corretor" type="text" placeholder="Ex: Carlos Andrade" maxlength="40">
+        </div>
+        <div>
+          <label class="demo-lbl" for="rv-cliente">Nome do cliente que visitou</label>
+          <input class="demo-inp" id="rv-cliente" type="text" placeholder="Ex: João Silva" maxlength="40">
+        </div>
+        <div>
+          <label class="demo-lbl" for="rv-imovel">Endereço do imóvel</label>
+          <input class="demo-inp" id="rv-imovel" type="text" placeholder="Ex: Rua das Acácias, 120 — São Paulo" maxlength="60">
+        </div>
+      </div>
+      <button class="cta demo-btn" onclick="gerarVisitaDemo()">
+        Gerar meu Registro de Visita
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+      </button>
+      <p class="demo-note">Demonstração no navegador — nada é enviado nem salvo.</p>
+    </div>
+
+    <div class="demo-skel" id="rv-skel">
+      <div class="bar" style="width:55%"></div>
+      <div class="bar" style="width:100%"></div>
+      <div class="bar" style="width:92%"></div>
+      <div class="bar" style="width:78%;margin-bottom:0"></div>
+    </div>
+
+    <div class="demo-out" id="rv-out">
+      <div class="rv-doc">
+        <div class="rv-head">
+          <div class="rv-av" id="rv-av">C</div>
+          <div class="rv-corretor">
+            <div class="n" id="rv-nome">—</div>
+            <div class="c">CRECI 00000-SP · (11) 99999-9999</div>
+          </div>
+          <span class="rv-badge"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg> Com amparo legal</span>
+        </div>
+        <div class="rv-body">
+          <div class="rv-title">Registro de Visita ao Imóvel</div>
+          <div class="rv-grid">
+            <div class="rv-chip"><b>Data da visita</b><span id="rv-data">—</span></div>
+            <div class="rv-chip"><b>Proteção</b>180 dias</div>
+            <div class="rv-chip"><b>Base legal</b>Art. 727 · CC</div>
+          </div>
+          <div class="rv-decl-t">Declaração</div>
+          <p class="rv-decl" id="rv-decl">—</p>
+          <div class="rv-sigs">
+            <div class="rv-sig">
+              <div class="nm" id="rv-sig-cliente">—</div>
+              <div class="rl">Visitante</div>
+            </div>
+            <div class="rv-sig">
+              <div class="nm" id="rv-sig-corretor">—</div>
+              <div class="rl">Corretor(a) de Imóveis</div>
+            </div>
+          </div>
+        </div>
+        <div class="rv-foot">Exemplo gerado no navegador · a versão completa sai com o seu logo, CRECI e campos de testemunha</div>
+      </div>
+
+      <div class="demo-after">
+        <p>Esse é o documento que <b>nenhum Word ou Canva gera pra você</b> — com fundamentação legal, prazo de 180 dias e campos de assinatura. Na versão completa sai com o seu logo e o seu CRECI, pronto pra assinar no celular ao fim da visita.</p>
+        <a class="cta" href="#planos" onclick="if(typeof fbq==='function')fbq('trackCustom','DemoVisitaParaPlanos')">
+          Quero proteger minhas comissões
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
+        </a>
+      </div>
+    </div>
+  </div>
+</section>
+
 <!-- ===================== 6. HOW IT WORKS ===================== -->
 <section class="section how" id="como-funciona">
   <div class="wrap">
@@ -1252,7 +1355,7 @@ src="https://www.facebook.com/tr?id=2015826029060952&ev=PageView&noscript=1"/></
         <div class="footer-col-t">Empresa</div>
         <a href="/termos.html">Termos de uso</a>
         <a href="/privacidade.html">Privacidade</a>
-        <a href="mailto:guilherme.assisp27@gmail.com">Suporte</a>
+        <a href="mailto:usecorretorpro@gmail.com">Suporte</a>
       </div>
     </div>
     <p class="footer-copy">© 2026 CorretorPRO. Todos os direitos reservados.</p>
@@ -1328,6 +1431,43 @@ src="https://www.facebook.com/tr?id=2015826029060952&ev=PageView&noscript=1"/></
     }, 1100);
   };
 
+  /* demo do Registro de Visita — espelha o termo real da ferramenta */
+  var esc = function(s){ return (s||'').replace(/[&<>]/g, function(c){ return {'&':'&amp;','<':'&lt;','>':'&gt;'}[c]; }); };
+
+  window.gerarVisitaDemo = function(){
+    var corretor = (document.getElementById('rv-corretor').value || '').trim() || 'Carlos Andrade';
+    var cliente  = (document.getElementById('rv-cliente').value || '').trim() || 'João Silva';
+    var imovel   = (document.getElementById('rv-imovel').value || '').trim() || 'Rua das Acácias, 120 — São Paulo';
+
+    var out  = document.getElementById('rv-out');
+    var skel = document.getElementById('rv-skel');
+    out.classList.remove('show');
+    skel.classList.add('show');
+    skel.scrollIntoView({behavior:'smooth', block:'center'});
+
+    setTimeout(function(){
+      var hoje = new Date().toLocaleDateString('pt-BR', { day:'numeric', month:'long', year:'numeric' });
+      document.getElementById('rv-av').textContent   = corretor.charAt(0).toUpperCase();
+      document.getElementById('rv-nome').textContent = corretor;
+      document.getElementById('rv-data').textContent = hoje;
+      document.getElementById('rv-sig-cliente').textContent  = cliente;
+      document.getElementById('rv-sig-corretor').textContent = corretor;
+      document.getElementById('rv-decl').innerHTML =
+        '<b>DECLARO</b>, para os devidos fins de direito, eu, <b>' + esc(cliente) + '</b>, que em <b>' + esc(hoje) +
+        '</b> visitei o imóvel situado em <b>' + esc(imovel) + '</b>, sendo-me este apresentado por intermédio do(a) corretor(a) de imóveis <b>' +
+        esc(corretor) + '</b>, a quem reconheço como responsável pela aproximação entre mim e o referido imóvel.<br><br>' +
+        'Declaro estar ciente de que, nos termos dos <b>artigos 722 a 729 do Código Civil</b> — em especial o <b>art. 727</b> —, ' +
+        'caso a negociação deste imóvel venha a se concretizar, <b>ainda que diretamente com o proprietário ou após o término da mediação</b>, ' +
+        'será devida ao(à) corretor(a) acima identificado(a) a respectiva remuneração de corretagem.<br><br>' +
+        'Esta declaração permanece eficaz pelo prazo de <b>180 (cento e oitenta) dias</b> e goza da presunção de veracidade prevista no <b>art. 408 do CPC</b>.';
+
+      skel.classList.remove('show');
+      out.classList.add('show');
+      out.scrollIntoView({behavior:'smooth', block:'center'});
+      if (typeof fbq === 'function') fbq('trackCustom', 'DemoVisitaGerada');
+    }, 1100);
+  };
+
   /* revela as seções conforme o scroll */
   var secs = document.querySelectorAll('section .wrap, .proof-inner');
   if ('IntersectionObserver' in window) {
@@ -1337,6 +1477,22 @@ src="https://www.facebook.com/tr?id=2015826029060952&ev=PageView&noscript=1"/></
       });
     }, { threshold: 0.12 });
     secs.forEach(function(s){ s.classList.add('reveal'); obs.observe(s); });
+  }
+
+  /* sinal de meio-funil: visitante chegou a ver a oferta (planos) */
+  var planosEl = document.getElementById('planos');
+  if (planosEl && 'IntersectionObserver' in window) {
+    var vcSent = false;
+    var vcObs = new IntersectionObserver(function(entries){
+      entries.forEach(function(e){
+        if (e.isIntersecting && !vcSent) {
+          vcSent = true;
+          if (typeof fbq === 'function') fbq('track', 'ViewContent', { content_name:'planos', content_type:'product' });
+          vcObs.disconnect();
+        }
+      });
+    }, { threshold: 0.4 });
+    vcObs.observe(planosEl);
   }
 
   /* barra fixa no celular após passar do hero */
