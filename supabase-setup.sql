@@ -37,3 +37,15 @@ create policy "cpr_update_own"
   on public.cpr_user_data for update
   using (auth.uid() = user_id)
   with check (auth.uid() = user_id);
+
+-- ============================================================
+-- Migração: Agenda de Visitas / Funil de Leads (2026-06)
+-- Nova coluna jsonb seguindo o MESMO padrão de `perfil` e `historico`
+-- (uma coluna por "domínio" de dado, sem tabela nova, RLS já cobre
+-- a tabela inteira por user_id). Idempotente — seguro rodar de novo.
+-- ============================================================
+alter table public.cpr_user_data
+  add column if not exists leads jsonb not null default '[]'::jsonb;
+
+-- Sem GRANT adicional necessário: a coluna nova já está coberta pelo
+-- grant select/insert/update on public.cpr_user_data feito acima.
