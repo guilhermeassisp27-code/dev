@@ -37,9 +37,9 @@
     --blue:#4D7EFF;
     --purple:#7C5CFC;
     --red:#F87171;
-    --urgency:#FB7185;
-    --urgency-h:#FDA4AF;
-    --urgency-soft:rgba(251,113,133,.13);
+    --urgency:#EF4444;
+    --urgency-h:#FCA5A5;
+    --urgency-soft:rgba(239,68,68,.16);
     --shadow:0 24px 60px rgba(0,0,0,.45);
     --shadow-amber:0 14px 34px rgba(245,158,11,.34);
     --rad:12px;
@@ -627,15 +627,15 @@
   /* ---------- faixa de preço de lançamento (escassez real) ---------- */
   .deadline{
     display:flex;align-items:center;justify-content:center;gap:16px;flex-wrap:wrap;
-    background:linear-gradient(135deg,rgba(251,113,133,.16),rgba(251,113,133,.04));
-    border:1px solid rgba(251,113,133,.4);border-radius:var(--rad-l);
+    background:linear-gradient(135deg,rgba(239,68,68,.24),rgba(239,68,68,.08));
+    border:1.5px solid rgba(239,68,68,.55);border-radius:var(--rad-l);
     padding:16px 24px;margin-bottom:32px;text-align:center;
   }
   .deadline-txt{font-size:14.5px;color:var(--white);font-weight:600}
   .deadline-txt strong{color:var(--urgency-h)}
   .deadline-clock{display:flex;gap:8px}
-  .deadline-clock div{background:var(--navy-3);border:1px solid rgba(251,113,133,.3);border-radius:8px;padding:6px 10px;min-width:46px;text-align:center}
-  .deadline-clock b{display:block;font-family:var(--font-h);font-size:18px;color:var(--urgency-h);line-height:1}
+  .deadline-clock div{background:var(--urgency);border:1px solid rgba(239,68,68,.7);border-radius:8px;padding:6px 10px;min-width:46px;text-align:center}
+  .deadline-clock b{display:block;font-family:var(--font-h);font-size:18px;color:var(--white);line-height:1}
   .deadline-clock span{display:block;font-size:9px;color:var(--t3);text-transform:uppercase;letter-spacing:.04em;margin-top:2px}
 
   /* ---------- video demo ---------- */
