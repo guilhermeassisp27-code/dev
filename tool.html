@@ -132,6 +132,16 @@ input[type=color]{opacity:0;width:0;height:0;position:absolute}
 .logo-preview svg{color:var(--t3)}
 .logo-actions{display:flex;flex-direction:column;gap:6px}
 
+/* foto do imóvel */
+.foto-upload{display:flex;align-items:center;gap:12px;flex-wrap:wrap}
+.foto-preview{width:96px;height:64px;border-radius:var(--rad);background:var(--s2);border:1px solid var(--b);display:flex;align-items:center;justify-content:center;overflow:hidden;flex-shrink:0}
+.foto-preview img{width:100%;height:100%;object-fit:cover}
+.foto-preview svg{color:var(--t3)}
+.foto-actions{display:flex;flex-direction:column;gap:6px}
+.prop-foto{width:100%;border-radius:var(--rad);overflow:hidden;margin-bottom:18px;display:none}
+.prop-foto.show{display:block}
+.prop-foto img{width:100%;max-height:320px;object-fit:cover;display:block}
+
 /* ── BUTTONS ── */
 .btn{display:inline-flex;align-items:center;gap:7px;padding:9px 16px;border-radius:var(--rad);font-size:13px;font-weight:600;font-family:var(--font);border:none;cursor:pointer;text-decoration:none;transition:all .15s;white-space:nowrap}
 .btn-primary{background:var(--p);color:#fff}
@@ -533,6 +543,23 @@ input[type=color]{opacity:0;width:0;height:0;position:absolute}
                 <input id="f-valor" type="text" class="inp" placeholder="450.000" required inputmode="numeric">
               </div>
             </div>
+            <div class="field f2">
+              <label class="lbl">Foto do imóvel (opcional)</label>
+              <div class="foto-upload">
+                <div class="foto-preview" id="foto-prev">
+                  <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>
+                </div>
+                <div class="foto-actions">
+                  <label class="btn btn-ghost btn-sm" style="cursor:pointer">
+                    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
+                    Enviar foto
+                    <input type="file" id="f-foto" accept="image/*" style="display:none" onchange="carregarFotoImovel(event)">
+                  </label>
+                  <button type="button" class="btn btn-ghost btn-sm" onclick="removerFotoImovel()">Remover</button>
+                </div>
+              </div>
+              <span class="hint">Deixa a proposta mais profissional. Máx 4MB.</span>
+            </div>
           </div>
 
           <!-- COMPRA específico -->
@@ -647,6 +674,9 @@ input[type=color]{opacity:0;width:0;height:0;position:absolute}
             <span class="prop-tag" id="p-tag-data"></span>
           </div>
         </div>
+
+        <!-- Foto do imóvel -->
+        <div class="prop-foto" id="p-foto"><img id="p-foto-img" alt="Foto do imóvel"></div>
 
         <!-- Grid do imóvel -->
         <div class="prop-imovel" id="p-imovel-grid"></div>
@@ -1105,6 +1135,7 @@ const escH = s => String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').repla
 let perfil = JSON.parse(localStorage.getItem('cpr_perfil') || 'null') || { nome:'',creci:'',tel:'',email:'',cor:'#4D7EFF',logo:null }
 let historico = JSON.parse(localStorage.getItem('cpr_hist') || '[]')
 let snapProposta = null
+let fotoAtual = null
 let _toastT = null
 let _crmFiltro = null  // filtro ativo por status no histórico
 let _menuAberto = null // referência ao dropdown de status aberto
@@ -1287,6 +1318,7 @@ function gerarProposta(ev) {
     garantia:   document.getElementById('f-garantia')?.value || 'Fiador',
     complem:    document.getElementById('f-complem')?.value.trim() || '',
     cond:       document.getElementById('f-cond').value.trim(),
+    foto:       fotoAtual,
   }
   snapProposta = d
 
@@ -1344,6 +1376,15 @@ function construirProposta(d) {
   document.getElementById('p-sub').textContent = `Para ${d.cliente} · ${hoje}`
   document.getElementById('p-tag-tipo').textContent = d.tipoNeg
   document.getElementById('p-tag-data').textContent = hoje
+
+  /* ── Foto do imóvel ── */
+  const fotoBox = document.getElementById('p-foto')
+  if (d.foto) {
+    document.getElementById('p-foto-img').src = d.foto
+    fotoBox.classList.add('show')
+  } else {
+    fotoBox.classList.remove('show')
+  }
 
   /* ── Grid do imóvel ── */
   const gridItems = [
@@ -1614,6 +1655,7 @@ function novaProposta() {
   document.getElementById('form').reset()
   atualizarTipoNeg()
   snapProposta = null
+  removerFotoImovel()
   window.scrollTo({ top:0, behavior:'smooth' })
   setTimeout(() => document.getElementById('f-cliente').focus(), 350)
 }
@@ -2298,6 +2340,43 @@ function removerLogo() {
   document.getElementById('logo-prev').innerHTML = `<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>`
   document.getElementById('cfg-prev-logo').innerHTML = `<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>`
   renderSidebarUser()
+}
+
+/* ── FOTO DO IMÓVEL (por proposta, não persiste no perfil) ── */
+// Mesmo padrão do logo: redimensiona antes de guardar em base64, mas em
+// JPEG (foto de imóvel não precisa de transparência) pra manter o jsonb leve.
+function carregarFotoImovel(ev) {
+  const file = ev.target.files[0]
+  if (!file) return
+  if (file.size > 4 * 1024 * 1024) { toast('Foto muito grande — máx 4MB', true); return }
+  const reader = new FileReader()
+  reader.onload = e => {
+    const img = new Image()
+    img.onload = () => {
+      const MAX = 800
+      let { width, height } = img
+      if (width > MAX || height > MAX) {
+        const escala = Math.min(MAX / width, MAX / height)
+        width = Math.round(width * escala)
+        height = Math.round(height * escala)
+      }
+      const canvas = document.createElement('canvas')
+      canvas.width = width; canvas.height = height
+      canvas.getContext('2d').drawImage(img, 0, 0, width, height)
+      fotoAtual = canvas.toDataURL('image/jpeg', 0.72)
+      document.getElementById('foto-prev').innerHTML = `<img src="${fotoAtual}" alt="Foto do imóvel">`
+      toast('Foto carregada')
+    }
+    img.onerror = () => toast('Arquivo de imagem inválido', true)
+    img.src = e.target.result
+  }
+  reader.readAsDataURL(file)
+}
+
+function removerFotoImovel() {
+  fotoAtual = null
+  document.getElementById('f-foto').value = ''
+  document.getElementById('foto-prev').innerHTML = `<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>`
 }
 
 /* ── TOAST ── */
