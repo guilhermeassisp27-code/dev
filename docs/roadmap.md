@@ -41,6 +41,7 @@ pesquisadas na internet, e implementa um por vez.
 - **Histórico por cliente** — agrupar todas as propostas de um mesmo cliente.
 
 ## Já entregue
+- **Agenda de Visitas / funil de leads** — cadastro do lead antes da visita (nome, telefone, imóvel, data/hora), lista priorizada por atraso/hoje/agendada, e "Marcar como realizada" que pré-preenche Registro de Visita e Proposta. _Dor validada via pesquisa em CRMs imobiliários: follow-up esquecido é causa recorrente de venda perdida._ (2026-06-17)
 - **Registro de Visita** — termo com amparo legal (arts. 722–729 CC) que comprova a intermediação do corretor, com assinaturas, PDF e WhatsApp. _Gatilho de assinatura validado na conversa com Isaac (2026-06-08)._ (2026-06-09)
 - **CRM leve / status da negociação** — badge de status por proposta (Nova / Enviada / Em negociação / Fechada / Perdida) com painel de contagem e filtro rápido por fase. _Atende o desejo de "BI/organização dos dados" do Isaac._ (2026-06-09)
 - **Busca/filtro no histórico** — campo de busca em "Minhas Propostas" para encontrar propostas antigas por cliente, tipo de imóvel ou endereço. (2026-06-06)

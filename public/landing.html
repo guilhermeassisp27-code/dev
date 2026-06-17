@@ -152,6 +152,7 @@
     display:block;width:100%;max-width:400px;margin:48px auto 0;
     border-radius:var(--rad-xl);box-shadow:var(--shadow);
     border:1px solid var(--line-2);
+    max-height:80vh;object-fit:cover;object-position:top;
   }
   /* no computador, mostra a versão larga (mais baixa) */
   @media(min-width:760px){
@@ -420,7 +421,7 @@
   .shot-frame-bar i:nth-child(2){background:#FBBF24}
   .shot-frame-bar i:nth-child(3){background:#34D399}
   .shot-frame-url{margin-left:10px;flex:1;height:18px;border-radius:6px;background:var(--navy-3);display:flex;align-items:center;padding:0 10px;font-size:10px;color:var(--t3);letter-spacing:.02em}
-  .shot-frame .hero-shot,.shot-frame img{margin:0;border:none;border-radius:0;box-shadow:none;max-width:100%;display:block;width:100%}
+  .shot-frame .hero-shot,.shot-frame img{margin:0;border:none;border-radius:0;box-shadow:none;max-width:100%;display:block;width:100%;max-height:80vh;object-fit:cover;object-position:top}
 
   /* grid de features (bento) */
   .feat-wrap{max-width:1020px}
@@ -619,6 +620,20 @@
   .roi-stat .big{font-family:var(--font-h);font-size:30px;font-weight:800;color:var(--amber);line-height:1}
   .roi-stat .lbl{font-size:11px;color:var(--t3);margin-top:4px;font-weight:600;letter-spacing:.04em;text-transform:uppercase}
   @media(max-width:560px){.roi-anchor{flex-direction:column;text-align:center}.roi-anchor-ico{margin:0 auto}}
+
+  /* ---------- faixa de preço de lançamento (escassez real) ---------- */
+  .deadline{
+    display:flex;align-items:center;justify-content:center;gap:16px;flex-wrap:wrap;
+    background:linear-gradient(135deg,rgba(245,158,11,.14),rgba(245,158,11,.04));
+    border:1px solid rgba(245,158,11,.35);border-radius:var(--rad-l);
+    padding:16px 24px;margin-bottom:32px;text-align:center;
+  }
+  .deadline-txt{font-size:14.5px;color:var(--white);font-weight:600}
+  .deadline-txt strong{color:var(--amber)}
+  .deadline-clock{display:flex;gap:8px}
+  .deadline-clock div{background:var(--navy-3);border:1px solid rgba(245,158,11,.25);border-radius:8px;padding:6px 10px;min-width:46px;text-align:center}
+  .deadline-clock b{display:block;font-family:var(--font-h);font-size:18px;color:var(--amber);line-height:1}
+  .deadline-clock span{display:block;font-size:9px;color:var(--t3);text-transform:uppercase;letter-spacing:.04em;margin-top:2px}
 
   /* ---------- video demo ---------- */
   .vdemo{background:var(--navy-2);border-top:1px solid var(--line);border-bottom:1px solid var(--line)}
@@ -1196,6 +1211,15 @@ src="https://www.facebook.com/tr?id=2015826029060952&ev=PageView&noscript=1"/></
       </div>
     </div>
 
+    <div class="deadline" id="deadline-banner">
+      <span class="deadline-txt"><strong>Preço de lançamento</strong> — R$ 67/mês até 30 de junho. Depois sobe para R$ 97/mês.</span>
+      <div class="deadline-clock" id="deadline-clock">
+        <div><b id="dl-d">--</b><span>dias</span></div>
+        <div><b id="dl-h">--</b><span>horas</span></div>
+        <div><b id="dl-m">--</b><span>min</span></div>
+      </div>
+    </div>
+
     <div class="plans">
       <!-- Mensal -->
       <div class="plan">
@@ -1494,6 +1518,24 @@ src="https://www.facebook.com/tr?id=2015826029060952&ev=PageView&noscript=1"/></
     }, { threshold: 0.4 });
     vcObs.observe(planosEl);
   }
+
+  /* contagem do preço de lançamento — termina 30/06/2026 23:59 (horário de Brasília) */
+  (function(){
+    var deadline = new Date('2026-06-30T23:59:59-03:00').getTime();
+    var dEl = document.getElementById('dl-d'), hEl = document.getElementById('dl-h'), mEl = document.getElementById('dl-m');
+    var banner = document.getElementById('deadline-banner');
+    if (!dEl || !hEl || !mEl) return;
+    function tick(){
+      var diff = deadline - Date.now();
+      if (diff <= 0) { if (banner) banner.style.display = 'none'; return; }
+      var d = Math.floor(diff / 86400000);
+      var h = Math.floor((diff % 86400000) / 3600000);
+      var m = Math.floor((diff % 3600000) / 60000);
+      dEl.textContent = d; hEl.textContent = h; mEl.textContent = m;
+    }
+    tick();
+    setInterval(tick, 60000);
+  })();
 
   /* barra fixa no celular após passar do hero */
   var bar = document.getElementById('stickbar');

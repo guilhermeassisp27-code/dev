@@ -15,6 +15,12 @@ Formato de cada entrada:
 
 ---
 
+## [2026-06-17] Agenda de Visitas — funil de leads antes da venda
+**Para o corretor:** pare de perder vendas por esquecer follow-up. Agende a visita com o cliente assim que marcar, e a ferramenta lembra você de quem ainda não foi atendido — e quando o cliente vira mesmo o registro de visita ou a proposta, os dados já vêm preenchidos.
+**O que mudou:** nova aba "Agenda de Visitas" (seção "Funil" no menu). Cadastro rápido de lead com nome, telefone, imóvel de interesse, data/hora e observação. Lista ordenada mostra atrasadas, hoje e agendadas primeiro, com badge na sidebar contando pendências. Botão "Marcar como realizada" libera "Gerar Registro de Visita" e "Gerar Proposta", que pré-preenchem nome, telefone e endereço a partir do lead — sem redigitar. Dados salvos em nova coluna jsonb (`leads`) na mesma tabela `cpr_user_data`, seguindo o padrão de `perfil`/`historico`.
+**Dor validada:** pesquisa em CRMs imobiliários (DNA de Vendas, Website Imobiliário, ImobDesk) mostra que o follow-up esquecido é apontado como uma das principais causas de perda de venda — "o cliente diz 'vou pensar' e o corretor não anota, não programa lembrete e não retorna"; estudos citados (Salesforce) associam uso de CRM a até 29% mais negócios fechados. O CorretorPRO hoje só atuava DEPOIS da visita (Registro de Visita/Proposta); esta é a primeira função que cobre o ANTES.
+**Status:** em PR
+
 ## [2026-06-09] Registro de Visita — proteção jurídica da corretagem
 **Para o corretor:** gere em segundos o termo que comprova que foi você quem apresentou o imóvel — sua garantia de receber a comissão caso o negócio feche por fora (arts. 722 a 729 do Código Civil).
 **O que mudou:** nova aba "Registro de Visita" gera um termo profissional com a marca do corretor: dados do visitante (nome, CPF), imóvel, data/hora, declaração com amparo legal e campos de assinatura para cliente e corretor. Dá pra copiar, baixar em PDF, enviar por WhatsApp e salvar na nuvem junto com as propostas.
