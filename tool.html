@@ -233,6 +233,61 @@ input[type=color]{opacity:0;width:0;height:0;position:absolute}
 
 .prop-foot{padding:14px 24px;border-top:1px solid var(--b);display:flex;flex-wrap:wrap;gap:7px;align-items:center}
 
+/* ── MODELOS DE PROPOSTA (temas visuais) ──
+   Reaproveitam os mesmos dados/IDs — só mudam classe + CSS, sem duplicar
+   a lógica de cálculo/preenchimento que fica em construirProposta(d). */
+
+/* Tema MODERNO: cabeçalho com cor de marca em destaque, cards de valor mais ousados */
+.proposta.tema-moderno .prop-corretor{background:linear-gradient(120deg,var(--p),var(--ph));border-bottom:none}
+.proposta.tema-moderno .prop-corretor-nome{color:#fff}
+.proposta.tema-moderno .prop-corretor-creci,.proposta.tema-moderno .prop-corretor-contato{color:rgba(255,255,255,.85)}
+.proposta.tema-moderno .prop-corretor-logo{background:rgba(255,255,255,.18)}
+.proposta.tema-moderno .prop-head{background:linear-gradient(120deg,var(--p) 0%,#7C5CFC 100%);border-bottom:none}
+.proposta.tema-moderno .prop-h2,.proposta.tema-moderno .prop-sub{color:#fff}
+.proposta.tema-moderno .prop-sub{opacity:.9}
+.proposta.tema-moderno .prop-badge{background:rgba(255,255,255,.18);color:#fff}
+.proposta.tema-moderno .prop-badge-dot{background:#fff}
+.proposta.tema-moderno .prop-tag{background:rgba(255,255,255,.16);border-color:rgba(255,255,255,.25);color:#fff}
+.proposta.tema-moderno .mod{border-radius:var(--radl);border-width:1px}
+.proposta.tema-moderno .mod.hl{background:linear-gradient(135deg,var(--p),var(--ph));border-color:transparent}
+.proposta.tema-moderno .mod.hl .mod-label,.proposta.tema-moderno .mod.hl .mod-note{color:rgba(255,255,255,.8)}
+.proposta.tema-moderno .mod.hl .mod-val{color:#fff}
+.proposta.tema-moderno .mod.hl .mod-parcela{color:#fff}
+.proposta.tema-moderno .sim-row.tot{background:var(--ps);border-radius:6px;padding:6px 8px;border-top:none}
+
+/* Tema MINIMALISTA: menos cor, tipografia maior, mais espaço em branco */
+.proposta.tema-minimalista{border:none;background:transparent}
+.proposta.tema-minimalista .prop-corretor{background:transparent;border-bottom:1px solid var(--b);padding:22px 4px}
+.proposta.tema-minimalista .prop-corretor-logo{background:transparent;border:1px solid var(--b)}
+.proposta.tema-minimalista .prop-head{background:transparent;border-bottom:1px solid var(--b);padding:24px 4px}
+.proposta.tema-minimalista .prop-h2{font-size:23px;letter-spacing:-.8px}
+.proposta.tema-minimalista .prop-badge{background:transparent;border:1px solid var(--b);color:var(--t2)}
+.proposta.tema-minimalista .prop-badge-dot{background:var(--t2)}
+.proposta.tema-minimalista .prop-tag{background:transparent}
+.proposta.tema-minimalista .prop-imovel{background:transparent;padding:18px 4px}
+.proposta.tema-minimalista .prop-body{padding:22px 4px;gap:26px}
+.proposta.tema-minimalista .prop-text{font-size:15px;line-height:1.9}
+.proposta.tema-minimalista .mod{background:transparent;border:1px solid var(--b);border-radius:2px}
+.proposta.tema-minimalista .mod.hl{background:transparent;border-color:var(--bm)}
+.proposta.tema-minimalista .mod-val{font-size:17px}
+.proposta.tema-minimalista .sim-col{background:transparent;border-radius:2px}
+.proposta.tema-minimalista .prop-foot{padding:18px 4px;border-top:1px solid var(--b)}
+
+/* Seletor de modelo (Configurações) */
+.modelo-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}
+@media(max-width:600px){.modelo-grid{grid-template-columns:1fr}}
+.modelo-card{background:var(--s2);border:2px solid var(--b);border-radius:var(--rad);padding:14px;cursor:pointer;transition:border-color .15s;text-align:left;font-family:var(--font)}
+.modelo-card:hover{border-color:var(--bm)}
+.modelo-card.sel-m{border-color:var(--p);background:var(--ps)}
+.modelo-preview{height:46px;border-radius:6px;margin-bottom:10px;display:flex;flex-direction:column;gap:4px;padding:6px 8px;justify-content:center}
+.modelo-preview-classico{background:linear-gradient(135deg,rgba(77,126,255,.18),rgba(124,92,252,.08));border:1px solid var(--b)}
+.modelo-preview-moderno{background:linear-gradient(120deg,var(--p),#7C5CFC)}
+.modelo-preview-minimalista{background:var(--s1);border:1px solid var(--bm)}
+.modelo-preview-bar{height:5px;border-radius:3px;background:rgba(255,255,255,.4);width:60%}
+.modelo-preview-minimalista .modelo-preview-bar{background:var(--t3);width:40%}
+.modelo-nome{font-size:13px;font-weight:700;color:var(--t);margin-bottom:2px}
+.modelo-desc{font-size:11px;color:var(--t3);line-height:1.4}
+
 /* ── HISTORY VIEW ── */
 .hist-empty{text-align:center;padding:60px 20px}
 .hist-empty svg{color:var(--t3);margin-bottom:16px}
@@ -1085,6 +1140,28 @@ input[type=color]{opacity:0;width:0;height:0;position:absolute}
           </div>
         </div>
 
+        <div class="card">
+          <div class="card-t">Modelo da Proposta</div>
+          <p style="font-size:12px;color:var(--t2);margin-bottom:14px">Escolha o estilo visual que sua proposta vai usar a partir de agora — pode trocar quando quiser, sem perder nenhum dado.</p>
+          <div class="modelo-grid" id="modelo-grid" role="radiogroup" aria-label="Modelo da proposta">
+            <button type="button" class="modelo-card" data-modelo="classico" onclick="selecionarModelo('classico')">
+              <div class="modelo-preview modelo-preview-classico"><div class="modelo-preview-bar"></div><div class="modelo-preview-bar" style="width:40%"></div></div>
+              <div class="modelo-nome">Clássico</div>
+              <div class="modelo-desc">Visual atual — equilibrado, com toque de cor na marca.</div>
+            </button>
+            <button type="button" class="modelo-card" data-modelo="moderno" onclick="selecionarModelo('moderno')">
+              <div class="modelo-preview modelo-preview-moderno"><div class="modelo-preview-bar"></div><div class="modelo-preview-bar" style="width:40%"></div></div>
+              <div class="modelo-nome">Moderno</div>
+              <div class="modelo-desc">Mais ousado — cabeçalho e destaques com a cor da sua marca em bloco.</div>
+            </button>
+            <button type="button" class="modelo-card" data-modelo="minimalista" onclick="selecionarModelo('minimalista')">
+              <div class="modelo-preview modelo-preview-minimalista"><div class="modelo-preview-bar"></div><div class="modelo-preview-bar" style="width:30%"></div></div>
+              <div class="modelo-nome">Minimalista</div>
+              <div class="modelo-desc">Mais limpo — tipografia maior, menos cor, foco no conteúdo.</div>
+            </button>
+          </div>
+        </div>
+
         <div style="display:flex;gap:10px;align-items:center">
           <button type="submit" class="btn btn-primary">
             <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 21H5a2 2 0 01-2-2V5a2 2 0 012-2h11l5 5v11a2 2 0 01-2 2z"/><polyline points="17 21 17 13 7 13 7 21"/><polyline points="7 3 7 8 15 8"/></svg>
@@ -1196,7 +1273,7 @@ function mostrarInativo() {
 const escH = s => String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;')
 
 /* ── STATE ── */
-let perfil = JSON.parse(localStorage.getItem('cpr_perfil') || 'null') || { nome:'',creci:'',tel:'',email:'',cor:'#4D7EFF',logo:null }
+let perfil = JSON.parse(localStorage.getItem('cpr_perfil') || 'null') || { nome:'',creci:'',tel:'',email:'',cor:'#4D7EFF',logo:null,modelo:'classico' }
 let historico = JSON.parse(localStorage.getItem('cpr_hist') || '[]')
 let leads = JSON.parse(localStorage.getItem('cpr_leads') || '[]')
 let snapProposta = null
@@ -1254,7 +1331,7 @@ async function carregarRemoto() {
     if (error) return
     if (data) {
       if (data.perfil && typeof data.perfil === 'object') {
-        perfil = Object.assign({ nome:'',creci:'',tel:'',email:'',cor:'#4D7EFF',logo:null }, data.perfil)
+        perfil = Object.assign({ nome:'',creci:'',tel:'',email:'',cor:'#4D7EFF',logo:null,modelo:'classico' }, data.perfil)
         localStorage.setItem('cpr_perfil', JSON.stringify(perfil))
       }
       if (Array.isArray(data.historico)) {
@@ -1424,6 +1501,13 @@ function construirProposta(d) {
   const valNum = parseFloat(d.valor.replace(/\./g,'').replace(',','.')) || 0
   const valorFmt = valNum ? 'R$ ' + valNum.toLocaleString('pt-BR') : 'A confirmar'
   const nomeCorretor = perfil.nome || 'Corretor(a)'
+
+  /* ── Modelo visual escolhido pelo corretor (Configurações) ──
+     Só troca a classe CSS; os dados (d) e o HTML montado abaixo são os
+     mesmos para os 3 modelos — sem duplicar cálculo/preenchimento. */
+  const modeloAtual = ['classico','moderno','minimalista'].includes(perfil.modelo) ? perfil.modelo : 'classico'
+  const propostaEl = document.getElementById('proposta')
+  propostaEl.className = 'proposta' + (modeloAtual !== 'classico' ? ' tema-' + modeloAtual : '')
 
   /* ── Cabeçalho corretor ── */
   document.getElementById('pc-nome').textContent = perfil.nome || '—'
@@ -2466,6 +2550,18 @@ function carregarFormConfig() {
     const prev = document.getElementById('logo-prev')
     prev.innerHTML = `<img src="${perfil.logo}" alt="Logo">`
   }
+  marcarModeloSelecionado(perfil.modelo || 'classico')
+}
+
+/* ── MODELO DE PROPOSTA (tema visual) ── */
+function marcarModeloSelecionado(modelo) {
+  document.querySelectorAll('.modelo-card').forEach(c => {
+    c.classList.toggle('sel-m', c.dataset.modelo === modelo)
+  })
+}
+function selecionarModelo(modelo) {
+  perfil.modelo = modelo
+  marcarModeloSelecionado(modelo)
 }
 
 function atualizarPreview() {

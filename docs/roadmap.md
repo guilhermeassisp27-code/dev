@@ -17,15 +17,11 @@ pesquisadas na internet, e implementa um por vez.
    _Dor:_ o corretor quer enviar a proposta na hora, direto no WhatsApp, sem anexar arquivo pesado.
    _Valor:_ gerar um link público da proposta + botão "Enviar no WhatsApp" com mensagem pronta.
 
-3. **Modelos de proposta (2–3 layouts)**
-   _Dor:_ corretores têm estilos diferentes; um único layout não serve para todos os imóveis (alto padrão vs popular).
-   _Valor:_ escolher entre 2–3 layouts prontos antes de gerar.
-
-4. **Cálculo de financiamento aprimorado (SAC + Price)**
+3. **Cálculo de financiamento aprimorado (SAC + Price)**
    _Dor:_ cliente sempre pergunta "quanto fica a parcela?"; o corretor perde tempo simulando à parte.
    _Valor:_ mostrar SAC e Price lado a lado dentro da proposta.
 
-5. **Galeria de fotos do imóvel na proposta**
+4. **Galeria de fotos do imóvel na proposta**
    _Dor:_ proposta sem foto não vende; o corretor monta isso manualmente em outro lugar.
    _Valor:_ anexar 3–5 fotos do imóvel que aparecem na proposta/PDF.
 
@@ -41,6 +37,7 @@ pesquisadas na internet, e implementa um por vez.
 - **Histórico por cliente** — agrupar todas as propostas de um mesmo cliente.
 
 ## Já entregue
+- **Modelos de proposta (Clássico, Moderno, Minimalista)** — seletor em Configurações que troca o visual da proposta gerada, salvo no perfil junto com logo/cor. _Dor:_ corretores têm estilos diferentes; um único layout não serve para todos os imóveis (alto padrão vs popular). (2026-06-17)
 - **Agenda de Visitas / funil de leads** — cadastro do lead antes da visita (nome, telefone, imóvel, data/hora), lista priorizada por atraso/hoje/agendada, e "Marcar como realizada" que pré-preenche Registro de Visita e Proposta. _Dor validada via pesquisa em CRMs imobiliários: follow-up esquecido é causa recorrente de venda perdida._ (2026-06-17)
 - **Registro de Visita** — termo com amparo legal (arts. 722–729 CC) que comprova a intermediação do corretor, com assinaturas, PDF e WhatsApp. _Gatilho de assinatura validado na conversa com Isaac (2026-06-08)._ (2026-06-09)
 - **CRM leve / status da negociação** — badge de status por proposta (Nova / Enviada / Em negociação / Fechada / Perdida) com painel de contagem e filtro rápido por fase. _Atende o desejo de "BI/organização dos dados" do Isaac._ (2026-06-09)
