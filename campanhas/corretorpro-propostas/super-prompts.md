@@ -13,6 +13,27 @@ Vídeo vertical 9:16, ritmo rápido e energético, estilo screen-recording mistu
 Vídeo vertical 9:16, estética de depoimento espontâneo gravado no celular. Um corretor de imóveis brasileiro, homem negro de uns 40 anos, camisa social, em pé no meio da sala ampla e vazia de um apartamento à venda com janelas grandes e luz natural abundante. Ele fala para a câmera com entusiasmo contido e emoção real, como quem manda um áudio empolgado para um amigo, gesticulando e depois virando a tela do próprio celular para mostrar uma proposta de imóvel profissional. Câmera na mão, plano médio, leve movimento natural, um discreto push-in no momento mais emocionante. Iluminação natural suave, cores realistas e quentes. 9:16, duração 22 segundos, estilo documental e autêntico.
 > Usar depoimento REAL com dado verdadeiro ("de X pra Y fechamentos"). Prova inventada queima a conta.
 
+## Vídeos 8s (Sora) — gerar 1 clipe por vez e juntar depois (ver montagem.md)
+REGRA: a descrição do personagem deve ser IDÊNTICA nos 3 clipes de cada vídeo,
+senão o Sora gera outra pessoa e a montagem quebra.
+
+### C1 — personagem: homem branco ~35, cabelo castanho curto, barba por fazer, camisa social azul-clara
+- Clipe 1/3 (gancho, 7s): no carro estacionado em frente a um prédio, luz de fim de tarde, selfie no celular. Fala em PT-BR: "Cara, eu perdi venda por causa disso e demorei pra entender."
+- Clipe 2/3 (corpo, 8s): mesmo carro; corte rápido de 1s pra close de tela de WhatsApp com foto de imóvel + preço digitado. Fala em PT-BR: "Mandei a proposta como sempre: foto e preço no zap. O cliente sumiu. Não foi o preço — eu pareci amador."
+- Clipe 3/3 (CTA, 6s): no carro, guarda o celular. Fala em PT-BR: "Se você manda proposta assim, presta atenção nisso. Faz diferença."
+
+### C4 — personagem: homem pardo ~28, cabelo escuro, camiseta cinza casual
+- Clipe 1/3 (gancho, 8s): mesa de escritório, notebook com editor de design bagunçado, bufando. Fala PT-BR: "Quanto tempo você gasta montando uma proposta no Canva? Pois é."
+- Clipe 2/3 (demo, 8s): close no celular preenchendo campos e proposta pronta aparecendo. Fala PT-BR: "Agora eu preencho os dados e a proposta sai pronta. Em segundos."
+- Clipe 3/3 (CTA, 8s): segurando o celular com a proposta pronta, sorriso. Fala PT-BR: "Enquanto você monta no Canva, o outro corretor já mandou. Para de perder tempo."
+
+### C7 — personagem: homem negro ~40, cabelo curto, camisa social branca
+- Clipe 1/3 (gancho, 7s): sala vazia de apê à venda, janelas grandes, luz natural. Fala PT-BR: "Eu fechei dois imóveis essa semana, e parte disso é a proposta, juro."
+- Clipe 2/3 (corpo, 8s): vira a tela do celular mostrando proposta profissional. Fala PT-BR: "O cliente respondeu na hora: 'que material caprichado'. Isso nunca tinha acontecido."
+- Clipe 3/3 (CTA, 7s): sorrindo, bate de leve no celular. Fala PT-BR: "Se você é corretor e ainda não usa, testa hoje. Sério."
+
+Todos: 9:16 vertical, estética autêntica de celular, áudio falado em português do Brasil.
+
 ## Assets gerados no Canva (links de edição permanentes)
 
 | # | Criativo | Editar no Canva |
