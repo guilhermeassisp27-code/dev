@@ -15,6 +15,11 @@ Formato de cada entrada:
 
 ---
 
+## [2026-06-17] Landing page — cores com foco estratégico de conversão + CTA em duas camadas
+**Para o corretor:** a página de vendas agora deixa mais claro o que é "destaque/premium" (dourado, já existia) e o que é "o prazo está acabando" (agora em vermelho-coral, separado do dourado) — sem confundir as duas mensagens. Quem ainda não está pronto para assinar agora tem um botão secundário para ver a demonstração antes.
+**O que mudou:** pesquisa de psicologia das cores aplicada a imóveis/SaaS confirmou que a base navy + âmbar/dourado já está correta para confiança e status premium (não foi alterada). O ponto fraco identificado: a faixa de escassez real (preço de lançamento + countdown) usava a mesma cor âmbar do CTA e de quase todo o resto da página, perdendo o efeito de urgência. Criada nova cor dedicada (`--urgency`, vermelho-coral) só para essa faixa de prazo, e reforçado o contraste do selo de garantia de 7 dias (borda e peso da fonte) para ele competir melhor visualmente perto do checkout. Inspirado em benchmarks de ferramentas para corretores (Follow Up Boss), o CTA principal do hero agora vem acompanhado de um CTA secundário ("Ver demonstração") em camada mais leve, sem alterar a paleta navy/âmbar. CTA, plano em destaque, badges e footer permanecem em âmbar — já validados pela pesquisa. Não foram alterados preços, links de checkout, countdown (JS) nem pixel.
+**Status:** publicado
+
 ## [2026-06-17] Modelos de Proposta — 3 visuais para escolher
 **Para o corretor:** sua proposta não fica igual à de todo mundo — escolha entre Clássico, Moderno e Minimalista e mande sempre com a cara que combina com o imóvel e a sua marca.
 **O que mudou:** nova seção "Modelo da Proposta" em Configurações, com 3 cards clicáveis (Clássico = visual atual; Moderno = cabeçalho e destaques em bloco de cor; Minimalista = mais limpo, tipografia maior, menos cor). A escolha é salva no perfil (mesma coluna `perfil` jsonb usada hoje para logo/cor) e aplicada automaticamente em toda nova proposta gerada — é só troca de CSS, sem duplicar o cálculo financeiro nem o conteúdo da proposta. PDF e impressão continuam no padrão limpo de sempre, independente do modelo escolhido.
