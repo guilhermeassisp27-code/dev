@@ -15,6 +15,12 @@ Formato de cada entrada:
 
 ---
 
+## [2026-06-17] Modelos de Proposta — 3 visuais para escolher
+**Para o corretor:** sua proposta não fica igual à de todo mundo — escolha entre Clássico, Moderno e Minimalista e mande sempre com a cara que combina com o imóvel e a sua marca.
+**O que mudou:** nova seção "Modelo da Proposta" em Configurações, com 3 cards clicáveis (Clássico = visual atual; Moderno = cabeçalho e destaques em bloco de cor; Minimalista = mais limpo, tipografia maior, menos cor). A escolha é salva no perfil (mesma coluna `perfil` jsonb usada hoje para logo/cor) e aplicada automaticamente em toda nova proposta gerada — é só troca de CSS, sem duplicar o cálculo financeiro nem o conteúdo da proposta. PDF e impressão continuam no padrão limpo de sempre, independente do modelo escolhido.
+**Dor validada:** já estava no roadmap priorizado ("corretores têm estilos diferentes; um único layout não serve para todos os imóveis — alto padrão vs popular"). Pesquisa sobre identidade visual no setor (blogs de marketing imobiliário) reforça que a paleta/estilo comunica posicionamento — imóveis de alto padrão pedem visual mais sóbrio/minimalista, enquanto público mais jovem/popular responde melhor a cores vibrantes e blocos de destaque; hoje o CorretorPRO só deixava o corretor variar a cor da marca, não o layout em si. Reforça o posicionamento usado na landing/anúncio de "parecer uma imobiliária grande".
+**Status:** em PR
+
 ## [2026-06-17] Agenda de Visitas — funil de leads antes da venda
 **Para o corretor:** pare de perder vendas por esquecer follow-up. Agende a visita com o cliente assim que marcar, e a ferramenta lembra você de quem ainda não foi atendido — e quando o cliente vira mesmo o registro de visita ou a proposta, os dados já vêm preenchidos.
 **O que mudou:** nova aba "Agenda de Visitas" (seção "Funil" no menu). Cadastro rápido de lead com nome, telefone, imóvel de interesse, data/hora e observação. Lista ordenada mostra atrasadas, hoje e agendadas primeiro, com badge na sidebar contando pendências. Botão "Marcar como realizada" libera "Gerar Registro de Visita" e "Gerar Proposta", que pré-preenchem nome, telefone e endereço a partir do lead — sem redigitar. Dados salvos em nova coluna jsonb (`leads`) na mesma tabela `cpr_user_data`, seguindo o padrão de `perfil`/`historico`.
