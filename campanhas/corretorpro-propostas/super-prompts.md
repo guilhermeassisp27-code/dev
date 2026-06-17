@@ -29,11 +29,21 @@ Vídeo vertical 9:16, estética de depoimento espontâneo gravado no celular. Um
 
 > Links de download (PNG/MP4) expiram em horas — reexportar pelo design quando precisar.
 
+## Auditoria de texto (feita)
+Corrigidos os textos editáveis que saíram errados na geração:
+- C2: estava em inglês ("The client judges you BEFORE") → "O cliente te julga ANTES DO PREÇO" (ajustado tamanho p/ caber + cedilha).
+- C8: placeholder "www.reallygreatsite.com" e data solta → "Assine hoje — mensal ou anual" + "Use na próxima visita".
+- C9: "na na prática" (duplicado) → "Não é promessa. Veja a diferença na prática".
+- C1: texto genérico "Realidade do Corretores" → gancho "Perdi venda e nem percebi" + legenda (layout reposicionado).
+- C4 cena 1: inglês com erro ("puicing") → "Quanto tempo você gasta montando UMA proposta?" (layout reposicionado).
+- C4 cena 2: inglês ("Fill it and the proposal...") → "Preenche e a proposta sai pronta. Em segundos."
+- C3, C5, C6: já estavam corretos em PT, sem alteração.
+
 ## Pendências
 - C4 cena 3 (CTA): regerar no Canva quando a cota resetar. Texto: "Enquanto você monta no Canva, o outro já mandou." + "CorretorPRO".
+- C8: regerar a IMAGEM (estilo 3D fora do padrão + "BREAL ESTATE" cravado no pixel, não editável) quando a cota resetar.
 - Cards internos dos carrosséis C3/C6/C9: montar no editor do Canva (texto já no criativos.md).
-- C1 e C7: gerar no Sora com os prompts acima.
-- Revisar texto dentro das imagens (IA às vezes erra acento/letra).
+- C1 e C7: gerar no Sora com os prompts acima (vídeo com pessoa falando).
 - Plugar dados reais de oferta/preço/garantia/depoimento nos criativos P3.
 
 ## Notas de ferramenta
