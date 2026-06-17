@@ -37,6 +37,9 @@
     --blue:#4D7EFF;
     --purple:#7C5CFC;
     --red:#F87171;
+    --urgency:#FB7185;
+    --urgency-h:#FDA4AF;
+    --urgency-soft:rgba(251,113,133,.13);
     --shadow:0 24px 60px rgba(0,0,0,.45);
     --shadow-amber:0 14px 34px rgba(245,158,11,.34);
     --rad:12px;
@@ -325,8 +328,8 @@
   .plan-ghost:hover{background:var(--amber-soft);box-shadow:none;transform:translateY(-2px)}
   .pricing .guarantee{
     display:flex;align-items:center;justify-content:center;gap:10px;
-    margin-top:32px;font-size:15px;color:var(--white);font-weight:600;
-    background:rgba(34,197,94,.09);border:1px solid rgba(34,197,94,.25);
+    margin-top:32px;font-size:15px;color:var(--white);font-weight:700;
+    background:rgba(34,197,94,.13);border:1.5px solid rgba(34,197,94,.4);
     border-radius:10px;padding:14px 22px;
   }
   .pricing .guarantee svg{width:22px;height:22px;color:var(--green);flex-shrink:0}
@@ -624,15 +627,15 @@
   /* ---------- faixa de preço de lançamento (escassez real) ---------- */
   .deadline{
     display:flex;align-items:center;justify-content:center;gap:16px;flex-wrap:wrap;
-    background:linear-gradient(135deg,rgba(245,158,11,.14),rgba(245,158,11,.04));
-    border:1px solid rgba(245,158,11,.35);border-radius:var(--rad-l);
+    background:linear-gradient(135deg,rgba(251,113,133,.16),rgba(251,113,133,.04));
+    border:1px solid rgba(251,113,133,.4);border-radius:var(--rad-l);
     padding:16px 24px;margin-bottom:32px;text-align:center;
   }
   .deadline-txt{font-size:14.5px;color:var(--white);font-weight:600}
-  .deadline-txt strong{color:var(--amber)}
+  .deadline-txt strong{color:var(--urgency-h)}
   .deadline-clock{display:flex;gap:8px}
-  .deadline-clock div{background:var(--navy-3);border:1px solid rgba(245,158,11,.25);border-radius:8px;padding:6px 10px;min-width:46px;text-align:center}
-  .deadline-clock b{display:block;font-family:var(--font-h);font-size:18px;color:var(--amber);line-height:1}
+  .deadline-clock div{background:var(--navy-3);border:1px solid rgba(251,113,133,.3);border-radius:8px;padding:6px 10px;min-width:46px;text-align:center}
+  .deadline-clock b{display:block;font-family:var(--font-h);font-size:18px;color:var(--urgency-h);line-height:1}
   .deadline-clock span{display:block;font-size:9px;color:var(--t3);text-transform:uppercase;letter-spacing:.04em;margin-top:2px}
 
   /* ---------- video demo ---------- */
