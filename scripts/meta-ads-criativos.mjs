@@ -74,32 +74,97 @@ async function resolveCampaignAdset(accId, campanha) {
   return ms[0];
 }
 
-// Pega o destino (página, link, CTA, instagram) de um anúncio que já existe na conta.
-async function herdarDestino(accId) {
+// Extrai página, link e CTA de um creative — cobrindo imagem, vídeo, Advantage+
+// (asset_feed_spec) e post existente (object_story_id no formato pageid_postid).
+function extrairDestino(cr) {
+  if (!cr) return {};
+  const spec = cr.object_story_spec || {};
+  let page_id = spec.page_id || null;
+  const ig = spec.instagram_actor_id || cr.instagram_actor_id || null;
+  let link = null;
+  let cta = null;
+
+  if (spec.link_data) {
+    link = spec.link_data.link || null;
+    cta = spec.link_data.call_to_action || null;
+  } else if (spec.video_data?.call_to_action) {
+    link = spec.video_data.call_to_action?.value?.link || null;
+    cta = spec.video_data.call_to_action || null;
+  } else if (cr.asset_feed_spec?.link_urls?.length) {
+    link = cr.asset_feed_spec.link_urls[0].website_url || null;
+    const t = cr.asset_feed_spec.call_to_action_types?.[0];
+    cta = t ? { type: t } : null;
+  }
+
+  // page_id também dá pra extrair do id do post (pageid_postid)
+  const storyId = cr.effective_object_story_id || cr.object_story_id;
+  if (!page_id && storyId && String(storyId).includes("_"))
+    page_id = String(storyId).split("_")[0];
+
+  return { page_id, instagram_actor_id: ig, link, call_to_action: cta, storyId };
+}
+
+// Herda o destino (página, link, CTA) de um anúncio que já existe na conta.
+async function herdarDestino(accId, override = {}) {
   const r = await graph(`${accId}/ads`, {
     params: {
       fields:
-        "id,name,effective_status,creative{object_story_spec,instagram_actor_id}",
-      limit: "50",
+        "id,name,effective_status,creative{id,object_type,object_story_id,effective_object_story_id,object_story_spec,asset_feed_spec,instagram_actor_id}",
+      limit: "100",
     },
   });
   const ads = r.data || [];
+  const diag = [];
+
   for (const ad of ads) {
-    const spec = ad.creative?.object_story_spec;
-    const ld = spec?.link_data;
-    if (spec?.page_id && ld?.link) {
+    const d = extrairDestino(ad.creative);
+    const link = d.link || override.link_destino || null;
+    if (d.page_id && link) {
       return {
-        page_id: spec.page_id,
-        instagram_actor_id: spec.instagram_actor_id || ad.creative?.instagram_actor_id || null,
-        link: ld.link,
-        call_to_action: ld.call_to_action || { type: "LEARN_MORE" },
+        page_id: override.page_id || d.page_id,
+        instagram_actor_id: d.instagram_actor_id,
+        link,
+        call_to_action: override.cta
+          ? { type: String(override.cta).toUpperCase() }
+          : d.call_to_action || { type: "LEARN_MORE" },
         de_anuncio: ad.name,
       };
     }
+    diag.push({
+      anuncio: ad.name,
+      status: ad.effective_status,
+      page_id: d.page_id,
+      link: d.link,
+      campos_creative: Object.keys(ad.creative || {}),
+    });
   }
+
+  // Último recurso: tentar o link a partir do post existente
+  for (const ad of ads) {
+    const d = extrairDestino(ad.creative);
+    if (d.page_id && d.storyId) {
+      try {
+        const post = await graph(d.storyId, { params: { fields: "call_to_action,permalink_url" } });
+        const link = post.call_to_action?.value?.link || override.link_destino || null;
+        if (link)
+          return {
+            page_id: override.page_id || d.page_id,
+            instagram_actor_id: d.instagram_actor_id,
+            link,
+            call_to_action: post.call_to_action || { type: "LEARN_MORE" },
+            de_anuncio: ad.name,
+          };
+      } catch {}
+    }
+  }
+
+  console.log(`\nAnúncios inspecionados (${ads.length}):`);
+  for (const d of diag) console.log("  • " + JSON.stringify(d));
+  console.log("");
   die(
-    "não encontrei nenhum anúncio existente com página + link para herdar o destino. " +
-      "Suba 1 anúncio manualmente no Meta primeiro (ou me passe page_id e link)."
+    "não consegui herdar página + link de nenhum anúncio existente.\n" +
+      "Solução: no ads/criativos-plano.json adicione \"page_id\" e \"link_destino\" " +
+      "(opcionalmente \"cta\", ex.: LEARN_MORE). Veja acima a estrutura dos anúncios."
   );
 }
 
@@ -156,7 +221,11 @@ async function main() {
   const adset = await resolveCampaignAdset(accId, plano.campanha);
   console.log(`Conjunto alvo: ${adset.name} (${adset.id}) — campanha ${adset.campaign?.name}`);
 
-  const destino = await herdarDestino(accId);
+  const destino = await herdarDestino(accId, {
+    page_id: plano.page_id,
+    link_destino: plano.link_destino,
+    cta: plano.cta,
+  });
   console.log(`Destino herdado do anúncio "${destino.de_anuncio}":`);
   console.log(`  página: ${destino.page_id}` + (destino.instagram_actor_id ? ` | ig: ${destino.instagram_actor_id}` : ""));
   console.log(`  link:   ${destino.link}`);
