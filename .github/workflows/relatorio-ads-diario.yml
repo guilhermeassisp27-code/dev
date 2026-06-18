@@ -1,0 +1,45 @@
+name: Relatório diário de Meta Ads
+
+# Puxa as métricas das contas de anúncio (READ-ONLY) e commita um relatório em
+# docs/ads/. Não altera campanhas, não gasta dinheiro, não publica nada.
+#
+# PRÉ-REQUISITOS (Settings → Secrets and variables → Actions):
+#   - META_ACCESS_TOKEN (secret, obrigatório): token Graph API com escopo ads_read.
+#       Use um token de LONGA DURAÇÃO (system user) — tokens do Graph Explorer
+#       expiram em ~1-2h e o job diário vai falhar.
+#   - META_AD_ACCOUNTS (variable, opcional): IDs separados por vírgula
+#       (ex: act_2241281872779854,act_26002376139454945). Sem isso, descobre
+#       automaticamente via /me/adaccounts.
+
+on:
+  schedule:
+    - cron: "0 11 * * *" # 11:00 UTC ≈ 08:00 BRT, todo dia
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  relatorio:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+      - name: Gerar relatório de Ads
+        env:
+          META_ACCESS_TOKEN: ${{ secrets.META_ACCESS_TOKEN }}
+          META_AD_ACCOUNTS: ${{ vars.META_AD_ACCOUNTS }}
+        run: node scripts/relatorio-ads.mjs
+      - name: Commitar relatório
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          if [ -n "$(git status --porcelain docs/ads)" ]; then
+            git add docs/ads
+            git commit -m "chore(ads): relatório diário $(date -u +%Y-%m-%d)"
+            git push
+          else
+            echo "Sem mudanças no relatório."
+          fi
