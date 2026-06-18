@@ -17,6 +17,7 @@ on:
         type: choice
         default: "simular"
         options:
+          - listar
           - simular
           - aplicar
 
@@ -36,8 +37,8 @@ jobs:
           META_MANAGE_TOKEN: ${{ secrets.META_MANAGE_TOKEN }}
           META_ACCESS_TOKEN: ${{ secrets.META_ACCESS_TOKEN }}
         run: |
-          if [ "${{ inputs.modo }}" = "aplicar" ]; then
-            node scripts/meta-ads-manage.mjs aplicar --apply
-          else
-            node scripts/meta-ads-manage.mjs aplicar
-          fi
+          case "${{ inputs.modo }}" in
+            listar)  node scripts/meta-ads-manage.mjs listar ;;
+            aplicar) node scripts/meta-ads-manage.mjs aplicar --apply ;;
+            *)       node scripts/meta-ads-manage.mjs aplicar ;;
+          esac
