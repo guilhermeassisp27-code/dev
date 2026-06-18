@@ -16,6 +16,7 @@ numa sessão do Claude Code) e **automático** (rodam agendados via GitHub Actio
 | `suporte` | Diagnóstico de problemas de usuário e logs | Sim — entrega causa raiz + correção |
 | `dados` | Relatórios de assinantes, churn, uso, conversão | Sim — read-only, nunca altera produção |
 | `trafego` | Tráfego pago: campanhas, públicos, verba, análise | Plano/recomendação — NÃO gasta nem sobe campanha sozinho |
+| `criativos` | Performance criativa Meta Ads: baterias de criativos (copy + roteiro + super prompt) | Gera material em `campanhas/` — você valida antes de subir |
 
 ## Ciclo automático produto → marketing
 

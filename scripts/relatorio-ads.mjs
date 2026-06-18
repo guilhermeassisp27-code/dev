@@ -63,7 +63,8 @@ async function listAccounts() {
   }));
 }
 
-const INSIGHT_FIELDS = "spend,impressions,clicks,ctr,cpc,cpm,reach,frequency";
+const INSIGHT_FIELDS =
+  "spend,impressions,clicks,ctr,cpc,cpm,reach,frequency,actions,cost_per_action_type";
 
 async function accountInsights(accId, datePreset) {
   const r = await gget(`${accId}/insights`, {
@@ -102,9 +103,57 @@ function flagsFor(row) {
   return flags;
 }
 
+// Eventos do funil de assinatura na ordem de prioridade — o que importa é o
+// custo por assinante, não por clique. Eventos fora dessa lista entram depois,
+// ordenados por volume, pra você enxergar exatamente qual evento o Pixel dispara.
+const FUNNEL_PRIORITY = [
+  "purchase",
+  "subscribe",
+  "start_trial",
+  "complete_registration",
+  "lead",
+  "onsite_web_purchase",
+  "onsite_web_lead",
+  "initiate_checkout",
+  "landing_page_view",
+];
+
+function renderConversions(row) {
+  const actions = row.actions || [];
+  if (!actions.length) return "";
+  const cost = Object.fromEntries(
+    (row.cost_per_action_type || []).map((c) => [c.action_type, c.value])
+  );
+  const rows = actions
+    .map((a) => ({
+      type: a.action_type,
+      qtd: Number(a.value || 0),
+      custo: cost[a.action_type] != null ? Number(cost[a.action_type]) : null,
+    }))
+    .filter((r) => r.qtd > 0)
+    .sort((a, b) => {
+      const pa = FUNNEL_PRIORITY.indexOf(a.type);
+      const pb = FUNNEL_PRIORITY.indexOf(b.type);
+      if (pa !== -1 || pb !== -1)
+        return (pa === -1 ? 99 : pa) - (pb === -1 ? 99 : pb);
+      return b.qtd - a.qtd;
+    });
+  if (!rows.length) return "";
+  const lines = [
+    "",
+    "_Conversões / eventos no período (custo por assinante = custo do evento de compra/assinatura):_",
+    "",
+    "| Evento | Qtd | Custo unitário |",
+    "|---|---|---|",
+  ];
+  for (const r of rows)
+    lines.push(`| ${r.type} | ${num(r.qtd)} | ${r.custo != null ? BRL(r.custo) : "—"} |`);
+  return lines.join("\n");
+}
+
 function renderRow(label, row) {
   if (!row) return `**${label}:** sem dados no período.\n`;
-  return [
+  const out = [
     `**${label}**`,
     "",
     "| Métrica | Valor |",
@@ -117,8 +166,11 @@ function renderRow(label, row) {
     `| CPC | ${BRL(row.cpc)} |`,
     `| CPM | ${BRL(row.cpm)} |`,
     `| Frequência | ${Number(row.frequency || 0).toFixed(2)} |`,
-    "",
-  ].join("\n");
+  ];
+  const conv = renderConversions(row);
+  if (conv) out.push(conv);
+  out.push("");
+  return out.join("\n");
 }
 
 async function main() {
@@ -131,7 +183,8 @@ async function main() {
   parts.push(
     "> Gerado automaticamente (read-only). Não altera campanhas nem gasto. " +
       "Heurísticas são alertas para investigar, **não** decisões. " +
-      "⚠️ Sem rastreamento de conversão, CTR/CPC medem clique, não assinante."
+      "Quando houver eventos de conversão atribuídos (Pixel), eles aparecem por " +
+      "período com o custo por evento — é assim que se mede custo por assinante."
   );
   parts.push("");
 
