@@ -3,7 +3,10 @@
   "conta": "act_2241281872779854",
   "campanha": "CorretorPRO - Campanha 20 reais inicial",
   "status_novos_anuncios": "PAUSED",
-  "reusar_destino_do_anuncio_existente": true,
+  "_nota_destino": "Os anúncios existentes são Reels impulsionados (sem link externo), então não há destino para herdar. Destino definido manualmente conforme o plano de tráfego: tráfego vai para a LANDING (que tem o Pixel e aquece antes do checkout), nunca direto para o checkout. page_id veio do diagnóstico do script.",
+  "page_id": "1231653620022487",
+  "link_destino": "https://usecorretorpro.vercel.app/",
+  "cta": "LEARN_MORE",
   "criativos": [
     {
       "nome": "C2 P1 estatico 1x1 - vendas perdidas",
