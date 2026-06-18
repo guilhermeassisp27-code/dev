@@ -41,8 +41,19 @@ async function graph(path, { method = "GET", params = {}, body } = {}) {
   }
   const res = await fetch(url, init);
   const json = await res.json();
-  if (json.error)
-    throw new Error(`Graph ${method} ${path}: ${json.error.message} (code ${json.error.code})`);
+  if (json.error) {
+    const e = json.error;
+    const det = [
+      e.message,
+      e.error_user_title ? `título: ${e.error_user_title}` : "",
+      e.error_user_msg ? `detalhe: ${e.error_user_msg}` : "",
+      e.error_subcode ? `subcode: ${e.error_subcode}` : "",
+      e.error_data ? `data: ${JSON.stringify(e.error_data)}` : "",
+    ]
+      .filter(Boolean)
+      .join(" | ");
+    throw new Error(`Graph ${method} ${path}: ${det} (code ${e.code})`);
+  }
   return json;
 }
 
@@ -169,7 +180,11 @@ async function herdarDestino(accId, override = {}) {
 }
 
 function buildSpec(c, destino, hashes) {
-  const cta = destino.call_to_action;
+  // CTA com value.link explícito (o Meta exige o link dentro do call_to_action).
+  const cta = {
+    type: destino.call_to_action?.type || "LEARN_MORE",
+    value: { link: destino.link },
+  };
   const base = { page_id: destino.page_id };
   if (destino.instagram_actor_id) base.instagram_actor_id = destino.instagram_actor_id;
 
