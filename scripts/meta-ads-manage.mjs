@@ -70,7 +70,7 @@ async function resolveAccount(arg) {
 async function listAdsets(accId) {
   const r = await graph(`${accId}/adsets`, {
     params: {
-      fields: "id,name,status,effective_status,daily_budget,campaign{name}",
+      fields: "id,name,status,effective_status,daily_budget,campaign{id,name,daily_budget}",
       limit: "200",
     },
   });
@@ -83,7 +83,11 @@ async function cmdListar(accArg) {
   const adsets = await listAdsets(accId);
   if (!adsets.length) return console.log("Sem conjuntos de anúncios.");
   for (const a of adsets) {
-    const orc = a.daily_budget ? BRL(centsToBRL(a.daily_budget)) : "(CBO/sem orçamento no conjunto)";
+    const orc = a.daily_budget
+      ? `${BRL(centsToBRL(a.daily_budget))} (no conjunto)`
+      : a.campaign?.daily_budget
+      ? `${BRL(centsToBRL(a.campaign.daily_budget))} (na campanha/CBO)`
+      : "(sem orçamento diário — talvez vitalício)";
     console.log(`• ${a.name}`);
     console.log(`    id: ${a.id}`);
     console.log(`    campanha: ${a.campaign?.name || "—"}`);
@@ -141,54 +145,74 @@ async function cmdAplicar(apply) {
       continue;
     }
 
-    const body = {};
-    const descr = [];
+    const ops = []; // cada op: { id, body, descr }
+    let bloqueou = false;
 
-    // --- Orçamento diário ---
+    // --- Orçamento diário (no conjunto OU na campanha, se for CBO) ---
     if (m.orcamento_diario_brl != null) {
       const novo = Number(m.orcamento_diario_brl);
-      const atualCents = alvo.daily_budget ? Number(alvo.daily_budget) : null;
-      const atual = atualCents != null ? centsToBRL(atualCents) : null;
+      let alvoOrc, atualCents, onde;
+      if (alvo.daily_budget) {
+        alvoOrc = alvo.id;
+        atualCents = Number(alvo.daily_budget);
+        onde = "conjunto";
+      } else if (alvo.campaign?.daily_budget) {
+        alvoOrc = alvo.campaign.id;
+        atualCents = Number(alvo.campaign.daily_budget);
+        onde = "campanha/CBO";
+      } else {
+        console.log(`✗ ${alvo.name}: sem orçamento diário no conjunto nem na campanha (talvez vitalício) — ajuste manual.`);
+        bloqueadas++;
+        bloqueou = true;
+      }
 
-      if (novo > tetoBRL) {
-        console.log(`✗ ${alvo.name}: ${BRL(novo)} excede o teto ${BRL(tetoBRL)} — BLOQUEADO.`);
-        bloqueadas++;
-        continue;
+      if (!bloqueou) {
+        const atual = centsToBRL(atualCents);
+        if (novo > tetoBRL) {
+          console.log(`✗ ${alvo.name}: ${BRL(novo)} excede o teto ${BRL(tetoBRL)} — BLOQUEADO.`);
+          bloqueadas++;
+          bloqueou = true;
+        } else if (maxPct && novo > atual * (1 + maxPct / 100)) {
+          console.log(
+            `✗ ${alvo.name}: ${BRL(atual)}→${BRL(novo)} é +${(((novo / atual) - 1) * 100).toFixed(0)}%, ` +
+              `acima do máx ${maxPct}% — BLOQUEADO.`
+          );
+          bloqueadas++;
+          bloqueou = true;
+        } else {
+          ops.push({
+            id: alvoOrc,
+            body: { daily_budget: brlToCents(novo) },
+            descr: `orçamento (${onde}) ${BRL(atual)} → ${BRL(novo)}`,
+          });
+        }
       }
-      if (maxPct && atual && novo > atual * (1 + maxPct / 100)) {
-        console.log(
-          `✗ ${alvo.name}: ${BRL(atual)}→${BRL(novo)} é +${(((novo / atual) - 1) * 100).toFixed(0)}%, ` +
-            `acima do máx ${maxPct}% — BLOQUEADO.`
-        );
-        bloqueadas++;
-        continue;
-      }
-      body.daily_budget = brlToCents(novo);
-      descr.push(`orçamento ${atual != null ? BRL(atual) : "?"} → ${BRL(novo)}`);
     }
 
-    // --- Status (ACTIVE / PAUSED) ---
+    if (bloqueou) continue;
+
+    // --- Status (ACTIVE / PAUSED) no conjunto ---
     if (m.status) {
       const s = String(m.status).toUpperCase();
       if (!["ACTIVE", "PAUSED"].includes(s))
         die(`status inválido "${m.status}" (use ACTIVE ou PAUSED).`);
-      body.status = s;
-      descr.push(`status ${alvo.status} → ${s}`);
+      ops.push({ id: alvo.id, body: { status: s }, descr: `status ${alvo.status} → ${s}` });
     }
 
-    if (!Object.keys(body).length) {
+    if (!ops.length) {
       console.log(`• ${alvo.name}: nada a mudar.`);
       continue;
     }
 
+    const descr = ops.map((o) => o.descr).join(" | ");
     if (!apply) {
-      console.log(`🟡 [simulado] ${alvo.name}: ${descr.join(" | ")}`);
+      console.log(`🟡 [simulado] ${alvo.name}: ${descr}`);
       aplicadas++;
       continue;
     }
 
-    await graph(alvo.id, { method: "POST", body });
-    console.log(`✅ ${alvo.name}: ${descr.join(" | ")}`);
+    for (const o of ops) await graph(o.id, { method: "POST", body: o.body });
+    console.log(`✅ ${alvo.name}: ${descr}`);
     aplicadas++;
   }
 
