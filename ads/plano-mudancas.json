@@ -3,9 +3,9 @@
   "conta": "act_2241281872779854",
   "limites": {
     "orcamento_diario_max_brl": 60,
-    "aumento_max_pct": 0
+    "aumento_max_pct": 20
   },
-  "_nota_trava": "aumento_max_pct=0 desliga a trava de % para o salto aprovado para R$40. O teto de R$60/dia segue ativo como proteção absoluta. Reativar (ex.: 20) quando começar a rampa gradual.",
+  "_nota_trava": "Trava reativada após o salto para R$40 (aplicado em 18/06). Agora cada aumento futuro é limitado a +20% por execução, com teto absoluto de R$60/dia. Para a rampa gradual, suba o orcamento_diario_brl aos poucos.",
   "mudancas": [
     {
       "adset": "CorretorPRO - Campanha 20 reais inicial",
