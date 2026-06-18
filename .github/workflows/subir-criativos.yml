@@ -1,0 +1,42 @@
+name: Subir Criativos no Meta (PAUSADOS)
+
+# Sobe os criativos do ads/criativos-plano.json como anúncios NOVOS e PAUSADOS
+# na campanha, herdando página + link + CTA do anúncio que já está rodando.
+# SEGURANÇA: por padrão SIMULA. Só cria de verdade quando você escolhe "aplicar".
+# Os anúncios nascem PAUSADOS — você revisa e ativa manualmente no Meta.
+#
+# PRÉ-REQUISITO (Settings → Secrets and variables → Actions):
+#   - META_MANAGE_TOKEN (secret) com escopo ads_management.
+#     Se não existir, usa META_ACCESS_TOKEN como fallback.
+
+on:
+  workflow_dispatch:
+    inputs:
+      modo:
+        description: "Simular (dry-run) ou aplicar (cria anúncios PAUSADOS)?"
+        type: choice
+        default: "simular"
+        options:
+          - simular
+          - aplicar
+
+permissions:
+  contents: read
+
+jobs:
+  subir:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+      - name: Subir criativos
+        env:
+          META_MANAGE_TOKEN: ${{ secrets.META_MANAGE_TOKEN }}
+          META_ACCESS_TOKEN: ${{ secrets.META_ACCESS_TOKEN }}
+        run: |
+          case "${{ inputs.modo }}" in
+            aplicar) node scripts/meta-ads-criativos.mjs aplicar --apply ;;
+            *)       node scripts/meta-ads-criativos.mjs simular ;;
+          esac

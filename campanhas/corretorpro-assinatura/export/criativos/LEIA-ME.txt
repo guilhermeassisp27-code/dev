@@ -1,0 +1,69 @@
+CORRETORPRO — BATERIA DE CRIATIVOS (Etapa 3)
+================================================
+
+Conteúdo desta pasta (16 imagens PNG em resolução de anúncio):
+
+01-video-9x16/   → VÍDEO 1 (storyboard, 3 frames de referência) — 1080×1920
+02-estatico-1x1/ → ESTÁTICO 1, arte final — 1080×1080  [PRONTO PRA SUBIR]
+03-carrossel-1x1/→ CARROSSEL, 5 cards — 1080×1080 cada [PRONTO PRA SUBIR]
+04-video-9x16/   → VÍDEO 2 (storyboard, 3 frames de referência) — 1080×1920
+05-estatico-9x16/→ ESTÁTICO 2, arte final — 1080×1920  [PRONTO PRA SUBIR]
+06-video-16x9/   → VÍDEO 3 (storyboard, 3 frames de referência) — 1920×1080
+
+OBS.: As pastas de vídeo (01, 04, 06) são STORYBOARDS — frames de
+referência com cena + locução (VO) + texto de tela. Servem pra briefar
+o editor / gravar. O arquivo .mp4 precisa ser produzido a partir deles.
+As cenas com pessoas devem ser gravadas/substituídas por filmagem real.
+
+================================================
+ROTEIROS DOS VÍDEOS
+================================================
+
+— VÍDEO 1 (P1 · 9:16 · ~20s · plano-sequência no carro) —
+0–3s  GANCHO: "Você não perdeu aquele cliente por causa do preço.
+       Foi por causa do PDF que você mandou."
+3–14s CORPO: "…o cliente compara visualmente sem perceber, e às vezes
+       escolhe quem pareceu mais profissional, não quem atendeu melhor."
+       [overlay: a proposta é a sua vitrine]
+14–20s CTA: "Se você sente que isso já aconteceu, fica de olho que eu vou
+       te mostrar uma forma de nunca mais passar por isso."
+       [logo + proposta pronta em segundos]
+
+— VÍDEO 2 (P2 · 9:16 · ~25s · selfie + screen recording) —
+0–3s  GANCHO (selfie): "Gente, achei uma forma de parar de remendar
+       proposta no Canva todo santo dia." [overlay: isso mudou minha rotina]
+3–18s CORPO (screen rec): "Coloco o nome do cliente, o valor, as condições,
+       e ele monta a proposta com a minha logo, minhas cores, tudo formatado."
+       [tela: preenche → gera → manda]
+18–25s CTA (selfie): "Se você também tá cansada de gambiarra pra fazer
+       proposta, dá uma olhada — tem plano mensal e anual."
+
+— VÍDEO 3 (P3 · 16:9 · ~15s · split-screen antes/depois) —
+0–3s  GANCHO: "Se você ainda manda proposta assim…"
+       [split: documento torto no Word | overlay: isso ainda passa confiança?]
+3–10s CORPO: "…você tá deixando dinheiro na mesa. O CorretorPRO gera isso
+       em segundos, com sua marca, pronto pra mandar."
+       [direita vira a proposta CorretorPRO | overlay: proposta pronta em segundos]
+10–15s CTA: "Assina agora com condição especial e pare de perder venda
+       por aparência." [ASSINE AGORA · checkout Hotmart]
+
+================================================
+MATRIZ DE VARIAÇÃO (macrovariação garantida)
+================================================
+#  Público  Formato                Prop.  Cenário                       Tom/Gatilho            Ângulo
+01 P1       Vídeo, plano único     9:16   Homem, no carro, luz natural  Confissão/dor/medo     Erro comum
+02 P1       Imagem estática        1:1    Sem pessoa, objetos, luz fria Reflexivo/confiança    Nova descoberta
+03 P2       Carrossel (5 cards)    1:1    Mockups; pessoa só no card 5  Energia alta/eficiência Contraste
+04 P2       Vídeo, cortes+screen   9:16   Mulher, apê em exposição      Recomendação/desejo    Oportunidade
+05 P3       Imagem estática        9:16   Sem pessoa, depoim.+mockup    Direto/prova/urgência  Prova social
+06 P3       Vídeo, split antes/dps 16:9   Sem pessoa, telas comparadas  Alta energia/fechamento Oport.+urgência
+
+Nenhum par repete formato+proporção+visual+tema ao mesmo tempo — todos
+diferem em pelo menos dois dos três níveis.
+
+================================================
+MARCA
+================================================
+Cores:  Verde #15A37A / #3BC79B · Azul-petróleo #0C2233 / #0E2C3D
+        Creme #F7F2E8 · Dourado #E0A93C · Vermelho (urgência) #E0553D
+Fontes: Schibsted Grotesk (títulos) · Instrument Sans (texto) · Space Mono (rótulos)
