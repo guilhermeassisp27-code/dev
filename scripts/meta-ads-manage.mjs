@@ -95,14 +95,17 @@ async function cmdListar(accArg) {
 }
 
 function matchAdset(adsets, ref) {
+  const r = String(ref).toLowerCase();
   const byId = adsets.find((a) => a.id === String(ref));
   if (byId) return byId;
-  const ms = adsets.filter((a) =>
-    a.name.toLowerCase().includes(String(ref).toLowerCase())
-  );
+  // 1º tenta pelo nome do conjunto; se não achar, pelo nome da campanha
+  // (o usuário costuma pensar em "campanha", não em "conjunto").
+  let ms = adsets.filter((a) => a.name.toLowerCase().includes(r));
+  if (!ms.length)
+    ms = adsets.filter((a) => (a.campaign?.name || "").toLowerCase().includes(r));
   if (ms.length === 1) return ms[0];
   if (ms.length > 1)
-    die(`"${ref}" casa com ${ms.length} conjuntos — use o id exato.`);
+    die(`"${ref}" casa com ${ms.length} conjuntos — use o id exato (rode "listar").`);
   return null;
 }
 
