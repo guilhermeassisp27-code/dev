@@ -1207,6 +1207,10 @@ const _CHECKOUT_URL = 'https://pay.hotmart.com/L106145948O'
     // Caminho isolado: retorna antes de qualquer verificação de sessão real.
     if (new URLSearchParams(location.search).get('demo') === '1') {
       window._DEMO = true
+      // Espera o resto do script inicializar (define `perfil`, funções etc.)
+      // antes de montar a UI — senão initApp() tocaria `perfil` na zona morta
+      // temporal e cairia no catch (que redireciona pro login).
+      await new Promise(res => setTimeout(res, 0))
       const al = document.getElementById('auth-loading'); if (al) al.remove()
       initApp()
       try { carregarExemplo() } catch(_) {}
