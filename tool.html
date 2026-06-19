@@ -1298,11 +1298,16 @@ function mostrarBannerDemo() {
   b.id = 'demo-banner'
   b.style.cssText = 'position:fixed;left:0;right:0;bottom:0;z-index:9999;display:flex;align-items:center;justify-content:center;gap:14px;flex-wrap:wrap;padding:11px 16px;background:#0E2C3D;border-top:1px solid rgba(255,255,255,.14);box-shadow:0 -8px 24px rgba(0,0,0,.3);font-family:inherit'
   b.innerHTML =
-    '<span style="font-size:13.5px;color:#EEF2FF;font-weight:600">🔓 Você está no <b>modo demonstração</b> — explore à vontade. Para salvar, enviar e usar com seus clientes, assine.</span>' +
+    '<span style="font-size:13.5px;color:#EEF2FF;font-weight:600">🔓 <b>Modo demonstração</b> — explore à vontade. Para salvar e enviar, assine.</span>' +
     '<a href="' + _DEMO_CHECKOUT + '" target="_blank" rel="noopener" style="background:#22C55E;color:#06281A;text-decoration:none;border-radius:8px;padding:9px 18px;font-size:13.5px;font-weight:800;white-space:nowrap">Assinar agora</a>'
   document.body.appendChild(b)
-  document.body.style.paddingBottom = '60px'
   document.body.classList.add('cpr-demo')
+  // Reserva no rodapé EXATAMENTE a altura do banner (recalcula ao redimensionar,
+  // pois o texto pode quebrar em mais linhas no celular) para nunca cobrir o
+  // botão "Gerar Proposta" nem o conteúdo final.
+  const ajustarPadDemo = () => { document.body.style.paddingBottom = (b.offsetHeight + 20) + 'px' }
+  ajustarPadDemo()
+  window.addEventListener('resize', ajustarPadDemo)
   // Marca d'água sobre a proposta/termo gerados — inutiliza prints no modo demo.
   if (!document.getElementById('demo-wm-style')) {
     const st = document.createElement('style')
