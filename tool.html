@@ -1211,6 +1211,7 @@ const _CHECKOUT_URL = 'https://pay.hotmart.com/L106145948O'
       initApp()
       try { carregarExemplo() } catch(_) {}
       mostrarBannerDemo()
+      try { iniciarTourDemo() } catch(_) {}
       return
     }
 
@@ -1295,10 +1296,78 @@ function mostrarBannerDemo() {
     '<a href="' + _DEMO_CHECKOUT + '" target="_blank" rel="noopener" style="background:#22C55E;color:#06281A;text-decoration:none;border-radius:8px;padding:9px 18px;font-size:13.5px;font-weight:800;white-space:nowrap">Assinar agora</a>'
   document.body.appendChild(b)
   document.body.style.paddingBottom = '60px'
+  document.body.classList.add('cpr-demo')
+  // Marca d'água sobre a proposta/termo gerados — inutiliza prints no modo demo.
+  if (!document.getElementById('demo-wm-style')) {
+    const st = document.createElement('style')
+    st.id = 'demo-wm-style'
+    st.textContent =
+      '.cpr-demo #proposta,.cpr-demo #termo{position:relative}' +
+      '.cpr-demo #proposta.show::after,.cpr-demo #termo.show::after{' +
+      'content:"DEMONSTRAÇÃO";position:absolute;top:50%;left:50%;' +
+      'transform:translate(-50%,-50%) rotate(-28deg);' +
+      'font-size:clamp(32px,9vw,84px);font-weight:800;letter-spacing:6px;' +
+      'color:rgba(13,34,51,.10);white-space:nowrap;pointer-events:none;z-index:5}'
+    document.head.appendChild(st)
+  }
 }
 function demoBloqueio() {
   if (typeof toast === 'function') toast('Recurso disponível para assinantes — assine para liberar')
   window.open(_DEMO_CHECKOUT, '_blank', 'noopener')
+}
+
+/* ── TOUR GUIADO (só no modo demo): destaca cada funcionalidade em passos ── */
+function iniciarTourDemo() {
+  const PASSOS = [
+    { t:'Bem-vindo 👋', x:'Esta é a plataforma real do CorretorPRO, em modo demonstração. Em poucos passos eu te mostro o principal — depois é só explorar.', sel:null },
+    { t:'1. Dados do imóvel', x:'Já deixamos um exemplo preenchido. Você pode editar qualquer campo: cliente, valor, prazo, condições.', sel:'.demo-row' },
+    { t:'2. Gere a proposta', x:'Clique em “Gerar Proposta” e veja uma proposta profissional montada na hora — com simulação de financiamento SAC e Price.', sel:'#gen-btn' },
+    { t:'3. Proteja sua comissão', x:'No menu “Registro de Visita” você gera o documento com amparo legal que comprova sua intermediação e protege sua comissão.', sel:'.sb-item[data-view="visita"]' },
+    { t:'4. Tudo organizado', x:'“Minhas Propostas” e a “Agenda de Visitas” guardam seu histórico e seus follow-ups, sincronizados na nuvem.', sel:'.sb-item[data-view="history"]' },
+    { t:'Pronto pra usar de verdade?', x:'Salvar, baixar em PDF e enviar no WhatsApp são liberados ao assinar — com garantia de 7 dias.', sel:'#demo-banner', cta:true },
+  ]
+  let i = 0
+  const back = document.createElement('div')
+  back.id = 'demo-tour'
+  back.style.cssText = 'position:fixed;inset:0;z-index:10000;background:rgba(8,18,28,.62)'
+  const ring = document.createElement('div')
+  ring.style.cssText = 'position:fixed;z-index:10001;border:2px solid #22C55E;border-radius:12px;box-shadow:0 0 0 4px rgba(34,197,94,.25);pointer-events:none;transition:all .25s ease;display:none'
+  const card = document.createElement('div')
+  card.style.cssText = 'position:fixed;z-index:10002;left:50%;transform:translateX(-50%);bottom:78px;width:min(420px,92vw);background:#0E2C3D;border:1px solid rgba(255,255,255,.14);border-radius:14px;padding:20px 22px;box-shadow:0 18px 50px rgba(0,0,0,.5);font-family:inherit'
+  back.appendChild(ring); back.appendChild(card); document.body.appendChild(back)
+
+  function fim() { back.remove() }
+  function render() {
+    const p = PASSOS[i]
+    const alvo = p.sel ? document.querySelector(p.sel) : null
+    if (alvo) {
+      try { alvo.scrollIntoView({ behavior:'smooth', block:'center' }) } catch(_) {}
+      const r = alvo.getBoundingClientRect()
+      if (r.width && r.height) {
+        ring.style.display = 'block'
+        ring.style.top = (r.top - 6) + 'px'; ring.style.left = (r.left - 6) + 'px'
+        ring.style.width = (r.width + 12) + 'px'; ring.style.height = (r.height + 12) + 'px'
+      } else { ring.style.display = 'none' }
+    } else { ring.style.display = 'none' }
+    card.innerHTML =
+      '<div style="font-size:11px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:#3BC79B;margin-bottom:6px">Passo ' + (i+1) + ' de ' + PASSOS.length + '</div>' +
+      '<div style="font-size:17px;font-weight:800;color:#EEF2FF;margin-bottom:7px">' + p.t + '</div>' +
+      '<p style="font-size:13.5px;line-height:1.6;color:#A9BBD0;margin-bottom:16px">' + p.x + '</p>' +
+      '<div style="display:flex;align-items:center;gap:10px">' +
+        '<button id="tour-skip" style="background:none;border:none;color:#7B93B8;font-size:13px;cursor:pointer;padding:6px 2px">Pular</button>' +
+        '<div style="margin-left:auto;display:flex;gap:8px">' +
+          (i>0 ? '<button id="tour-prev" style="background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.14);color:#EEF2FF;font-size:13px;font-weight:600;border-radius:8px;padding:8px 14px;cursor:pointer">Voltar</button>' : '') +
+          (p.cta
+            ? '<a href="' + _DEMO_CHECKOUT + '" target="_blank" rel="noopener" style="background:#22C55E;color:#06281A;text-decoration:none;font-size:13px;font-weight:800;border-radius:8px;padding:9px 16px">Assinar agora</a>'
+            : '<button id="tour-next" style="background:#22C55E;color:#06281A;border:none;font-size:13px;font-weight:800;border-radius:8px;padding:9px 16px;cursor:pointer">Próximo</button>') +
+        '</div>' +
+      '</div>'
+    const s = document.getElementById('tour-skip'); if (s) s.onclick = fim
+    const pv = document.getElementById('tour-prev'); if (pv) pv.onclick = function(){ i--; render() }
+    const nx = document.getElementById('tour-next'); if (nx) nx.onclick = function(){ if (i < PASSOS.length-1) { i++; render() } else fim() }
+  }
+  render()
+  window.addEventListener('resize', render)
 }
 
 /* ── ESC HTML ── */
