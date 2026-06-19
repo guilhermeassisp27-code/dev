@@ -1206,6 +1206,7 @@ const _CHECKOUT_URL = 'https://pay.hotmart.com/L106145948O'
     await new Promise(res => setTimeout(res, 0))
     try {
       const al = document.getElementById('auth-loading'); if (al) al.remove()
+      seedDemoData()
       initApp()
       carregarExemplo()
       mostrarBannerDemo()
@@ -1321,15 +1322,44 @@ function demoBloqueio() {
   window.open(_DEMO_CHECKOUT, '_blank', 'noopener')
 }
 
+/* ── DADOS DE EXEMPLO (só no modo demo): a plataforma abre "cheia de vida" ── */
+function seedDemoData() {
+  const diaBR = n => new Date(Date.now() - n*86400000).toLocaleDateString('pt-BR')
+  const iso   = n => new Date(Date.now() - n*86400000).toISOString().slice(0,10)
+  const base  = Date.now()
+
+  perfil = {
+    nome:'Carlos Andrade', creci:'152.347-F',
+    tel:'(11) 98765-4321', email:'carlos.andrade@imoveis.com.br',
+    cor:'#15A37A', logo:null, modelo:'moderno'
+  }
+
+  historico = [
+    { id:base-1, data:diaBR(0), status:'nova',       cliente:'João Silva',    tipoNeg:'Compra',  tipoImovel:'Apartamento', end:'Av. Faria Lima, 3000 — São Paulo, SP',            area:'78',  dorms:'3', vagas:'2', valor:'620.000',   prazo:300, taxa:10.5, complem:'', cond:'Primeiro contato pelo portal',  tituloGerado:'Proposta — Faria Lima' },
+    { id:base-2, data:diaBR(1), status:'negociando', cliente:'Mariana Costa', tipoNeg:'Compra',  tipoImovel:'Apartamento', end:'Rua Oscar Freire, 820, Jardins — São Paulo, SP',  area:'92',  dorms:'3', vagas:'2', valor:'780.000',   prazo:360, taxa:10.5, complem:'', cond:'Cliente pré-aprovado no banco', tituloGerado:'Proposta — Jardins' },
+    { id:base-3, data:diaBR(2), status:'enviada',    cliente:'Roberto Lima',  tipoNeg:'Compra',  tipoImovel:'Casa',        end:'Alameda dos Anjos, 145, Alphaville — Barueri, SP', area:'210', dorms:'4', vagas:'4', valor:'1.450.000', prazo:300, taxa:11,   complem:'', cond:'Avalia permuta parcial',       tituloGerado:'Proposta — Alphaville' },
+    { id:base-4, data:diaBR(5), status:'fechada',    cliente:'Ana Beatriz',   tipoNeg:'Locação', tipoImovel:'Apartamento', end:'Av. Paulista, 1500 — São Paulo, SP',               area:'55',  dorms:'2', vagas:'1', valor:'4.200', garantia:'Seguro-fiança', complem:'', cond:'Contrato de 30 meses', tituloGerado:'Locação — Av. Paulista' },
+    { id:base-5, docTipo:'visita', data:diaBR(3), cliente:'Fernanda Souza', end:'Rua Haddock Lobo, 400 — São Paulo, SP', dataVisita:iso(3), cpf:'123.456.789-00', cidade:'São Paulo', obs:'Forte interesse; pediu simulação de financiamento.' },
+  ]
+
+  leads = [
+    { id:base-11, cliente:'Pedro Henrique',  tel:'(11) 99111-2233', imovel:'Cobertura — Vila Nova Conceição', dataVisita:iso(0),  hora:'14:30', obs:'Segunda visita, leva a esposa',     status:'agendada',  criadoEm:diaBR(2) },
+    { id:base-12, cliente:'Juliana Martins', tel:'(11) 98222-3344', imovel:'Apto 2 dorm — Pinheiros',          dataVisita:iso(-1), hora:'10:00', obs:'Primeira visita',                   status:'agendada',  criadoEm:diaBR(1) },
+    { id:base-13, cliente:'Marcos Vinícius', tel:'(11) 97333-4455', imovel:'Casa — Granja Viana',              dataVisita:iso(2),  hora:'16:00', obs:'Confirmar documentação',            status:'agendada',  criadoEm:diaBR(3) },
+    { id:base-14, cliente:'Fernanda Souza',  tel:'(11) 96444-5566', imovel:'Apto — Higienópolis',             dataVisita:iso(3),  hora:'11:00', obs:'Visita realizada — gerou proposta', status:'realizada', criadoEm:diaBR(5) },
+  ]
+}
+
 /* ── TOUR GUIADO (só no modo demo): destaca cada funcionalidade em passos ── */
 function iniciarTourDemo() {
   const PASSOS = [
-    { t:'Bem-vindo 👋', x:'Esta é a plataforma real do CorretorPRO, em modo demonstração. Em poucos passos eu te mostro o principal — depois é só explorar.', sel:null },
-    { t:'1. Dados do imóvel', x:'Já deixamos um exemplo preenchido. Você pode editar qualquer campo: cliente, valor, prazo, condições.', sel:'.demo-row' },
-    { t:'2. Gere a proposta', x:'Clique em “Gerar Proposta” e veja uma proposta profissional montada na hora — com simulação de financiamento SAC e Price.', sel:'#gen-btn' },
-    { t:'3. Proteja sua comissão', x:'No menu “Registro de Visita” você gera o documento com amparo legal que comprova sua intermediação e protege sua comissão.', sel:'.sb-item[data-view="visita"]' },
-    { t:'4. Tudo organizado', x:'“Minhas Propostas” e a “Agenda de Visitas” guardam seu histórico e seus follow-ups, sincronizados na nuvem.', sel:'.sb-item[data-view="history"]' },
-    { t:'Pronto pra usar de verdade?', x:'Salvar, baixar em PDF e enviar no WhatsApp são liberados ao assinar — com garantia de 7 dias.', sel:'#demo-banner', cta:true },
+    { t:'Bem-vindo 👋', x:'Esta é a plataforma real do CorretorPRO — já preenchida com dados de exemplo pra você explorar. Em poucos passos eu mostro tudo que ela faz.', sel:null, view:'form' },
+    { t:'Proposta em 60 segundos', x:'Preencha os dados e gere uma proposta profissional com a sua marca — já com simulação de financiamento SAC e Price calculada. Clique em “Gerar Proposta” pra ver.', sel:'#gen-btn', view:'form' },
+    { t:'Funil de vendas (CRM)', x:'Cada negociação vira um card e caminha pelo funil: Nova → Enviada → Em negociação → Fechada. Você acompanha todas num lugar só.', sel:'.sb-item[data-view="history"]', view:'history' },
+    { t:'Agenda de visitas', x:'Organize suas visitas e nunca perca um follow-up: agendadas, de hoje, atrasadas e realizadas — separadas automaticamente.', sel:'.sb-item[data-view="agenda"]', view:'agenda' },
+    { t:'Registro de Visita (jurídico)', x:'O documento com amparo legal que comprova sua intermediação e protege a sua comissão se o cliente fechar direto com o dono.', sel:'.sb-item[data-view="visita"]', view:'visita' },
+    { t:'Sua marca, 3 modelos', x:'Coloque seu logo, CRECI e cor, e escolha entre 3 modelos de proposta: Clássico, Moderno e Minimalista. Suas propostas com a sua identidade.', sel:'.sb-item[data-view="config"]', view:'config' },
+    { t:'Pronto pra usar de verdade?', x:'Salvar, baixar em PDF e enviar no WhatsApp são liberados ao assinar — com garantia de 7 dias. Comece agora.', sel:'#demo-banner', cta:true },
   ]
   let i = 0
   const back = document.createElement('div')
@@ -1344,6 +1374,7 @@ function iniciarTourDemo() {
   function fim() { back.remove() }
   function render() {
     const p = PASSOS[i]
+    if (p.view) { try { showView(p.view) } catch(_) {} }
     const alvo = p.sel ? document.querySelector(p.sel) : null
     if (alvo) {
       try { alvo.scrollIntoView({ behavior:'smooth', block:'center' }) } catch(_) {}
