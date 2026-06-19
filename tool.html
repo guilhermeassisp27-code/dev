@@ -1194,30 +1194,31 @@ const _CHECKOUT_URL = 'https://pay.hotmart.com/L106145948O'
 
 /* ── AUTH GATE ── */
 ;(async function authGate() {
+  // ── MODO DEMONSTRAÇÃO (?demo=1) ──────────────────────────────────────
+  // Tratado ANTES do fluxo de auth real e FORA do try que redireciona pro
+  // login. Roda a plataforma REAL sem login: não define window._uid, então
+  // salvarRemoto()/carregarRemoto() viram no-op e nunca tocam o Supabase.
+  // Blindado: qualquer erro aqui é só logado — o demo NUNCA cai no login.
+  if (new URLSearchParams(location.search).get('demo') === '1') {
+    window._DEMO = true
+    try { window._sb = supabase.createClient(_SUPA_URL, _SUPA_KEY, { auth: { flowType:'implicit', detectSessionInUrl:false } }) } catch(_) {}
+    // Espera o resto do script inicializar (perfil/funções saem da zona morta temporal).
+    await new Promise(res => setTimeout(res, 0))
+    try {
+      const al = document.getElementById('auth-loading'); if (al) al.remove()
+      initApp()
+      carregarExemplo()
+      mostrarBannerDemo()
+      iniciarTourDemo()
+    } catch(e) { console.error('Demo init:', e) }
+    return
+  }
+
   try {
     const _sb = supabase.createClient(_SUPA_URL, _SUPA_KEY, {
       auth: { flowType: 'implicit', detectSessionInUrl: true }
     })
     window._sb = _sb
-
-    // ── MODO DEMONSTRAÇÃO (?demo=1) ──────────────────────────────────────
-    // Roda a plataforma REAL na landing, sem login e sem assinatura. NÃO
-    // define window._uid → salvarRemoto()/carregarRemoto() viram no-op e
-    // nunca tocam o Supabase. As ações de salvar/enviar/PDF chamam o checkout.
-    // Caminho isolado: retorna antes de qualquer verificação de sessão real.
-    if (new URLSearchParams(location.search).get('demo') === '1') {
-      window._DEMO = true
-      // Espera o resto do script inicializar (define `perfil`, funções etc.)
-      // antes de montar a UI — senão initApp() tocaria `perfil` na zona morta
-      // temporal e cairia no catch (que redireciona pro login).
-      await new Promise(res => setTimeout(res, 0))
-      const al = document.getElementById('auth-loading'); if (al) al.remove()
-      initApp()
-      try { carregarExemplo() } catch(_) {}
-      mostrarBannerDemo()
-      try { iniciarTourDemo() } catch(_) {}
-      return
-    }
 
     // Tenta estabelecer sessão a partir dos tokens no hash fragment
     // (passados pelo app Next.js no formato #access_token=...&refresh_token=...)
