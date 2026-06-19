@@ -2629,7 +2629,9 @@ async function marcarRealizada(id) {
   atualizarBadgeAgenda()
   renderAgenda()
   try { await salvarRemoto() } catch(_) {}
-  toast('Visita marcada como realizada — gere o Registro de Visita ou a Proposta')
+  toast('Visita realizada — gerando o Registro de Visita...')
+  // Jornada conectada: gera o termo e oferece a proposta com os dados do lead.
+  usarLeadParaVisita(id)
 }
 
 async function excluirLead(id) {
@@ -2643,7 +2645,8 @@ async function excluirLead(id) {
   toast('Agendamento removido')
 }
 
-// Pré-preenche o Registro de Visita com os dados do lead (nome, telefone, imóvel/endereço, data)
+// Jornada: a partir de um lead com visita realizada, preenche E gera o
+// Registro de Visita automaticamente, depois oferece gerar a proposta.
 function usarLeadParaVisita(id) {
   const l = leads.find(x => x.id === id)
   if (!l) return
@@ -2659,9 +2662,39 @@ function usarLeadParaVisita(id) {
     set('v-data', l.dataVisita || new Date().toISOString().slice(0, 10))
     set('v-hora', l.hora || '')
     set('v-obs', l.obs || '')
-    document.getElementById('v-cliente').focus()
-    toast('Dados do lead preenchidos — confira e gere o termo')
-  }, 80)
+    // Gera o termo automaticamente com os dados disponíveis do lead.
+    const tipoEl = document.getElementById('v-tipo')
+    const d = {
+      cliente: l.cliente || '', cpf:'', rg:'', tel: l.tel || '',
+      end: l.imovel || '', tipoImovel: (tipoEl && tipoEl.value) || '',
+      matricula:'', dataVisita: l.dataVisita || new Date().toISOString().slice(0,10),
+      hora: l.hora || '', cidade:'', obs: l.obs || '',
+    }
+    snapVisita = d
+    construirTermo(d)
+    const termo = document.getElementById('termo')
+    termo.classList.add('show')
+    termo.scrollIntoView({ behavior:'smooth', block:'start' })
+    toast('Registro de Visita gerado!')
+    ofereceProposta(id, l.cliente)
+  }, 90)
+}
+
+// Pergunta (inline) se o corretor quer já gerar a proposta com os mesmos dados.
+function ofereceProposta(id, cliente) {
+  const antigo = document.getElementById('jornada-proposta'); if (antigo) antigo.remove()
+  const termo = document.getElementById('termo')
+  if (!termo) return
+  const box = document.createElement('div')
+  box.id = 'jornada-proposta'
+  box.style.cssText = 'margin:16px auto 0;max-width:680px;background:rgba(34,197,94,.13);border:1px solid rgba(34,197,94,.42);border-radius:12px;padding:16px 18px;display:flex;align-items:center;gap:12px;flex-wrap:wrap;justify-content:center;text-align:center'
+  box.innerHTML =
+    '<span style="font-size:14px;color:#EAF6EF;font-weight:600">✅ Termo pronto! Gerar a proposta para <b style="color:#fff">' + escH(cliente || 'o cliente') + '</b> com os mesmos dados?</span>' +
+    '<span style="display:flex;gap:8px">' +
+      '<button class="btn btn-green btn-sm" onclick="(function(){usarLeadParaProposta(' + id + ');var e=document.getElementById(\'jornada-proposta\');if(e)e.remove()})()">Gerar proposta</button>' +
+      '<button class="btn btn-ghost btn-sm" onclick="(function(){var e=document.getElementById(\'jornada-proposta\');if(e)e.remove()})()">Agora não</button>' +
+    '</span>'
+  termo.parentNode.insertBefore(box, termo.nextSibling)
 }
 
 // Pré-preenche a Nova Proposta com os dados do lead (nome, endereço/imóvel)
