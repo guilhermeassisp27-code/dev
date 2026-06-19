@@ -897,43 +897,52 @@ src="https://www.facebook.com/tr?id=2015826029060952&ev=PageView&noscript=1"/></
 <!-- ===================== 4.4 VIDEO DEMO ===================== -->
 <section class="section vdemo">
   <div class="wrap">
-    <h2>Veja a ferramenta <em>funcionando de verdade</em></h2>
-    <p class="vdemo-lead">Da visita ao envio da proposta no WhatsApp — em segundos, direto do celular.</p>
+    <h2>Use a plataforma <em>agora mesmo</em> — sem cadastro</h2>
+    <p class="vdemo-lead">Esta é a ferramenta de verdade, rodando aqui na página. Preencha, gere a proposta, troque o modelo e veja o Registro de Visita. Para salvar e enviar, é só assinar.</p>
 
-    <div class="vdemo-grid">
-      <div class="phone">
-        <video
-          src="/demo-corretorpro.mp4"
-          poster="/print-ferramenta-mobile.png"
-          controls playsinline preload="metadata"
-          onplay="if(typeof fbq==='function')fbq('trackCustom','DemoVideoPlay')">
-        </video>
+    <style>
+      .live-demo{max-width:1020px;margin:0 auto;border-radius:18px;overflow:hidden;border:1px solid var(--line-2);box-shadow:var(--shadow),0 0 80px rgba(245,158,11,.07);background:var(--navy-3)}
+      .live-demo-bar{display:flex;align-items:center;gap:6px;padding:10px 14px;background:var(--navy-2);border-bottom:1px solid var(--line)}
+      .live-demo-bar i{width:10px;height:10px;border-radius:50%;display:block}
+      .live-demo-bar i:nth-child(1){background:#F87171}.live-demo-bar i:nth-child(2){background:#FBBF24}.live-demo-bar i:nth-child(3){background:#34D399}
+      .live-demo-url{margin-left:10px;flex:1;font-size:11px;color:var(--t3);letter-spacing:.02em;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+      .live-demo-full{font-size:12px;font-weight:700;color:var(--amber);white-space:nowrap}
+      .live-demo-full:hover{text-decoration:underline}
+      .live-demo-frame{display:block;width:100%;height:640px;border:0;background:#0B1220}
+      @media(max-width:760px){.live-demo-frame{height:560px}}
+    </style>
+    <div class="live-demo">
+      <div class="live-demo-bar">
+        <i></i><i></i><i></i>
+        <span class="live-demo-url">CorretorPRO · modo demonstração</span>
+        <a class="live-demo-full" href="https://guilhermeassisp27-code.github.io/dev/tool.html?demo=1" target="_blank" rel="noopener" onclick="if(typeof fbq==='function')fbq('trackCustom','DemoAppFullscreen')">Abrir em tela cheia ↗</a>
       </div>
-
-      <ul class="vdemo-points">
-        <li>
-          <div class="vdemo-pico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg></div>
-          <div>
-            <h3>Registro de Visita assinado na hora</h3>
-            <p>Termina a visita, gera o documento e o cliente assina pelo celular. Sua comissão protegida antes de sair do imóvel.</p>
-          </div>
-        </li>
-        <li>
-          <div class="vdemo-pico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg></div>
-          <div>
-            <h3>Proposta profissional em 60 segundos</h3>
-            <p>Com seu logo, CRECI e as condições de pagamento já calculadas. Pronta pra impressionar.</p>
-          </div>
-        </li>
-        <li>
-          <div class="vdemo-pico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 11.5a8.38 8.38 0 01-.9 3.8 8.5 8.5 0 01-7.6 4.7 8.38 8.38 0 01-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 01-.9-3.8 8.5 8.5 0 014.7-7.6 8.38 8.38 0 013.8-.9h.5a8.48 8.48 0 018 8v.5z"/></svg></div>
-          <div>
-            <h3>Enviada no WhatsApp com 1 clique</h3>
-            <p>No canal onde a venda realmente acontece — sem anexo pesado, sem fricção.</p>
-          </div>
-        </li>
-      </ul>
+      <iframe class="live-demo-frame" src="https://guilhermeassisp27-code.github.io/dev/tool.html?demo=1" title="Demonstração da plataforma CorretorPRO" loading="lazy" referrerpolicy="no-referrer-when-downgrade"></iframe>
     </div>
+
+    <ul class="vdemo-points" style="margin:36px auto 0;max-width:980px;flex-direction:row;flex-wrap:wrap;justify-content:center;gap:22px">
+      <li style="flex:1;min-width:240px">
+        <div class="vdemo-pico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg></div>
+        <div>
+          <h3>Registro de Visita assinado na hora</h3>
+          <p>Termina a visita, gera o documento e o cliente assina pelo celular. Sua comissão protegida antes de sair do imóvel.</p>
+        </div>
+      </li>
+      <li style="flex:1;min-width:240px">
+        <div class="vdemo-pico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg></div>
+        <div>
+          <h3>Proposta profissional em 60 segundos</h3>
+          <p>Com seu logo, CRECI e as condições de pagamento já calculadas. Pronta pra impressionar.</p>
+        </div>
+      </li>
+      <li style="flex:1;min-width:240px">
+        <div class="vdemo-pico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 11.5a8.38 8.38 0 01-.9 3.8 8.5 8.5 0 01-7.6 4.7 8.38 8.38 0 01-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 01-.9-3.8 8.5 8.5 0 014.7-7.6 8.38 8.38 0 013.8-.9h.5a8.48 8.48 0 018 8v.5z"/></svg></div>
+        <div>
+          <h3>Enviada no WhatsApp com 1 clique</h3>
+          <p>No canal onde a venda realmente acontece — sem anexo pesado, sem fricção.</p>
+        </div>
+      </li>
+    </ul>
 
     <div style="text-align:center">
       <a class="cta vdemo-cta" href="#planos">

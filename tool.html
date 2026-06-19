@@ -1200,6 +1200,20 @@ const _CHECKOUT_URL = 'https://pay.hotmart.com/L106145948O'
     })
     window._sb = _sb
 
+    // ── MODO DEMONSTRAÇÃO (?demo=1) ──────────────────────────────────────
+    // Roda a plataforma REAL na landing, sem login e sem assinatura. NÃO
+    // define window._uid → salvarRemoto()/carregarRemoto() viram no-op e
+    // nunca tocam o Supabase. As ações de salvar/enviar/PDF chamam o checkout.
+    // Caminho isolado: retorna antes de qualquer verificação de sessão real.
+    if (new URLSearchParams(location.search).get('demo') === '1') {
+      window._DEMO = true
+      const al = document.getElementById('auth-loading'); if (al) al.remove()
+      initApp()
+      try { carregarExemplo() } catch(_) {}
+      mostrarBannerDemo()
+      return
+    }
+
     // Tenta estabelecer sessão a partir dos tokens no hash fragment
     // (passados pelo app Next.js no formato #access_token=...&refresh_token=...)
     let session = null
@@ -1267,6 +1281,24 @@ function mostrarInativo() {
       '<a href="' + _CHECKOUT_URL + '" style="display:block;background:#4D7EFF;color:#fff;text-decoration:none;border-radius:8px;padding:12px;font-size:14px;font-weight:600;margin-bottom:12px">Reativar assinatura</a>' +
       '<a href="#" onclick="sair();return false" style="font-size:13px;color:#7B93B8;text-decoration:none">Sair</a>' +
     '</div>'
+}
+
+/* ── MODO DEMONSTRAÇÃO: banner fixo + bloqueio das ações que pedem assinatura ── */
+const _DEMO_CHECKOUT = 'https://usecorretorpro.vercel.app/#planos'
+function mostrarBannerDemo() {
+  if (document.getElementById('demo-banner')) return
+  const b = document.createElement('div')
+  b.id = 'demo-banner'
+  b.style.cssText = 'position:fixed;left:0;right:0;bottom:0;z-index:9999;display:flex;align-items:center;justify-content:center;gap:14px;flex-wrap:wrap;padding:11px 16px;background:#0E2C3D;border-top:1px solid rgba(255,255,255,.14);box-shadow:0 -8px 24px rgba(0,0,0,.3);font-family:inherit'
+  b.innerHTML =
+    '<span style="font-size:13.5px;color:#EEF2FF;font-weight:600">🔓 Você está no <b>modo demonstração</b> — explore à vontade. Para salvar, enviar e usar com seus clientes, assine.</span>' +
+    '<a href="' + _DEMO_CHECKOUT + '" target="_blank" rel="noopener" style="background:#22C55E;color:#06281A;text-decoration:none;border-radius:8px;padding:9px 18px;font-size:13.5px;font-weight:800;white-space:nowrap">Assinar agora</a>'
+  document.body.appendChild(b)
+  document.body.style.paddingBottom = '60px'
+}
+function demoBloqueio() {
+  if (typeof toast === 'function') toast('Recurso disponível para assinantes — assine para liberar')
+  window.open(_DEMO_CHECKOUT, '_blank', 'noopener')
 }
 
 /* ── ESC HTML ── */
@@ -1745,6 +1777,7 @@ function copiar() {
 
 /* ── BAIXAR PDF (print CSS isola a proposta) ── */
 function baixarPDF() {
+  if (window._DEMO) return demoBloqueio()
   if (!document.getElementById('proposta').classList.contains('show')) return
   toast('Abrindo impressão — salve como PDF...')
   setTimeout(() => window.print(), 400)
@@ -1752,6 +1785,7 @@ function baixarPDF() {
 
 /* ── WHATSAPP (mensagem completa) ── */
 function compartilharWA() {
+  if (window._DEMO) return demoBloqueio()
   if (!snapProposta) return
   const d = snapProposta
   const corretor = perfil.nome || 'seu corretor'
@@ -1789,6 +1823,7 @@ function compartilharWA() {
 
 /* ── SALVAR PROPOSTA ── */
 async function salvarProposta() {
+  if (window._DEMO) return demoBloqueio()
   if (!snapProposta) return
   const item = {
     id: Date.now(),
@@ -2254,6 +2289,7 @@ function construirTermo(d) {
 }
 
 async function salvarVisita() {
+  if (window._DEMO) return demoBloqueio()
   if (!snapVisita) return
   const item = {
     id: Date.now(),
@@ -2365,12 +2401,14 @@ function copiarTermo() {
 }
 
 function baixarTermoPDF() {
+  if (window._DEMO) return demoBloqueio()
   if (!document.getElementById('termo').classList.contains('show')) return
   toast('Abrindo impressão — salve como PDF...')
   setTimeout(() => window.print(), 400)
 }
 
 function compartilharTermoWA() {
+  if (window._DEMO) return demoBloqueio()
   if (!snapVisita) return
   const msg = textoTermo() + '\n\nPor favor, confirme o recebimento deste registro de visita. Obrigado!'
   window.open('https://wa.me/?text=' + encodeURIComponent(msg), '_blank')
@@ -2380,6 +2418,7 @@ function compartilharTermoWA() {
 
 async function salvarLead(ev) {
   ev.preventDefault()
+  if (window._DEMO) return demoBloqueio()
   const form = document.getElementById('form-lead')
   if (!form.checkValidity()) { form.reportValidity(); return }
 
