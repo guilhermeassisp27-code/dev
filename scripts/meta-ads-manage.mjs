@@ -98,6 +98,63 @@ async function cmdListar(accArg) {
   );
 }
 
+// Identifica o tipo de mídia do criativo (imagem única, vídeo, carrossel, post existente).
+function tipoCreative(cr) {
+  if (!cr) return "—";
+  const spec = cr.object_story_spec || {};
+  if (spec.video_data) return "vídeo";
+  if (Array.isArray(spec.link_data?.child_attachments) && spec.link_data.child_attachments.length)
+    return "carrossel";
+  if (spec.link_data) return "imagem única";
+  if (cr.object_story_id || cr.effective_object_story_id) return "post existente (Reels/feed)";
+  if (cr.asset_feed_spec) return "Advantage+ (asset_feed_spec)";
+  return cr.object_type || "desconhecido";
+}
+
+async function cmdAuditoria(accArg) {
+  const accId = await resolveAccount(accArg);
+  console.log(`Conta: ${accId}\n`);
+
+  const camps = await graph(`${accId}/campaigns`, {
+    params: {
+      fields: "id,name,status,effective_status,objective,daily_budget,lifetime_budget",
+      limit: "100",
+    },
+  });
+  console.log("================ CAMPANHAS ================");
+  for (const c of camps.data || []) {
+    const orc = c.daily_budget
+      ? `${BRL(centsToBRL(c.daily_budget))}/dia (CBO)`
+      : c.lifetime_budget
+      ? `${BRL(centsToBRL(c.lifetime_budget))} vitalício`
+      : "orçamento no conjunto";
+    console.log(`• ${c.name}  [${c.effective_status}]`);
+    console.log(`    id: ${c.id} | objetivo: ${c.objective} | orçamento: ${orc}\n`);
+  }
+
+  const adsets = await listAdsets(accId);
+  console.log("================ CONJUNTOS ================");
+  for (const a of adsets) {
+    console.log(`• ${a.name}  [${a.effective_status}]  (campanha: ${a.campaign?.name || "—"})`);
+  }
+
+  const ads = await graph(`${accId}/ads`, {
+    params: {
+      fields:
+        "id,name,status,effective_status,adset{name},campaign{name},creative{id,object_type,object_story_spec,asset_feed_spec,effective_object_story_id}",
+      limit: "200",
+    },
+  });
+  console.log("\n================ ANÚNCIOS ================");
+  for (const ad of ads.data || []) {
+    console.log(`• ${ad.name}  [${ad.effective_status}]`);
+    console.log(`    conjunto: ${ad.adset?.name || "—"} | campanha: ${ad.campaign?.name || "—"}`);
+    console.log(`    tipo de mídia: ${tipoCreative(ad.creative)}\n`);
+  }
+  console.log(`Resumo: ${(camps.data || []).length} campanha(s), ${adsets.length} conjunto(s), ${(ads.data || []).length} anúncio(s).`);
+}
+
+
 function matchAdset(adsets, ref) {
   const r = String(ref).toLowerCase();
   const byId = adsets.find((a) => a.id === String(ref));
@@ -227,10 +284,12 @@ async function main() {
   const [cmd, ...rest] = process.argv.slice(2);
   const apply = rest.includes("--apply");
   if (cmd === "listar") return cmdListar(rest.find((a) => a.startsWith("act_")));
+  if (cmd === "auditoria") return cmdAuditoria(rest.find((a) => a.startsWith("act_")));
   if (cmd === "aplicar") return cmdAplicar(apply);
   console.log(
     "Uso:\n" +
       "  node scripts/meta-ads-manage.mjs listar [act_XXXX]\n" +
+      "  node scripts/meta-ads-manage.mjs auditoria [act_XXXX]  # campanhas + conjuntos + anúncios\n" +
       "  node scripts/meta-ads-manage.mjs aplicar           # simula\n" +
       "  node scripts/meta-ads-manage.mjs aplicar --apply   # executa"
   );
