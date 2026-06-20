@@ -36,6 +36,12 @@ export async function middleware(req: NextRequest) {
     return NextResponse.next()
   }
 
+  // Captação pública de leads: /captura/<slug> é uma página de contato que o
+  // corretor compartilha com clientes — precisa abrir sem login.
+  if (pathname.startsWith('/captura/')) {
+    return NextResponse.next()
+  }
+
   const res = NextResponse.next()
   const supabase = createMiddlewareClient({ req, res })
   const { data: { session } } = await supabase.auth.getSession()

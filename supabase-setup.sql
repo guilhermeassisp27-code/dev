@@ -72,3 +72,48 @@ create table if not exists public.cpr_abandoned_carts (
 );
 
 alter table public.cpr_abandoned_carts enable row level security;
+
+-- ============================================================
+-- Migração: Captação pública de leads (2026-06-20)
+-- Formulário público (sem login) que o corretor compartilha com o
+-- cliente. O lead cai aqui via API com service role; o corretor
+-- revisa na ferramenta e importa para a própria Agenda de Visitas.
+-- Sem policy de INSERT: ninguém insere autenticado/anon — só o
+-- service role (que ignora RLS) pela rota /api/captura. O corretor
+-- lê/atualiza apenas os próprios leads (owner_id = auth.uid()).
+-- ============================================================
+create table if not exists public.cpr_public_leads (
+  id          uuid primary key default gen_random_uuid(),
+  owner_id    uuid not null references auth.users(id) on delete cascade,
+  nome        text not null,
+  telefone    text,
+  imovel      text,
+  mensagem    text,
+  origem      text not null default 'captura',
+  status      text not null default 'pendente',  -- pendente | importado | descartado
+  created_at  timestamptz not null default now()
+);
+
+alter table public.cpr_public_leads enable row level security;
+
+grant select, update on public.cpr_public_leads to authenticated;
+
+-- SELECT: corretor lê apenas os leads que chegaram para ele
+drop policy if exists "cpl_select_own" on public.cpr_public_leads;
+create policy "cpl_select_own"
+  on public.cpr_public_leads for select
+  using (auth.uid() = owner_id);
+
+-- UPDATE: corretor marca como importado/descartado apenas os próprios
+drop policy if exists "cpl_update_own" on public.cpr_public_leads;
+create policy "cpl_update_own"
+  on public.cpr_public_leads for update
+  using (auth.uid() = owner_id)
+  with check (auth.uid() = owner_id);
+
+create index if not exists cpr_public_leads_owner_idx
+  on public.cpr_public_leads (owner_id, status);
+
+-- Índice para resolver slug -> user_id na rota pública /api/captura
+create index if not exists cpr_user_data_slug_idx
+  on public.cpr_user_data ((perfil->>'slug'));
