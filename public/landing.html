@@ -300,6 +300,49 @@
   .step h3{font-size:18px;margin-bottom:5px;font-family:var(--font);font-weight:700;color:var(--white)}
   .step p{font-size:15px}
 
+  /* ---------- jornada completa (identidade do corretor) ---------- */
+  .journey{background:linear-gradient(180deg,var(--navy) 0%,var(--navy-2) 100%);border-top:1px solid var(--line);border-bottom:1px solid var(--line)}
+  .jr-wrap{max-width:800px}
+  .jr-title{text-align:center;font-size:31px;line-height:1.18;margin-bottom:14px}
+  .jr-title em{font-style:normal;color:var(--amber)}
+  .jr-sub{text-align:center;max-width:580px;margin:0 auto 52px;font-size:17px;color:var(--t2)}
+  @media(min-width:980px){.jr-title{font-size:40px}}
+
+  .jr-rail{position:relative;display:flex;flex-direction:column;gap:24px}
+  /* trilho vertical que conecta os momentos da jornada */
+  .jr-rail::before{
+    content:"";position:absolute;left:27px;top:16px;bottom:16px;width:2px;
+    background:linear-gradient(180deg,var(--amber) 0%,rgba(245,158,11,.12) 100%);
+  }
+  .jr-step{position:relative;display:flex;gap:22px;align-items:flex-start}
+  .jr-dot{
+    position:relative;z-index:1;flex-shrink:0;
+    width:56px;height:56px;border-radius:16px;
+    background:var(--card);border:1px solid var(--line-2);
+    display:flex;align-items:center;justify-content:center;
+    box-shadow:0 0 0 6px var(--navy);
+  }
+  .jr-dot svg{width:24px;height:24px;color:var(--amber)}
+  .jr-card{
+    flex:1;min-width:0;background:var(--card);border:1px solid var(--line);
+    border-radius:var(--rad-l);padding:22px 24px;
+    transition:border-color .18s ease,transform .18s ease;
+  }
+  .jr-card:hover{border-color:var(--line-2);transform:translateX(3px)}
+  .jr-stage{display:block;font-size:11.5px;font-weight:800;letter-spacing:.12em;text-transform:uppercase;color:var(--amber);margin-bottom:9px}
+  .jr-card h3{font-size:18.5px;line-height:1.36;font-family:var(--font-h);font-weight:700;color:var(--white);margin-bottom:8px}
+  .jr-card p{font-size:15px;color:var(--t2)}
+  .jr-cta{text-align:center;margin-top:48px}
+  .jr-cta .jr-kicker{font-size:16px;color:var(--t);margin-bottom:18px}
+  .jr-cta .jr-kicker b{color:var(--amber)}
+  @media(max-width:560px){
+    .jr-dot{width:48px;height:48px;border-radius:13px}
+    .jr-dot svg{width:21px;height:21px}
+    .jr-rail::before{left:23px}
+    .jr-card{padding:18px 20px}
+    .jr-card h3{font-size:17px}
+  }
+
   /* ---------- pricing ---------- */
   .pricing .wrap{max-width:920px}
   .pricing h2{font-size:32px;text-align:center;margin-bottom:10px}
@@ -1055,44 +1098,71 @@ src="https://www.facebook.com/tr?id=2015826029060952&ev=PageView&noscript=1"/></
 </section>
 
 <!-- ===================== 6. HOW IT WORKS ===================== -->
-<section class="section how" id="como-funciona">
-  <div class="wrap">
-    <h2>A jornada completa, do primeiro contato ao fechamento</h2>
-    <p class="lead" style="text-align:center;max-width:560px;margin:0 auto 34px">Tudo dentro do CorretorPRO — sem redigitar nada de uma etapa pra outra.</p>
-
-    <div class="steps">
-    <div class="step">
-      <div class="step-num">1</div>
-      <div>
-        <h3>Capte o lead com o seu link <span class="feat-new">NOVO</span></h3>
-        <p>Compartilhe seu link com a sua marca no Instagram, WhatsApp ou anúncio. O cliente preenche os dados e cai direto na sua caixa de entrada.</p>
-      </div>
+<section class="section journey" id="como-funciona">
+  <div class="wrap jr-wrap">
+    <div class="eyebrow" style="justify-content:center;display:flex">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 12h4l3 8 4-16 3 8h4"/></svg>
+      A sua operação completa
     </div>
+    <h2 class="jr-title">Um corretor sozinho. <em>A estrutura de uma imobiliária inteira.</em></h2>
+    <p class="jr-sub">Da primeira mensagem do cliente ao "fechou", tudo acontece dentro do CorretorPRO. Sem planilha, sem Word, sem perder lead no caminho — e parecendo muito maior do que um corretor só.</p>
 
-    <div class="step">
-      <div class="step-num">2</div>
-      <div>
-        <h3>Aceite e agende a visita</h3>
-        <p>Um clique e o lead já vira agendamento na sua Agenda de Visitas — sem copiar telefone, sem perder o follow-up.</p>
-      </div>
-    </div>
+    <div class="jr-rail">
 
-    <div class="step">
-      <div class="step-num">3</div>
-      <div>
-        <h3>Registre a visita</h3>
-        <p>Depois de visitar, gere o Registro de Visita com amparo legal — sua comissão protegida com os dados já preenchidos.</p>
+      <div class="jr-step">
+        <div class="jr-dot"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="4"/><path d="M4 21c0-4 3.5-7 8-7s8 3 8 7"/></svg></div>
+        <div class="jr-card">
+          <span class="jr-stage">01 · A captação <span class="feat-new">NOVO</span></span>
+          <h3>"O cliente me achou — e caiu direto na minha caixa de entrada."</h3>
+          <p>Meu link com a minha marca na bio do Instagram e no status do WhatsApp. O cliente preenche os dados dele sozinho e o lead aparece pra mim — até enquanto eu durmo.</p>
+        </div>
       </div>
-    </div>
 
-    <div class="step">
-      <div class="step-num">4</div>
-      <div>
-        <h3>Gere a proposta e feche</h3>
-        <p>Proposta com a sua marca, condições calculadas, enviada pelo WhatsApp com 1 clique.</p>
+      <div class="jr-step">
+        <div class="jr-dot"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg></div>
+        <div class="jr-card">
+          <span class="jr-stage">02 · O follow-up</span>
+          <h3>"Parei de perder venda por esquecimento."</h3>
+          <p>Aceito o lead com um toque e a visita já entra na minha Agenda. A ferramenta me avisa de quem ainda não foi atendido — o follow-up deixou de morar só na minha cabeça.</p>
+        </div>
       </div>
+
+      <div class="jr-step">
+        <div class="jr-dot"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg></div>
+        <div class="jr-card">
+          <span class="jr-stage">03 · A visita</span>
+          <h3>"Saio do imóvel com a comissão já protegida."</h3>
+          <p>Terminou a visita, gero o Registro de Visita com amparo legal e o cliente assina ali mesmo, pelo celular. Se ele tentar fechar por fora, eu tenho o documento.</p>
+        </div>
+      </div>
+
+      <div class="jr-step">
+        <div class="jr-dot"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg></div>
+        <div class="jr-card">
+          <span class="jr-stage">04 · A proposta</span>
+          <h3>"Mando proposta de imobiliária grande — em 60 segundos."</h3>
+          <p>Com o meu logo, CRECI e as condições de pagamento já calculadas. O cliente recebe no WhatsApp antes do concorrente terminar de abrir o Word.</p>
+        </div>
+      </div>
+
+      <div class="jr-step">
+        <div class="jr-dot"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><path d="M22 4 12 14.01l-3-3"/></svg></div>
+        <div class="jr-card">
+          <span class="jr-stage">05 · O fechamento</span>
+          <h3>"Sozinho, mas com a estrutura de um time inteiro."</h3>
+          <p>Cada negociação com o seu status, tudo salvo na nuvem, histórico sempre na mão. Eu fecho mais — e o cliente nem imagina que do outro lado tem um corretor só.</p>
+        </div>
+      </div>
+
+    </div><!-- /jr-rail -->
+
+    <div class="jr-cta">
+      <p class="jr-kicker">Essa jornada já é sua a partir de <b>hoje</b>.</p>
+      <a class="cta" href="#planos">
+        Quero essa operação rodando
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
+      </a>
     </div>
-    </div><!-- /steps -->
   </div>
 </section>
 
