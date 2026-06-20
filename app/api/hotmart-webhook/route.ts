@@ -20,6 +20,16 @@ function resolvePlan(data: Record<string, unknown>): string {
   return OFFER_PLANS[offerCode] ?? 'corretorpro'
 }
 
+// Escapa HTML básico — buyer.name vem direto do que o comprador digitou no
+// checkout da Hotmart, não confiar nele cru dentro do htmlContent do email.
+function escHtmlEmail(s: string): string {
+  return s
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;')
+}
+
 // Email de recuperação de carrinho abandonado, via API transacional da
 // Brevo (mesmo provedor já usado para o SMTP do Supabase, agora chamado
 // direto pela API — requer BREVO_API_KEY e BREVO_SENDER_EMAIL no Vercel).
@@ -28,7 +38,7 @@ async function enviarEmailRecuperacao(destino: string, nome: string, plano: stri
     console.error('[hotmart-webhook] BREVO_API_KEY ou BREVO_SENDER_EMAIL não configurados — pulando email de recuperação')
     return false
   }
-  const primeiroNome = nome.split(' ')[0] || 'tudo bem'
+  const primeiroNome = escHtmlEmail(nome.split(' ')[0] || 'tudo bem')
   const offerCode = plano === 'anual' ? 'mcjyy7ub' : 'hgn79gvq'
   const checkoutUrl = `https://pay.hotmart.com/L106145948O?off=${offerCode}`
 
@@ -208,18 +218,16 @@ export async function POST(req: NextRequest) {
   // CARRINHO ABANDONADO: comprador iniciou o checkout e não concluiu.
   // Guarda o lead (não cria conta) e dispara email de recuperação via Brevo.
   if (event === 'PURCHASE_OUT_OF_SHOPPING_CART') {
-    const phoneDigits = (buyer.phone ?? '').replace(/\D/g, '')
+    const rawDigits = (buyer.phone ?? '').replace(/\D/g, '')
+    // A Hotmart nem sempre manda o DDI junto — quando o número já tem
+    // DDD+9 dígitos e começa com 55, ele já está embutido; sem essa checagem
+    // o link saía como wa.me/555511999999999 (DDI duplicado, link inválido).
+    const phoneDigits = rawDigits.startsWith('55') && rawDigits.length >= 12 ? rawDigits.slice(2) : rawDigits
     const whatsappLink = phoneDigits
       ? `https://wa.me/55${phoneDigits}?text=${encodeURIComponent(
           `Oi ${buyer.name?.split(' ')[0] ?? ''}! Aqui é do CorretorPRO. Vi que você começou a assinar e não finalizou — ficou alguma dúvida? Acabamos de lançar o link de captação de leads: o cliente preenche e cai direto na sua agenda, aí é só agendar a visita, emitir o Registro de Visita (que protege sua comissão) e mandar a proposta. Posso te mostrar funcionando em 2 min?`
         )}`
       : null
-
-    const { data: existingLead } = await supabase
-      .from('cpr_abandoned_carts')
-      .select('email_sent')
-      .eq('email', email)
-      .maybeSingle()
 
     await supabase.from('cpr_abandoned_carts').upsert(
       {
@@ -233,10 +241,22 @@ export async function POST(req: NextRequest) {
       { onConflict: 'email' }
     )
 
-    if (!existingLead?.email_sent) {
+    // Reivindica o envio de forma atômica (update condicional + select dos
+    // afetados): se a Hotmart disparar o mesmo evento 2x quase junto, só a
+    // requisição que conseguir virar email_sent para true segue pro envio —
+    // evita reenviar o email de recuperação duplicado.
+    const { data: claimed } = await supabase
+      .from('cpr_abandoned_carts')
+      .update({ email_sent: true })
+      .eq('email', email)
+      .or('email_sent.is.null,email_sent.eq.false')
+      .select('email')
+
+    if (claimed && claimed.length > 0) {
       const emailOk = await enviarEmailRecuperacao(email, buyer.name ?? '', plan)
-      if (emailOk) {
-        await supabase.from('cpr_abandoned_carts').update({ email_sent: true }).eq('email', email)
+      if (!emailOk) {
+        // Envio falhou: libera a reivindicação para uma próxima tentativa.
+        await supabase.from('cpr_abandoned_carts').update({ email_sent: false }).eq('email', email)
       }
     }
 

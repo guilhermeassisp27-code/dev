@@ -28,23 +28,34 @@ function brandFrom(row: OwnerRow) {
   }
 }
 
+// Confirma que o dono do slug ainda tem assinatura ativa antes de expor a
+// página/aceitar leads — sem isso, um corretor banido (cancelamento/reembolso)
+// continuava captando leads que ele nunca veria.
+async function comAssinaturaAtiva(supabase: ReturnType<typeof admin>, row: OwnerRow) {
+  const { data, error } = await supabase.auth.admin.getUserById(row.user_id)
+  if (error || !data?.user) return null
+  const status = (data.user.app_metadata as Record<string, unknown> | undefined)?.subscription_status
+  if (status !== 'active') return null
+  return brandFrom(row)
+}
+
 // Resolve o slug público -> dono (user_id) + branding visível ao cliente.
-// O filtro direto em campo JSONB (perfil->>slug) pode ser codificado de forma
-// incompatível pelo postgrest-js em alguns casos, então há um fallback que
-// varre as linhas e compara em código (seguro na escala atual de usuários).
+// Usa a função SQL cpr_resolve_slug (supabase-setup.sql), que de fato
+// exercita o índice em perfil->>'slug' — o filtro direto via .filter() do
+// postgrest-js se mostrou pouco confiável neste projeto (retornou "não
+// encontrado" para slugs reais em produção). Mantém o scan como fallback
+// defensivo só para o caso da função ainda não existir no banco.
 async function resolveSlug(slug: string) {
   const supabase = admin()
 
-  // 1) tentativa direta via escape hatch .filter() (sintaxe de JSON)
-  const direct = await supabase
-    .from('cpr_user_data')
-    .select('user_id, perfil')
-    .filter('perfil->>slug', 'eq', slug)
-    .maybeSingle()
-  if (direct.error) console.error('[captura] filtro JSONB falhou:', direct.error.message)
-  if (direct.data) return brandFrom(direct.data as OwnerRow)
+  const rpc = await supabase.rpc('cpr_resolve_slug', { p_slug: slug })
+  if (rpc.error) {
+    console.error('[captura] rpc cpr_resolve_slug falhou:', rpc.error.message)
+  } else if (rpc.data && rpc.data.length > 0) {
+    return await comAssinaturaAtiva(supabase, rpc.data[0] as OwnerRow)
+  }
 
-  // 2) fallback: varre e compara em código
+  console.error('[captura] usando fallback de scan para resolver slug — verifique se cpr_resolve_slug existe no banco')
   const scan = await supabase.from('cpr_user_data').select('user_id, perfil').limit(2000)
   if (scan.error) {
     console.error('[captura] scan falhou:', scan.error.message)
@@ -53,7 +64,7 @@ async function resolveSlug(slug: string) {
   const match = (scan.data ?? []).find(
     (r) => String((r.perfil as Record<string, unknown> | null)?.slug ?? '') === slug
   )
-  return match ? brandFrom(match as OwnerRow) : null
+  return match ? await comAssinaturaAtiva(supabase, match as OwnerRow) : null
 }
 
 // GET /api/captura?slug=... -> branding público do corretor (sem PII sensível)
@@ -99,6 +110,33 @@ export async function POST(req: NextRequest) {
   if (!owner) return NextResponse.json({ error: 'not found' }, { status: 404 })
 
   const supabase = admin()
+
+  // Evita duplicar o mesmo lead na caixa de entrada do corretor se o cliente
+  // reenviar o formulário (refresh, duplo clique, ou revisita ao link) — em
+  // vez de criar outro card "pendente", atualiza o que já existe pra esse
+  // telefone e renova a data, como se tivesse acabado de chegar.
+  if (telefone) {
+    const { data: existing } = await supabase
+      .from('cpr_public_leads')
+      .select('id')
+      .eq('owner_id', owner.ownerId)
+      .eq('telefone', telefone)
+      .eq('status', 'pendente')
+      .maybeSingle()
+
+    if (existing) {
+      const { error } = await supabase
+        .from('cpr_public_leads')
+        .update({ nome, imovel, mensagem, created_at: new Date().toISOString() })
+        .eq('id', existing.id)
+      if (error) {
+        console.error('[captura] update de lead existente falhou:', error.message)
+        return NextResponse.json({ error: 'falha ao registrar' }, { status: 500 })
+      }
+      return NextResponse.json({ ok: true })
+    }
+  }
+
   const { error } = await supabase.from('cpr_public_leads').insert({
     owner_id: owner.ownerId,
     nome,

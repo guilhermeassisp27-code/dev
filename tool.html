@@ -2556,14 +2556,27 @@ function slugify(s) {
 }
 
 // Garante um slug único para o corretor (base no nome + parte do uid).
+// O banco tem um índice ÚNICO em perfil->>'slug' (supabase-setup.sql) — se a
+// tentativa colidir com o slug de outro corretor, salvarRemoto() falha com
+// 23505 e a gente gera outro sufixo e tenta de novo.
 async function garantirSlug() {
   if (perfil.slug) return perfil.slug
   if (window._DEMO) return 'demonstracao'
   const base = slugify(perfil.nome) || 'corretor'
-  const uidPart = (window._uid || '').replace(/-/g,'').slice(0,6) || Math.random().toString(36).slice(2,8)
-  perfil.slug = base + '-' + uidPart
-  localStorage.setItem('cpr_perfil', JSON.stringify(perfil))
-  try { await salvarRemoto() } catch(_) {}
+  for (let tentativa = 0; tentativa < 5; tentativa++) {
+    const uidPart = tentativa === 0
+      ? ((window._uid || '').replace(/-/g,'').slice(0,6) || Math.random().toString(36).slice(2,8))
+      : Math.random().toString(36).slice(2,8)
+    perfil.slug = base + '-' + uidPart
+    localStorage.setItem('cpr_perfil', JSON.stringify(perfil))
+    try {
+      await salvarRemoto()
+      return perfil.slug
+    } catch(e) {
+      if (e && e.code === '23505') continue // slug colidiu — tenta outro sufixo
+      break // outro erro (rede etc.) — mantém o slug local e segue
+    }
+  }
   return perfil.slug
 }
 
@@ -2641,12 +2654,17 @@ function renderCapturasInbox() {
 }
 
 // Aceitar: vira um lead da agenda (sem data ainda) e marca o público como importado.
+// Remove o card da lista ANTES do await — clique duplo (comum em touch) não
+// dispara duas vezes a mesma aceitação nem duplica o lead na agenda.
 async function aceitarCaptura(id) {
   if (window._DEMO) return demoBloqueio()
   const c = capturasPend.find(x => String(x.id) === String(id))
   if (!c) return
+  capturasPend = capturasPend.filter(x => String(x.id) !== String(id))
+  renderCapturasInbox()
+
   leads.unshift({
-    id: Date.now(),
+    id: Date.now() * 1000 + Math.floor(Math.random() * 1000),
     cliente: c.nome || '',
     tel: c.telefone || '',
     imovel: c.imovel || '',
@@ -2662,17 +2680,15 @@ async function aceitarCaptura(id) {
     await salvarRemoto()
     toast('Lead adicionado à agenda — defina a data da visita.')
   } catch(_) { toast('Salvo localmente — verifique sua conexão', true) }
-  capturasPend = capturasPend.filter(x => String(x.id) !== String(id))
-  renderCapturasInbox()
   atualizarBadgeAgenda()
   renderAgenda()
 }
 
 async function descartarCaptura(id) {
   if (window._DEMO) return demoBloqueio()
-  try { await window._sb.from('cpr_public_leads').update({ status: 'descartado' }).eq('id', id) } catch(_) {}
   capturasPend = capturasPend.filter(x => String(x.id) !== String(id))
   renderCapturasInbox()
+  try { await window._sb.from('cpr_public_leads').update({ status: 'descartado' }).eq('id', id) } catch(_) {}
 }
 
 async function salvarLead(ev) {

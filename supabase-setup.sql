@@ -124,6 +124,35 @@ create policy "cpl_update_own"
 create index if not exists cpr_public_leads_owner_idx
   on public.cpr_public_leads (owner_id, status);
 
--- Índice para resolver slug -> user_id na rota pública /api/captura
-create index if not exists cpr_user_data_slug_idx
-  on public.cpr_user_data ((perfil->>'slug'));
+-- Índice para resolver slug -> user_id na rota pública /api/captura.
+-- ÚNICO: impede dois corretores com o mesmo slug (garantirSlug no tool.html
+-- já tenta evitar a colisão antes de salvar, mas a constraint no banco é a
+-- garantia de verdade). Nulos não colidem entre si — quem ainda não definiu
+-- slug não é afetado.
+drop index if exists cpr_user_data_slug_idx;
+create unique index if not exists cpr_user_data_slug_idx
+  on public.cpr_user_data ((perfil->>'slug'))
+  where perfil->>'slug' is not null;
+
+-- ============================================================
+-- Migração: resolução de slug via função SQL (2026-06-20)
+-- O filtro direto via postgrest-js (.filter('perfil->>slug','eq',valor))
+-- se mostrou pouco confiável neste projeto — chegou a retornar "não
+-- encontrado" para um slug real em produção, fazendo toda requisição cair
+-- no fallback de varrer a tabela em código (sem usar o índice acima). Esta
+-- função roda a comparação direto em SQL, garantindo o uso do índice.
+-- ============================================================
+create or replace function public.cpr_resolve_slug(p_slug text)
+returns table(user_id uuid, perfil jsonb)
+language sql
+stable
+security definer
+set search_path = public
+as $$
+  select user_id, perfil
+  from public.cpr_user_data
+  where perfil->>'slug' = p_slug
+  limit 1;
+$$;
+
+grant execute on function public.cpr_resolve_slug(text) to service_role;
