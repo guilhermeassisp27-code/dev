@@ -20,6 +20,48 @@ function resolvePlan(data: Record<string, unknown>): string {
   return OFFER_PLANS[offerCode] ?? 'corretorpro'
 }
 
+// Email de recuperação de carrinho abandonado, via API transacional da
+// Brevo (mesmo provedor já usado para o SMTP do Supabase, agora chamado
+// direto pela API — requer BREVO_API_KEY e BREVO_SENDER_EMAIL no Vercel).
+async function enviarEmailRecuperacao(destino: string, nome: string, plano: string): Promise<boolean> {
+  if (!process.env.BREVO_API_KEY || !process.env.BREVO_SENDER_EMAIL) {
+    console.error('[hotmart-webhook] BREVO_API_KEY ou BREVO_SENDER_EMAIL não configurados — pulando email de recuperação')
+    return false
+  }
+  const primeiroNome = nome.split(' ')[0] || 'tudo bem'
+  const offerCode = plano === 'anual' ? 'mcjyy7ub' : 'hgn79gvq'
+  const checkoutUrl = `https://pay.hotmart.com/L106145948O?off=${offerCode}`
+
+  try {
+    const resp = await fetch('https://api.brevo.com/v3/smtp/email', {
+      method: 'POST',
+      headers: {
+        'api-key': process.env.BREVO_API_KEY,
+        'content-type': 'application/json',
+      },
+      body: JSON.stringify({
+        sender: { name: 'CorretorPRO', email: process.env.BREVO_SENDER_EMAIL },
+        to: [{ email: destino, name: nome || undefined }],
+        subject: 'Ainda dá tempo de proteger sua comissão',
+        htmlContent: `
+          <p>Oi, ${primeiroNome}!</p>
+          <p>Vi que você começou a assinar o CorretorPRO e não finalizou. Ficou alguma dúvida?</p>
+          <p>O CorretorPRO gera suas propostas comerciais e o Registro de Visita (que protege sua comissão) em segundos — com garantia incondicional de 7 dias.</p>
+          <p><a href="${checkoutUrl}">Voltar e finalizar minha assinatura</a></p>
+        `,
+      }),
+    })
+    if (!resp.ok) {
+      console.error('[hotmart-webhook] envio Brevo falhou:', resp.status, await resp.text())
+      return false
+    }
+    return true
+  } catch (err) {
+    console.error('[hotmart-webhook] erro ao chamar Brevo:', err)
+    return false
+  }
+}
+
 export async function POST(req: NextRequest) {
   const token =
     req.headers.get(HOTTOK_HEADER) ||
@@ -153,6 +195,44 @@ export async function POST(req: NextRequest) {
       })
     }
     return NextResponse.json({ ok: true, action: 'created', emailSent: emailOk })
+  }
+
+  // CARRINHO ABANDONADO: comprador iniciou o checkout e não concluiu.
+  // Guarda o lead (não cria conta) e dispara email de recuperação via Brevo.
+  if (event === 'PURCHASE_OUT_OF_SHOPPING_CART') {
+    const phoneDigits = (buyer.phone ?? '').replace(/\D/g, '')
+    const whatsappLink = phoneDigits
+      ? `https://wa.me/55${phoneDigits}?text=${encodeURIComponent(
+          `Oi ${buyer.name?.split(' ')[0] ?? ''}! Vi que você começou a assinar o CorretorPRO e não finalizou — ficou alguma dúvida? Posso te ajudar agora.`
+        )}`
+      : null
+
+    const { data: existingLead } = await supabase
+      .from('cpr_abandoned_carts')
+      .select('email_sent')
+      .eq('email', email)
+      .maybeSingle()
+
+    await supabase.from('cpr_abandoned_carts').upsert(
+      {
+        email,
+        name: buyer.name ?? '',
+        phone: buyer.phone ?? '',
+        plan,
+        whatsapp_link: whatsappLink,
+        updated_at: new Date().toISOString(),
+      },
+      { onConflict: 'email' }
+    )
+
+    if (!existingLead?.email_sent) {
+      const emailOk = await enviarEmailRecuperacao(email, buyer.name ?? '', plan)
+      if (emailOk) {
+        await supabase.from('cpr_abandoned_carts').update({ email_sent: true }).eq('email', email)
+      }
+    }
+
+    return NextResponse.json({ ok: true, action: 'abandoned_cart_logged' })
   }
 
   // CORTA acesso: reembolso, chargeback, cancelamento — NÃO deleta, só bane +
