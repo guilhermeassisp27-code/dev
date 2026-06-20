@@ -49,3 +49,26 @@ alter table public.cpr_user_data
 
 -- Sem GRANT adicional necessário: a coluna nova já está coberta pelo
 -- grant select/insert/update on public.cpr_user_data feito acima.
+
+-- ============================================================
+-- Migração: Carrinho abandonado Hotmart (2026-06-20)
+-- Leads que iniciaram o checkout e não compraram (evento
+-- PURCHASE_OUT_OF_SHOPPING_CART). Só o webhook (service role) grava;
+-- visualização é manual pelo Table Editor do Supabase. RLS sem
+-- nenhuma policy = bloqueado para anon/authenticated, só service role
+-- (que ignora RLS) lê/escreve.
+-- ============================================================
+create table if not exists public.cpr_abandoned_carts (
+  id          uuid primary key default gen_random_uuid(),
+  email       text not null unique,
+  name        text,
+  phone       text,
+  plan        text,
+  whatsapp_link text,
+  email_sent  boolean not null default false,
+  recovered   boolean not null default false,
+  created_at  timestamptz not null default now(),
+  updated_at  timestamptz not null default now()
+);
+
+alter table public.cpr_abandoned_carts enable row level security;
