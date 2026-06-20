@@ -58,6 +58,19 @@ async function resolveSlug(slug: string) {
 
 // GET /api/captura?slug=... -> branding público do corretor (sem PII sensível)
 export async function GET(req: NextRequest) {
+  // DIAGNÓSTICO TEMPORÁRIO — remover após resolver a captação.
+  // Lista os slugs salvos no banco (sem PII além do primeiro nome).
+  if (req.nextUrl.searchParams.get('debug') === 'diag-916a45') {
+    const supabase = admin()
+    const { data, error } = await supabase.from('cpr_user_data').select('perfil').limit(2000)
+    if (error) return NextResponse.json({ debug: true, error: error.message })
+    const linhas = (data ?? []).map((r) => {
+      const p = (r.perfil ?? {}) as Record<string, unknown>
+      return { slug: p.slug ?? null, nome: String(p.nome ?? '').split(' ')[0] }
+    })
+    return NextResponse.json({ debug: true, total: linhas.length, linhas })
+  }
+
   const slug = (req.nextUrl.searchParams.get('slug') ?? '').trim().toLowerCase()
   if (!slug) return NextResponse.json({ error: 'missing slug' }, { status: 400 })
 
