@@ -536,6 +536,27 @@ input[type=color]{opacity:0;width:0;height:0;position:absolute}
         <p>Cadastre o lead antes da visita acontecer — depois, marque como realizada e gere o Registro de Visita ou a Proposta sem redigitar nada.</p>
       </div>
 
+      <!-- Captação pública de leads: link que o corretor compartilha; quem preenche cai aqui -->
+      <div class="card" id="card-captacao">
+        <div class="card-t">Captar leads pela internet</div>
+        <p style="color:var(--t2);font-size:13px;margin:-4px 0 14px;line-height:1.6">Compartilhe seu link de contato (bio do Instagram, status do WhatsApp, anúncios). Quem preencher entra automaticamente na sua agenda — você só aceita e segue para a visita.</p>
+        <div class="field f2">
+          <label class="lbl" for="cap-link">Seu link de captação</label>
+          <div style="display:flex;gap:8px;flex-wrap:wrap">
+            <input id="cap-link" type="text" class="inp" readonly style="flex:1;min-width:200px" value="">
+            <button type="button" class="btn btn-ghost btn-sm" onclick="copiarLinkCaptacao()">
+              <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1"/></svg>
+              Copiar
+            </button>
+            <button type="button" class="btn btn-ghost btn-sm" onclick="compartilharLinkCaptacao()">
+              <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 11.5a8.38 8.38 0 01-.9 3.8 8.5 8.5 0 01-7.6 4.7 8.38 8.38 0 01-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 01-.9-3.8 8.5 8.5 0 014.7-7.6 8.38 8.38 0 013.8-.9h.5a8.48 8.48 0 018 8v.5z"/></svg>
+              WhatsApp
+            </button>
+          </div>
+        </div>
+        <div id="captacao-inbox" style="margin-top:16px"></div>
+      </div>
+
       <form id="form-lead" onsubmit="salvarLead(event)" novalidate>
         <div class="card">
           <div class="card-t">Novo agendamento</div>
@@ -1189,6 +1210,7 @@ input[type=color]{opacity:0;width:0;height:0;position:absolute}
 const _SUPA_URL    = 'https://kdudodqmijlzqwnkxpjo.supabase.co'
 const _SUPA_KEY    = 'sb_publishable_ADIRZ2I6Eu9S8_CwCt6RSQ_rrRlIqq9'
 const _LOGIN_URL   = 'https://usecorretorpro.vercel.app/acesso'
+const _APP_BASE    = 'https://usecorretorpro.vercel.app'
 // Link de (re)assinatura — usado quando a assinatura está inativa
 const _CHECKOUT_URL = 'https://pay.hotmart.com/L106145948O'
 
@@ -1415,7 +1437,7 @@ function iniciarTourDemo() {
 const escH = s => String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;')
 
 /* ── STATE ── */
-let perfil = JSON.parse(localStorage.getItem('cpr_perfil') || 'null') || { nome:'',creci:'',tel:'',email:'',cor:'#4D7EFF',logo:null,modelo:'classico' }
+let perfil = JSON.parse(localStorage.getItem('cpr_perfil') || 'null') || { nome:'',creci:'',tel:'',email:'',cor:'#4D7EFF',logo:null,modelo:'classico',slug:'' }
 let historico = JSON.parse(localStorage.getItem('cpr_hist') || '[]')
 let leads = JSON.parse(localStorage.getItem('cpr_leads') || '[]')
 let snapProposta = null
@@ -1473,7 +1495,7 @@ async function carregarRemoto() {
     if (error) return
     if (data) {
       if (data.perfil && typeof data.perfil === 'object') {
-        perfil = Object.assign({ nome:'',creci:'',tel:'',email:'',cor:'#4D7EFF',logo:null,modelo:'classico' }, data.perfil)
+        perfil = Object.assign({ nome:'',creci:'',tel:'',email:'',cor:'#4D7EFF',logo:null,modelo:'classico',slug:'' }, data.perfil)
         localStorage.setItem('cpr_perfil', JSON.stringify(perfil))
       }
       if (Array.isArray(data.historico)) {
@@ -1533,6 +1555,7 @@ function showView(name) {
     const dt = document.getElementById('l-data')
     if (dt && !dt.value) dt.value = new Date().toISOString().slice(0, 10)
     renderAgenda()
+    renderCaptacao()
   }
   closeSidebar()
   window.scrollTo({ top: 0, behavior: 'smooth' })
@@ -2525,6 +2548,132 @@ function compartilharTermoWA() {
 }
 
 /* ══════════════ AGENDA DE VISITAS / FUNIL DE LEADS ══════════════ */
+
+/* ── Captação pública de leads ── */
+function slugify(s) {
+  return String(s||'').toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g,'')
+    .replace(/[^a-z0-9]+/g,'-').replace(/^-+|-+$/g,'').slice(0,24)
+}
+
+// Garante um slug único para o corretor (base no nome + parte do uid).
+async function garantirSlug() {
+  if (perfil.slug) return perfil.slug
+  if (window._DEMO) return 'demonstracao'
+  const base = slugify(perfil.nome) || 'corretor'
+  const uidPart = (window._uid || '').replace(/-/g,'').slice(0,6) || Math.random().toString(36).slice(2,8)
+  perfil.slug = base + '-' + uidPart
+  localStorage.setItem('cpr_perfil', JSON.stringify(perfil))
+  try { await salvarRemoto() } catch(_) {}
+  return perfil.slug
+}
+
+function linkCaptacao() {
+  return _APP_BASE + '/captura/' + (perfil.slug || '')
+}
+
+async function renderCaptacao() {
+  const inp = document.getElementById('cap-link')
+  await garantirSlug()
+  if (inp) inp.value = linkCaptacao()
+  await carregarCapturas()
+}
+
+function copiarLinkCaptacao() {
+  if (window._DEMO) return demoBloqueio()
+  const url = linkCaptacao()
+  if (navigator.clipboard) {
+    navigator.clipboard.writeText(url).then(() => toast('Link copiado!')).catch(() => fallbackCopia(url))
+  } else fallbackCopia(url)
+}
+function fallbackCopia(url) {
+  const inp = document.getElementById('cap-link')
+  if (inp) { inp.focus(); inp.select(); try { document.execCommand('copy'); toast('Link copiado!') } catch(_) {} }
+}
+function compartilharLinkCaptacao() {
+  if (window._DEMO) return demoBloqueio()
+  const msg = 'Olá! Tem interesse em algum imóvel? Deixe seus dados aqui que eu entro em contato: ' + linkCaptacao()
+  window.open('https://wa.me/?text=' + encodeURIComponent(msg), '_blank')
+}
+
+// Lê os leads pendentes que chegaram pelo formulário público (RLS: só os do dono).
+let capturasPend = []
+async function carregarCapturas() {
+  const box = document.getElementById('captacao-inbox')
+  if (!box) return
+  if (window._DEMO || !window._sb || !window._uid) { box.innerHTML = ''; return }
+  try {
+    const { data, error } = await window._sb
+      .from('cpr_public_leads')
+      .select('id,nome,telefone,imovel,mensagem,created_at')
+      .eq('owner_id', window._uid)
+      .eq('status', 'pendente')
+      .order('created_at', { ascending: false })
+    if (error) { box.innerHTML = ''; return }
+    capturasPend = data || []
+    renderCapturasInbox()
+  } catch(_) { box.innerHTML = '' }
+}
+
+function renderCapturasInbox() {
+  const box = document.getElementById('captacao-inbox')
+  if (!box) return
+  if (!capturasPend.length) { box.innerHTML = ''; return }
+  box.innerHTML = `
+    <div class="card-t" style="margin-bottom:10px">Leads recebidos
+      <span class="sb-badge" style="background:var(--gs);color:var(--g);font-size:10px;font-weight:700;padding:2px 7px;border-radius:100px;margin-left:6px">${capturasPend.length}</span>
+    </div>
+    <div class="hist-list">${capturasPend.map(c => `
+      <div class="hist-card">
+        <div class="hist-main-row">
+          <span class="lead-status" data-s="hoje">Novo</span>
+          <div class="hist-info">
+            <div class="hist-cliente">${escH(c.nome||'—')}</div>
+            <div class="hist-imovel">${escH(c.imovel||'')}</div>
+          </div>
+          <div class="hist-actions">
+            <button class="btn btn-primary btn-sm" onclick="aceitarCaptura('${c.id}')" title="Aceitar e agendar">Aceitar</button>
+            <button class="btn btn-ghost btn-sm" onclick="descartarCaptura('${c.id}')" title="Descartar">Descartar</button>
+          </div>
+        </div>
+        ${c.telefone ? `<div class="hist-bottom-row"><div class="hist-meta">${escH(c.telefone)}</div></div>` : ''}
+        ${c.mensagem ? `<div class="lead-obs">${escH(c.mensagem)}</div>` : ''}
+      </div>`).join('')}</div>`
+}
+
+// Aceitar: vira um lead da agenda (sem data ainda) e marca o público como importado.
+async function aceitarCaptura(id) {
+  if (window._DEMO) return demoBloqueio()
+  const c = capturasPend.find(x => String(x.id) === String(id))
+  if (!c) return
+  leads.unshift({
+    id: Date.now(),
+    cliente: c.nome || '',
+    tel: c.telefone || '',
+    imovel: c.imovel || '',
+    dataVisita: '',
+    hora: '',
+    obs: c.mensagem || '',
+    status: 'agendada',
+    criadoEm: new Date().toLocaleDateString('pt-BR'),
+  })
+  localStorage.setItem('cpr_leads', JSON.stringify(leads))
+  try {
+    await window._sb.from('cpr_public_leads').update({ status: 'importado' }).eq('id', id)
+    await salvarRemoto()
+    toast('Lead adicionado à agenda — defina a data da visita.')
+  } catch(_) { toast('Salvo localmente — verifique sua conexão', true) }
+  capturasPend = capturasPend.filter(x => String(x.id) !== String(id))
+  renderCapturasInbox()
+  atualizarBadgeAgenda()
+  renderAgenda()
+}
+
+async function descartarCaptura(id) {
+  if (window._DEMO) return demoBloqueio()
+  try { await window._sb.from('cpr_public_leads').update({ status: 'descartado' }).eq('id', id) } catch(_) {}
+  capturasPend = capturasPend.filter(x => String(x.id) !== String(id))
+  renderCapturasInbox()
+}
 
 async function salvarLead(ev) {
   ev.preventDefault()
