@@ -73,6 +73,12 @@ create table if not exists public.cpr_abandoned_carts (
 
 alter table public.cpr_abandoned_carts enable row level security;
 
+-- IMPORTANTE: neste projeto as tabelas criadas por SQL NÃO recebem grant
+-- automático (mesmo motivo do grant a `authenticated` acima). O service_role
+-- tem BYPASSRLS (ignora policies) mas ainda precisa do GRANT de tabela —
+-- sem isto, o webhook leva "permission denied for table" (42501).
+grant select, insert, update on public.cpr_abandoned_carts to service_role;
+
 -- ============================================================
 -- Migração: Captação pública de leads (2026-06-20)
 -- Formulário público (sem login) que o corretor compartilha com o
@@ -97,6 +103,10 @@ create table if not exists public.cpr_public_leads (
 alter table public.cpr_public_leads enable row level security;
 
 grant select, update on public.cpr_public_leads to authenticated;
+-- A rota pública /api/captura insere via service role — precisa do grant.
+grant select, insert, update on public.cpr_public_leads to service_role;
+-- E o resolveSlug lê cpr_user_data pela chave secreta — grant de SELECT.
+grant select on public.cpr_user_data to service_role;
 
 -- SELECT: corretor lê apenas os leads que chegaram para ele
 drop policy if exists "cpl_select_own" on public.cpr_public_leads;
