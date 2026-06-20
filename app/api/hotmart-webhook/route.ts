@@ -42,12 +42,20 @@ async function enviarEmailRecuperacao(destino: string, nome: string, plano: stri
       body: JSON.stringify({
         sender: { name: 'CorretorPRO', email: process.env.BREVO_SENDER_EMAIL },
         to: [{ email: destino, name: nome || undefined }],
-        subject: 'Ainda dá tempo de proteger sua comissão',
+        subject: 'Você quase assinou — e agora o CorretorPRO faz ainda mais',
         htmlContent: `
           <p>Oi, ${primeiroNome}!</p>
-          <p>Vi que você começou a assinar o CorretorPRO e não finalizou. Ficou alguma dúvida?</p>
-          <p>O CorretorPRO gera suas propostas comerciais e o Registro de Visita (que protege sua comissão) em segundos — com garantia incondicional de 7 dias.</p>
+          <p>Vi que você começou a assinar o CorretorPRO e não finalizou — sem problema. Queria te contar uma novidade que talvez mude a sua decisão.</p>
+          <p>Agora o CorretorPRO cobre <b>toda a jornada do corretor autônomo</b>, num lugar só:</p>
+          <ul>
+            <li><b>Capta o cliente</b> — um link com a sua marca pra bio do Instagram e status do WhatsApp; o lead cai direto na sua agenda, até enquanto você dorme.</li>
+            <li><b>Organiza a visita</b> — Agenda de Visitas pra você nunca mais perder um follow-up.</li>
+            <li><b>Protege a sua comissão</b> — Registro de Visita com amparo legal, assinado na hora.</li>
+            <li><b>Fecha com proposta profissional</b> — com o seu logo e CRECI, em 60 segundos, pronta pro WhatsApp.</li>
+          </ul>
+          <p>Sozinho, com a estrutura de uma imobiliária inteira. Garantia incondicional de 7 dias.</p>
           <p><a href="${checkoutUrl}">Voltar e finalizar minha assinatura</a></p>
+          <p>Ficou alguma dúvida — preço, a ferramenta ou só não era o momento? É só responder este email que eu te ajudo pessoalmente.</p>
         `,
       }),
     })
@@ -203,7 +211,7 @@ export async function POST(req: NextRequest) {
     const phoneDigits = (buyer.phone ?? '').replace(/\D/g, '')
     const whatsappLink = phoneDigits
       ? `https://wa.me/55${phoneDigits}?text=${encodeURIComponent(
-          `Oi ${buyer.name?.split(' ')[0] ?? ''}! Vi que você começou a assinar o CorretorPRO e não finalizou — ficou alguma dúvida? Posso te ajudar agora.`
+          `Oi ${buyer.name?.split(' ')[0] ?? ''}! Aqui é do CorretorPRO. Vi que você começou a assinar e não finalizou — ficou alguma dúvida? Acabamos de lançar o link de captação de leads: o cliente preenche e cai direto na sua agenda, aí é só agendar a visita, emitir o Registro de Visita (que protege sua comissão) e mandar a proposta. Posso te mostrar funcionando em 2 min?`
         )}`
       : null
 
