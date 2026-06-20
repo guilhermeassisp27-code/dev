@@ -15,23 +15,45 @@ function admin() {
   )
 }
 
-// Resolve o slug público -> dono (user_id) + branding visível ao cliente.
-async function resolveSlug(slug: string) {
-  const supabase = admin()
-  const { data, error } = await supabase
-    .from('cpr_user_data')
-    .select('user_id, perfil')
-    .eq('perfil->>slug', slug)
-    .maybeSingle()
-  if (error || !data) return null
-  const perfil = (data.perfil ?? {}) as Record<string, unknown>
+type OwnerRow = { user_id: string; perfil: Record<string, unknown> | null }
+
+function brandFrom(row: OwnerRow) {
+  const perfil = (row.perfil ?? {}) as Record<string, unknown>
   return {
-    ownerId: data.user_id as string,
+    ownerId: row.user_id,
     nome: String(perfil.nome ?? ''),
     creci: String(perfil.creci ?? ''),
     cor: String(perfil.cor ?? '#4D7EFF'),
     logo: (perfil.logo as string | null) ?? null,
   }
+}
+
+// Resolve o slug público -> dono (user_id) + branding visível ao cliente.
+// O filtro direto em campo JSONB (perfil->>slug) pode ser codificado de forma
+// incompatível pelo postgrest-js em alguns casos, então há um fallback que
+// varre as linhas e compara em código (seguro na escala atual de usuários).
+async function resolveSlug(slug: string) {
+  const supabase = admin()
+
+  // 1) tentativa direta via escape hatch .filter() (sintaxe de JSON)
+  const direct = await supabase
+    .from('cpr_user_data')
+    .select('user_id, perfil')
+    .filter('perfil->>slug', 'eq', slug)
+    .maybeSingle()
+  if (direct.error) console.error('[captura] filtro JSONB falhou:', direct.error.message)
+  if (direct.data) return brandFrom(direct.data as OwnerRow)
+
+  // 2) fallback: varre e compara em código
+  const scan = await supabase.from('cpr_user_data').select('user_id, perfil').limit(2000)
+  if (scan.error) {
+    console.error('[captura] scan falhou:', scan.error.message)
+    return null
+  }
+  const match = (scan.data ?? []).find(
+    (r) => String((r.perfil as Record<string, unknown> | null)?.slug ?? '') === slug
+  )
+  return match ? brandFrom(match as OwnerRow) : null
 }
 
 // GET /api/captura?slug=... -> branding público do corretor (sem PII sensível)
