@@ -1,0 +1,15 @@
+{
+  "_instrucoes": "Plano de mudanças aplicado por scripts/meta-ads-manage.mjs. Rode 'listar' primeiro para pegar os nomes/ids dos conjuntos. O campo 'adset' aceita id exato ou parte do nome. 'limites' é a trava de segurança e é obrigatório.",
+  "conta": "act_2241281872779854",
+  "limites": {
+    "orcamento_diario_max_brl": 60,
+    "aumento_max_pct": 20
+  },
+  "_nota_trava": "Trava reativada após o salto para R$40 (aplicado em 18/06). Agora cada aumento futuro é limitado a +20% por execução, com teto absoluto de R$60/dia. Para a rampa gradual, suba o orcamento_diario_brl aos poucos.",
+  "mudancas": [
+    {
+      "adset": "CorretorPRO - Campanha 20 reais inicial",
+      "orcamento_diario_brl": 40
+    }
+  ]
+}

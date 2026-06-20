@@ -1,0 +1,42 @@
+{
+  "_instrucoes": "Plano de criativos subidos por scripts/meta-ads-criativos.mjs. Sobe imagens estáticas + carrossel como anúncios NOVOS e PAUSADOS no conjunto da campanha indicada. Reaproveita página, link de destino e CTA do anúncio que já está rodando (nada de chutar para onde manda o clique). Vídeos (C1/C4/C6) são storyboards e NÃO entram aqui — viram .mp4 e sobem depois.",
+  "conta": "act_2241281872779854",
+  "campanha": "CorretorPRO - Campanha 20 reais inicial",
+  "status_novos_anuncios": "PAUSED",
+  "_nota_destino": "Os anúncios existentes são Reels impulsionados (sem link externo), então não há destino para herdar. Destino definido manualmente conforme o plano de tráfego: tráfego vai para a LANDING (que tem o Pixel e aquece antes do checkout), nunca direto para o checkout. page_id veio do diagnóstico do script.",
+  "page_id": "1231653620022487",
+  "link_destino": "https://usecorretorpro.vercel.app/",
+  "cta": "LEARN_MORE",
+  "criativos": [
+    {
+      "nome": "C2 P1 estatico 1x1 - vendas perdidas",
+      "tipo": "single",
+      "imagem": "campanhas/corretorpro-assinatura/export/criativos/02-estatico-1x1/anuncio.png",
+      "headline": "Proposta pronta em segundos",
+      "descricao": "Com sua logo, suas cores e seu CRECI já configurados.",
+      "texto": "Você já parou pra pensar quantas vendas você perdeu sem nem saber o motivo?\n\nNão foi o preço. Não foi a localização. Foi o momento em que você mandou a proposta — e ela não condizia com o profissional que você é.\n\nA maioria dos corretores nem percebe isso, porque o cliente nunca fala \"ah, sua proposta tava feia\". Ele só... some.\n\nExiste uma forma de garantir que isso nunca mais aconteça com você."
+    },
+    {
+      "nome": "C3 P2 carrossel - Canva x Word x CorretorPRO",
+      "tipo": "carousel",
+      "imagens": [
+        "campanhas/corretorpro-assinatura/export/criativos/03-carrossel-1x1/card-1.png",
+        "campanhas/corretorpro-assinatura/export/criativos/03-carrossel-1x1/card-2.png",
+        "campanhas/corretorpro-assinatura/export/criativos/03-carrossel-1x1/card-3.png",
+        "campanhas/corretorpro-assinatura/export/criativos/03-carrossel-1x1/card-4.png",
+        "campanhas/corretorpro-assinatura/export/criativos/03-carrossel-1x1/card-5.png"
+      ],
+      "headline": "Canva, Word ou CorretorPRO?",
+      "descricao": "47 segundos, com seu logo e seu CRECI.",
+      "texto": "Testamos: mesma proposta, três ferramentas. Cronômetro ligado.\n\nCanva: 18 minutos (e ainda ficou faltando o CRECI).\nWord: 12 minutos (e quebrou a formatação no celular do cliente).\nCorretorPRO: 47 segundos. Com seu logo, suas cores e seu CRECI já configurados.\n\nA diferença não é só velocidade. É nunca mais perder tempo com algo que devia ser automático."
+    },
+    {
+      "nome": "C5 P3 estatico 9x16 - prova social +2400",
+      "tipo": "single",
+      "imagem": "campanhas/corretorpro-assinatura/export/criativos/05-estatico-9x16/anuncio.png",
+      "headline": "+2.400 corretores já confiam",
+      "descricao": "Assinatura mensal ou anual. Cancele quando quiser.",
+      "texto": "\"Não vendo mais sem mandar a proposta pelo CorretorPRO. Cliente comenta como ficou profissional.\" — corretor de SP, 6 meses de CorretorPRO.\n\nMais de 2.400 corretores já usam pra fechar mais rápido.\n\nAssinatura mensal ou anual, cancela quando quiser, sem letra miúda.\n\nHoje tem condição especial pra quem assina — clica e garante o seu acesso."
+    }
+  ]
+}

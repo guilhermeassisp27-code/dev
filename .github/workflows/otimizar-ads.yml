@@ -1,0 +1,46 @@
+name: Otimizar Meta Ads (com aprovação)
+
+# Aplica o ads/plano-mudancas.json na campanha via Marketing API.
+# SEGURANÇA: por padrão roda em SIMULAÇÃO (dry-run). Só altera a campanha de
+# verdade quando você escolhe "aplicar" no disparo manual. Nunca roda sozinho
+# (sem schedule) e respeita os limites de orçamento definidos no plano.
+#
+# PRÉ-REQUISITO (Settings → Secrets and variables → Actions):
+#   - META_MANAGE_TOKEN (secret): token com escopo ads_management. Se não existir,
+#     usa META_ACCESS_TOKEN como fallback (caso esse já tenha ads_management).
+
+on:
+  workflow_dispatch:
+    inputs:
+      modo:
+        description: "Simular (dry-run) ou aplicar de verdade?"
+        type: choice
+        default: "simular"
+        options:
+          - listar
+          - auditoria
+          - simular
+          - aplicar
+
+permissions:
+  contents: read
+
+jobs:
+  otimizar:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+      - name: Executar plano de mudanças
+        env:
+          META_MANAGE_TOKEN: ${{ secrets.META_MANAGE_TOKEN }}
+          META_ACCESS_TOKEN: ${{ secrets.META_ACCESS_TOKEN }}
+        run: |
+          case "${{ inputs.modo }}" in
+            listar)    node scripts/meta-ads-manage.mjs listar ;;
+            auditoria) node scripts/meta-ads-manage.mjs auditoria ;;
+            aplicar)   node scripts/meta-ads-manage.mjs aplicar --apply ;;
+            *)       node scripts/meta-ads-manage.mjs aplicar ;;
+          esac

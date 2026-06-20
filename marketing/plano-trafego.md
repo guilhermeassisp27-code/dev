@@ -406,3 +406,109 @@ melhorando vs. baseline 09/06), não apenas vendas concluídas. Pausar só se tu
 **Baseline para comparação (relatório 16/05-14/06):**
 4 InitiateCheckout · R$36,25 cada · R$145 gastos · 2.989 impressões · 1.825 alcance ·
 engajamento e conversão acima da média · 0 vendas.
+
+---
+
+## Plano de Otimização — 18/06/2026
+
+> Dados reais da conta `act_2241281872779854`, campanha "CorretorPRO - Campanha 20 reais inicial".
+> Estrutura atual: 1 campanha, 1 conjunto, 1 anúncio. Orçamento ~R$20-25/dia (em rampa, ver checkpoints acima).
+
+### Dados de referência
+
+| Período | Gasto | Impressões | Alcance | Cliques | CTR | CPC | CPM | Freq. |
+|---|---|---|---|---|---|---|---|---|
+| Ontem | R$35,13 | 732 | 634 | 25 | 3,42% | R$1,41 | R$47,99 | 1,15 |
+| 7 dias | R$169,65 | 3.635 | 2.272 | 145 | 3,99% | R$1,17 | R$46,67 | 1,60 |
+| 30 dias | R$232,14 | 4.907 | 2.814 | 242 | 4,93% | R$0,96 | R$47,31 | 1,74 |
+
+### 1. Diagnóstico curto
+
+- **CTR forte (3,4-4,9%)** — muito acima do benchmark de nicho B2B/profissional (1,5-2%). Criativo e gancho funcionam, isso não é o problema.
+- **CPC caindo com o tempo** (R$1,41 → R$0,96 nos 30 dias) — sinal de que o leilão está "aprendendo a entregar" o anúncio, mesmo sem otimizar por conversão ainda.
+- **CPM estável e alto (~R$47)** nas três janelas — não é ruído, é estrutural. Com freq. baixa (1,15-1,74) não é fadiga de público, é leilão caro: ou o público está concentrado demais, ou o posicionamento padrão (feed) está puxando o custo, ou o nicho "profissional/imobiliário" tem leilão mais disputado.
+- **Gargalo real:** não é o criativo, não é o engajamento — é o custo de entrega (CPM) combinado com volume baixo. A campanha ainda roda com otimização de cliques/checkout, sem aproveitar o Pixel para achar quem de fato assina.
+- Isso confirma o que já está registrado no log de 15/06: Purchase é rastreado mas sem volume (~50 compras/semana) pra otimizar por ele ainda. Continuar a rampa de verba é a prioridade, não mudar estrutura.
+
+### 2. Objetivo da campanha — otimizar por conversão agora?
+
+**Ainda não, pelo critério já registrado:** otimização por Purchase exige histórico mínimo de ~50 conversões/semana para o algoritmo ter dados (mesmo Cost Cap/ROAS Goal). A campanha está longe disso. Trocar agora reseta o aprendizado do conjunto e devolve o leilão para "modo chute" — pior do que manter o que está rodando.
+
+**O que fazer em vez disso:**
+- Manter otimização em **InitiateCheckout** (evento intermediário) até acumular volume de checkouts suficiente (referência: ~30-50 checkouts) para então testar Purchase.
+- Continuar a rampa de verba já definida (R$25→R$50/dia) sem interromper — é o caminho mais rápido para sair do "modo aprendizado eterno".
+- Corrigir paralelamente o `value/currency` do evento Purchase na Hotmart (já identificado como pendência de baixa prioridade) — sem isso, mesmo quando o volume permitir, ROAS Goal não vai funcionar bem.
+
+### 3. Estrutura recomendada
+
+Não mudar estrutura agora — orçamento é baixo demais para fragmentar aprendizado em múltiplos conjuntos. Mas preparar para quando o checkpoint CP2 (28/06) liberar escala:
+
+```
+Campanha única (CBO) — Conversões, evento InitiateCheckout (depois Purchase)
+└── Conjunto 1 (atual) — público amplo Brasil 25-55, Advantage+ posicionamentos
+    └── Anúncio atual ("Reels Judicial") — MANTER, não tocar
+```
+
+**Quando liberar 2º conjunto (só após CP2 com CPA saudável):**
+```
+Campanha CBO
+├── Conjunto A — público amplo (controle, o que já roda)
+└── Conjunto B — Lookalike 1% de compradores OU retargeting de quem visitou e não comprou
+```
+CBO porque a verba ainda é pequena (R$50-100/dia) — não dá pra dividir manualmente entre conjuntos sem desperdiçar. ABO só entra quando houver 2+ públicos com sinal validado e verba > R$150/dia para alocar diferente entre eles.
+
+**Sobre testar novos criativos agora:** não. O briefing da "demonstração crua de tela" (já registrado acima) deve ficar em standby até o conjunto atual sair da fase de aprendizado — rodar 2 criativos com volume baixo divide os dados pela metade e atrasa tudo.
+
+### 4. Públicos a testar (assim que houver verba/sinal para isso — não agora)
+
+1. **Lookalike 1% de compradores** (Hotmart → evento Purchase no Pixel) — só pode ser criado com no mínimo ~50-100 compradores na base. Prioridade #1 quando atingir esse volume; histórico mostra que costuma ser o público mais lucrativo.
+2. **Retargeting de quem visitou a landing e não assinou** (Custom Audience por PageView/InitiateCheckout, janela 14 dias) — público pequeno mas barato e qualificado, criativo de reforço de garantia/prova social. Pode entrar mais cedo que o lookalike, mesmo com pouco volume, porque o custo por impressão nesse público costuma ser baixo.
+3. **Interesse "corretor de imóveis" / "CRECI" / páginas de imobiliária** como teste de controle paralelo ao público amplo — só depois que o público amplo validar CPA, para comparar se segmentar por interesse reduz CPM sem matar o CTR. Não prioritário: o plano original já mostrou que público aberto funciona bem com criativo forte.
+
+### 5. Orçamento e escala
+
+- **Manter a rampa já definida e em curso:** 15/06 R$25 → 16/06 R$30 → 17/06 R$35 → 18/06 R$40 (hoje) → 19/06 R$45 → 20/06+ R$50/dia. Não pular degraus.
+- **Regra de escala pós-rampa:** subir em blocos de **+20% a cada 3 dias**, nunca mais que isso de uma vez — saltos maiores resetam o aprendizado do conjunto.
+- **Limite para não estourar aprendizado:** nenhuma edição estrutural (criativo, público, posicionamento, evento de otimização) nos próximos 7 dias após qualquer mudança de verba — só ajustar o número do orçamento.
+- **Teto até a próxima decisão de escala (CP3, 05/07):** não passar de R$50/dia sem CPA validado. Resistir à tentação de acelerar mesmo com CTR bom — CTR não paga conta, CPA paga.
+
+### 6. Atacar o CPM ~R$47 — hipóteses e o que testar primeiro
+
+Hipóteses, em ordem de probabilidade:
+
+1. **Volume baixo ainda penaliza o CPM** (a entrega não tem dados suficientes pra o leilão precificar bem o público) — mais provável, dado que CPC caiu enquanto CPM ficou estável: o leilão está aprendendo a quem mostrar, não necessariamente "achatando" o custo de exibição ainda.
+2. **Posicionamento:** se o Advantage+ de posicionamentos não está habilitado (ou está restrito a feed), o CPM sobe — feed costuma ser mais caro que Stories/Reels, que têm mais inventário disponível.
+3. **Público "profissional/imobiliário" é leilão naturalmente mais caro** (B2B-like) — menos espaço pra reduzir CPM via público amplo, mas ainda é a opção mais barata disponível.
+4. **Frequência baixa (1,15-1,74) descarta fadiga de criativo** como causa do CPM alto — não é esse o problema.
+
+**O que testar primeiro (ordem):**
+1. Confirmar no conjunto atual que **todos os posicionamentos Advantage+** estão habilitados (Feed, Stories, Reels, Audience Network) — se algo estiver restrito, liberar é a ação de menor risco e maior potencial de queda de CPM. *(Isso é uma checagem de configuração, não uma "edição significativa" — pode ser feito sem reset de aprendizado se não alterar segmentação.)*
+2. Deixar a rampa de verba rodar — volume maior tende a estabilizar/reduzir CPM organicamente em 1-2 semanas.
+3. Só depois, se CPM continuar > R$45 com volume maior, testar abrir a faixa de idade/gênero (se estiver restrita) para ampliar ainda mais o público e baratear o leilão.
+
+### 7. Metas e benchmarks (próximos 7-14 dias)
+
+| Métrica | Meta | Janela de avaliação |
+|---|---|---|
+| CTR | manter > 3% (já está ótimo, não deixar cair) | diário |
+| CPM | tendência de queda para R$35-40 com volume maior | 14 dias |
+| Custo por InitiateCheckout | < R$30 (hoje ~R$36) | 7 dias |
+| CPA (1ª venda mensal R$67) | < R$67 ideal / até R$134 aceitável (payback 2 meses) | conforme CP2/CP3 |
+| CPA (venda anual R$497) | até R$250 excelente, até R$497 ainda positivo | conforme CP2/CP3 |
+
+Isso está alinhado aos checkpoints já registrados (CP1 21/06, CP2 28/06, CP3 05/07) — este plano não cria nova régua, reforça a existente.
+
+### 8. Checklist priorizado
+
+1. **Hoje (18/06):** confirmar orçamento em R$40/dia conforme rampa — não mais, não menos.
+2. **Hoje/amanhã:** checar configuração de posicionamentos (Advantage+ completo, sem Feed-only) — única alteração de "configuração" tolerável sem resetar aprendizado, porque não muda segmentação nem orçamento.
+3. **Sem mexer até 21/06:** deixar o conjunto atual rodar sem nenhuma edição significativa — criativo, público e evento de otimização ficam como estão.
+4. **21/06 — CP1:** ler CTR, custo por checkout e CPM; aplicar critério de stop-loss já definido (zero sinal após ~R$300 acumulado → pausa e diagnóstica).
+5. **28/06 — CP2:** calcular CPA real; se saudável (< R$134), seguir rampa; se CPA > R$150 com 5+ vendas, matar o conjunto e acionar criativo reserva ("demonstração crua de tela").
+6. **Quando atingir ~50-100 compradores:** criar Lookalike 1% e Custom Audience de retargeting — só então abrir 2º conjunto na campanha CBO.
+7. **05/07 — CP3:** decisão final — escalar em CBO com 2 conjuntos (amplo + lookalike/retargeting) ou encerrar com diagnóstico, conforme CPA acumulado.
+
+---
+
+**Próxima ação para o Guilherme:**
+Confirmar que o orçamento está em R$40/dia hoje (conforme rampa já definida) e checar rapidamente no Gerenciador de Anúncios se os posicionamentos Advantage+ estão todos habilitados (Feed, Stories, Reels, Audience Network) — é a única alteração segura a fazer agora. Depois disso, não tocar em mais nada até a leitura do CP1 em 21/06. Qualquer mudança de público, criativo ou evento de otimização precisa de aprovação explícita antes de ser aplicada.
