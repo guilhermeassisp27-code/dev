@@ -414,6 +414,35 @@ input[type=color]{opacity:0;width:0;height:0;position:absolute}
 .followup-modal textarea{width:100%;min-height:120px;resize:vertical;background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.14);border-radius:10px;color:#EEF2FF;font-size:13.5px;line-height:1.55;padding:12px;font-family:inherit}
 .followup-modal .fu-actions{display:flex;gap:8px;margin-top:16px;flex-wrap:wrap;justify-content:flex-end}
 
+/* ── DASHBOARD ──
+   Tela de visão agregada: cruza leads/imoveis/vendas já existentes, sem
+   array novo no jsonb. Gráfico de barras é SVG puro gerado por JS — zero
+   dependência nova, mesmo princípio dos módulos anteriores do pivô. */
+.dash-kpis{display:grid;grid-template-columns:repeat(6,1fr);gap:12px}
+@media(max-width:1100px){.dash-kpis{grid-template-columns:repeat(3,1fr)}}
+@media(max-width:620px){.dash-kpis{grid-template-columns:repeat(2,1fr)}}
+.dash-kpi{background:var(--s1);border:1px solid var(--b);border-radius:var(--radl);padding:16px 16px;display:flex;flex-direction:column;gap:6px;min-width:0}
+.dash-kpi-l{font-size:10.5px;font-weight:700;text-transform:uppercase;letter-spacing:.06em;color:var(--t3);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.dash-kpi-v{font-size:19px;font-weight:800;color:var(--t)}
+.dash-kpi.alerta .dash-kpi-v{color:#F97316}
+.dash-grid{display:grid;grid-template-columns:1.3fr 1fr;gap:16px;margin-top:20px}
+@media(max-width:900px){.dash-grid{grid-template-columns:1fr}}
+.dash-chart-wrap{width:100%;overflow-x:auto}
+.dash-chart-bar-label{font-size:10.5px;fill:var(--t3);text-anchor:middle}
+.dash-chart-val-label{font-size:10.5px;fill:var(--t2);text-anchor:middle;font-weight:700}
+.dash-funil-row{display:flex;align-items:center;gap:10px;margin-bottom:10px}
+.dash-funil-row:last-child{margin-bottom:0}
+.dash-funil-label{font-size:12px;color:var(--t2);width:118px;flex:0 0 118px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.dash-funil-bar-track{flex:1;height:10px;border-radius:100px;background:rgba(255,255,255,.06);overflow:hidden}
+.dash-funil-bar-fill{height:100%;border-radius:100px;transition:width .3s}
+.dash-funil-count{font-size:12px;font-weight:700;color:var(--t);width:24px;text-align:right;flex:0 0 24px}
+.dash-atencao-item{display:flex;align-items:center;gap:10px;padding:10px 0;border-bottom:1px solid var(--b)}
+.dash-atencao-item:last-child{border-bottom:none}
+.dash-atencao-info{min-width:0;flex:1}
+.dash-atencao-cliente{font-size:13.5px;font-weight:700;color:var(--t);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.dash-atencao-meta{font-size:11.5px;color:var(--t3);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.dash-atalhos{display:flex;gap:10px;flex-wrap:wrap;margin-top:4px}
+
 /* ── VENDAS ── */
 .vendas-kpis{display:grid;grid-template-columns:repeat(3,1fr);gap:14px}
 @media(max-width:700px){.vendas-kpis{grid-template-columns:1fr}}
@@ -533,9 +562,14 @@ input[type=color]{opacity:0;width:0;height:0;position:absolute}
 
 <aside class="sidebar" id="sidebar" aria-label="Menu lateral">
   <div class="sb-head">
-    <a href="#" class="sb-logo" onclick="showView('form');return false">Corretor<em>PRO</em></a>
+    <a href="#" class="sb-logo" onclick="showView('dashboard');return false">Corretor<em>PRO</em></a>
   </div>
   <nav class="sb-nav" aria-label="Navegação">
+    <div class="sb-sec">Visão geral</div>
+    <button class="sb-item active" data-view="dashboard" onclick="showView('dashboard')">
+      <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="9"/><rect x="14" y="3" width="7" height="5"/><rect x="14" y="12" width="7" height="9"/><rect x="3" y="16" width="7" height="5"/></svg>
+      Dashboard
+    </button>
     <div class="sb-sec">Funil</div>
     <button class="sb-item" data-view="agenda" onclick="showView('agenda')">
       <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
@@ -559,7 +593,7 @@ input[type=color]{opacity:0;width:0;height:0;position:absolute}
       <span class="sb-badge" id="sb-count-imoveis" style="margin-left:auto;background:var(--ps);color:var(--p);font-size:10px;font-weight:700;padding:2px 7px;border-radius:100px;display:none"></span>
     </button>
     <div class="sb-sec">Propostas</div>
-    <button class="sb-item active" data-view="form" onclick="showView('form')">
+    <button class="sb-item" data-view="form" onclick="showView('form')">
       <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
       Nova Proposta
     </button>
@@ -621,6 +655,54 @@ input[type=color]{opacity:0;width:0;height:0;position:absolute}
       <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
       <p><b>Seu perfil ainda não está configurado.</b> Configure seu nome, CRECI e logo para que a proposta saia com a sua marca. <a onclick="showView('config')">Configurar agora</a></p>
     </div>
+
+    <!-- ══════════════════ VIEW: DASHBOARD ══════════════════
+         Tela inicial: visão agregada cruzando leads/imóveis/vendas já
+         existentes. Não cria array novo — só lê e calcula em cima do que
+         já está salvo no jsonb (cpr_user_data). -->
+    <div class="view active" id="view-dashboard">
+      <div class="ph">
+        <h1>Dashboard</h1>
+        <p>Visão geral do seu negócio — leads, imóveis e vendas em um só lugar.</p>
+      </div>
+
+      <div class="dash-kpis" id="dash-kpis"></div>
+
+      <div class="dash-grid">
+        <div class="card">
+          <div class="card-t">Vendas nos últimos 6 meses</div>
+          <div class="dash-chart-wrap" id="dash-chart"></div>
+        </div>
+        <div class="card">
+          <div class="card-t">Funil de vendas (resumo)</div>
+          <div id="dash-funil-resumo"></div>
+        </div>
+      </div>
+
+      <div class="dash-grid">
+        <div class="card">
+          <div class="card-t">Leads que precisam de atenção agora</div>
+          <div id="dash-atencao"></div>
+        </div>
+        <div class="card">
+          <div class="card-t">Atalhos rápidos</div>
+          <div class="dash-atalhos">
+            <button class="btn btn-green btn-sm" onclick="showView('form')">
+              <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+              Nova proposta
+            </button>
+            <button class="btn btn-ghost btn-sm" onclick="showView('agenda')">
+              <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+              Novo lead
+            </button>
+            <button class="btn btn-ghost btn-sm" onclick="showView('imoveis')">
+              <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+              Novo imóvel
+            </button>
+          </div>
+        </div>
+      </div>
+    </div><!-- /view-dashboard -->
 
     <!-- ══════════════════ VIEW: AGENDA DE VISITAS ══════════════════ -->
     <div class="view" id="view-agenda">
@@ -889,7 +971,7 @@ input[type=color]{opacity:0;width:0;height:0;position:absolute}
     </div><!-- /view-vendas -->
 
     <!-- ══════════════════ VIEW: NOVA PROPOSTA ══════════════════ -->
-    <div class="view active" id="view-form">
+    <div class="view" id="view-form">
       <div class="ph">
         <h1>Nova Proposta Comercial</h1>
         <p>Preencha os dados do cliente e do imóvel para gerar a proposta com sua marca.</p>
@@ -1781,6 +1863,7 @@ function initApp() {
   atualizarBadgeImoveis()
   atualizarBadgeFunil()
   atualizarBadgeVendas()
+  renderDashboard()
   if (!perfil.nome) {
     document.getElementById('banner-profile').classList.add('show')
   }
@@ -1857,8 +1940,8 @@ function showView(name) {
   document.querySelectorAll('.view').forEach(v => v.classList.remove('active'))
   document.getElementById('view-' + name).classList.add('active')
   document.querySelectorAll('.sb-item[data-view]').forEach(i => i.classList.toggle('active', i.dataset.view === name))
-  const labels = { agenda:'Agenda de Visitas', form:'Nova Proposta', history:'Minhas Propostas', visita:'Registro de Visita', config:'Configurações', imoveis:'Meus Imóveis', funil:'Funil de Vendas', vendas:'Vendas' }
-  const roots  = { agenda:'Funil', form:'Propostas', history:'Propostas', visita:'Documentos', config:'Conta', imoveis:'Imóveis', funil:'Funil', vendas:'Funil' }
+  const labels = { dashboard:'Dashboard', agenda:'Agenda de Visitas', form:'Nova Proposta', history:'Minhas Propostas', visita:'Registro de Visita', config:'Configurações', imoveis:'Meus Imóveis', funil:'Funil de Vendas', vendas:'Vendas' }
+  const roots  = { dashboard:'Visão geral', agenda:'Funil', form:'Propostas', history:'Propostas', visita:'Documentos', config:'Conta', imoveis:'Imóveis', funil:'Funil', vendas:'Funil' }
   document.getElementById('crumb-page').textContent = labels[name] || name
   document.getElementById('crumb-root').textContent = roots[name] || name
   // topbar buttons only for form
@@ -1891,6 +1974,9 @@ function showView(name) {
   }
   if (name === 'vendas') {
     renderVendas()
+  }
+  if (name === 'dashboard') {
+    renderDashboard()
   }
   closeSidebar()
   window.scrollTo({ top: 0, behavior: 'smooth' })
@@ -3895,6 +3981,150 @@ function atualizarBadgeVendas() {
   } else {
     badge.style.display = 'none'
   }
+}
+
+/* ── DASHBOARD ──
+   4º módulo do pivô para CRM: cruza leads/imoveis/vendas (já existentes,
+   sem array novo) numa visão agregada. Gráfico de barras em SVG puro,
+   gerado por JS — sem dependência nova, mesmo princípio dos módulos
+   anteriores (Funil, Vendas, Meus Imóveis). */
+function renderDashboard() {
+  const elKpis = document.getElementById('dash-kpis')
+  if (!elKpis) return // view ainda não está no DOM (proteção defensiva)
+
+  const hoje = new Date()
+
+  // ── KPIs ──
+  const leadsAtivos = leads.filter(l => estagioFunilLead(l) !== 'venda_fechada').length
+  const leadsAlerta = leads.filter(l => alertaLead(l).nivel).length
+  const imoveisDisponiveis = imoveis.filter(i => (i.status || 'disponivel') === 'disponivel').length
+  const vendasDoMes = vendas.filter(v => {
+    const d = new Date(v.dataFechamento)
+    return !isNaN(d) && d.getFullYear() === hoje.getFullYear() && d.getMonth() === hoje.getMonth()
+  })
+  const vendasDoAno = vendas.filter(v => {
+    const d = new Date(v.dataFechamento)
+    return !isNaN(d) && d.getFullYear() === hoje.getFullYear()
+  })
+  const comissaoMes = vendasDoMes.reduce((s, v) => s + (v.comissaoValor || 0), 0)
+  const comissaoAno = vendasDoAno.reduce((s, v) => s + (v.comissaoValor || 0), 0)
+
+  const kpis = [
+    { l: 'Leads ativos',            v: String(leadsAtivos),                 alerta:false },
+    { l: 'Leads em alerta',         v: String(leadsAlerta),                 alerta:leadsAlerta>0 },
+    { l: 'Imóveis disponíveis',     v: String(imoveisDisponiveis),          alerta:false },
+    { l: 'Vendas fechadas no mês',  v: String(vendasDoMes.length),          alerta:false },
+    { l: 'Comissão no mês',         v: formatarMoedaBR(comissaoMes),        alerta:false },
+    { l: 'Comissão no ano',         v: formatarMoedaBR(comissaoAno),        alerta:false },
+  ]
+  elKpis.innerHTML = kpis.map(k => `
+    <div class="dash-kpi${k.alerta ? ' alerta' : ''}">
+      <span class="dash-kpi-l">${escH(k.l)}</span>
+      <span class="dash-kpi-v">${escH(k.v)}</span>
+    </div>`).join('')
+
+  renderDashboardChart()
+  renderDashboardFunilResumo()
+  renderDashboardAtencao()
+}
+
+// Gráfico de barras dos últimos 6 meses (volume de vendas fechadas), SVG
+// puro — sem biblioteca de gráfico nova.
+function renderDashboardChart() {
+  const el = document.getElementById('dash-chart')
+  if (!el) return
+
+  const hoje = new Date()
+  const meses = []
+  for (let i = 5; i >= 0; i--) {
+    const d = new Date(hoje.getFullYear(), hoje.getMonth() - i, 1)
+    meses.push({ ano: d.getFullYear(), mes: d.getMonth(), label: d.toLocaleDateString('pt-BR', { month:'short' }).replace('.','') })
+  }
+  const valores = meses.map(m => {
+    const doMes = vendas.filter(v => {
+      const d = new Date(v.dataFechamento)
+      return !isNaN(d) && d.getFullYear() === m.ano && d.getMonth() === m.mes
+    })
+    return doMes.reduce((s, v) => s + valorParaNumero(v.valor), 0)
+  })
+
+  const max = Math.max(...valores, 1)
+  const W = 480, H = 200, padTop = 24, padBottom = 28, padSide = 16
+  const larguraUtil = W - padSide * 2
+  const n = meses.length
+  const gap = 14
+  const barW = (larguraUtil - gap * (n - 1)) / n
+  const alturaUtil = H - padTop - padBottom
+
+  const barras = meses.map((m, i) => {
+    const valor = valores[i]
+    const h = max > 0 ? (valor / max) * alturaUtil : 0
+    const x = padSide + i * (barW + gap)
+    const y = padTop + (alturaUtil - h)
+    const cor = valor > 0 ? 'var(--p, #4D7EFF)' : 'rgba(255,255,255,.08)'
+    const valorLabel = valor > 0 ? formatarMoedaBR(valor).replace('R$', '').trim() : ''
+    return `
+      <rect x="${x.toFixed(1)}" y="${y.toFixed(1)}" width="${barW.toFixed(1)}" height="${Math.max(h,2).toFixed(1)}" rx="4" fill="${cor}"></rect>
+      ${valorLabel ? `<text class="dash-chart-val-label" x="${(x+barW/2).toFixed(1)}" y="${(y-7).toFixed(1)}">${escH(valorLabel)}</text>` : ''}
+      <text class="dash-chart-bar-label" x="${(x+barW/2).toFixed(1)}" y="${H-8}">${escH(m.label)}</text>`
+  }).join('')
+
+  el.innerHTML = `<svg viewBox="0 0 ${W} ${H}" width="100%" height="${H}" style="display:block;min-width:320px">${barras}</svg>`
+}
+
+// Mini visualização do Funil: contagem por estágio, em barras horizontais.
+function renderDashboardFunilResumo() {
+  const el = document.getElementById('dash-funil-resumo')
+  if (!el) return
+
+  if (leads.length === 0) {
+    el.innerHTML = `<p style="font-size:13px;color:var(--t3)">Nenhum lead cadastrado ainda.</p>`
+    return
+  }
+
+  const total = leads.length
+  el.innerHTML = FUNIL_ESTAGIOS.map(estagio => {
+    const n = leads.filter(l => estagioFunilLead(l) === estagio.key).length
+    const pct = total > 0 ? Math.round((n / total) * 100) : 0
+    return `
+    <div class="dash-funil-row">
+      <span class="dash-funil-label">${escH(estagio.label)}</span>
+      <div class="dash-funil-bar-track"><div class="dash-funil-bar-fill" style="width:${pct}%;background:${estagio.cor}"></div></div>
+      <span class="dash-funil-count">${n}</span>
+    </div>`
+  }).join('')
+}
+
+// Top 5 leads com alerta (crítico primeiro), com atalho direto pro follow-up.
+function renderDashboardAtencao() {
+  const el = document.getElementById('dash-atencao')
+  if (!el) return
+
+  const comAlerta = leads
+    .map(l => ({ l, alerta: alertaLead(l) }))
+    .filter(x => x.alerta.nivel)
+    .sort((a, b) => b.alerta.dias - a.alerta.dias)
+    .slice(0, 5)
+
+  if (comAlerta.length === 0) {
+    el.innerHTML = `<p style="font-size:13px;color:var(--t3)">Nenhum lead pedindo atenção agora — tudo em dia.</p>`
+    return
+  }
+
+  el.innerHTML = comAlerta.map(({ l, alerta }) => `
+    <div class="dash-atencao-item">
+      <button class="lead-alert" data-nivel="${alerta.nivel}" onclick="abrirFollowUpLead(${l.id})" title="Ver sugestão de mensagem de follow-up">
+        <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
+        ${alerta.dias}d
+      </button>
+      <div class="dash-atencao-info">
+        <div class="dash-atencao-cliente">${escH(l.cliente || '—')}</div>
+        <div class="dash-atencao-meta">${escH(l.imovel || 'Sem imóvel vinculado')}</div>
+      </div>
+      <button class="btn btn-ghost btn-sm" onclick="showView('funil')" title="Ver no Funil">
+        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
+      </button>
+    </div>`).join('')
 }
 
 function renderVendas() {

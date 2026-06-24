@@ -36,6 +36,9 @@ pesquisadas na internet, e implementa um por vez.
 - **Histórico por cliente** — agrupar todas as propostas de um mesmo cliente.
 
 ## Já entregue
+- **Dashboard — visão geral cruzando leads, imóveis e vendas — 4º módulo do pivô para CRM completo**
+  _Dor:_ corretor controla seus números "de cabeça" ou em telas separadas (Funil, Imóveis, Vendas), sem visão rápida de gargalo (lead esfriando, estoque curto, mês fraco de comissão) — pesquisa de mercado mostra demanda crescente por dashboards/indicadores em CRM imobiliário justamente por isso.
+  _Valor:_ tela inicial com KPIs (leads ativos, leads em alerta, imóveis disponíveis, vendas e comissão do mês/ano), gráfico de vendas dos últimos 6 meses (SVG puro), resumo do Funil por estágio e lista dos 5 leads mais críticos com atalho pro follow-up — tudo calculado em cima dos dados já existentes, sem array novo. (2026-06-24)
 - **Vendas — registro de comissão e resumo comercial — 3º módulo do pivô para CRM completo**
   _Dor:_ corretor autônomo ainda controla vendas e comissões em planilha de Excel separada do CRM (modelos de "planilha de controle de vendas/comissão para corretor" amplamente usados no mercado) — retrabalho de digitar tudo de novo, risco de erro no cálculo manual da comissão (padrão de mercado ~6%, Cofeci) e nenhuma visão automática de "quanto fechei esse mês".
   _Valor:_ ao mover um lead para "Venda fechada" no Funil, modal pede valor, % de comissão e data, calcula a comissão automaticamente, e registra no novo array `vendas`. Nova aba lista todas as vendas com totais de mês/ano, permite editar/excluir, e sugere marcar o imóvel do catálogo como vendido/locado. (2026-06-24)
