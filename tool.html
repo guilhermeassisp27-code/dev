@@ -2299,7 +2299,7 @@ function initApp() {
 async function sair() {
   if (window._sb) await window._sb.auth.signOut()
   // Limpa o cache local para não deixar PII (perfil/histórico/leads) no dispositivo
-  try { localStorage.removeItem('cpr_perfil'); localStorage.removeItem('cpr_hist'); localStorage.removeItem('cpr_leads'); localStorage.removeItem('cpr_imoveis') } catch(_) {}
+  try { localStorage.removeItem('cpr_perfil'); localStorage.removeItem('cpr_hist'); localStorage.removeItem('cpr_leads'); localStorage.removeItem('cpr_imoveis'); localStorage.removeItem('cpr_vendas') } catch(_) {}
   location.replace(_LOGIN_URL)
 }
 
@@ -2987,7 +2987,7 @@ function atualizarBadgeImoveis() {
   const badge = document.getElementById('sb-count-imoveis')
   if (!badge) return
   // Badge mostra só os disponíveis — é o que pede atenção (catálogo ativo)
-  const nDisp = imoveis.filter(i => i.status === 'disponivel').length
+  const nDisp = imoveis.filter(i => (i.status || 'disponivel') === 'disponivel').length
   if (nDisp > 0) {
     badge.textContent = nDisp
     badge.style.display = 'inline'
@@ -4160,6 +4160,7 @@ function renderAgenda() {
 }
 
 async function marcarRealizada(id) {
+  if (window._DEMO) return demoBloqueio()
   const l = leads.find(x => x.id === id)
   if (!l) return
   l.status = 'realizada'
@@ -4180,6 +4181,7 @@ async function marcarRealizada(id) {
 }
 
 async function excluirLead(id) {
+  if (window._DEMO) return demoBloqueio()
   const i = leads.findIndex(x => x.id === id)
   if (i === -1) return
   leads.splice(i, 1)
@@ -4497,6 +4499,10 @@ async function confirmarVenda() {
 
   const l = _vendaLeadIdAtual ? leads.find(x => x.id === _vendaLeadIdAtual) : null
   const imovelId = l ? (l.imovelId || null) : (_vendaEdicaoId ? vendas.find(v => v.id === _vendaEdicaoId)?.imovelId || null : null)
+  // Captura ANTES de fecharModalVenda() zerar _vendaEdicaoId: a sugestão de
+  // marcar o imóvel como vendido só vale em venda NOVA — ao apenas editar uma
+  // venda existente não devemos reabrir o prompt (corretor pode já ter recusado).
+  const ehEdicao = !!_vendaEdicaoId
 
   if (_vendaEdicaoId) {
     const v = vendas.find(x => x.id === _vendaEdicaoId)
@@ -4540,7 +4546,7 @@ async function confirmarVenda() {
   }
 
   // Sugere marcar o imóvel do catálogo como Vendido/Locado, sem forçar.
-  if (imovelId) {
+  if (imovelId && !ehEdicao) {
     const im = imoveis.find(x => String(x.id) === String(imovelId))
     if (im && im.status !== 'vendido' && im.status !== 'locado') {
       ofereceMarcarImovelStatus(imovelId)
@@ -4630,6 +4636,7 @@ function editarVenda(id) {
 }
 
 async function excluirVenda(id) {
+  if (window._DEMO) return demoBloqueio()
   const i = vendas.findIndex(x => x.id === id)
   if (i === -1) return
   if (!confirm('Excluir este registro de venda? Isso não afeta o lead nem o imóvel vinculados.')) return
@@ -4641,12 +4648,21 @@ async function excluirVenda(id) {
   toast('Venda removida')
 }
 
+// Parse de data "YYYY-MM-DD" como meia-noite LOCAL (não UTC). Sem o sufixo
+// 'T00:00:00', new Date('2026-06-01') é interpretado como UTC e vira
+// 31/maio em fusos negativos (America/Sao_Paulo = UTC-3), jogando a venda
+// do dia 1º para o mês anterior em todos os agregadores. Invalid Date se a
+// string for vazia (os filtros já testam isNaN/comparações dão false).
+function parseDataLocal(s) {
+  return new Date((s || '') + 'T00:00:00')
+}
+
 function atualizarBadgeVendas() {
   const badge = document.getElementById('sb-count-vendas')
   if (!badge) return
   const hoje = new Date()
   const nMes = vendas.filter(v => {
-    const d = new Date(v.dataFechamento)
+    const d = parseDataLocal(v.dataFechamento)
     return d.getFullYear() === hoje.getFullYear() && d.getMonth() === hoje.getMonth()
   }).length
   if (nMes > 0) {
@@ -4673,11 +4689,11 @@ function renderDashboard() {
   const leadsAlerta = leads.filter(l => alertaLead(l).nivel).length
   const imoveisDisponiveis = imoveis.filter(i => (i.status || 'disponivel') === 'disponivel').length
   const vendasDoMes = vendas.filter(v => {
-    const d = new Date(v.dataFechamento)
+    const d = parseDataLocal(v.dataFechamento)
     return !isNaN(d) && d.getFullYear() === hoje.getFullYear() && d.getMonth() === hoje.getMonth()
   })
   const vendasDoAno = vendas.filter(v => {
-    const d = new Date(v.dataFechamento)
+    const d = parseDataLocal(v.dataFechamento)
     return !isNaN(d) && d.getFullYear() === hoje.getFullYear()
   })
   const comissaoMes = vendasDoMes.reduce((s, v) => s + (v.comissaoValor || 0), 0)
@@ -4716,7 +4732,7 @@ function renderDashboardChart() {
   }
   const valores = meses.map(m => {
     const doMes = vendas.filter(v => {
-      const d = new Date(v.dataFechamento)
+      const d = parseDataLocal(v.dataFechamento)
       return !isNaN(d) && d.getFullYear() === m.ano && d.getMonth() === m.mes
     })
     return doMes.reduce((s, v) => s + valorParaNumero(v.valor), 0)
@@ -4807,11 +4823,11 @@ function renderVendas() {
 
   const hoje = new Date()
   const doMes = vendas.filter(v => {
-    const d = new Date(v.dataFechamento)
+    const d = parseDataLocal(v.dataFechamento)
     return !isNaN(d) && d.getFullYear() === hoje.getFullYear() && d.getMonth() === hoje.getMonth()
   })
   const doAno = vendas.filter(v => {
-    const d = new Date(v.dataFechamento)
+    const d = parseDataLocal(v.dataFechamento)
     return !isNaN(d) && d.getFullYear() === hoje.getFullYear()
   })
   const vendidoMes = doMes.reduce((s, v) => s + valorParaNumero(v.valor), 0)
@@ -4952,6 +4968,7 @@ function cancelarEdicaoImovel() {
 }
 
 async function excluirImovel(id) {
+  if (window._DEMO) return demoBloqueio()
   const i = imoveis.findIndex(x => x.id === id)
   if (i === -1) return
   if (!confirm('Excluir este imóvel do catálogo?')) return
