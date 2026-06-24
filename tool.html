@@ -357,6 +357,20 @@ input[type=color]{opacity:0;width:0;height:0;position:absolute}
 .lead-status[data-s="realizada"]{background:rgba(34,197,94,.13);color:#22C55E}
 .lead-obs{font-size:12px;color:var(--t3);margin-top:6px;padding-top:6px;border-top:1px solid var(--b);line-height:1.5}
 
+/* Alerta de lead esquecido: sem interação há N dias */
+.lead-alert{display:inline-flex;align-items:center;gap:4px;padding:3px 8px;border-radius:5px;font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.06em;flex-shrink:0;cursor:pointer;border:none}
+.lead-alert[data-nivel="atencao"]{background:rgba(234,179,8,.15);color:#EAB308}
+.lead-alert[data-nivel="critico"]{background:rgba(239,68,68,.16);color:#EF4444;animation:pulseAlert 2s ease-in-out infinite}
+@keyframes pulseAlert{0%,100%{opacity:1}50%{opacity:.55}}
+.hist-card.lead-esquecido{border-color:rgba(239,68,68,.35)}
+.hist-card.lead-atencao{border-color:rgba(234,179,8,.35)}
+.followup-modal-back{position:fixed;inset:0;z-index:10000;background:rgba(8,18,28,.65);display:flex;align-items:center;justify-content:center;padding:18px}
+.followup-modal{width:min(440px,94vw);background:#0E2C3D;border:1px solid rgba(255,255,255,.14);border-radius:14px;padding:22px;box-shadow:0 18px 50px rgba(0,0,0,.5);font-family:inherit}
+.followup-modal h3{font-size:16px;font-weight:800;color:#EEF2FF;margin:0 0 4px}
+.followup-modal .fu-sub{font-size:12.5px;color:#A9BBD0;margin:0 0 14px}
+.followup-modal textarea{width:100%;min-height:120px;resize:vertical;background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.14);border-radius:10px;color:#EEF2FF;font-size:13.5px;line-height:1.55;padding:12px;font-family:inherit}
+.followup-modal .fu-actions{display:flex;gap:8px;margin-top:16px;flex-wrap:wrap;justify-content:flex-end}
+
 /* ── REGISTRO DE VISITA ── */
 .termo-decl{font-size:14px;line-height:1.85;color:var(--t2);text-align:justify}
 .termo-decl b{color:var(--t)}
@@ -1353,6 +1367,7 @@ function demoBloqueio() {
 function seedDemoData() {
   const diaBR = n => new Date(Date.now() - n*86400000).toLocaleDateString('pt-BR')
   const iso   = n => new Date(Date.now() - n*86400000).toISOString().slice(0,10)
+  const isoTs = n => new Date(Date.now() - n*86400000).toISOString()
   const base  = Date.now()
 
   perfil = {
@@ -1370,10 +1385,10 @@ function seedDemoData() {
   ]
 
   leads = [
-    { id:base-11, cliente:'Pedro Henrique',  tel:'(11) 99111-2233', imovel:'Cobertura — Vila Nova Conceição', dataVisita:iso(0),  hora:'14:30', obs:'Segunda visita, leva a esposa',     status:'agendada',  criadoEm:diaBR(2) },
-    { id:base-12, cliente:'Juliana Martins', tel:'(11) 98222-3344', imovel:'Apto 2 dorm — Pinheiros',          dataVisita:iso(-1), hora:'10:00', obs:'Primeira visita',                   status:'agendada',  criadoEm:diaBR(1) },
-    { id:base-13, cliente:'Marcos Vinícius', tel:'(11) 97333-4455', imovel:'Casa — Granja Viana',              dataVisita:iso(2),  hora:'16:00', obs:'Confirmar documentação',            status:'agendada',  criadoEm:diaBR(3) },
-    { id:base-14, cliente:'Fernanda Souza',  tel:'(11) 96444-5566', imovel:'Apto — Higienópolis',             dataVisita:iso(3),  hora:'11:00', obs:'Visita realizada — gerou proposta', status:'realizada', criadoEm:diaBR(5) },
+    { id:base-11, cliente:'Pedro Henrique',  tel:'(11) 99111-2233', imovel:'Cobertura — Vila Nova Conceição', dataVisita:iso(0),  hora:'14:30', obs:'Segunda visita, leva a esposa',     status:'agendada',  criadoEm:diaBR(2), ultimaInteracao:isoTs(1) },
+    { id:base-12, cliente:'Juliana Martins', tel:'(11) 98222-3344', imovel:'Apto 2 dorm — Pinheiros',          dataVisita:iso(-1), hora:'10:00', obs:'Primeira visita',                   status:'agendada',  criadoEm:diaBR(1), ultimaInteracao:isoTs(8) },
+    { id:base-13, cliente:'Marcos Vinícius', tel:'(11) 97333-4455', imovel:'Casa — Granja Viana',              dataVisita:iso(2),  hora:'16:00', obs:'Confirmar documentação',            status:'agendada',  criadoEm:diaBR(3), ultimaInteracao:isoTs(4) },
+    { id:base-14, cliente:'Fernanda Souza',  tel:'(11) 96444-5566', imovel:'Apto — Higienópolis',             dataVisita:iso(3),  hora:'11:00', obs:'Visita realizada — gerou proposta', status:'realizada', criadoEm:diaBR(5), ultimaInteracao:isoTs(3) },
   ]
 }
 
@@ -2673,6 +2688,7 @@ async function aceitarCaptura(id) {
     obs: c.mensagem || '',
     status: 'agendada',
     criadoEm: new Date().toLocaleDateString('pt-BR'),
+    ultimaInteracao: new Date().toISOString(),
   })
   localStorage.setItem('cpr_leads', JSON.stringify(leads))
   try {
@@ -2707,6 +2723,7 @@ async function salvarLead(ev) {
     obs:     document.getElementById('l-obs').value.trim(),
     status:  'agendada',
     criadoEm: new Date().toLocaleDateString('pt-BR'),
+    ultimaInteracao: new Date().toISOString(),
   }
   leads.unshift(item)
   localStorage.setItem('cpr_leads', JSON.stringify(leads))
@@ -2735,6 +2752,143 @@ function statusCalculadoLead(l) {
 
 const LEAD_STATUS_LABEL = { agendada:'Agendada', hoje:'Hoje', atrasada:'Atrasada', realizada:'Realizada' }
 
+/* ── ALERTA DE LEAD ESQUECIDO ──
+   Dor real do corretor autônomo: o lead esfria entre o primeiro contato e o
+   fechamento porque não existe nenhum empurrão pra retomar. Aqui calculamos
+   há quantos dias o lead não teve nenhuma interação registrada e destacamos
+   visualmente — sem nenhuma automação de envio, só o alerta + sugestão. */
+const LEAD_DIAS_ATENCAO = 3
+const LEAD_DIAS_CRITICO = 7
+
+function diasSemContatoLead(l) {
+  // ultimaInteracao é o campo novo; leads antigos (antes desta versão) usam
+  // criadoEm como fallback pra não quebrar leads já salvos no jsonb.
+  const ref = l.ultimaInteracao || l.criadoEmISO || null
+  let dataRef
+  if (ref) {
+    dataRef = new Date(ref)
+  } else if (l.criadoEm) {
+    // criadoEm está em pt-BR (dd/mm/aaaa)
+    const [d, m, a] = l.criadoEm.split('/')
+    dataRef = new Date(`${a}-${m}-${d}T00:00:00`)
+  } else {
+    return 0
+  }
+  if (isNaN(dataRef.getTime())) return 0
+  const ms = Date.now() - dataRef.getTime()
+  return Math.max(0, Math.floor(ms / 86400000))
+}
+
+// Retorna { nivel: 'atencao'|'critico'|null, dias } — só alerta leads ainda
+// em aberto (realizada não esfria, já virou Registro de Visita/Proposta).
+function alertaLead(l) {
+  if (l.status === 'realizada') return { nivel: null, dias: 0 }
+  const dias = diasSemContatoLead(l)
+  if (dias >= LEAD_DIAS_CRITICO) return { nivel: 'critico', dias }
+  if (dias >= LEAD_DIAS_ATENCAO) return { nivel: 'atencao', dias }
+  return { nivel: null, dias }
+}
+
+// Marca "falei com o cliente agora" — reseta o contador do alerta sem
+// precisar mudar status nem data da visita.
+async function marcarContatoLead(id) {
+  const l = leads.find(x => x.id === id)
+  if (!l) return
+  l.ultimaInteracao = new Date().toISOString()
+  localStorage.setItem('cpr_leads', JSON.stringify(leads))
+  renderAgenda()
+  try { await salvarRemoto() } catch(_) {}
+  toast('Contato registrado — alerta zerado')
+}
+
+// Gera uma sugestão de mensagem de follow-up por template local (sem IA
+// externa), variando o tom conforme quantos dias o lead está sem contato.
+function gerarMensagemFollowUp(l) {
+  const nome = (l.cliente || '').trim().split(' ')[0] || ''
+  const imovel = (l.imovel || '').trim()
+  const dias = diasSemContatoLead(l)
+  const saudacao = nome ? `Oi, ${nome}!` : 'Oi!'
+  const refImovel = imovel ? ` sobre o imóvel ${imovel}` : ''
+
+  if (dias >= LEAD_DIAS_CRITICO) {
+    return `${saudacao} Faz um tempo que a gente não troca uma palavra${refImovel} — quero ter certeza de que você não perdeu a oportunidade. Ainda está em busca? Se quiser, consigo agendar uma nova visita ou te mandar opções atualizadas ainda hoje.`
+  }
+  if (dias >= LEAD_DIAS_ATENCAO) {
+    return `${saudacao} Passando pra saber como você está${refImovel}. Ficou alguma dúvida que eu possa resolver, ou quer que eu separe mais opções parecidas?`
+  }
+  return `${saudacao} Tudo bem? Só confirmando se ainda está interessado${refImovel} — qualquer dúvida me chama por aqui.`
+}
+
+// Limpa o telefone do lead pro padrão wa.me, mesma lógica usada no
+// hotmart-webhook (DDI 55 já embutido vs. só DDD+número).
+function telefoneParaWhatsapp(tel) {
+  const rawDigits = (tel || '').replace(/\D/g, '')
+  if (!rawDigits) return null
+  const digits = rawDigits.startsWith('55') && rawDigits.length >= 12
+    ? rawDigits.slice(2)
+    : rawDigits
+  return digits ? '55' + digits : null
+}
+
+// Abre o modal com a mensagem sugerida — corretor revisa e decide enviar.
+function abrirFollowUpLead(id) {
+  const l = leads.find(x => x.id === id)
+  if (!l) return
+  const antigo = document.getElementById('followup-modal-back')
+  if (antigo) antigo.remove()
+
+  const dias = diasSemContatoLead(l)
+  const mensagem = gerarMensagemFollowUp(l)
+  const waNumero = telefoneParaWhatsapp(l.tel)
+
+  const back = document.createElement('div')
+  back.id = 'followup-modal-back'
+  back.className = 'followup-modal-back'
+  back.onclick = (e) => { if (e.target === back) back.remove() }
+  back.innerHTML = `
+    <div class="followup-modal">
+      <h3>Retomar contato com ${escH(l.cliente || 'o cliente')}</h3>
+      <p class="fu-sub">${dias > 0 ? `Sem interação há ${dias} dia${dias === 1 ? '' : 's'}.` : 'Sem registro de contato ainda.'} Revise a mensagem antes de enviar.</p>
+      <textarea id="fu-texto">${escH(mensagem)}</textarea>
+      <div class="fu-actions">
+        <button class="btn btn-ghost btn-sm" onclick="document.getElementById('followup-modal-back').remove()">Fechar</button>
+        <button class="btn btn-ghost btn-sm" onclick="marcarContatoLead(${l.id});document.getElementById('followup-modal-back').remove()" title="Já falei com o cliente por outro canal (ligação, presencial)">Já contatei (outro canal)</button>
+        <button class="btn btn-ghost btn-sm" onclick="copiarMensagemFollowUp()">Copiar texto</button>
+        <button class="btn btn-green btn-sm" onclick="enviarFollowUpWhatsapp(${l.id})" ${waNumero ? '' : 'disabled title="Lead sem telefone cadastrado"'}>
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 11.5a8.38 8.38 0 01-.9 3.8 8.5 8.5 0 01-7.6 4.7 8.38 8.38 0 01-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 01-.9-3.8 8.5 8.5 0 014.7-7.6 8.38 8.38 0 013.8-.9h.5a8.48 8.48 0 018 8v.5z"/></svg>
+          Enviar no WhatsApp
+        </button>
+      </div>
+    </div>`
+  document.body.appendChild(back)
+}
+
+function copiarMensagemFollowUp() {
+  const ta = document.getElementById('fu-texto')
+  if (!ta) return
+  ta.select()
+  try { document.execCommand('copy'); toast('Mensagem copiada!') } catch(_) {}
+}
+
+// Abre o wa.me com o texto (editado ou não) já preenchido. Não envia nada
+// automaticamente — é o corretor que confirma o envio dentro do WhatsApp.
+async function enviarFollowUpWhatsapp(id) {
+  const l = leads.find(x => x.id === id)
+  if (!l) return
+  const waNumero = telefoneParaWhatsapp(l.tel)
+  if (!waNumero) { toast('Lead sem telefone cadastrado', true); return }
+  const ta = document.getElementById('fu-texto')
+  const texto = (ta && ta.value.trim()) || gerarMensagemFollowUp(l)
+  window.open(`https://wa.me/${waNumero}?text=${encodeURIComponent(texto)}`, '_blank')
+  // Marca como contatado: corretor revisou e decidiu agir agora.
+  l.ultimaInteracao = new Date().toISOString()
+  localStorage.setItem('cpr_leads', JSON.stringify(leads))
+  const back = document.getElementById('followup-modal-back')
+  if (back) back.remove()
+  renderAgenda()
+  try { await salvarRemoto() } catch(_) {}
+}
+
 function renderAgenda() {
   const el = document.getElementById('agenda-content')
   if (!el) return
@@ -2759,6 +2913,7 @@ function renderAgenda() {
   el.innerHTML = `<div class="hist-list">${ordenados.map(l => {
     const st = statusCalculadoLead(l)
     const dataFmt = fmtDataBR(l.dataVisita) + (l.hora ? ' às ' + l.hora : '')
+    const alerta = alertaLead(l)
     const acoes = st === 'realizada'
       ? `<button class="btn btn-ghost btn-sm" onclick="usarLeadParaVisita(${l.id})" title="Gerar Registro de Visita">
            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 01-2 2H5a2 2 0 01-2-2V5a2 2 0 012-2h11"/></svg>
@@ -2769,10 +2924,18 @@ function renderAgenda() {
       : `<button class="btn btn-ghost btn-sm" onclick="marcarRealizada(${l.id})" title="Marcar como realizada">
            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg>
          </button>`
+    const cardClass = alerta.nivel === 'critico' ? 'hist-card lead-esquecido' : (alerta.nivel === 'atencao' ? 'hist-card lead-atencao' : 'hist-card')
+    const alertaBadge = alerta.nivel
+      ? `<button class="lead-alert" data-nivel="${alerta.nivel}" onclick="abrirFollowUpLead(${l.id})" title="Ver sugestão de mensagem de follow-up">
+           <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
+           ${alerta.dias}d sem contato
+         </button>`
+      : ''
     return `
-    <div class="hist-card">
+    <div class="${cardClass}">
       <div class="hist-main-row">
         <span class="lead-status" data-s="${st}">${escH(LEAD_STATUS_LABEL[st])}</span>
+        ${alertaBadge}
         <div class="hist-info">
           <div class="hist-cliente">${escH(l.cliente||'—')}</div>
           <div class="hist-imovel">${escH(l.imovel||'')}</div>
@@ -2795,6 +2958,7 @@ async function marcarRealizada(id) {
   const l = leads.find(x => x.id === id)
   if (!l) return
   l.status = 'realizada'
+  l.ultimaInteracao = new Date().toISOString()
   localStorage.setItem('cpr_leads', JSON.stringify(leads))
   atualizarBadgeAgenda()
   renderAgenda()

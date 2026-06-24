@@ -27,7 +27,6 @@ pesquisadas na internet, e implementa um por vez.
 
 ## Ideias (a avaliar)
 
-- **Lembrete de follow-up** — aviso para retomar contato com o cliente em X dias. _Dor: o dinheiro está no follow-up, e ele esquece._
 - **Link de proposta para o cliente preencher** — corretor envia um link e o próprio cliente formaliza a proposta. _Dor (validada na conversa com Isaac, 2026-06-08): cliente fica mais à vontade para abrir valores reais; corretor não "condiciona" a proposta sem perceber._
 - **Qualificação/triagem de lead** — separar interessado real de "curioso". _Dor (validada na conversa com Kono, 2026-06-08): perder tempo com quem não vai fechar._
 - **Logo/cores aplicados automaticamente** em toda proposta a partir do perfil.
@@ -37,6 +36,7 @@ pesquisadas na internet, e implementa um por vez.
 - **Histórico por cliente** — agrupar todas as propostas de um mesmo cliente.
 
 ## Já entregue
+- **Alerta de lead esquecido + sugestão de follow-up no WhatsApp** — badge de "X dias sem contato" nos leads parados (3d atenção, 7d+ crítico) e mensagem de retomada gerada por template local, com botão "Enviar no WhatsApp" pré-preenchido. _Dor:_ o dinheiro está no follow-up, e ele esquece — confirmada como dor #1 do corretor autônomo em pesquisa de mercado (WAX, Tecimob já resolvem com lembretes automáticos). (2026-06-24)
 - **Modelos de proposta (Clássico, Moderno, Minimalista)** — seletor em Configurações que troca o visual da proposta gerada, salvo no perfil junto com logo/cor. _Dor:_ corretores têm estilos diferentes; um único layout não serve para todos os imóveis (alto padrão vs popular). (2026-06-17)
 - **Agenda de Visitas / funil de leads** — cadastro do lead antes da visita (nome, telefone, imóvel, data/hora), lista priorizada por atraso/hoje/agendada, e "Marcar como realizada" que pré-preenche Registro de Visita e Proposta. _Dor validada via pesquisa em CRMs imobiliários: follow-up esquecido é causa recorrente de venda perdida._ (2026-06-17)
 - **Registro de Visita** — termo com amparo legal (arts. 722–729 CC) que comprova a intermediação do corretor, com assinaturas, PDF e WhatsApp. _Gatilho de assinatura validado na conversa com Isaac (2026-06-08)._ (2026-06-09)
