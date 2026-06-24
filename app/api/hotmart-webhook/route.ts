@@ -102,13 +102,18 @@ export async function POST(req: NextRequest) {
   const event = String(body?.event ?? '')
   const data = (body?.data as Record<string, unknown>) ?? {}
   const buyer = data?.buyer as Record<string, string> | undefined
+  // Eventos de assinatura (ex: SUBSCRIPTION_CANCELLATION) não mandam `buyer`,
+  // só `subscriber` — sem esse fallback o webhook de cancelamento retornava
+  // 400 antes de chegar na lógica de revogação, e o usuário nunca era banido.
+  const subscriber = data?.subscriber as Record<string, string> | undefined
   const purchase = data?.purchase as Record<string, string> | undefined
   const plan = resolvePlan(data)
 
-  if (!buyer?.email) {
-    return NextResponse.json({ error: 'Missing buyer.email' }, { status: 400 })
+  const buyerEmail = buyer?.email ?? subscriber?.email
+  if (!buyerEmail) {
+    return NextResponse.json({ error: 'Missing buyer/subscriber email' }, { status: 400 })
   }
-  const email = buyer.email.toLowerCase()
+  const email = buyerEmail.toLowerCase()
 
   const supabase = createClient(
     process.env.NEXT_PUBLIC_SUPABASE_URL!,
@@ -190,7 +195,7 @@ export async function POST(req: NextRequest) {
       email,
       email_confirm: true,
       user_metadata: {
-        full_name: buyer.name ?? '',
+        full_name: buyer?.name ?? '',
         hotmart_transaction: purchase?.transaction ?? '',
         plan,
       },
@@ -218,22 +223,22 @@ export async function POST(req: NextRequest) {
   // CARRINHO ABANDONADO: comprador iniciou o checkout e não concluiu.
   // Guarda o lead (não cria conta) e dispara email de recuperação via Brevo.
   if (event === 'PURCHASE_OUT_OF_SHOPPING_CART') {
-    const rawDigits = (buyer.phone ?? '').replace(/\D/g, '')
+    const rawDigits = (buyer?.phone ?? '').replace(/\D/g, '')
     // A Hotmart nem sempre manda o DDI junto — quando o número já tem
     // DDD+9 dígitos e começa com 55, ele já está embutido; sem essa checagem
     // o link saía como wa.me/555511999999999 (DDI duplicado, link inválido).
     const phoneDigits = rawDigits.startsWith('55') && rawDigits.length >= 12 ? rawDigits.slice(2) : rawDigits
     const whatsappLink = phoneDigits
       ? `https://wa.me/55${phoneDigits}?text=${encodeURIComponent(
-          `Oi ${buyer.name?.split(' ')[0] ?? ''}! Aqui é do CorretorPRO. Vi que você começou a assinar e não finalizou — ficou alguma dúvida? Acabamos de lançar o link de captação de leads: o cliente preenche e cai direto na sua agenda, aí é só agendar a visita, emitir o Registro de Visita (que protege sua comissão) e mandar a proposta. Posso te mostrar funcionando em 2 min?`
+          `Oi ${buyer?.name?.split(' ')[0] ?? ''}! Aqui é do CorretorPRO. Vi que você começou a assinar e não finalizou — ficou alguma dúvida? Acabamos de lançar o link de captação de leads: o cliente preenche e cai direto na sua agenda, aí é só agendar a visita, emitir o Registro de Visita (que protege sua comissão) e mandar a proposta. Posso te mostrar funcionando em 2 min?`
         )}`
       : null
 
     await supabase.from('cpr_abandoned_carts').upsert(
       {
         email,
-        name: buyer.name ?? '',
-        phone: buyer.phone ?? '',
+        name: buyer?.name ?? '',
+        phone: buyer?.phone ?? '',
         plan,
         whatsapp_link: whatsappLink,
         updated_at: new Date().toISOString(),
@@ -253,7 +258,7 @@ export async function POST(req: NextRequest) {
       .select('email')
 
     if (claimed && claimed.length > 0) {
-      const emailOk = await enviarEmailRecuperacao(email, buyer.name ?? '', plan)
+      const emailOk = await enviarEmailRecuperacao(email, buyer?.name ?? '', plan)
       if (!emailOk) {
         // Envio falhou: libera a reivindicação para uma próxima tentativa.
         await supabase.from('cpr_abandoned_carts').update({ email_sent: false }).eq('email', email)
@@ -281,9 +286,12 @@ export async function POST(req: NextRequest) {
           subscription_status: 'inactive',
         },
       })
+    } else {
+      console.error('[hotmart-webhook] cancelamento recebido mas usuário não encontrado:', email, event)
     }
     return NextResponse.json({ ok: true, action: 'revoked' })
   }
 
+  console.error('[hotmart-webhook] evento ignorado (sem handler):', event)
   return NextResponse.json({ ok: true, action: 'ignored', event })
 }
