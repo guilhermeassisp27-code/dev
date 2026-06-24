@@ -155,6 +155,12 @@ input[type=color]{opacity:0;width:0;height:0;position:absolute}
 .btn-sm{padding:6px 12px;font-size:12px}
 .btn-full{width:100%;justify-content:center}
 .btn:disabled{opacity:.4;cursor:not-allowed;pointer-events:none}
+.btn-ai{background:linear-gradient(135deg,#7C5CFC 0%,#A855F7 100%);color:#fff;padding:5px 11px;font-size:11.5px;border-radius:100px;gap:5px}
+.btn-ai:hover{box-shadow:0 4px 14px rgba(168,85,247,.35)}
+.btn-ai:disabled{opacity:.55}
+
+/* label + IA action on the same row (used by the description AI helper) */
+.lbl-row{display:flex;align-items:center;justify-content:space-between;gap:8px;flex-wrap:wrap}
 
 .gen-btn{width:100%;padding:14px;background:linear-gradient(135deg,var(--p) 0%,#7C5CFC 100%);color:#fff;border:none;border-radius:var(--rad);font-size:15px;font-weight:700;font-family:var(--font);cursor:pointer;display:flex;align-items:center;justify-content:center;gap:10px;transition:opacity .2s,transform .15s;margin-top:4px}
 .gen-btn:hover{opacity:.88;transform:translateY(-1px)}
@@ -771,8 +777,15 @@ input[type=color]{opacity:0;width:0;height:0;position:absolute}
           <div class="card-t">Condições e Observações</div>
           <div class="fg fg1">
             <div class="field">
-              <label class="lbl" for="f-cond">Condições especiais (opcional)</label>
+              <div class="lbl-row">
+                <label class="lbl" for="f-cond">Condições especiais (opcional)</label>
+                <button type="button" class="btn btn-ai" id="btn-gerar-descricao" onclick="gerarDescricaoIA()" title="Gera uma descrição comercial a partir dos dados do imóvel preenchidos acima">
+                  <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 3v4M12 17v4M3 12h4M17 12h4M5.6 5.6l2.8 2.8M15.6 15.6l2.8 2.8M18.4 5.6l-2.8 2.8M8.4 15.6l-2.8 2.8"/></svg>
+                  Gerar descrição com IA
+                </button>
+              </div>
               <textarea id="f-cond" class="txa inp" placeholder="Ex: cliente tem FGTS disponível, aceita financiamento, documentação em dia, disponível para visita nos finais de semana..."></textarea>
+              <span class="hint" id="ia-desc-hint" style="display:none">✨ Descrição gerada por IA — revise e ajuste como preferir antes de gerar a proposta.</span>
             </div>
           </div>
         </div>
@@ -1588,6 +1601,13 @@ const fmtInput = id => {
 fmtInput('f-valor')
 fmtInput('f-complem')
 
+// Se o corretor editar manualmente o texto gerado pela IA, esconde o aviso
+// "gerado por IA" — deixou de ser exatamente o texto sugerido.
+document.getElementById('f-cond')?.addEventListener('input', () => {
+  const hint = document.getElementById('ia-desc-hint')
+  if (hint) hint.style.display = 'none'
+})
+
 /* ── TIPO NEGOCIAÇÃO → mostrar bloco específico ── */
 function atualizarTipoNeg() {
   const tipo = document.getElementById('f-tipo-neg').value
@@ -1612,6 +1632,109 @@ function carregarExemplo() {
   atualizarTipoNeg()
   showView('form')
   toast('Exemplo carregado — clique em Gerar Proposta')
+}
+
+/* ── GERAR DESCRIÇÃO DO IMÓVEL POR IA (template local, sem API paga) ──
+   Mesmo padrão de gerarMensagemFollowUp: varia a frase conforme os dados
+   reais preenchidos no formulário, sem inventar características que o
+   corretor não informou. Preenche o próprio campo "Condições especiais"
+   (f-cond) — já é o texto livre usado em "Sobre o imóvel" na proposta. */
+function extrairBairro(endereco) {
+  const partes = (endereco || '').split(',').map(s => s.trim()).filter(Boolean)
+  // formato comum: "Rua X, 123, Bairro — Cidade, UF" ou "Rua X, 123 — Cidade, UF"
+  // (no 2º formato, sem bairro, a 3ª parte vira só a sigla da UF — descartamos.)
+  if (partes.length >= 3) {
+    const candidato = partes[2].split('—')[0].trim()
+    const ehSiglaUF = /^[A-Za-z]{2}$/.test(candidato)
+    if (candidato && candidato.length > 2 && !/^\d+$/.test(candidato) && !ehSiglaUF) return candidato
+  }
+  return ''
+}
+
+function gerarDescricaoIA() {
+  const tipoImovel = document.getElementById('f-tipo-imovel').value
+  const tipoNeg     = document.getElementById('f-tipo-neg').value
+  const endereco    = document.getElementById('f-end').value.trim()
+  const area        = document.getElementById('f-area').value
+  const dorms       = document.getElementById('f-dorms').value
+  const vagas       = document.getElementById('f-vagas').value
+  const garantia    = document.getElementById('f-garantia')?.value || ''
+  const condEl      = document.getElementById('f-cond')
+  const diferenciaisTexto = condEl.value.trim()
+
+  if (!tipoImovel) {
+    toast('Selecione o tipo do imóvel antes de gerar a descrição', true)
+    return
+  }
+
+  const bairro = extrairBairro(endereco)
+  const tipoLower = tipoImovel.toLowerCase()
+
+  // Abertura — varia conforme tipo de imóvel e se há bairro identificado
+  const aberturas = bairro
+    ? [`${tipoImovel} bem localizado${tipoLower.endsWith('a') ? 'a' : ''} no ${bairro}`,
+       `Excelente ${tipoLower} disponível no ${bairro}`,
+       `Ótima oportunidade: ${tipoLower} no ${bairro}`]
+    : [`${tipoImovel} em ótima localização`,
+       `Excelente ${tipoLower} disponível`,
+       `Ótima oportunidade de ${tipoLower}`]
+  const abertura = aberturas[Math.floor(Math.random() * aberturas.length)]
+
+  // Características reais — só entra o que foi preenchido
+  const caracteristicas = []
+  if (area) caracteristicas.push(`${area} m²`)
+  if (dorms && dorms !== '—') {
+    caracteristicas.push(dorms === 'Studio' ? 'conceito studio' : `${dorms} dormitório${dorms === '1' ? '' : 's'}`)
+  }
+  if (vagas && vagas !== '—' && vagas !== '0') caracteristicas.push(`${vagas} vaga${vagas === '1' ? '' : 's'} de garagem`)
+
+  let frase1 = abertura
+  if (caracteristicas.length) {
+    frase1 += `, com ${caracteristicas.join(', ')}.`
+  } else {
+    frase1 += '.'
+  }
+
+  // Frase 2 — varia conforme tipo de negociação
+  const frasesNeg = {
+    'Compra': [
+      'Documentação em dia e pronto para morar, ideal para quem busca conforto e praticidade no dia a dia.',
+      'Imóvel pronto para morar, com excelente potencial de valorização na região.',
+      'Oportunidade de aquisição com documentação regularizada e disponibilidade imediata.'
+    ],
+    'Locação': [
+      `Ideal para quem busca praticidade no dia a dia${garantia ? ` (garantia aceita: ${garantia})` : ''}.`,
+      'Pronto para morar, em região com fácil acesso a comércio e transporte.',
+      'Perfeito para quem busca um novo lar com conforto e bem-estar no dia a dia.'
+    ],
+    'Permuta': [
+      'Excelente opção para quem deseja trocar de imóvel com agilidade e segurança jurídica.',
+      'Documentação regularizada, ideal para viabilizar uma permuta vantajosa para ambas as partes.',
+      'Ótima opção para quem busca trocar de imóvel sem burocracia.'
+    ]
+  }
+  const opcoesNeg = frasesNeg[tipoNeg] || frasesNeg['Compra']
+  const frase2 = opcoesNeg[Math.floor(Math.random() * opcoesNeg.length)]
+
+  // Diferenciais informados pelo corretor (texto livre já digitado) —
+  // citados literalmente, nunca inventados.
+  const frase3 = diferenciaisTexto
+    ? `Diferenciais: ${diferenciaisTexto}.`
+    : ''
+
+  // Fechamento — chamada para ação, sempre presente
+  const fechamentos = [
+    'Agende uma visita e venha conhecer de perto!',
+    'Fale comigo para agendar uma visita sem compromisso.',
+    'Não perca essa oportunidade — agende sua visita hoje mesmo.'
+  ]
+  const fechamento = fechamentos[Math.floor(Math.random() * fechamentos.length)]
+
+  const descricao = [frase1, frase2, frase3, fechamento].filter(Boolean).join(' ')
+
+  condEl.value = descricao
+  document.getElementById('ia-desc-hint').style.display = ''
+  toast('Descrição gerada — revise antes de continuar')
 }
 
 /* ── CALCULAR PARCELA (Tabela Price) ── */
