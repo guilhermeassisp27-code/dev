@@ -36,6 +36,9 @@ pesquisadas na internet, e implementa um por vez.
 - **Histórico por cliente** — agrupar todas as propostas de um mesmo cliente.
 
 ## Já entregue
+- **Contratos — gerador de modelos de documento (Autorização de Venda/Locação e Proposta de Compra) — fase 2 do pivô para CRM**
+  _Dor:_ corretores autônomos hoje redigem do zero (ou copiam de modelo solto na internet) a autorização de venda/locação e a proposta de compra — concorrentes diretos (ex. Tecimob) já oferecem "Gerador de Contratos" como diferencial visível na comparação de planos.
+  _Valor:_ nova aba "Contratos" com dois modelos prontos, preenchimento automático a partir do perfil/leads/imóveis já cadastrados, texto final **editável num textarea** antes de exportar (o corretor revisa e ajusta livremente), e exportação em PDF/WhatsApp reaproveitando o mesmo `window.print()` da Proposta e do Registro de Visita. Aviso jurídico fixo e não removível em tela e no PDF: modelo genérico, sem validade jurídica garantida, não substitui advogado. Nenhum dado de terceiro é persistido em `cpr_user_data` — o texto é gerado e editado só na sessão. (2026-06-24)
 - **Fase 1 do pivô para CRM imobiliário completo — CONCLUÍDA (2026-06-24)**
   Sequência completa: alerta de lead esquecido → gerador de descrição com IA → Meus Imóveis → Funil de Vendas (Kanban) → Vendas (comissão) → Dashboard → Tutoriais/Ajuda (último módulo, fecha o ciclo de onboarding/referência da ferramenta).
 - **Tutoriais / Ajuda — guia de referência para cada módulo — 5º e último módulo do pivô para CRM completo**

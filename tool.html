@@ -501,6 +501,22 @@ input[type=color]{opacity:0;width:0;height:0;position:absolute}
 .visita-info-banner{display:flex;gap:10px;align-items:flex-start;background:rgba(34,197,94,.07);border:1px solid rgba(34,197,94,.2);border-radius:var(--rad);padding:12px 14px;margin-bottom:18px;font-size:12.5px;color:var(--t2);line-height:1.6}
 .visita-info-banner svg{flex-shrink:0;color:var(--g,#22C55E);margin-top:2px}
 
+/* ── CONTRATOS: aviso jurídico (não pode ser confundido com proteção legal) ── */
+.contrato-aviso{display:flex;gap:10px;align-items:flex-start;background:rgba(239,68,68,.08);border:1px solid rgba(239,68,68,.28);border-radius:var(--rad);padding:12px 14px;margin-bottom:18px;font-size:12.5px;color:var(--t2);line-height:1.6}
+.contrato-aviso svg{flex-shrink:0;color:#EF4444;margin-top:2px}
+.contrato-aviso b{color:var(--t)}
+.contrato-aviso.mini{margin:0 0 16px;padding:10px 12px;font-size:11.5px}
+.modelo-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:12px;margin-bottom:22px}
+.modelo-card{background:var(--s2);border:1px solid var(--b);border-radius:var(--radl);padding:16px;cursor:pointer;transition:border-color .15s,transform .1s;text-align:left}
+.modelo-card:hover{border-color:var(--p);transform:translateY(-1px)}
+.modelo-card.active{border-color:var(--p);background:var(--ps)}
+.modelo-card-ico{width:34px;height:34px;border-radius:9px;background:var(--ps);color:var(--p);display:flex;align-items:center;justify-content:center;margin-bottom:10px}
+.modelo-card-t{font-size:13.5px;font-weight:700;color:var(--t);margin-bottom:4px}
+.modelo-card-x{font-size:11.5px;color:var(--t3);line-height:1.5}
+.contrato-edit-txa{width:100%;min-height:420px;background:var(--s2);border:1px solid rgba(255,255,255,.09);border-radius:var(--rad);padding:16px;font-size:13px;line-height:1.7;color:var(--t);font-family:var(--font);outline:none;resize:vertical;white-space:pre-wrap}
+.contrato-edit-txa:focus{border-color:var(--p)}
+.contrato-print{display:none}
+
 /* ── CONFIG VIEW ── */
 .cfg-preview{background:var(--s2);border:1px solid var(--b);border-radius:var(--radl);padding:14px 18px;margin-bottom:14px;display:flex;align-items:center;gap:12px}
 .cfg-preview-logo{width:40px;height:40px;border-radius:var(--rad);background:var(--s3);display:flex;align-items:center;justify-content:center;overflow:hidden;flex-shrink:0}
@@ -563,6 +579,10 @@ input[type=color]{opacity:0;width:0;height:0;position:absolute}
   .sim-row.tot b{color:#1d40ae!important}
   .prop-badge{background:#eff6ff!important;color:#1d40ae!important}
   .prop-head{background:linear-gradient(135deg,#eff6ff,#f0fdf4)!important;border-bottom-color:#bfdbfe!important}
+  .modelo-grid,.contrato-edit-wrap,.contrato-aviso{display:none!important}
+  .contrato-print{display:block!important}
+  .contrato-print-aviso{display:block!important;border:1px solid #999!important;background:#f5f5f5!important;color:#000!important;font-size:10.5px!important;line-height:1.5!important;padding:10px 12px!important;margin-bottom:14px!important}
+  .contrato-print-texto{white-space:pre-wrap!important;font-size:12.5px!important;line-height:1.75!important;color:#000!important;padding:0 24px 24px!important}
 }
 </style>
 </head>
@@ -629,6 +649,10 @@ input[type=color]{opacity:0;width:0;height:0;position:absolute}
       <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 01-2 2H5a2 2 0 01-2-2V5a2 2 0 012-2h11"/></svg>
       Registro de Visita
       <span class="sb-badge" id="sb-count-visita" style="margin-left:auto;background:var(--ps);color:var(--p);font-size:10px;font-weight:700;padding:2px 7px;border-radius:100px;display:none"></span>
+    </button>
+    <button class="sb-item" data-view="contratos" onclick="showView('contratos')">
+      <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="8" y1="13" x2="16" y2="13"/><line x1="8" y1="17" x2="13" y2="17"/></svg>
+      Contratos
     </button>
     <div class="sb-sec">Conta</div>
     <button class="sb-item" data-view="config" onclick="showView('config')">
@@ -1486,6 +1510,235 @@ input[type=color]{opacity:0;width:0;height:0;position:absolute}
       </div>
     </div><!-- /view-visita -->
 
+    <!-- ══════════════════ VIEW: CONTRATOS ══════════════════
+         Gera modelos GENÉRICOS de documento (Autorização de Venda/Locação,
+         Proposta de Compra) a partir dos dados já existentes (perfil, leads,
+         imóveis). Não persiste nada em cpr_user_data — o documento é gerado
+         na hora, editado pelo corretor e exportado; nada de dado de terceiro
+         fica salvo na nuvem. Reaproveita o mesmo mecanismo de PDF (window.print)
+         já usado em Proposta e Registro de Visita. -->
+    <div class="view" id="view-contratos">
+      <div class="ph">
+        <h1>Contratos</h1>
+        <p>Modelos prontos para preencher e gerar em PDF — autorização de venda/locação e proposta de compra.</p>
+      </div>
+
+      <div class="contrato-aviso">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+        <span><b>Modelo genérico — não substitui orientação jurídica.</b> Estes documentos são modelos de apoio para agilizar seu dia a dia. Eles não têm validade jurídica garantida nem dispensam a revisão de um advogado. Você, corretor(a), é responsável por adequar o texto à legislação vigente, às normas do seu CRECI e às particularidades de cada negociação antes de usar o documento com terceiros.</span>
+      </div>
+
+      <!-- PASSO 1: escolha do modelo -->
+      <div class="no-print" id="contrato-passo-modelo">
+        <div class="card-t" style="margin-bottom:12px">Escolha o modelo</div>
+        <div class="modelo-grid">
+          <button type="button" class="modelo-card" data-modelo="autorizacao" onclick="escolherModeloContrato('autorizacao')">
+            <div class="modelo-card-ico"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 01-2 2H5a2 2 0 01-2-2V5a2 2 0 012-2h11"/></svg></div>
+            <div class="modelo-card-t">Autorização de Venda/Locação</div>
+            <div class="modelo-card-x">O proprietário autoriza você a intermediar a venda ou locação do imóvel — protege a sua comissão.</div>
+          </button>
+          <button type="button" class="modelo-card" data-modelo="proposta_compra" onclick="escolherModeloContrato('proposta_compra')">
+            <div class="modelo-card-ico"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 000 7h5a3.5 3.5 0 010 7H6"/></svg></div>
+            <div class="modelo-card-t">Proposta de Compra</div>
+            <div class="modelo-card-x">O comprador formaliza ao vendedor o valor e as condições da proposta — base para negociação.</div>
+          </button>
+        </div>
+        <p style="font-size:12px;color:var(--t3);margin-top:-6px">Precisa do termo que comprova a visita ao imóvel? Isso já existe em <a onclick="showView('visita')" style="color:var(--p);cursor:pointer">Registro de Visita</a>.</p>
+      </div>
+
+      <!-- PASSO 2: formulário de dados -->
+      <form class="no-print" id="form-contrato" style="display:none" onsubmit="gerarTextoContrato(event)" novalidate>
+        <div class="card">
+          <div class="card-t" id="ctt-form-titulo">Dados do documento</div>
+          <div class="fg">
+            <div class="field">
+              <label class="lbl" for="ct-lead-id">Preencher a partir de um lead (opcional)</label>
+              <select id="ct-lead-id" class="sel" onchange="preencherContratoDeLead()">
+                <option value="">— Preencher manualmente —</option>
+              </select>
+            </div>
+            <div class="field">
+              <label class="lbl" for="ct-imovel-id">Preencher a partir de um imóvel do catálogo (opcional)</label>
+              <select id="ct-imovel-id" class="sel" onchange="preencherContratoDeImovel()">
+                <option value="">— Preencher manualmente —</option>
+              </select>
+            </div>
+          </div>
+        </div>
+
+        <div class="card">
+          <div class="card-t" id="ctt-parte-titulo">Contraparte</div>
+          <div class="fg">
+            <div class="field">
+              <label class="lbl" for="ct-parte-nome">Nome completo <span class="req">*</span></label>
+              <input id="ct-parte-nome" type="text" class="inp" placeholder="Ex: João Silva" required autocomplete="name">
+            </div>
+            <div class="field">
+              <label class="lbl" for="ct-parte-cpf">CPF/CNPJ</label>
+              <input id="ct-parte-cpf" type="text" class="inp" placeholder="000.000.000-00">
+            </div>
+            <div class="field">
+              <label class="lbl" for="ct-parte-rg">RG (opcional)</label>
+              <input id="ct-parte-rg" type="text" class="inp" placeholder="00.000.000-0">
+            </div>
+            <div class="field">
+              <label class="lbl" for="ct-parte-tel">Telefone</label>
+              <input id="ct-parte-tel" type="tel" class="inp" placeholder="(11) 99999-9999">
+            </div>
+            <div class="field f2">
+              <label class="lbl" for="ct-parte-end">Endereço (opcional)</label>
+              <input id="ct-parte-end" type="text" class="inp" placeholder="Endereço residencial/comercial da contraparte">
+            </div>
+          </div>
+        </div>
+
+        <div class="card">
+          <div class="card-t">Imóvel</div>
+          <div class="fg">
+            <div class="field f2">
+              <label class="lbl" for="ct-im-end">Endereço completo <span class="req">*</span></label>
+              <input id="ct-im-end" type="text" class="inp" placeholder="Ex: Av. Paulista, 1000, ap 72 — Bela Vista, São Paulo, SP" required>
+            </div>
+            <div class="field">
+              <label class="lbl" for="ct-im-tipo">Tipo do imóvel</label>
+              <select id="ct-im-tipo" class="sel">
+                <option value="" selected>Não informar</option>
+                <option>Apartamento</option>
+                <option>Casa</option>
+                <option>Terreno</option>
+                <option>Sala Comercial</option>
+                <option>Galpão</option>
+                <option>Cobertura</option>
+                <option>Flat / Studio</option>
+              </select>
+            </div>
+            <div class="field">
+              <label class="lbl" for="ct-im-matricula">Matrícula (recomendado)</label>
+              <input id="ct-im-matricula" type="text" class="inp" placeholder="Ex: 123.456 — 4º CRI de São Paulo">
+            </div>
+          </div>
+        </div>
+
+        <div class="card" id="ctt-bloco-autorizacao">
+          <div class="card-t">Condições da autorização</div>
+          <div class="fg">
+            <div class="field">
+              <label class="lbl" for="ct-finalidade">Finalidade</label>
+              <select id="ct-finalidade" class="sel">
+                <option value="venda">Venda</option>
+                <option value="locacao">Locação</option>
+              </select>
+            </div>
+            <div class="field">
+              <label class="lbl" for="ct-valor">Valor pretendido (R$)</label>
+              <div class="pfx"><span class="pfx-l">R$</span><input id="ct-valor" type="text" class="inp" placeholder="450.000" inputmode="numeric"></div>
+            </div>
+            <div class="field">
+              <label class="lbl" for="ct-comissao">Comissão (%)</label>
+              <input id="ct-comissao" type="text" class="inp" placeholder="Ex: 6" inputmode="decimal">
+            </div>
+            <div class="field">
+              <label class="lbl" for="ct-prazo-aut">Prazo de vigência (dias)</label>
+              <input id="ct-prazo-aut" type="number" class="inp" placeholder="90" value="90" min="1">
+            </div>
+            <div class="field">
+              <label class="lbl" for="ct-exclusividade">Exclusividade</label>
+              <select id="ct-exclusividade" class="sel">
+                <option value="nao">Não exclusiva</option>
+                <option value="sim">Com exclusividade</option>
+              </select>
+            </div>
+          </div>
+        </div>
+
+        <div class="card" id="ctt-bloco-proposta" style="display:none">
+          <div class="card-t">Condições da proposta de compra</div>
+          <div class="fg">
+            <div class="field">
+              <label class="lbl" for="ct-valor-prop">Valor da proposta (R$) <span class="req">*</span></label>
+              <div class="pfx"><span class="pfx-l">R$</span><input id="ct-valor-prop" type="text" class="inp" placeholder="430.000" inputmode="numeric" required></div>
+            </div>
+            <div class="field">
+              <label class="lbl" for="ct-forma-pagto">Forma de pagamento</label>
+              <select id="ct-forma-pagto" class="sel">
+                <option value="vista">À vista</option>
+                <option value="financiamento">Financiamento bancário</option>
+                <option value="entrada+financiamento">Entrada + financiamento</option>
+                <option value="parcelado">Parcelado direto com o vendedor</option>
+              </select>
+            </div>
+            <div class="field">
+              <label class="lbl" for="ct-sinal">Valor do sinal/arras (R$, opcional)</label>
+              <div class="pfx"><span class="pfx-l">R$</span><input id="ct-sinal" type="text" class="inp" placeholder="20.000" inputmode="numeric"></div>
+            </div>
+            <div class="field">
+              <label class="lbl" for="ct-validade-prop">Validade da proposta (dias)</label>
+              <input id="ct-validade-prop" type="number" class="inp" placeholder="5" value="5" min="1">
+            </div>
+          </div>
+        </div>
+
+        <div class="card">
+          <div class="card-t">Observações e condições adicionais (opcional)</div>
+          <div class="fg fg1">
+            <div class="field">
+              <textarea id="ct-obs" class="txa inp" placeholder="Ex: imóvel entregue com móveis planejados da cozinha; despesas de escritura e ITBI a cargo do comprador..."></textarea>
+            </div>
+          </div>
+        </div>
+
+        <div class="fg" style="display:flex;gap:10px;flex-wrap:wrap">
+          <button type="button" class="btn btn-ghost" onclick="voltarModeloContrato()">
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="19" y1="12" x2="5" y2="12"/><polyline points="12 19 5 12 12 5"/></svg>
+            Trocar modelo
+          </button>
+          <button type="submit" class="gen-btn" style="flex:1">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 01-2 2H5a2 2 0 01-2-2V5a2 2 0 012-2h11"/></svg>
+            Gerar texto do documento
+          </button>
+        </div>
+      </form>
+
+      <!-- PASSO 3: texto gerado, editável antes de exportar -->
+      <div class="no-print contrato-edit-wrap" id="contrato-passo-texto" style="display:none">
+        <div class="card-t" style="margin-bottom:10px" id="ctt-edit-titulo">Revise e edite o documento</div>
+        <p style="font-size:12.5px;color:var(--t2);margin:-2px 0 12px;line-height:1.6">O texto abaixo é apenas um ponto de partida. Leia com atenção, ajuste o que for preciso para o seu caso e, se houver qualquer dúvida sobre cláusulas, valores ou obrigações, consulte um advogado antes de assinar ou enviar à contraparte.</p>
+        <textarea id="contrato-texto" class="contrato-edit-txa" spellcheck="true"></textarea>
+
+        <div class="contrato-aviso mini" style="margin-top:14px">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+          <span>Lembrete: modelo genérico, sem validade jurídica garantida. A responsabilidade pela revisão e adequação do texto é sua.</span>
+        </div>
+
+        <div class="fg" style="display:flex;gap:8px;flex-wrap:wrap;margin-top:14px">
+          <button type="button" class="btn btn-ghost" onclick="voltarFormContrato()">
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="19" y1="12" x2="5" y2="12"/><polyline points="12 19 5 12 12 5"/></svg>
+            Voltar e editar dados
+          </button>
+          <button type="button" class="btn btn-ghost" onclick="copiarContrato()">
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1"/></svg>
+            Copiar texto
+          </button>
+          <button type="button" class="btn btn-ghost" onclick="baixarContratoPDF()">
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+            Baixar PDF
+          </button>
+          <button type="button" class="btn btn-primary" onclick="compartilharContratoWA()">
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 11.5a8.38 8.38 0 01-.9 3.8 8.5 8.5 0 01-7.6 4.7 8.38 8.38 0 01-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 01-.9-3.8 8.5 8.5 0 014.7-7.6 8.38 8.38 0 013.8-.9h.5a8.48 8.48 0 018 8v.5z"/></svg>
+            WhatsApp
+          </button>
+        </div>
+      </div>
+
+      <!-- Versão usada SÓ na impressão/PDF: espelha o texto editado + aviso fixo -->
+      <div class="contrato-print" id="contrato-print">
+        <div class="contrato-print-aviso">
+          <b>MODELO GENÉRICO — NÃO SUBSTITUI ORIENTAÇÃO JURÍDICA.</b> Este documento foi gerado como modelo de apoio pela ferramenta CorretorPRO e não tem validade jurídica garantida. As partes devem revisar o conteúdo e, em caso de dúvida sobre cláusulas, valores ou obrigações, consultar um advogado antes de assinar.
+        </div>
+        <div class="contrato-print-texto" id="contrato-print-texto"></div>
+      </div>
+    </div><!-- /view-contratos -->
+
     <!-- ══════════════════ VIEW: CONFIGURAÇÕES ══════════════════ -->
     <div class="view" id="view-config">
       <div class="ph">
@@ -2111,8 +2364,8 @@ function showView(name) {
   document.querySelectorAll('.view').forEach(v => v.classList.remove('active'))
   document.getElementById('view-' + name).classList.add('active')
   document.querySelectorAll('.sb-item[data-view]').forEach(i => i.classList.toggle('active', i.dataset.view === name))
-  const labels = { dashboard:'Dashboard', agenda:'Agenda de Visitas', form:'Nova Proposta', history:'Minhas Propostas', visita:'Registro de Visita', config:'Configurações', imoveis:'Meus Imóveis', funil:'Funil de Vendas', vendas:'Vendas', ajuda:'Tutoriais e Ajuda' }
-  const roots  = { dashboard:'Visão geral', agenda:'Funil', form:'Propostas', history:'Propostas', visita:'Documentos', config:'Conta', imoveis:'Imóveis', funil:'Funil', vendas:'Funil', ajuda:'Conta' }
+  const labels = { dashboard:'Dashboard', agenda:'Agenda de Visitas', form:'Nova Proposta', history:'Minhas Propostas', visita:'Registro de Visita', contratos:'Contratos', config:'Configurações', imoveis:'Meus Imóveis', funil:'Funil de Vendas', vendas:'Vendas', ajuda:'Tutoriais e Ajuda' }
+  const roots  = { dashboard:'Visão geral', agenda:'Funil', form:'Propostas', history:'Propostas', visita:'Documentos', contratos:'Documentos', config:'Conta', imoveis:'Imóveis', funil:'Funil', vendas:'Funil', ajuda:'Conta' }
   document.getElementById('crumb-page').textContent = labels[name] || name
   document.getElementById('crumb-root').textContent = roots[name] || name
   // topbar buttons only for form
@@ -2129,6 +2382,9 @@ function showView(name) {
     const dt = document.getElementById('v-data')
     if (dt && !dt.value) dt.value = new Date().toISOString().slice(0, 10)
     renderVisitas()
+  }
+  if (name === 'contratos') {
+    resetContratoView()
   }
   if (name === 'agenda') {
     const dt = document.getElementById('l-data')
@@ -3264,6 +3520,250 @@ function compartilharTermoWA() {
   if (window._DEMO) return demoBloqueio()
   if (!snapVisita) return
   const msg = textoTermo() + '\n\nPor favor, confirme o recebimento deste registro de visita. Obrigado!'
+  window.open('https://wa.me/?text=' + encodeURIComponent(msg), '_blank')
+}
+
+/* ══════════════ CONTRATOS (modelos genéricos de documento) ══════════════
+   Gera o TEXTO de modelos de Autorização de Venda/Locação e Proposta de
+   Compra a partir de perfil/leads/imoveis já existentes. O corretor pode
+   editar livremente o texto final num textarea antes de copiar/imprimir —
+   nada aqui é persistido em cpr_user_data (decisão deliberada: menos dado
+   sensível de terceiro guardado na nuvem; o documento é gerado on-demand). */
+let contratoModeloAtual = null // 'autorizacao' | 'proposta_compra'
+
+function resetContratoView() {
+  document.getElementById('contrato-passo-modelo').style.display = ''
+  document.getElementById('form-contrato').style.display = 'none'
+  document.getElementById('contrato-passo-texto').style.display = 'none'
+  document.querySelectorAll('.modelo-card').forEach(c => c.classList.remove('active'))
+  contratoModeloAtual = null
+  popularSelectsContrato()
+}
+
+function popularSelectsContrato() {
+  const selLead = document.getElementById('ct-lead-id')
+  const selIm = document.getElementById('ct-imovel-id')
+  if (selLead) {
+    selLead.innerHTML = '<option value="">— Preencher manualmente —</option>' + leads.map(l =>
+      `<option value="${l.id}">${escH(l.cliente || 'Lead')}${l.imovel ? ' — ' + escH(l.imovel) : ''}</option>`
+    ).join('')
+  }
+  if (selIm) {
+    selIm.innerHTML = '<option value="">— Preencher manualmente —</option>' + imoveis.map(im =>
+      `<option value="${im.id}">${escH((im.tipo || 'Imóvel') + ' — ' + (im.end || ''))}</option>`
+    ).join('')
+  }
+}
+
+function preencherContratoDeLead() {
+  const id = document.getElementById('ct-lead-id').value
+  const l = leads.find(x => String(x.id) === String(id))
+  if (!l) return
+  document.getElementById('ct-parte-nome').value = l.cliente || ''
+  document.getElementById('ct-parte-tel').value = l.tel || ''
+  if (l.imovel && !document.getElementById('ct-im-end').value.trim()) {
+    document.getElementById('ct-im-end').value = l.imovel
+  }
+  if (l.valorEstimado) {
+    document.getElementById('ct-valor').value = l.valorEstimado
+    document.getElementById('ct-valor-prop').value = l.valorEstimado
+  }
+  if (l.imovelId) {
+    const selIm = document.getElementById('ct-imovel-id')
+    if (selIm) { selIm.value = l.imovelId; preencherContratoDeImovel() }
+  }
+}
+
+function preencherContratoDeImovel() {
+  const id = document.getElementById('ct-imovel-id').value
+  const im = imoveis.find(x => String(x.id) === String(id))
+  if (!im) return
+  document.getElementById('ct-im-end').value = im.end || ''
+  document.getElementById('ct-im-tipo').value = im.tipo || ''
+  if (im.valor) {
+    document.getElementById('ct-valor').value = im.valor
+    document.getElementById('ct-valor-prop').value = im.valor
+  }
+  if (im.finalidade === 'locacao') document.getElementById('ct-finalidade').value = 'locacao'
+  else if (im.finalidade === 'venda') document.getElementById('ct-finalidade').value = 'venda'
+}
+
+function escolherModeloContrato(modelo) {
+  contratoModeloAtual = modelo
+  document.querySelectorAll('.modelo-card').forEach(c => c.classList.toggle('active', c.dataset.modelo === modelo))
+  popularSelectsContrato()
+
+  const titulos = {
+    autorizacao: { form:'Dados da Autorização de Venda/Locação', parte:'Proprietário(a) do imóvel' },
+    proposta_compra: { form:'Dados da Proposta de Compra', parte:'Vendedor(a) do imóvel' },
+  }
+  document.getElementById('ctt-form-titulo').textContent = titulos[modelo].form
+  document.getElementById('ctt-parte-titulo').textContent = titulos[modelo].parte
+  document.getElementById('ctt-bloco-autorizacao').style.display = modelo === 'autorizacao' ? '' : 'none'
+  document.getElementById('ctt-bloco-proposta').style.display = modelo === 'proposta_compra' ? '' : 'none'
+  document.getElementById('ct-valor-prop').required = modelo === 'proposta_compra'
+
+  document.getElementById('contrato-passo-modelo').style.display = 'none'
+  document.getElementById('form-contrato').style.display = ''
+  document.getElementById('contrato-passo-texto').style.display = 'none'
+  document.getElementById('form-contrato').scrollIntoView({ behavior:'smooth', block:'start' })
+}
+
+function voltarModeloContrato() {
+  document.getElementById('contrato-passo-modelo').style.display = ''
+  document.getElementById('form-contrato').style.display = 'none'
+  document.getElementById('contrato-passo-texto').style.display = 'none'
+  window.scrollTo({ top:0, behavior:'smooth' })
+}
+
+function voltarFormContrato() {
+  document.getElementById('form-contrato').style.display = ''
+  document.getElementById('contrato-passo-texto').style.display = 'none'
+  document.getElementById('form-contrato').scrollIntoView({ behavior:'smooth', block:'start' })
+}
+
+function fmtMoedaSimples(v) {
+  const n = String(v||'').replace(/[^\d,.]/g,'')
+  return n ? 'R$ ' + n : 'a definir'
+}
+
+function montarTextoAutorizacao(d) {
+  const hoje = new Date().toLocaleDateString('pt-BR', { day:'numeric', month:'long', year:'numeric' })
+  const nomeCorretor = perfil.nome || 'Corretor(a)'
+  const creci = perfil.creci ? `, inscrito(a) no CRECI sob o nº ${perfil.creci}` : ''
+  const docsProp = [d.partCpf ? `CPF/CNPJ nº ${d.partCpf}` : null, d.partRg ? `RG nº ${d.partRg}` : null].filter(Boolean).join(', ')
+  const idProp = d.partNome + (docsProp ? `, portador(a) do ${docsProp}` : '') + (d.partEnd ? `, residente/sediado(a) em ${d.partEnd}` : '')
+  const idImovel = (d.imTipo ? d.imTipo.toLowerCase() + ' ' : 'imóvel ') + `situado em ${d.imEnd}` + (d.imMatricula ? `, matrícula nº ${d.imMatricula}` : '')
+  const finalidadeTxt = d.finalidade === 'locacao' ? 'LOCAÇÃO' : 'VENDA'
+  const exclusividadeTxt = d.exclusividade === 'sim'
+    ? 'com EXCLUSIVIDADE, comprometendo-se o(a) CONTRATANTE a não intermediar nem autorizar terceiros a intermediar o mesmo negócio durante a vigência deste instrumento'
+    : 'em caráter NÃO EXCLUSIVO, podendo o(a) CONTRATANTE contratar outros corretores ou intermediar o negócio por conta própria'
+
+  return [
+    `AUTORIZAÇÃO PARA INTERMEDIAÇÃO DE ${finalidadeTxt}`,
+    '',
+    `Pelo presente instrumento, ${idProp}, doravante denominado(a) CONTRATANTE, autoriza ${nomeCorretor}${creci}, doravante denominado(a) CORRETOR(A), a intermediar a ${finalidadeTxt.toLowerCase()} do(a) ${idImovel}.`,
+    '',
+    `1. OBJETO — Esta autorização tem por objeto a intermediação, pelo(a) CORRETOR(A), da ${finalidadeTxt.toLowerCase()} do imóvel acima identificado, ${exclusividadeTxt}.`,
+    '',
+    `2. VALOR PRETENDIDO — O valor pretendido pelo(a) CONTRATANTE para o negócio é de ${fmtMoedaSimples(d.valor)}, podendo ser ajustado de comum acordo entre as partes durante a vigência desta autorização.`,
+    '',
+    `3. COMISSÃO — Em caso de concretização do negócio, será devida ao(à) CORRETOR(A) a comissão de corretagem de ${d.comissao ? d.comissao + '% sobre o valor da operação' : 'a ser ajustada entre as partes'}, nos termos da legislação aplicável à corretagem imobiliária.`,
+    '',
+    `4. VIGÊNCIA — Esta autorização tem vigência de ${d.prazo || '90'} dias a contar da data abaixo, podendo ser renovada ou encerrada por acordo entre as partes.`,
+    '',
+    `5. OBRIGAÇÕES DO(A) CORRETOR(A) — Promover a divulgação do imóvel, agendar e acompanhar visitas, apresentar propostas recebidas ao(à) CONTRATANTE e prestar informações sobre o andamento das negociações.`,
+    '',
+    `6. DISPOSIÇÕES GERAIS — As partes elegem o foro da comarca de domicílio do(a) CONTRATANTE para dirimir eventuais dúvidas decorrentes deste instrumento, ressalvada disposição legal em contrário.`,
+    d.obs ? `\n7. OBSERVAÇÕES — ${d.obs}` : '',
+    '',
+    (d.cidade ? d.cidade + ', ' : '') + hoje + '.',
+    '',
+    '_______________________________',
+    d.partNome + ' (CONTRATANTE' + (d.partCpf ? ' · CPF/CNPJ ' + d.partCpf : '') + ')',
+    '',
+    '_______________________________',
+    nomeCorretor + (perfil.creci ? ' — CRECI ' + perfil.creci : '') + ' (CORRETOR(A))',
+  ].filter(s => s !== '').join('\n')
+}
+
+function montarTextoPropostaCompra(d) {
+  const hoje = new Date().toLocaleDateString('pt-BR', { day:'numeric', month:'long', year:'numeric' })
+  const nomeCorretor = perfil.nome || 'Corretor(a)'
+  const creci = perfil.creci ? ' — CRECI ' + perfil.creci : ''
+  const docsVend = [d.partCpf ? `CPF/CNPJ nº ${d.partCpf}` : null, d.partRg ? `RG nº ${d.partRg}` : null].filter(Boolean).join(', ')
+  const idVend = d.partNome + (docsVend ? `, portador(a) do ${docsVend}` : '')
+  const idImovel = (d.imTipo ? d.imTipo.toLowerCase() + ' ' : 'imóvel ') + `situado em ${d.imEnd}` + (d.imMatricula ? `, matrícula nº ${d.imMatricula}` : '')
+  const formaTxt = { vista:'pagamento à vista', financiamento:'financiamento bancário', 'entrada+financiamento':'entrada seguida de financiamento bancário', parcelado:'parcelamento direto com o(a) vendedor(a)' }[d.formaPagto] || 'a definir entre as partes'
+
+  return [
+    'PROPOSTA DE COMPRA DE IMÓVEL',
+    '',
+    `Por meio deste instrumento, eu, [NOME DO(A) PROPONENTE COMPRADOR(A)], apresento a ${idVend}, doravante denominado(a) VENDEDOR(A), a presente proposta para aquisição do(a) ${idImovel}.`,
+    '',
+    `1. VALOR DA PROPOSTA — Proponho a aquisição do imóvel pelo valor de ${fmtMoedaSimples(d.valorProp)}.`,
+    '',
+    `2. FORMA DE PAGAMENTO — A proposta considera ${formaTxt}.` + (d.sinal ? ` Como sinal de boa-fé (arras), proponho o pagamento de ${fmtMoedaSimples(d.sinal)} no ato da aceitação, a ser deduzido do valor total na escritura.` : ''),
+    '',
+    `3. VALIDADE — Esta proposta é válida por ${d.validadeProp || '5'} dias a contar da data abaixo, após os quais poderá ser revista ou retirada caso não haja resposta do(a) VENDEDOR(A).`,
+    '',
+    `4. CONDIÇÃO RESOLUTIVA — Esta proposta está condicionada à confirmação da documentação do imóvel (matrícula atualizada, certidões negativas e ausência de ônus) e, quando aplicável, à aprovação do financiamento pretendido junto à instituição financeira.`,
+    '',
+    `5. INTERMEDIAÇÃO — Esta proposta é apresentada por intermédio do(a) corretor(a) de imóveis ${nomeCorretor}${creci}, responsável pela aproximação entre as partes.`,
+    d.obs ? `\n6. OBSERVAÇÕES — ${d.obs}` : '',
+    '',
+    (d.cidade ? d.cidade + ', ' : '') + hoje + '.',
+    '',
+    '_______________________________',
+    '[NOME DO(A) PROPONENTE COMPRADOR(A)] (PROPONENTE)',
+    '',
+    '_______________________________',
+    d.partNome + ' (VENDEDOR(A)' + (d.partCpf ? ' · CPF/CNPJ ' + d.partCpf : '') + ')',
+  ].filter(s => s !== '').join('\n')
+}
+
+function gerarTextoContrato(ev) {
+  ev.preventDefault()
+  const form = document.getElementById('form-contrato')
+  if (!form.checkValidity()) { form.reportValidity(); return }
+
+  const d = {
+    partNome:    document.getElementById('ct-parte-nome').value.trim(),
+    partCpf:     document.getElementById('ct-parte-cpf').value.trim(),
+    partRg:      document.getElementById('ct-parte-rg').value.trim(),
+    partTel:     document.getElementById('ct-parte-tel').value.trim(),
+    partEnd:     document.getElementById('ct-parte-end').value.trim(),
+    imEnd:       document.getElementById('ct-im-end').value.trim(),
+    imTipo:      document.getElementById('ct-im-tipo').value,
+    imMatricula: document.getElementById('ct-im-matricula').value.trim(),
+    finalidade:  document.getElementById('ct-finalidade').value,
+    valor:       document.getElementById('ct-valor').value.trim(),
+    comissao:    document.getElementById('ct-comissao').value.trim(),
+    prazo:       document.getElementById('ct-prazo-aut').value.trim(),
+    exclusividade: document.getElementById('ct-exclusividade').value,
+    valorProp:   document.getElementById('ct-valor-prop').value.trim(),
+    formaPagto:  document.getElementById('ct-forma-pagto').value,
+    sinal:       document.getElementById('ct-sinal').value.trim(),
+    validadeProp: document.getElementById('ct-validade-prop').value.trim(),
+    obs:         document.getElementById('ct-obs').value.trim(),
+    cidade:      '',
+  }
+
+  const texto = contratoModeloAtual === 'proposta_compra'
+    ? montarTextoPropostaCompra(d)
+    : montarTextoAutorizacao(d)
+
+  const titulos = { autorizacao:'Autorização de Venda/Locação', proposta_compra:'Proposta de Compra' }
+  document.getElementById('ctt-edit-titulo').textContent = 'Revise e edite — ' + titulos[contratoModeloAtual]
+  document.getElementById('contrato-texto').value = texto
+
+  document.getElementById('form-contrato').style.display = 'none'
+  document.getElementById('contrato-passo-texto').style.display = ''
+  document.getElementById('contrato-passo-texto').scrollIntoView({ behavior:'smooth', block:'start' })
+}
+
+function copiarContrato() {
+  const txt = document.getElementById('contrato-texto').value
+  if (!txt) return
+  navigator.clipboard.writeText(txt)
+    .then(() => toast('Texto copiado!'))
+    .catch(() => toast('Selecione o texto e use Ctrl+C'))
+}
+
+function baixarContratoPDF() {
+  if (window._DEMO) return demoBloqueio()
+  const txt = document.getElementById('contrato-texto').value
+  if (!txt) return
+  document.getElementById('contrato-print-texto').textContent = txt
+  toast('Abrindo impressão — salve como PDF...')
+  setTimeout(() => window.print(), 400)
+}
+
+function compartilharContratoWA() {
+  if (window._DEMO) return demoBloqueio()
+  const txt = document.getElementById('contrato-texto').value
+  if (!txt) return
+  const msg = txt + '\n\n— Documento gerado como modelo de apoio pelo CorretorPRO. Não substitui orientação jurídica; revise antes de assinar.'
   window.open('https://wa.me/?text=' + encodeURIComponent(msg), '_blank')
 }
 
