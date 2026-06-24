@@ -1,0 +1,18 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" width="512" height="512">
+  <defs>
+    <linearGradient id="g" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#4D7EFF"/>
+      <stop offset="100%" stop-color="#7C5CFC"/>
+    </linearGradient>
+  </defs>
+  <!-- squircle badge, proporção de cantos no estilo apple app-icon -->
+  <rect x="0" y="0" width="512" height="512" rx="115" fill="url(#g)"/>
+  <!-- fitas do selo de cera, atrás do medalhão -->
+  <path d="M196 318 L150 408 L222 388 L256 420 L290 388 L362 408 L316 318 Z" fill="rgba(0,0,0,.18)"/>
+  <!-- medalhão do selo -->
+  <circle cx="256" cy="232" r="124" fill="#ffffff"/>
+  <circle cx="256" cy="232" r="124" fill="none" stroke="#C9D6FF" stroke-width="10" stroke-dasharray="10 14"/>
+  <circle cx="256" cy="232" r="96" fill="none" stroke="#C9D6FF" stroke-width="6"/>
+  <!-- check de aprovação -->
+  <path d="M206 234 L240 268 L312 192" fill="none" stroke="url(#g)" stroke-width="26" stroke-linecap="round" stroke-linejoin="round"/>
+</svg>
