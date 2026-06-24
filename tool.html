@@ -88,6 +88,28 @@ body{font-family:var(--font);background:var(--bg);color:var(--t);-webkit-font-sm
 .card-t{font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.09em;color:var(--t3);margin-bottom:16px;display:flex;align-items:center;gap:8px}
 .card-t::after{content:'';flex:1;height:1px;background:var(--b)}
 
+/* ── TUTORIAIS (accordion) ── */
+.tut-item{background:var(--s1);border:1px solid var(--b);border-radius:var(--radl);margin-bottom:10px;overflow:hidden}
+.tut-head{display:flex;align-items:center;gap:14px;padding:16px 18px;cursor:pointer;width:100%;background:none;border:none;text-align:left;font-family:var(--font)}
+.tut-head:hover{background:rgba(255,255,255,.03)}
+.tut-ic{width:36px;height:36px;border-radius:10px;background:var(--ps);color:var(--p);display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.tut-head-t{flex:1;min-width:0}
+.tut-head-t b{font-size:14px;font-weight:700;color:var(--t);display:block}
+.tut-head-t span{font-size:12.5px;color:var(--t2)}
+.tut-chev{color:var(--t3);transition:transform .2s ease;flex-shrink:0}
+.tut-item.open .tut-chev{transform:rotate(180deg)}
+.tut-body{display:none;padding:0 18px 20px 68px}
+.tut-item.open .tut-body{display:block}
+.tut-body ol{display:flex;flex-direction:column;gap:10px;margin-top:4px}
+.tut-body ol li{font-size:13.5px;line-height:1.55;color:var(--t2);counter-increment:tut-step;position:relative;padding-left:28px}
+.tut-body ol{counter-reset:tut-step}
+.tut-body ol li::before{content:counter(tut-step);position:absolute;left:0;top:-1px;width:20px;height:20px;border-radius:50%;background:var(--ps);color:var(--p);font-size:11px;font-weight:800;display:flex;align-items:center;justify-content:center}
+.tut-body p.tut-dica{margin-top:10px;font-size:13px;color:var(--t2);background:rgba(255,255,255,.03);border:1px solid var(--b);border-radius:8px;padding:10px 12px}
+.tut-body p.tut-dica b{color:var(--t)}
+.help-fab{position:fixed;right:24px;bottom:24px;width:46px;height:46px;border-radius:50%;background:var(--p);color:#fff;border:none;display:flex;align-items:center;justify-content:center;font-size:18px;font-weight:800;cursor:pointer;box-shadow:0 8px 22px rgba(77,126,255,.35);z-index:60;transition:transform .15s ease}
+.help-fab:hover{transform:scale(1.06)}
+.cpr-demo .help-fab{bottom:84px}
+
 /* ── FORM GRID ── */
 .fg{display:grid;grid-template-columns:1fr 1fr;gap:12px}
 .fg1{grid-template-columns:1fr}
@@ -155,6 +177,12 @@ input[type=color]{opacity:0;width:0;height:0;position:absolute}
 .btn-sm{padding:6px 12px;font-size:12px}
 .btn-full{width:100%;justify-content:center}
 .btn:disabled{opacity:.4;cursor:not-allowed;pointer-events:none}
+.btn-ai{background:linear-gradient(135deg,#7C5CFC 0%,#A855F7 100%);color:#fff;padding:5px 11px;font-size:11.5px;border-radius:100px;gap:5px}
+.btn-ai:hover{box-shadow:0 4px 14px rgba(168,85,247,.35)}
+.btn-ai:disabled{opacity:.55}
+
+/* label + IA action on the same row (used by the description AI helper) */
+.lbl-row{display:flex;align-items:center;justify-content:space-between;gap:8px;flex-wrap:wrap}
 
 .gen-btn{width:100%;padding:14px;background:linear-gradient(135deg,var(--p) 0%,#7C5CFC 100%);color:#fff;border:none;border-radius:var(--rad);font-size:15px;font-weight:700;font-family:var(--font);cursor:pointer;display:flex;align-items:center;justify-content:center;gap:10px;transition:opacity .2s,transform .15s;margin-top:4px}
 .gen-btn:hover{opacity:.88;transform:translateY(-1px)}
@@ -357,6 +385,106 @@ input[type=color]{opacity:0;width:0;height:0;position:absolute}
 .lead-status[data-s="realizada"]{background:rgba(34,197,94,.13);color:#22C55E}
 .lead-obs{font-size:12px;color:var(--t3);margin-top:6px;padding-top:6px;border-top:1px solid var(--b);line-height:1.5}
 
+/* Alerta de lead esquecido: sem interação há N dias */
+.lead-alert{display:inline-flex;align-items:center;gap:4px;padding:3px 8px;border-radius:5px;font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.06em;flex-shrink:0;cursor:pointer;border:none}
+.lead-alert[data-nivel="atencao"]{background:rgba(234,179,8,.15);color:#EAB308}
+.lead-alert[data-nivel="critico"]{background:rgba(239,68,68,.16);color:#EF4444;animation:pulseAlert 2s ease-in-out infinite}
+@keyframes pulseAlert{0%,100%{opacity:1}50%{opacity:.55}}
+.hist-card.lead-esquecido{border-color:rgba(239,68,68,.35)}
+.hist-card.lead-atencao{border-color:rgba(234,179,8,.35)}
+.followup-modal-back{position:fixed;inset:0;z-index:10000;background:rgba(8,18,28,.65);display:flex;align-items:center;justify-content:center;padding:18px}
+.followup-modal{width:min(440px,94vw);background:#0E2C3D;border:1px solid rgba(255,255,255,.14);border-radius:14px;padding:22px;box-shadow:0 18px 50px rgba(0,0,0,.5);font-family:inherit}
+
+/* ── MEUS IMÓVEIS ── */
+.im-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:14px}
+.im-card{background:var(--s1);border:1px solid var(--b);border-radius:var(--radl);overflow:hidden;transition:border-color .15s;display:flex;flex-direction:column}
+.im-card:hover{border-color:var(--bm)}
+.im-card-foto{width:100%;height:140px;background:var(--s2);display:flex;align-items:center;justify-content:center;overflow:hidden;flex-shrink:0}
+.im-card-foto img{width:100%;height:100%;object-fit:cover}
+.im-card-foto svg{color:var(--t3)}
+.im-card-body{padding:14px 16px;display:flex;flex-direction:column;gap:6px;flex:1}
+.im-card-top{display:flex;align-items:center;gap:8px}
+.im-card-tipo{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.06em;color:var(--p);background:var(--ps);padding:3px 8px;border-radius:5px}
+.im-card-status{margin-left:auto;display:inline-flex;align-items:center;gap:4px;padding:3px 8px;border-radius:5px;font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.06em;flex-shrink:0}
+.im-card-status[data-s="disponivel"]{background:rgba(34,197,94,.13);color:#22C55E}
+.im-card-status[data-s="reservado"]{background:rgba(234,179,8,.13);color:#EAB308}
+.im-card-status[data-s="vendido"]{background:rgba(77,126,255,.15);color:#7BA3FF}
+.im-card-status[data-s="locado"]{background:rgba(168,85,247,.15);color:#C084FC}
+.im-card-end{font-size:14px;font-weight:700;line-height:1.35;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.im-card-bairro{font-size:12px;color:var(--t2);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.im-card-meta{font-size:11px;color:var(--t3);margin-top:2px}
+.im-card-valor{font-size:15px;font-weight:800;color:var(--t);margin-top:4px}
+.im-card-actions{display:flex;gap:6px;margin-top:auto;padding-top:10px}
+
+/* ── FUNIL DE VENDAS (KANBAN) ── */
+.funil-board{display:flex;gap:14px;overflow-x:auto;padding-bottom:8px;align-items:flex-start}
+.funil-col{flex:0 0 250px;min-width:250px;background:var(--s2);border:1px solid var(--b);border-radius:var(--radl);display:flex;flex-direction:column;max-height:calc(100vh - 280px)}
+.funil-col-head{display:flex;align-items:center;justify-content:space-between;gap:8px;padding:12px 14px;border-bottom:2px solid var(--fc,var(--p));font-size:12px;font-weight:800;text-transform:uppercase;letter-spacing:.04em;color:var(--t)}
+.funil-col-count{background:var(--s1);color:var(--t2);font-size:11px;font-weight:700;padding:1px 8px;border-radius:100px;flex-shrink:0}
+.funil-col-body{padding:10px;display:flex;flex-direction:column;gap:10px;overflow-y:auto;flex:1}
+.funil-col-empty{font-size:12px;color:var(--t3);text-align:center;padding:18px 4px}
+.funil-card{background:var(--s1);border:1px solid var(--b);border-radius:10px;padding:12px;display:flex;flex-direction:column;gap:6px}
+.funil-card-top{display:flex;align-items:center;justify-content:space-between;gap:6px}
+.funil-card-cliente{font-size:13px;font-weight:700;color:var(--t);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.funil-card-imovel{font-size:11.5px;color:var(--t2);line-height:1.4;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.funil-card-valor{font-size:13px;font-weight:800;color:var(--p)}
+.funil-card-actions{display:flex;gap:6px;margin-top:4px}
+.funil-card-select{flex:1;font-size:11px;padding:6px 8px}
+@media (max-width:760px){.funil-col{flex:0 0 220px;min-width:220px;max-height:none}}
+.followup-modal h3{font-size:16px;font-weight:800;color:#EEF2FF;margin:0 0 4px}
+.followup-modal .fu-sub{font-size:12.5px;color:#A9BBD0;margin:0 0 14px}
+.followup-modal textarea{width:100%;min-height:120px;resize:vertical;background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.14);border-radius:10px;color:#EEF2FF;font-size:13.5px;line-height:1.55;padding:12px;font-family:inherit}
+.followup-modal .fu-actions{display:flex;gap:8px;margin-top:16px;flex-wrap:wrap;justify-content:flex-end}
+
+/* ── DASHBOARD ──
+   Tela de visão agregada: cruza leads/imoveis/vendas já existentes, sem
+   array novo no jsonb. Gráfico de barras é SVG puro gerado por JS — zero
+   dependência nova, mesmo princípio dos módulos anteriores do pivô. */
+.dash-kpis{display:grid;grid-template-columns:repeat(6,1fr);gap:12px}
+@media(max-width:1100px){.dash-kpis{grid-template-columns:repeat(3,1fr)}}
+@media(max-width:620px){.dash-kpis{grid-template-columns:repeat(2,1fr)}}
+.dash-kpi{background:var(--s1);border:1px solid var(--b);border-radius:var(--radl);padding:16px 16px;display:flex;flex-direction:column;gap:6px;min-width:0}
+.dash-kpi-l{font-size:10.5px;font-weight:700;text-transform:uppercase;letter-spacing:.06em;color:var(--t3);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.dash-kpi-v{font-size:19px;font-weight:800;color:var(--t)}
+.dash-kpi.alerta .dash-kpi-v{color:#F97316}
+.dash-grid{display:grid;grid-template-columns:1.3fr 1fr;gap:16px;margin-top:20px}
+@media(max-width:900px){.dash-grid{grid-template-columns:1fr}}
+.dash-chart-wrap{width:100%;overflow-x:auto}
+.dash-chart-bar-label{font-size:10.5px;fill:var(--t3);text-anchor:middle}
+.dash-chart-val-label{font-size:10.5px;fill:var(--t2);text-anchor:middle;font-weight:700}
+.dash-funil-row{display:flex;align-items:center;gap:10px;margin-bottom:10px}
+.dash-funil-row:last-child{margin-bottom:0}
+.dash-funil-label{font-size:12px;color:var(--t2);width:118px;flex:0 0 118px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.dash-funil-bar-track{flex:1;height:10px;border-radius:100px;background:rgba(255,255,255,.06);overflow:hidden}
+.dash-funil-bar-fill{height:100%;border-radius:100px;transition:width .3s}
+.dash-funil-count{font-size:12px;font-weight:700;color:var(--t);width:24px;text-align:right;flex:0 0 24px}
+.dash-atencao-item{display:flex;align-items:center;gap:10px;padding:10px 0;border-bottom:1px solid var(--b)}
+.dash-atencao-item:last-child{border-bottom:none}
+.dash-atencao-info{min-width:0;flex:1}
+.dash-atencao-cliente{font-size:13.5px;font-weight:700;color:var(--t);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.dash-atencao-meta{font-size:11.5px;color:var(--t3);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.dash-atalhos{display:flex;gap:10px;flex-wrap:wrap;margin-top:4px}
+
+/* ── VENDAS ── */
+.vendas-kpis{display:grid;grid-template-columns:repeat(3,1fr);gap:14px}
+@media(max-width:700px){.vendas-kpis{grid-template-columns:1fr}}
+.vendas-kpi{background:var(--s1);border:1px solid var(--b);border-radius:var(--radl);padding:18px 20px;display:flex;flex-direction:column;gap:6px}
+.vendas-kpi-l{font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.07em;color:var(--t3)}
+.vendas-kpi-v{font-size:21px;font-weight:800;color:var(--t)}
+.venda-card-imovel{font-size:11.5px;color:var(--t2);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.venda-card-comissao{font-size:12px;color:#22C55E;font-weight:700}
+.venda-modal-back{position:fixed;inset:0;z-index:10000;background:rgba(8,18,28,.65);display:flex;align-items:center;justify-content:center;padding:18px}
+.venda-modal{width:min(460px,94vw);background:#0E2C3D;border:1px solid rgba(255,255,255,.14);border-radius:14px;padding:22px;box-shadow:0 18px 50px rgba(0,0,0,.5);font-family:inherit;max-height:92vh;overflow-y:auto}
+.venda-modal h3{font-size:16px;font-weight:800;color:#EEF2FF;margin:0 0 4px}
+.venda-modal .vm-sub{font-size:12.5px;color:#A9BBD0;margin:0 0 16px}
+.venda-modal .vm-field{display:flex;flex-direction:column;gap:5px;margin-bottom:12px}
+.venda-modal .vm-field label{font-size:12px;font-weight:600;color:#A9BBD0}
+.venda-modal .vm-resumo{background:rgba(34,197,94,.1);border:1px solid rgba(34,197,94,.3);border-radius:10px;padding:12px 14px;margin:6px 0 14px;font-size:13px;color:#EAF6EF}
+.venda-modal .vm-resumo b{color:#22C55E;font-size:15px}
+.venda-modal .vm-actions{display:flex;gap:8px;margin-top:6px;flex-wrap:wrap;justify-content:flex-end}
+.venda-modal .vm-imovel-opt{display:flex;align-items:flex-start;gap:8px;background:rgba(77,126,255,.1);border:1px solid rgba(77,126,255,.28);border-radius:10px;padding:12px 14px;margin:4px 0 14px;font-size:12.5px;color:#D5E1F5}
+.venda-modal .vm-imovel-opt input{margin-top:2px}
+
 /* ── REGISTRO DE VISITA ── */
 .termo-decl{font-size:14px;line-height:1.85;color:var(--t2);text-align:justify}
 .termo-decl b{color:var(--t)}
@@ -372,6 +500,22 @@ input[type=color]{opacity:0;width:0;height:0;position:absolute}
 .sig-area.test .sig-nome{font-weight:500;color:var(--t3);font-size:11px}
 .visita-info-banner{display:flex;gap:10px;align-items:flex-start;background:rgba(34,197,94,.07);border:1px solid rgba(34,197,94,.2);border-radius:var(--rad);padding:12px 14px;margin-bottom:18px;font-size:12.5px;color:var(--t2);line-height:1.6}
 .visita-info-banner svg{flex-shrink:0;color:var(--g,#22C55E);margin-top:2px}
+
+/* ── CONTRATOS: aviso jurídico (não pode ser confundido com proteção legal) ── */
+.contrato-aviso{display:flex;gap:10px;align-items:flex-start;background:rgba(239,68,68,.08);border:1px solid rgba(239,68,68,.28);border-radius:var(--rad);padding:12px 14px;margin-bottom:18px;font-size:12.5px;color:var(--t2);line-height:1.6}
+.contrato-aviso svg{flex-shrink:0;color:#EF4444;margin-top:2px}
+.contrato-aviso b{color:var(--t)}
+.contrato-aviso.mini{margin:0 0 16px;padding:10px 12px;font-size:11.5px}
+.modelo-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:12px;margin-bottom:22px}
+.modelo-card{background:var(--s2);border:1px solid var(--b);border-radius:var(--radl);padding:16px;cursor:pointer;transition:border-color .15s,transform .1s;text-align:left}
+.modelo-card:hover{border-color:var(--p);transform:translateY(-1px)}
+.modelo-card.active{border-color:var(--p);background:var(--ps)}
+.modelo-card-ico{width:34px;height:34px;border-radius:9px;background:var(--ps);color:var(--p);display:flex;align-items:center;justify-content:center;margin-bottom:10px}
+.modelo-card-t{font-size:13.5px;font-weight:700;color:var(--t);margin-bottom:4px}
+.modelo-card-x{font-size:11.5px;color:var(--t3);line-height:1.5}
+.contrato-edit-txa{width:100%;min-height:420px;background:var(--s2);border:1px solid rgba(255,255,255,.09);border-radius:var(--rad);padding:16px;font-size:13px;line-height:1.7;color:var(--t);font-family:var(--font);outline:none;resize:vertical;white-space:pre-wrap}
+.contrato-edit-txa:focus{border-color:var(--p)}
+.contrato-print{display:none}
 
 /* ── CONFIG VIEW ── */
 .cfg-preview{background:var(--s2);border:1px solid var(--b);border-radius:var(--radl);padding:14px 18px;margin-bottom:14px;display:flex;align-items:center;gap:12px}
@@ -435,6 +579,10 @@ input[type=color]{opacity:0;width:0;height:0;position:absolute}
   .sim-row.tot b{color:#1d40ae!important}
   .prop-badge{background:#eff6ff!important;color:#1d40ae!important}
   .prop-head{background:linear-gradient(135deg,#eff6ff,#f0fdf4)!important;border-bottom-color:#bfdbfe!important}
+  .modelo-grid,.contrato-edit-wrap,.contrato-aviso{display:none!important}
+  .contrato-print{display:block!important}
+  .contrato-print-aviso{display:block!important;border:1px solid #999!important;background:#f5f5f5!important;color:#000!important;font-size:10.5px!important;line-height:1.5!important;padding:10px 12px!important;margin-bottom:14px!important}
+  .contrato-print-texto{white-space:pre-wrap!important;font-size:12.5px!important;line-height:1.75!important;color:#000!important;padding:0 24px 24px!important}
 }
 </style>
 </head>
@@ -456,17 +604,38 @@ input[type=color]{opacity:0;width:0;height:0;position:absolute}
 
 <aside class="sidebar" id="sidebar" aria-label="Menu lateral">
   <div class="sb-head">
-    <a href="#" class="sb-logo" onclick="showView('form');return false">Corretor<em>PRO</em></a>
+    <a href="#" class="sb-logo" onclick="showView('dashboard');return false">Corretor<em>PRO</em></a>
   </div>
   <nav class="sb-nav" aria-label="Navegação">
+    <div class="sb-sec">Visão geral</div>
+    <button class="sb-item active" data-view="dashboard" onclick="showView('dashboard')">
+      <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="9"/><rect x="14" y="3" width="7" height="5"/><rect x="14" y="12" width="7" height="9"/><rect x="3" y="16" width="7" height="5"/></svg>
+      Dashboard
+    </button>
     <div class="sb-sec">Funil</div>
     <button class="sb-item" data-view="agenda" onclick="showView('agenda')">
       <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
       Agenda de Visitas
       <span class="sb-badge" id="sb-count-agenda" style="margin-left:auto;background:var(--ps);color:var(--p);font-size:10px;font-weight:700;padding:2px 7px;border-radius:100px;display:none"></span>
     </button>
+    <button class="sb-item" data-view="funil" onclick="showView('funil')">
+      <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 3H2l8 9.46V19l4 2v-8.54L22 3z"/></svg>
+      Funil de Vendas
+      <span class="sb-badge" id="sb-count-funil" style="margin-left:auto;background:var(--ps);color:var(--p);font-size:10px;font-weight:700;padding:2px 7px;border-radius:100px;display:none"></span>
+    </button>
+    <button class="sb-item" data-view="vendas" onclick="showView('vendas')">
+      <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 000 7h5a3.5 3.5 0 010 7H6"/></svg>
+      Vendas
+      <span class="sb-badge" id="sb-count-vendas" style="margin-left:auto;background:var(--ps);color:var(--p);font-size:10px;font-weight:700;padding:2px 7px;border-radius:100px;display:none"></span>
+    </button>
+    <div class="sb-sec">Imóveis</div>
+    <button class="sb-item" data-view="imoveis" onclick="showView('imoveis')">
+      <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 9l9-7 9 7"/><path d="M9 22V12h6v10"/><path d="M5 10v10a1 1 0 001 1h12a1 1 0 001-1V10"/></svg>
+      Meus Imóveis
+      <span class="sb-badge" id="sb-count-imoveis" style="margin-left:auto;background:var(--ps);color:var(--p);font-size:10px;font-weight:700;padding:2px 7px;border-radius:100px;display:none"></span>
+    </button>
     <div class="sb-sec">Propostas</div>
-    <button class="sb-item active" data-view="form" onclick="showView('form')">
+    <button class="sb-item" data-view="form" onclick="showView('form')">
       <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
       Nova Proposta
     </button>
@@ -481,10 +650,18 @@ input[type=color]{opacity:0;width:0;height:0;position:absolute}
       Registro de Visita
       <span class="sb-badge" id="sb-count-visita" style="margin-left:auto;background:var(--ps);color:var(--p);font-size:10px;font-weight:700;padding:2px 7px;border-radius:100px;display:none"></span>
     </button>
+    <button class="sb-item" data-view="contratos" onclick="showView('contratos')">
+      <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="8" y1="13" x2="16" y2="13"/><line x1="8" y1="17" x2="13" y2="17"/></svg>
+      Contratos
+    </button>
     <div class="sb-sec">Conta</div>
     <button class="sb-item" data-view="config" onclick="showView('config')">
       <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 00.33 1.82l.06.06a2 2 0 010 2.83 2 2 0 01-2.83 0l-.06-.06a1.65 1.65 0 00-1.82-.33 1.65 1.65 0 00-1 1.51V21a2 2 0 01-2 2 2 2 0 01-2-2v-.09A1.65 1.65 0 009 19.4a1.65 1.65 0 00-1.82.33l-.06.06a2 2 0 01-2.83 0 2 2 0 010-2.83l.06-.06A1.65 1.65 0 004.68 15a1.65 1.65 0 00-1.51-1H3a2 2 0 01-2-2 2 2 0 012-2h.09A1.65 1.65 0 004.6 9a1.65 1.65 0 00-.33-1.82l-.06-.06a2 2 0 010-2.83 2 2 0 012.83 0l.06.06A1.65 1.65 0 009 4.68a1.65 1.65 0 001-1.51V3a2 2 0 012-2 2 2 0 012 2v.09a1.65 1.65 0 001 1.51 1.65 1.65 0 001.82-.33l.06-.06a2 2 0 012.83 0 2 2 0 010 2.83l-.06.06A1.65 1.65 0 0019.4 9a1.65 1.65 0 001.51 1H21a2 2 0 012 2 2 2 0 01-2 2h-.09a1.65 1.65 0 00-1.51 1z"/></svg>
       Configurações
+    </button>
+    <button class="sb-item" data-view="ajuda" onclick="showView('ajuda')">
+      <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M9.09 9a3 3 0 015.83 1c0 2-3 3-3 3"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
+      Tutoriais / Ajuda
     </button>
   </nav>
   <div class="sb-foot">
@@ -501,6 +678,8 @@ input[type=color]{opacity:0;width:0;height:0;position:absolute}
     </button>
   </div>
 </aside>
+
+<button class="help-fab" onclick="showView('ajuda')" title="Tutoriais e ajuda" aria-label="Abrir Tutoriais e Ajuda">?</button>
 
 <div class="main">
   <div class="topbar">
@@ -528,6 +707,54 @@ input[type=color]{opacity:0;width:0;height:0;position:absolute}
       <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
       <p><b>Seu perfil ainda não está configurado.</b> Configure seu nome, CRECI e logo para que a proposta saia com a sua marca. <a onclick="showView('config')">Configurar agora</a></p>
     </div>
+
+    <!-- ══════════════════ VIEW: DASHBOARD ══════════════════
+         Tela inicial: visão agregada cruzando leads/imóveis/vendas já
+         existentes. Não cria array novo — só lê e calcula em cima do que
+         já está salvo no jsonb (cpr_user_data). -->
+    <div class="view active" id="view-dashboard">
+      <div class="ph">
+        <h1>Dashboard</h1>
+        <p>Visão geral do seu negócio — leads, imóveis e vendas em um só lugar.</p>
+      </div>
+
+      <div class="dash-kpis" id="dash-kpis"></div>
+
+      <div class="dash-grid">
+        <div class="card">
+          <div class="card-t">Vendas nos últimos 6 meses</div>
+          <div class="dash-chart-wrap" id="dash-chart"></div>
+        </div>
+        <div class="card">
+          <div class="card-t">Funil de vendas (resumo)</div>
+          <div id="dash-funil-resumo"></div>
+        </div>
+      </div>
+
+      <div class="dash-grid">
+        <div class="card">
+          <div class="card-t">Leads que precisam de atenção agora</div>
+          <div id="dash-atencao"></div>
+        </div>
+        <div class="card">
+          <div class="card-t">Atalhos rápidos</div>
+          <div class="dash-atalhos">
+            <button class="btn btn-green btn-sm" onclick="showView('form')">
+              <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+              Nova proposta
+            </button>
+            <button class="btn btn-ghost btn-sm" onclick="showView('agenda')">
+              <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+              Novo lead
+            </button>
+            <button class="btn btn-ghost btn-sm" onclick="showView('imoveis')">
+              <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+              Novo imóvel
+            </button>
+          </div>
+        </div>
+      </div>
+    </div><!-- /view-dashboard -->
 
     <!-- ══════════════════ VIEW: AGENDA DE VISITAS ══════════════════ -->
     <div class="view" id="view-agenda">
@@ -600,8 +827,203 @@ input[type=color]{opacity:0;width:0;height:0;position:absolute}
       </div>
     </div><!-- /view-agenda -->
 
+    <!-- ══════════════════ VIEW: FUNIL DE VENDAS (KANBAN) ══════════════════
+         Camada nova sobre o mesmo array `leads` — não substitui a Agenda de
+         Visitas, nem o status agendada/hoje/atrasada/realizada usado nela.
+         Cada lead ganha um campo `estagioFunil`, mapeado automaticamente a
+         partir do `status` antigo para quem já tinha leads salvos. -->
+    <div class="view" id="view-funil">
+      <div class="ph">
+        <h1>Funil de Vendas</h1>
+        <p>Acompanhe cada lead pelas etapas do processo comercial, do primeiro contato até a venda fechada — sem precisar reorganizar nada na Agenda de Visitas.</p>
+      </div>
+
+      <div class="card" id="card-funil-novo">
+        <div class="card-t">Novo contato</div>
+        <form id="form-funil-lead" onsubmit="salvarLeadFunil(event)" novalidate>
+          <div class="fg">
+            <div class="field">
+              <label class="lbl" for="fl-cliente">Nome do cliente <span class="req">*</span></label>
+              <input id="fl-cliente" type="text" class="inp" placeholder="Ex: João Silva" required autocomplete="name">
+            </div>
+            <div class="field">
+              <label class="lbl" for="fl-tel">Telefone</label>
+              <input id="fl-tel" type="tel" class="inp" placeholder="(11) 99999-9999">
+            </div>
+            <div class="field">
+              <label class="lbl" for="fl-imovel-id">Imóvel de interesse (do catálogo)</label>
+              <select id="fl-imovel-id" class="sel"><option value="">— Nenhum / fora do catálogo —</option></select>
+            </div>
+            <div class="field">
+              <label class="lbl" for="fl-imovel">Imóvel (texto livre, se não estiver no catálogo)</label>
+              <input id="fl-imovel" type="text" class="inp" placeholder="Ex: Apartamento — Av. Paulista, 1000">
+            </div>
+            <div class="field">
+              <label class="lbl" for="fl-valor">Valor estimado da negociação</label>
+              <div class="pfx">
+                <span class="pfx-l">R$</span>
+                <input id="fl-valor" type="text" class="inp" placeholder="450.000" inputmode="numeric">
+              </div>
+            </div>
+          </div>
+          <button type="submit" class="gen-btn" id="btn-funil-lead">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+            Adicionar ao funil
+          </button>
+        </form>
+      </div>
+
+      <div style="margin-top:24px">
+        <div id="funil-board"></div>
+      </div>
+    </div><!-- /view-funil -->
+
+    <!-- ══════════════════ VIEW: MEUS IMÓVEIS ══════════════════ -->
+    <div class="view" id="view-imoveis">
+      <div class="ph">
+        <h1>Meus Imóveis</h1>
+        <p>Seu catálogo de imóveis em carteira — a base para gerar propostas e acompanhar vendas e locações sem redigitar nada.</p>
+      </div>
+
+      <form id="form-imovel" onsubmit="salvarImovel(event)" novalidate>
+        <div class="card">
+          <div class="card-t" id="imovel-form-titulo">Novo imóvel</div>
+          <input type="hidden" id="im-id" value="">
+          <div class="fg">
+            <div class="field">
+              <label class="lbl" for="im-tipo">Tipo <span class="req">*</span></label>
+              <select id="im-tipo" class="sel" required>
+                <option value="" disabled selected>Selecione</option>
+                <option>Apartamento</option>
+                <option>Casa</option>
+                <option>Comercial</option>
+                <option>Terreno</option>
+              </select>
+            </div>
+            <div class="field">
+              <label class="lbl" for="im-finalidade">Finalidade <span class="req">*</span></label>
+              <select id="im-finalidade" class="sel" required>
+                <option value="" disabled selected>Selecione</option>
+                <option value="venda">Venda</option>
+                <option value="locacao">Locação</option>
+                <option value="permuta">Permuta</option>
+              </select>
+            </div>
+            <div class="field f2">
+              <label class="lbl" for="im-end">Endereço <span class="req">*</span></label>
+              <input id="im-end" type="text" class="inp" placeholder="Ex: Av. Paulista, 1000 — São Paulo, SP" required>
+            </div>
+            <div class="field">
+              <label class="lbl" for="im-bairro">Bairro</label>
+              <input id="im-bairro" type="text" class="inp" placeholder="Ex: Bela Vista">
+            </div>
+            <div class="field">
+              <label class="lbl" for="im-valor">Valor <span class="req">*</span></label>
+              <div class="pfx">
+                <span class="pfx-l">R$</span>
+                <input id="im-valor" type="text" class="inp" placeholder="450.000" required inputmode="numeric">
+              </div>
+            </div>
+            <div class="field">
+              <label class="lbl" for="im-area">Área (m²)</label>
+              <input id="im-area" type="number" class="inp" placeholder="78" min="1" step="0.5">
+            </div>
+            <div class="field">
+              <label class="lbl" for="im-dorms">Dormitórios</label>
+              <select id="im-dorms" class="sel">
+                <option value="">—</option>
+                <option>Studio</option>
+                <option>1</option><option>2</option><option>3</option>
+                <option>4</option><option>5+</option>
+              </select>
+            </div>
+            <div class="field">
+              <label class="lbl" for="im-vagas">Vagas de garagem</label>
+              <select id="im-vagas" class="sel">
+                <option value="">—</option>
+                <option>0</option><option>1</option><option>2</option>
+                <option>3</option><option>4+</option>
+              </select>
+            </div>
+            <div class="field">
+              <label class="lbl" for="im-status">Status</label>
+              <select id="im-status" class="sel">
+                <option value="disponivel">Disponível</option>
+                <option value="reservado">Reservado</option>
+                <option value="vendido">Vendido</option>
+                <option value="locado">Locado</option>
+              </select>
+            </div>
+            <div class="field f2">
+              <label class="lbl">Foto de capa (opcional)</label>
+              <div class="foto-upload">
+                <div class="foto-preview" id="im-foto-prev">
+                  <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>
+                </div>
+                <div class="foto-actions">
+                  <label class="btn btn-ghost btn-sm" style="cursor:pointer">
+                    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
+                    Enviar foto
+                    <input type="file" id="im-foto" accept="image/*" style="display:none" onchange="carregarFotoCapaImovel(event)">
+                  </label>
+                  <button type="button" class="btn btn-ghost btn-sm" onclick="removerFotoCapaImovel()">Remover</button>
+                </div>
+              </div>
+              <span class="hint">Aparece no card da listagem. Máx 4MB.</span>
+            </div>
+          </div>
+        </div>
+
+        <div style="display:flex;gap:10px">
+          <button type="submit" class="gen-btn" id="btn-imovel" style="flex:1">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+            <span id="btn-imovel-txt">Cadastrar imóvel</span>
+          </button>
+          <button type="button" class="btn btn-ghost" id="btn-imovel-cancelar" style="display:none" onclick="cancelarEdicaoImovel()">Cancelar edição</button>
+        </div>
+      </form>
+
+      <div style="margin-top:28px">
+        <div class="card-t" style="margin-bottom:12px">Imóveis cadastrados</div>
+        <div id="imoveis-content"></div>
+      </div>
+    </div><!-- /view-imoveis -->
+
+    <!-- ══════════════════ VIEW: VENDAS ══════════════════
+         Registro comercial das vendas fechadas no Funil. Mesmo padrão de
+         array no jsonb (igual `leads`/`imoveis`) — cada venda referencia
+         leadId/imovelId para rastreabilidade, mas guarda os dados principais
+         direto no objeto pra não depender de lookup se o lead/imóvel for
+         excluído depois. -->
+    <div class="view" id="view-vendas">
+      <div class="ph">
+        <h1>Vendas</h1>
+        <p>Toda venda fechada no Funil cai aqui automaticamente — com valor, comissão e data — pra você acompanhar seu resultado comercial sem planilha.</p>
+      </div>
+
+      <div class="vendas-kpis">
+        <div class="vendas-kpi">
+          <span class="vendas-kpi-l">Vendido no mês</span>
+          <span class="vendas-kpi-v" id="kpi-vendido-mes">R$ 0</span>
+        </div>
+        <div class="vendas-kpi">
+          <span class="vendas-kpi-l">Comissão no mês</span>
+          <span class="vendas-kpi-v" id="kpi-comissao-mes">R$ 0</span>
+        </div>
+        <div class="vendas-kpi">
+          <span class="vendas-kpi-l">Vendas no ano</span>
+          <span class="vendas-kpi-v" id="kpi-vendas-ano">0</span>
+        </div>
+      </div>
+
+      <div style="margin-top:24px">
+        <div class="card-t" style="margin-bottom:12px">Vendas registradas</div>
+        <div id="vendas-content"></div>
+      </div>
+    </div><!-- /view-vendas -->
+
     <!-- ══════════════════ VIEW: NOVA PROPOSTA ══════════════════ -->
-    <div class="view active" id="view-form">
+    <div class="view" id="view-form">
       <div class="ph">
         <h1>Nova Proposta Comercial</h1>
         <p>Preencha os dados do cliente e do imóvel para gerar a proposta com sua marca.</p>
@@ -757,8 +1179,15 @@ input[type=color]{opacity:0;width:0;height:0;position:absolute}
           <div class="card-t">Condições e Observações</div>
           <div class="fg fg1">
             <div class="field">
-              <label class="lbl" for="f-cond">Condições especiais (opcional)</label>
+              <div class="lbl-row">
+                <label class="lbl" for="f-cond">Condições especiais (opcional)</label>
+                <button type="button" class="btn btn-ai" id="btn-gerar-descricao" onclick="gerarDescricaoIA()" title="Gera uma descrição comercial a partir dos dados do imóvel preenchidos acima">
+                  <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 3v4M12 17v4M3 12h4M17 12h4M5.6 5.6l2.8 2.8M15.6 15.6l2.8 2.8M18.4 5.6l-2.8 2.8M8.4 15.6l-2.8 2.8"/></svg>
+                  Gerar descrição com IA
+                </button>
+              </div>
               <textarea id="f-cond" class="txa inp" placeholder="Ex: cliente tem FGTS disponível, aceita financiamento, documentação em dia, disponível para visita nos finais de semana..."></textarea>
+              <span class="hint" id="ia-desc-hint" style="display:none">✨ Descrição gerada por IA — revise e ajuste como preferir antes de gerar a proposta.</span>
             </div>
           </div>
         </div>
@@ -1081,6 +1510,235 @@ input[type=color]{opacity:0;width:0;height:0;position:absolute}
       </div>
     </div><!-- /view-visita -->
 
+    <!-- ══════════════════ VIEW: CONTRATOS ══════════════════
+         Gera modelos GENÉRICOS de documento (Autorização de Venda/Locação,
+         Proposta de Compra) a partir dos dados já existentes (perfil, leads,
+         imóveis). Não persiste nada em cpr_user_data — o documento é gerado
+         na hora, editado pelo corretor e exportado; nada de dado de terceiro
+         fica salvo na nuvem. Reaproveita o mesmo mecanismo de PDF (window.print)
+         já usado em Proposta e Registro de Visita. -->
+    <div class="view" id="view-contratos">
+      <div class="ph">
+        <h1>Contratos</h1>
+        <p>Modelos prontos para preencher e gerar em PDF — autorização de venda/locação e proposta de compra.</p>
+      </div>
+
+      <div class="contrato-aviso">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+        <span><b>Modelo genérico — não substitui orientação jurídica.</b> Estes documentos são modelos de apoio para agilizar seu dia a dia. Eles não têm validade jurídica garantida nem dispensam a revisão de um advogado. Você, corretor(a), é responsável por adequar o texto à legislação vigente, às normas do seu CRECI e às particularidades de cada negociação antes de usar o documento com terceiros.</span>
+      </div>
+
+      <!-- PASSO 1: escolha do modelo -->
+      <div class="no-print" id="contrato-passo-modelo">
+        <div class="card-t" style="margin-bottom:12px">Escolha o modelo</div>
+        <div class="modelo-grid">
+          <button type="button" class="modelo-card" data-modelo="autorizacao" onclick="escolherModeloContrato('autorizacao')">
+            <div class="modelo-card-ico"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 01-2 2H5a2 2 0 01-2-2V5a2 2 0 012-2h11"/></svg></div>
+            <div class="modelo-card-t">Autorização de Venda/Locação</div>
+            <div class="modelo-card-x">O proprietário autoriza você a intermediar a venda ou locação do imóvel — protege a sua comissão.</div>
+          </button>
+          <button type="button" class="modelo-card" data-modelo="proposta_compra" onclick="escolherModeloContrato('proposta_compra')">
+            <div class="modelo-card-ico"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 000 7h5a3.5 3.5 0 010 7H6"/></svg></div>
+            <div class="modelo-card-t">Proposta de Compra</div>
+            <div class="modelo-card-x">O comprador formaliza ao vendedor o valor e as condições da proposta — base para negociação.</div>
+          </button>
+        </div>
+        <p style="font-size:12px;color:var(--t3);margin-top:-6px">Precisa do termo que comprova a visita ao imóvel? Isso já existe em <a onclick="showView('visita')" style="color:var(--p);cursor:pointer">Registro de Visita</a>.</p>
+      </div>
+
+      <!-- PASSO 2: formulário de dados -->
+      <form class="no-print" id="form-contrato" style="display:none" onsubmit="gerarTextoContrato(event)" novalidate>
+        <div class="card">
+          <div class="card-t" id="ctt-form-titulo">Dados do documento</div>
+          <div class="fg">
+            <div class="field">
+              <label class="lbl" for="ct-lead-id">Preencher a partir de um lead (opcional)</label>
+              <select id="ct-lead-id" class="sel" onchange="preencherContratoDeLead()">
+                <option value="">— Preencher manualmente —</option>
+              </select>
+            </div>
+            <div class="field">
+              <label class="lbl" for="ct-imovel-id">Preencher a partir de um imóvel do catálogo (opcional)</label>
+              <select id="ct-imovel-id" class="sel" onchange="preencherContratoDeImovel()">
+                <option value="">— Preencher manualmente —</option>
+              </select>
+            </div>
+          </div>
+        </div>
+
+        <div class="card">
+          <div class="card-t" id="ctt-parte-titulo">Contraparte</div>
+          <div class="fg">
+            <div class="field">
+              <label class="lbl" for="ct-parte-nome">Nome completo <span class="req">*</span></label>
+              <input id="ct-parte-nome" type="text" class="inp" placeholder="Ex: João Silva" required autocomplete="name">
+            </div>
+            <div class="field">
+              <label class="lbl" for="ct-parte-cpf">CPF/CNPJ</label>
+              <input id="ct-parte-cpf" type="text" class="inp" placeholder="000.000.000-00">
+            </div>
+            <div class="field">
+              <label class="lbl" for="ct-parte-rg">RG (opcional)</label>
+              <input id="ct-parte-rg" type="text" class="inp" placeholder="00.000.000-0">
+            </div>
+            <div class="field">
+              <label class="lbl" for="ct-parte-tel">Telefone</label>
+              <input id="ct-parte-tel" type="tel" class="inp" placeholder="(11) 99999-9999">
+            </div>
+            <div class="field f2">
+              <label class="lbl" for="ct-parte-end">Endereço (opcional)</label>
+              <input id="ct-parte-end" type="text" class="inp" placeholder="Endereço residencial/comercial da contraparte">
+            </div>
+          </div>
+        </div>
+
+        <div class="card">
+          <div class="card-t">Imóvel</div>
+          <div class="fg">
+            <div class="field f2">
+              <label class="lbl" for="ct-im-end">Endereço completo <span class="req">*</span></label>
+              <input id="ct-im-end" type="text" class="inp" placeholder="Ex: Av. Paulista, 1000, ap 72 — Bela Vista, São Paulo, SP" required>
+            </div>
+            <div class="field">
+              <label class="lbl" for="ct-im-tipo">Tipo do imóvel</label>
+              <select id="ct-im-tipo" class="sel">
+                <option value="" selected>Não informar</option>
+                <option>Apartamento</option>
+                <option>Casa</option>
+                <option>Terreno</option>
+                <option>Sala Comercial</option>
+                <option>Galpão</option>
+                <option>Cobertura</option>
+                <option>Flat / Studio</option>
+              </select>
+            </div>
+            <div class="field">
+              <label class="lbl" for="ct-im-matricula">Matrícula (recomendado)</label>
+              <input id="ct-im-matricula" type="text" class="inp" placeholder="Ex: 123.456 — 4º CRI de São Paulo">
+            </div>
+          </div>
+        </div>
+
+        <div class="card" id="ctt-bloco-autorizacao">
+          <div class="card-t">Condições da autorização</div>
+          <div class="fg">
+            <div class="field">
+              <label class="lbl" for="ct-finalidade">Finalidade</label>
+              <select id="ct-finalidade" class="sel">
+                <option value="venda">Venda</option>
+                <option value="locacao">Locação</option>
+              </select>
+            </div>
+            <div class="field">
+              <label class="lbl" for="ct-valor">Valor pretendido (R$)</label>
+              <div class="pfx"><span class="pfx-l">R$</span><input id="ct-valor" type="text" class="inp" placeholder="450.000" inputmode="numeric"></div>
+            </div>
+            <div class="field">
+              <label class="lbl" for="ct-comissao">Comissão (%)</label>
+              <input id="ct-comissao" type="text" class="inp" placeholder="Ex: 6" inputmode="decimal">
+            </div>
+            <div class="field">
+              <label class="lbl" for="ct-prazo-aut">Prazo de vigência (dias)</label>
+              <input id="ct-prazo-aut" type="number" class="inp" placeholder="90" value="90" min="1">
+            </div>
+            <div class="field">
+              <label class="lbl" for="ct-exclusividade">Exclusividade</label>
+              <select id="ct-exclusividade" class="sel">
+                <option value="nao">Não exclusiva</option>
+                <option value="sim">Com exclusividade</option>
+              </select>
+            </div>
+          </div>
+        </div>
+
+        <div class="card" id="ctt-bloco-proposta" style="display:none">
+          <div class="card-t">Condições da proposta de compra</div>
+          <div class="fg">
+            <div class="field">
+              <label class="lbl" for="ct-valor-prop">Valor da proposta (R$) <span class="req">*</span></label>
+              <div class="pfx"><span class="pfx-l">R$</span><input id="ct-valor-prop" type="text" class="inp" placeholder="430.000" inputmode="numeric" required></div>
+            </div>
+            <div class="field">
+              <label class="lbl" for="ct-forma-pagto">Forma de pagamento</label>
+              <select id="ct-forma-pagto" class="sel">
+                <option value="vista">À vista</option>
+                <option value="financiamento">Financiamento bancário</option>
+                <option value="entrada+financiamento">Entrada + financiamento</option>
+                <option value="parcelado">Parcelado direto com o vendedor</option>
+              </select>
+            </div>
+            <div class="field">
+              <label class="lbl" for="ct-sinal">Valor do sinal/arras (R$, opcional)</label>
+              <div class="pfx"><span class="pfx-l">R$</span><input id="ct-sinal" type="text" class="inp" placeholder="20.000" inputmode="numeric"></div>
+            </div>
+            <div class="field">
+              <label class="lbl" for="ct-validade-prop">Validade da proposta (dias)</label>
+              <input id="ct-validade-prop" type="number" class="inp" placeholder="5" value="5" min="1">
+            </div>
+          </div>
+        </div>
+
+        <div class="card">
+          <div class="card-t">Observações e condições adicionais (opcional)</div>
+          <div class="fg fg1">
+            <div class="field">
+              <textarea id="ct-obs" class="txa inp" placeholder="Ex: imóvel entregue com móveis planejados da cozinha; despesas de escritura e ITBI a cargo do comprador..."></textarea>
+            </div>
+          </div>
+        </div>
+
+        <div class="fg" style="display:flex;gap:10px;flex-wrap:wrap">
+          <button type="button" class="btn btn-ghost" onclick="voltarModeloContrato()">
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="19" y1="12" x2="5" y2="12"/><polyline points="12 19 5 12 12 5"/></svg>
+            Trocar modelo
+          </button>
+          <button type="submit" class="gen-btn" style="flex:1">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 01-2 2H5a2 2 0 01-2-2V5a2 2 0 012-2h11"/></svg>
+            Gerar texto do documento
+          </button>
+        </div>
+      </form>
+
+      <!-- PASSO 3: texto gerado, editável antes de exportar -->
+      <div class="no-print contrato-edit-wrap" id="contrato-passo-texto" style="display:none">
+        <div class="card-t" style="margin-bottom:10px" id="ctt-edit-titulo">Revise e edite o documento</div>
+        <p style="font-size:12.5px;color:var(--t2);margin:-2px 0 12px;line-height:1.6">O texto abaixo é apenas um ponto de partida. Leia com atenção, ajuste o que for preciso para o seu caso e, se houver qualquer dúvida sobre cláusulas, valores ou obrigações, consulte um advogado antes de assinar ou enviar à contraparte.</p>
+        <textarea id="contrato-texto" class="contrato-edit-txa" spellcheck="true"></textarea>
+
+        <div class="contrato-aviso mini" style="margin-top:14px">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+          <span>Lembrete: modelo genérico, sem validade jurídica garantida. A responsabilidade pela revisão e adequação do texto é sua.</span>
+        </div>
+
+        <div class="fg" style="display:flex;gap:8px;flex-wrap:wrap;margin-top:14px">
+          <button type="button" class="btn btn-ghost" onclick="voltarFormContrato()">
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="19" y1="12" x2="5" y2="12"/><polyline points="12 19 5 12 12 5"/></svg>
+            Voltar e editar dados
+          </button>
+          <button type="button" class="btn btn-ghost" onclick="copiarContrato()">
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1"/></svg>
+            Copiar texto
+          </button>
+          <button type="button" class="btn btn-ghost" onclick="baixarContratoPDF()">
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+            Baixar PDF
+          </button>
+          <button type="button" class="btn btn-primary" onclick="compartilharContratoWA()">
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 11.5a8.38 8.38 0 01-.9 3.8 8.5 8.5 0 01-7.6 4.7 8.38 8.38 0 01-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 01-.9-3.8 8.5 8.5 0 014.7-7.6 8.38 8.38 0 013.8-.9h.5a8.48 8.48 0 018 8v.5z"/></svg>
+            WhatsApp
+          </button>
+        </div>
+      </div>
+
+      <!-- Versão usada SÓ na impressão/PDF: espelha o texto editado + aviso fixo -->
+      <div class="contrato-print" id="contrato-print">
+        <div class="contrato-print-aviso">
+          <b>MODELO GENÉRICO — NÃO SUBSTITUI ORIENTAÇÃO JURÍDICA.</b> Este documento foi gerado como modelo de apoio pela ferramenta CorretorPRO e não tem validade jurídica garantida. As partes devem revisar o conteúdo e, em caso de dúvida sobre cláusulas, valores ou obrigações, consultar um advogado antes de assinar.
+        </div>
+        <div class="contrato-print-texto" id="contrato-print-texto"></div>
+      </div>
+    </div><!-- /view-contratos -->
+
     <!-- ══════════════════ VIEW: CONFIGURAÇÕES ══════════════════ -->
     <div class="view" id="view-config">
       <div class="ph">
@@ -1192,6 +1850,20 @@ input[type=color]{opacity:0;width:0;height:0;position:absolute}
         </div>
       </form>
     </div><!-- /view-config -->
+
+    <!-- ══════════════════ VIEW: TUTORIAIS / AJUDA ══════════════════
+         Conteúdo de referência permanente — complementa o tour guiado do
+         modo demo (iniciarTourDemo), que só roda uma vez em ?demo=1. Aqui
+         o corretor volta sempre que precisar, com o passo a passo de cada
+         módulo já em produção. Sem array novo, sem dado no jsonb: é 100%
+         apresentação (HTML estático renderizado por renderAjuda()). -->
+    <div class="view" id="view-ajuda">
+      <div class="ph">
+        <h1>Tutoriais e Ajuda</h1>
+        <p>Guias rápidos de cada parte do CorretorPRO. Clique num tópico para abrir o passo a passo.</p>
+      </div>
+      <div id="ajuda-content"></div>
+    </div><!-- /view-ajuda -->
 
   </main>
 </div>
@@ -1353,6 +2025,7 @@ function demoBloqueio() {
 function seedDemoData() {
   const diaBR = n => new Date(Date.now() - n*86400000).toLocaleDateString('pt-BR')
   const iso   = n => new Date(Date.now() - n*86400000).toISOString().slice(0,10)
+  const isoTs = n => new Date(Date.now() - n*86400000).toISOString()
   const base  = Date.now()
 
   perfil = {
@@ -1370,10 +2043,22 @@ function seedDemoData() {
   ]
 
   leads = [
-    { id:base-11, cliente:'Pedro Henrique',  tel:'(11) 99111-2233', imovel:'Cobertura — Vila Nova Conceição', dataVisita:iso(0),  hora:'14:30', obs:'Segunda visita, leva a esposa',     status:'agendada',  criadoEm:diaBR(2) },
-    { id:base-12, cliente:'Juliana Martins', tel:'(11) 98222-3344', imovel:'Apto 2 dorm — Pinheiros',          dataVisita:iso(-1), hora:'10:00', obs:'Primeira visita',                   status:'agendada',  criadoEm:diaBR(1) },
-    { id:base-13, cliente:'Marcos Vinícius', tel:'(11) 97333-4455', imovel:'Casa — Granja Viana',              dataVisita:iso(2),  hora:'16:00', obs:'Confirmar documentação',            status:'agendada',  criadoEm:diaBR(3) },
-    { id:base-14, cliente:'Fernanda Souza',  tel:'(11) 96444-5566', imovel:'Apto — Higienópolis',             dataVisita:iso(3),  hora:'11:00', obs:'Visita realizada — gerou proposta', status:'realizada', criadoEm:diaBR(5) },
+    { id:base-11, cliente:'Pedro Henrique',  tel:'(11) 99111-2233', imovel:'Cobertura — Vila Nova Conceição', dataVisita:iso(0),  hora:'14:30', obs:'Segunda visita, leva a esposa',     status:'agendada',  criadoEm:diaBR(2), ultimaInteracao:isoTs(1) },
+    { id:base-12, cliente:'Juliana Martins', tel:'(11) 98222-3344', imovel:'Apto 2 dorm — Pinheiros',          dataVisita:iso(-1), hora:'10:00', obs:'Primeira visita',                   status:'agendada',  criadoEm:diaBR(1), ultimaInteracao:isoTs(8) },
+    { id:base-13, cliente:'Marcos Vinícius', tel:'(11) 97333-4455', imovel:'Casa — Granja Viana',              dataVisita:iso(2),  hora:'16:00', obs:'Confirmar documentação',            status:'agendada',  criadoEm:diaBR(3), ultimaInteracao:isoTs(4) },
+    { id:base-14, cliente:'Fernanda Souza',  tel:'(11) 96444-5566', imovel:'Apto — Higienópolis',             dataVisita:iso(3),  hora:'11:00', obs:'Visita realizada — gerou proposta', status:'realizada', criadoEm:diaBR(5), ultimaInteracao:isoTs(3) },
+  ]
+
+  imoveis = [
+    { id:base-21, tipo:'Apartamento', finalidade:'venda',   end:'Av. Faria Lima, 3000 — São Paulo, SP',           bairro:'Itaim Bibi',     valor:'620.000',   area:'78',  dorms:'3', vagas:'2', status:'disponivel', foto:null, criadoEm:diaBR(4) },
+    { id:base-22, tipo:'Casa',        finalidade:'venda',   end:'Alameda dos Anjos, 145, Alphaville — Barueri, SP', bairro:'Alphaville',     valor:'1.450.000', area:'210', dorms:'4', vagas:'4', status:'reservado',  foto:null, criadoEm:diaBR(2) },
+    { id:base-23, tipo:'Apartamento', finalidade:'locacao', end:'Av. Paulista, 1500 — São Paulo, SP',              bairro:'Bela Vista',     valor:'4.200',     area:'55',  dorms:'2', vagas:'1', status:'locado',     foto:null, criadoEm:diaBR(6) },
+    { id:base-24, tipo:'Comercial',   finalidade:'venda',   end:'Rua Oscar Freire, 820 — São Paulo, SP',           bairro:'Jardins',        valor:'2.300.000', area:'140', dorms:'',  vagas:'3', status:'disponivel', foto:null, criadoEm:diaBR(1) },
+  ]
+
+  vendas = [
+    { id:base-31, leadId:null, imovelId:null, cliente:'Ana Beatriz', imovel:'Apartamento — Av. Paulista, 1500', valor:'4.200', percComissao:8, comissaoValor:336, dataFechamento:iso(5), criadoEm:isoTs(5) },
+    { id:base-32, leadId:null, imovelId:null, cliente:'Roberto Lima', imovel:'Casa — Alameda dos Anjos, 145, Alphaville', valor:'1.450.000', percComissao:6, comissaoValor:87000, dataFechamento:iso(12), criadoEm:isoTs(12) },
   ]
 }
 
@@ -1381,11 +2066,14 @@ function seedDemoData() {
 function iniciarTourDemo() {
   const PASSOS = [
     { t:'Bem-vindo 👋', x:'Esta é a plataforma real do CorretorPRO — já preenchida com dados de exemplo pra você explorar. Em poucos passos eu mostro tudo que ela faz.', sel:null, view:'form' },
+    { t:'Meus Imóveis', x:'Cadastre cada imóvel da sua carteira com foto, valor e status — disponível, reservado, vendido ou locado. É a base do seu catálogo.', sel:'.sb-item[data-view="imoveis"]', view:'imoveis' },
     { t:'Proposta em 60 segundos', x:'Preencha os dados e gere uma proposta profissional com a sua marca — já com simulação de financiamento SAC e Price calculada. Clique em “Gerar Proposta” pra ver.', sel:'#gen-btn', view:'form' },
-    { t:'Funil de vendas (CRM)', x:'Cada negociação vira um card e caminha pelo funil: Nova → Enviada → Em negociação → Fechada. Você acompanha todas num lugar só.', sel:'.sb-item[data-view="history"]', view:'history' },
+    { t:'Status das propostas (CRM)', x:'Cada proposta vira um card e caminha pelo status: Nova → Enviada → Em negociação → Fechada. Você acompanha todas num lugar só.', sel:'.sb-item[data-view="history"]', view:'history' },
+    { t:'Funil de Vendas', x:'Acompanhe cada lead num Kanban visual — do primeiro contato até a venda fechada — sem perder o fio da negociação.', sel:'.sb-item[data-view="funil"]', view:'funil' },
     { t:'Agenda de visitas', x:'Organize suas visitas e nunca perca um follow-up: agendadas, de hoje, atrasadas e realizadas — separadas automaticamente.', sel:'.sb-item[data-view="agenda"]', view:'agenda' },
     { t:'Registro de Visita (jurídico)', x:'O documento com amparo legal que comprova sua intermediação e protege a sua comissão se o cliente fechar direto com o dono.', sel:'.sb-item[data-view="visita"]', view:'visita' },
     { t:'Sua marca, 3 modelos', x:'Coloque seu logo, CRECI e cor, e escolha entre 3 modelos de proposta: Clássico, Moderno e Minimalista. Suas propostas com a sua identidade.', sel:'.sb-item[data-view="config"]', view:'config' },
+    { t:'Sempre que precisar, tem ajuda aqui', x:'Esse tour é só a primeira passada. Depois, sempre que tiver dúvida em algum módulo, clique no botão "?" ou em "Tutoriais / Ajuda" no menu — tem o passo a passo de cada parte da ferramenta.', sel:'.sb-item[data-view="ajuda"]', view:'ajuda' },
     { t:'Pronto pra usar de verdade?', x:'Salvar, baixar em PDF e enviar no WhatsApp são liberados ao assinar — com garantia de 7 dias. Comece agora.', sel:'#demo-banner', cta:true },
   ]
   let i = 0
@@ -1433,6 +2121,134 @@ function iniciarTourDemo() {
   window.addEventListener('resize', render)
 }
 
+/* ── TUTORIAIS / AJUDA ──
+   Conteúdo de referência permanente sobre cada módulo já em produção.
+   Complementa (não substitui) o tour guiado (iniciarTourDemo), que só
+   roda na primeira visita do modo demo. Aqui o corretor sempre pode
+   voltar para reler o passo a passo. 100% estático — não lê nem grava
+   nada em leads/imoveis/vendas/historico/perfil. */
+const TUTORIAIS = [
+  {
+    id: 'proposta',
+    icone: '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>',
+    titulo: 'Como gerar sua primeira proposta',
+    resumo: 'Do formulário ao PDF pronto para enviar, em menos de 1 minuto.',
+    passos: [
+      'Clique em <b>"Nova Proposta"</b> no menu lateral.',
+      'Preencha os dados do cliente, do imóvel e da negociação (compra, venda ou locação). Se quiser só testar, use o botão <b>"Carregar exemplo"</b> no topo da página.',
+      'No campo de condições/observações, clique em <b>"✨ Gerar descrição com IA"</b> para preencher um parágrafo comercial automático — você pode editar o texto depois.',
+      'Confira a simulação de financiamento (SAC e Price) gerada automaticamente quando o valor do imóvel é informado.',
+      'Clique em <b>"Gerar Proposta"</b>. A proposta abre formatada com sua marca (logo, CRECI e cor, se já configurados em Configurações).',
+      'Use os botões de baixar em PDF ou enviar direto no WhatsApp para mandar ao cliente.',
+      'A proposta é salva automaticamente em <b>"Minhas Propostas"</b> com status "Nova" — você acompanha o andamento por lá.'
+    ],
+    dica: 'Sem perfil configurado (nome/CRECI/logo), a proposta sai sem a sua marca. Configure uma vez em <b>Configurações</b> e todas as próximas propostas já saem prontas.'
+  },
+  {
+    id: 'imoveis',
+    icone: '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 9l9-7 9 7"/><path d="M9 22V12h6v10"/><path d="M5 10v10a1 1 0 001 1h12a1 1 0 001-1V10"/></svg>',
+    titulo: 'Como cadastrar um imóvel em "Meus Imóveis"',
+    resumo: 'Monte seu catálogo com foto, valor e status de disponibilidade.',
+    passos: [
+      'No menu lateral, clique em <b>"Meus Imóveis"</b>.',
+      'Clique em <b>"Novo imóvel"</b> e preencha tipo (apartamento, casa, comercial, terreno), finalidade (venda, locação ou permuta), endereço, bairro, valor, área, dormitórios e vagas.',
+      'Escolha o <b>status</b>: disponível, reservado, vendido ou locado — esse status aparece como badge colorido no card do imóvel.',
+      'Adicione uma foto de capa (opcional, mas recomendado — imóvel com foto é mais fácil de reconhecer na sua lista).',
+      'Salve. O imóvel aparece em grade na tela de "Meus Imóveis" e pode ser vinculado a um lead no Funil de Vendas.',
+      'Para editar ou excluir, use os botões no próprio card.'
+    ],
+    dica: 'Quando uma venda é fechada no Funil para um imóvel cadastrado, a ferramenta sugere automaticamente marcar esse imóvel como "Vendido" ou "Locado" — você só confirma.'
+  },
+  {
+    id: 'funil',
+    icone: '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 3H2l8 9.46V19l4 2v-8.54L22 3z"/></svg>',
+    titulo: 'Como funciona o Funil de Vendas',
+    resumo: 'Do primeiro contato até a venda fechada, em 6 etapas visuais.',
+    passos: [
+      'Abra <b>"Funil de Vendas"</b> no menu lateral. Você verá 6 colunas: Novo contato, Visita agendada, Visita realizada, Proposta enviada, Negociação e Venda fechada.',
+      'Cada lead aparece como um card com nome do cliente, imóvel de interesse (se vinculado a um imóvel cadastrado) e valor estimado.',
+      'Para mover um lead de etapa, use o seletor de estágio no card ou o botão <b>"avançar"</b> — não é preciso arrastar.',
+      'Leads parados aparecem com o badge de <b>"X dias sem contato"</b> — o mesmo alerta de lead esquecido da Agenda.',
+      'Ao mover um lead para <b>"Venda fechada"</b>, abre um modal pedindo o valor da venda, a % de comissão e a data — a comissão é calculada na hora e o registro vai automaticamente para a aba "Vendas".',
+      'Se você cancelar esse modal, o lead permanece no estágio anterior — nada é fechado sem sua confirmação.'
+    ],
+    dica: 'O Funil usa os mesmos leads da Agenda de Visitas — você não cadastra a mesma pessoa duas vezes em lugares diferentes.'
+  },
+  {
+    id: 'followup',
+    icone: '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M9.09 9a3 3 0 015.83 1c0 2-3 3-3 3"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>',
+    titulo: 'Como funciona o alerta de lead esquecido e o follow-up no WhatsApp',
+    resumo: 'A ferramenta avisa quando um lead esfria e já te entrega a mensagem pronta.',
+    passos: [
+      'Na <b>Agenda de Visitas</b> (e também no Funil), cada lead mostra um badge de dias desde a última interação.',
+      'A partir de <b>3 dias</b> sem contato, o badge fica em tom de atenção. A partir de <b>7 dias</b>, fica em destaque (crítico).',
+      'Clique no badge de um lead "frio" para abrir uma mensagem de retomada já escrita — o tom da mensagem varia conforme quantos dias o lead está parado.',
+      'Revise o texto (edite se quiser personalizar) e clique em <b>"Enviar no WhatsApp"</b> — o link abre o WhatsApp Web/app já com o número e a mensagem preenchidos.',
+      'Nada é enviado automaticamente: você sempre confere e aperta enviar dentro do próprio WhatsApp.',
+      'A data de "última interação" do lead é atualizada sempre que você agenda, registra contato, marca visita como realizada ou usa o follow-up — então o contador reinicia.'
+    ],
+    dica: 'O follow-up é a etapa mais esquecida do funil imobiliário — reserve 10 minutos por dia só para revisar os leads com alerta antes que fiquem mais de 7 dias parados.'
+  },
+  {
+    id: 'captacao',
+    icone: '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15.3 15.3 0 014 10 15.3 15.3 0 01-4 10 15.3 15.3 0 01-4-10 15.3 15.3 0 014-10z"/></svg>',
+    titulo: 'Como configurar seu link de captação de leads',
+    resumo: 'Um link com a sua marca para colocar na bio do Instagram ou no status do WhatsApp.',
+    passos: [
+      'Vá em <b>Configurações</b> e defina seu identificador (slug) de captação — geralmente seu nome ou nome comercial.',
+      'Copie o link gerado na tela de Configurações ou na Agenda de Visitas (seção de captação).',
+      'Cole esse link na bio do Instagram, no status do WhatsApp, em anúncios ou no seu cartão digital.',
+      'Quando um cliente preenche o formulário pelo link, o lead cai automaticamente na sua <b>Agenda de Visitas</b> como novo contato — pronto para você aceitar e agendar a visita.',
+      'A partir daí, o lead segue o fluxo normal: visita, registro, proposta e Funil de Vendas.'
+    ],
+    dica: 'Quanto mais visível o link (bio do Instagram, status do WhatsApp, assinatura de email), mais leads chegam organizados direto na ferramenta — sem você precisar redigitar nada que o cliente já preencheu.'
+  },
+  {
+    id: 'dashboard',
+    icone: '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="9"/><rect x="14" y="3" width="7" height="5"/><rect x="14" y="12" width="7" height="9"/><rect x="3" y="16" width="7" height="5"/></svg>',
+    titulo: 'Como ler o Dashboard',
+    resumo: 'A tela inicial cruza leads, imóveis e vendas num só painel.',
+    passos: [
+      'Os <b>6 cards no topo</b> mostram: leads ativos, leads em alerta (esquecidos), imóveis disponíveis, vendas fechadas no mês, comissão no mês e comissão no ano.',
+      'O <b>gráfico de barras</b> mostra o total vendido nos últimos 6 meses — útil para ver se o ritmo está subindo ou caindo.',
+      'O <b>resumo do Funil</b> mostra quantos leads estão em cada estágio (barras horizontais) — ajuda a identificar gargalo, por exemplo muitos leads parados em "Proposta enviada".',
+      'A lista de <b>"leads mais críticos"</b> traz os 5 com mais dias sem contato — clique para ir direto ao follow-up no Funil.',
+      'Os botões de atalho ("Nova proposta", "Novo lead", "Novo imóvel") levam direto para a tela de cadastro correspondente.'
+    ],
+    dica: 'Comece o dia pelo Dashboard: se houver leads em alerta, resolva o follow-up deles antes de qualquer outra tarefa — é onde mais se perde venda por demora.'
+  }
+]
+
+let _ajudaAberto = null
+function renderAjuda() {
+  const el = document.getElementById('ajuda-content')
+  if (!el) return
+  el.innerHTML = TUTORIAIS.map(t => {
+    const aberto = _ajudaAberto === t.id
+    return (
+      '<div class="tut-item' + (aberto ? ' open' : '') + '" id="tut-' + t.id + '">' +
+        '<button class="tut-head" onclick="toggleAjuda(\'' + t.id + '\')">' +
+          '<span class="tut-ic">' + t.icone + '</span>' +
+          '<span class="tut-head-t"><b>' + escH(t.titulo) + '</b><span>' + escH(t.resumo) + '</span></span>' +
+          '<svg class="tut-chev" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg>' +
+        '</button>' +
+        '<div class="tut-body">' +
+          '<ol>' + t.passos.map(p => '<li>' + p + '</li>').join('') + '</ol>' +
+          (t.dica ? '<p class="tut-dica">💡 ' + t.dica + '</p>' : '') +
+        '</div>' +
+      '</div>'
+    )
+  }).join('')
+}
+function toggleAjuda(id) {
+  _ajudaAberto = (_ajudaAberto === id) ? null : id
+  renderAjuda()
+  if (_ajudaAberto) {
+    const card = document.getElementById('tut-' + id)
+    if (card) card.scrollIntoView({ behavior: 'smooth', block: 'nearest' })
+  }
+}
+
 /* ── ESC HTML ── */
 const escH = s => String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;')
 
@@ -1440,6 +2256,8 @@ const escH = s => String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').repla
 let perfil = JSON.parse(localStorage.getItem('cpr_perfil') || 'null') || { nome:'',creci:'',tel:'',email:'',cor:'#4D7EFF',logo:null,modelo:'classico',slug:'' }
 let historico = JSON.parse(localStorage.getItem('cpr_hist') || '[]')
 let leads = JSON.parse(localStorage.getItem('cpr_leads') || '[]')
+let imoveis = JSON.parse(localStorage.getItem('cpr_imoveis') || '[]')
+let vendas = JSON.parse(localStorage.getItem('cpr_vendas') || '[]')
 let snapProposta = null
 let fotoAtual = null
 let _toastT = null
@@ -1466,6 +2284,10 @@ function initApp() {
   renderSidebarUser()
   atualizarBadgeHist()
   atualizarBadgeAgenda()
+  atualizarBadgeImoveis()
+  atualizarBadgeFunil()
+  atualizarBadgeVendas()
+  renderDashboard()
   if (!perfil.nome) {
     document.getElementById('banner-profile').classList.add('show')
   }
@@ -1477,7 +2299,7 @@ function initApp() {
 async function sair() {
   if (window._sb) await window._sb.auth.signOut()
   // Limpa o cache local para não deixar PII (perfil/histórico/leads) no dispositivo
-  try { localStorage.removeItem('cpr_perfil'); localStorage.removeItem('cpr_hist'); localStorage.removeItem('cpr_leads') } catch(_) {}
+  try { localStorage.removeItem('cpr_perfil'); localStorage.removeItem('cpr_hist'); localStorage.removeItem('cpr_leads'); localStorage.removeItem('cpr_imoveis'); localStorage.removeItem('cpr_vendas') } catch(_) {}
   location.replace(_LOGIN_URL)
 }
 
@@ -1489,7 +2311,7 @@ async function carregarRemoto() {
   try {
     const { data, error } = await window._sb
       .from('cpr_user_data')
-      .select('perfil,historico,leads')
+      .select('perfil,historico,leads,imoveis,vendas')
       .eq('user_id', window._uid)
       .maybeSingle()
     if (error) return
@@ -1507,7 +2329,17 @@ async function carregarRemoto() {
         leads = data.leads
         localStorage.setItem('cpr_leads', JSON.stringify(leads))
       }
-    } else if (perfil.nome || historico.length || leads.length) {
+      // Coluna nova — pode não existir ainda em contas antigas/antes da migração SQL
+      if (Array.isArray(data.imoveis)) {
+        imoveis = data.imoveis
+        localStorage.setItem('cpr_imoveis', JSON.stringify(imoveis))
+      }
+      // Coluna nova — pode não existir ainda em contas antigas/antes da migração SQL
+      if (Array.isArray(data.vendas)) {
+        vendas = data.vendas
+        localStorage.setItem('cpr_vendas', JSON.stringify(vendas))
+      }
+    } else if (perfil.nome || historico.length || leads.length || imoveis.length || vendas.length) {
       // Primeiro acesso desta conta: migra os dados locais para a nuvem
       await salvarRemoto()
     }
@@ -1518,7 +2350,7 @@ async function salvarRemoto() {
   if (!window._sb || !window._uid) return
   try {
     const { error } = await window._sb.from('cpr_user_data').upsert(
-      { user_id: window._uid, perfil, historico, leads, updated_at: new Date().toISOString() },
+      { user_id: window._uid, perfil, historico, leads, imoveis, vendas, updated_at: new Date().toISOString() },
       { onConflict: 'user_id' }
     )
     if (error) throw error
@@ -1532,8 +2364,8 @@ function showView(name) {
   document.querySelectorAll('.view').forEach(v => v.classList.remove('active'))
   document.getElementById('view-' + name).classList.add('active')
   document.querySelectorAll('.sb-item[data-view]').forEach(i => i.classList.toggle('active', i.dataset.view === name))
-  const labels = { agenda:'Agenda de Visitas', form:'Nova Proposta', history:'Minhas Propostas', visita:'Registro de Visita', config:'Configurações' }
-  const roots  = { agenda:'Funil', form:'Propostas', history:'Propostas', visita:'Documentos', config:'Conta' }
+  const labels = { dashboard:'Dashboard', agenda:'Agenda de Visitas', form:'Nova Proposta', history:'Minhas Propostas', visita:'Registro de Visita', contratos:'Contratos', config:'Configurações', imoveis:'Meus Imóveis', funil:'Funil de Vendas', vendas:'Vendas', ajuda:'Tutoriais e Ajuda' }
+  const roots  = { dashboard:'Visão geral', agenda:'Funil', form:'Propostas', history:'Propostas', visita:'Documentos', contratos:'Documentos', config:'Conta', imoveis:'Imóveis', funil:'Funil', vendas:'Funil', ajuda:'Conta' }
   document.getElementById('crumb-page').textContent = labels[name] || name
   document.getElementById('crumb-root').textContent = roots[name] || name
   // topbar buttons only for form
@@ -1551,11 +2383,30 @@ function showView(name) {
     if (dt && !dt.value) dt.value = new Date().toISOString().slice(0, 10)
     renderVisitas()
   }
+  if (name === 'contratos') {
+    resetContratoView()
+  }
   if (name === 'agenda') {
     const dt = document.getElementById('l-data')
     if (dt && !dt.value) dt.value = new Date().toISOString().slice(0, 10)
     renderAgenda()
     renderCaptacao()
+  }
+  if (name === 'imoveis') {
+    renderImoveis()
+  }
+  if (name === 'funil') {
+    popularSelectImoveisFunil()
+    renderFunil()
+  }
+  if (name === 'vendas') {
+    renderVendas()
+  }
+  if (name === 'dashboard') {
+    renderDashboard()
+  }
+  if (name === 'ajuda') {
+    renderAjuda()
   }
   closeSidebar()
   window.scrollTo({ top: 0, behavior: 'smooth' })
@@ -1572,6 +2423,15 @@ const fmtInput = id => {
 }
 fmtInput('f-valor')
 fmtInput('f-complem')
+fmtInput('im-valor')
+fmtInput('fl-valor')
+
+// Se o corretor editar manualmente o texto gerado pela IA, esconde o aviso
+// "gerado por IA" — deixou de ser exatamente o texto sugerido.
+document.getElementById('f-cond')?.addEventListener('input', () => {
+  const hint = document.getElementById('ia-desc-hint')
+  if (hint) hint.style.display = 'none'
+})
 
 /* ── TIPO NEGOCIAÇÃO → mostrar bloco específico ── */
 function atualizarTipoNeg() {
@@ -1597,6 +2457,109 @@ function carregarExemplo() {
   atualizarTipoNeg()
   showView('form')
   toast('Exemplo carregado — clique em Gerar Proposta')
+}
+
+/* ── GERAR DESCRIÇÃO DO IMÓVEL POR IA (template local, sem API paga) ──
+   Mesmo padrão de gerarMensagemFollowUp: varia a frase conforme os dados
+   reais preenchidos no formulário, sem inventar características que o
+   corretor não informou. Preenche o próprio campo "Condições especiais"
+   (f-cond) — já é o texto livre usado em "Sobre o imóvel" na proposta. */
+function extrairBairro(endereco) {
+  const partes = (endereco || '').split(',').map(s => s.trim()).filter(Boolean)
+  // formato comum: "Rua X, 123, Bairro — Cidade, UF" ou "Rua X, 123 — Cidade, UF"
+  // (no 2º formato, sem bairro, a 3ª parte vira só a sigla da UF — descartamos.)
+  if (partes.length >= 3) {
+    const candidato = partes[2].split('—')[0].trim()
+    const ehSiglaUF = /^[A-Za-z]{2}$/.test(candidato)
+    if (candidato && candidato.length > 2 && !/^\d+$/.test(candidato) && !ehSiglaUF) return candidato
+  }
+  return ''
+}
+
+function gerarDescricaoIA() {
+  const tipoImovel = document.getElementById('f-tipo-imovel').value
+  const tipoNeg     = document.getElementById('f-tipo-neg').value
+  const endereco    = document.getElementById('f-end').value.trim()
+  const area        = document.getElementById('f-area').value
+  const dorms       = document.getElementById('f-dorms').value
+  const vagas       = document.getElementById('f-vagas').value
+  const garantia    = document.getElementById('f-garantia')?.value || ''
+  const condEl      = document.getElementById('f-cond')
+  const diferenciaisTexto = condEl.value.trim()
+
+  if (!tipoImovel) {
+    toast('Selecione o tipo do imóvel antes de gerar a descrição', true)
+    return
+  }
+
+  const bairro = extrairBairro(endereco)
+  const tipoLower = tipoImovel.toLowerCase()
+
+  // Abertura — varia conforme tipo de imóvel e se há bairro identificado
+  const aberturas = bairro
+    ? [`${tipoImovel} bem localizado${tipoLower.endsWith('a') ? 'a' : ''} no ${bairro}`,
+       `Excelente ${tipoLower} disponível no ${bairro}`,
+       `Ótima oportunidade: ${tipoLower} no ${bairro}`]
+    : [`${tipoImovel} em ótima localização`,
+       `Excelente ${tipoLower} disponível`,
+       `Ótima oportunidade de ${tipoLower}`]
+  const abertura = aberturas[Math.floor(Math.random() * aberturas.length)]
+
+  // Características reais — só entra o que foi preenchido
+  const caracteristicas = []
+  if (area) caracteristicas.push(`${area} m²`)
+  if (dorms && dorms !== '—') {
+    caracteristicas.push(dorms === 'Studio' ? 'conceito studio' : `${dorms} dormitório${dorms === '1' ? '' : 's'}`)
+  }
+  if (vagas && vagas !== '—' && vagas !== '0') caracteristicas.push(`${vagas} vaga${vagas === '1' ? '' : 's'} de garagem`)
+
+  let frase1 = abertura
+  if (caracteristicas.length) {
+    frase1 += `, com ${caracteristicas.join(', ')}.`
+  } else {
+    frase1 += '.'
+  }
+
+  // Frase 2 — varia conforme tipo de negociação
+  const frasesNeg = {
+    'Compra': [
+      'Documentação em dia e pronto para morar, ideal para quem busca conforto e praticidade no dia a dia.',
+      'Imóvel pronto para morar, com excelente potencial de valorização na região.',
+      'Oportunidade de aquisição com documentação regularizada e disponibilidade imediata.'
+    ],
+    'Locação': [
+      `Ideal para quem busca praticidade no dia a dia${garantia ? ` (garantia aceita: ${garantia})` : ''}.`,
+      'Pronto para morar, em região com fácil acesso a comércio e transporte.',
+      'Perfeito para quem busca um novo lar com conforto e bem-estar no dia a dia.'
+    ],
+    'Permuta': [
+      'Excelente opção para quem deseja trocar de imóvel com agilidade e segurança jurídica.',
+      'Documentação regularizada, ideal para viabilizar uma permuta vantajosa para ambas as partes.',
+      'Ótima opção para quem busca trocar de imóvel sem burocracia.'
+    ]
+  }
+  const opcoesNeg = frasesNeg[tipoNeg] || frasesNeg['Compra']
+  const frase2 = opcoesNeg[Math.floor(Math.random() * opcoesNeg.length)]
+
+  // Diferenciais informados pelo corretor (texto livre já digitado) —
+  // citados literalmente, nunca inventados.
+  const frase3 = diferenciaisTexto
+    ? `Diferenciais: ${diferenciaisTexto}.`
+    : ''
+
+  // Fechamento — chamada para ação, sempre presente
+  const fechamentos = [
+    'Agende uma visita e venha conhecer de perto!',
+    'Fale comigo para agendar uma visita sem compromisso.',
+    'Não perca essa oportunidade — agende sua visita hoje mesmo.'
+  ]
+  const fechamento = fechamentos[Math.floor(Math.random() * fechamentos.length)]
+
+  const descricao = [frase1, frase2, frase3, fechamento].filter(Boolean).join(' ')
+
+  condEl.value = descricao
+  document.getElementById('ia-desc-hint').style.display = ''
+  toast('Descrição gerada — revise antes de continuar')
 }
 
 /* ── CALCULAR PARCELA (Tabela Price) ── */
@@ -2014,6 +2977,19 @@ function atualizarBadgeAgenda() {
   const nPend = leads.filter(l => l.status !== 'realizada').length
   if (nPend > 0) {
     badge.textContent = nPend
+    badge.style.display = 'inline'
+  } else {
+    badge.style.display = 'none'
+  }
+}
+
+function atualizarBadgeImoveis() {
+  const badge = document.getElementById('sb-count-imoveis')
+  if (!badge) return
+  // Badge mostra só os disponíveis — é o que pede atenção (catálogo ativo)
+  const nDisp = imoveis.filter(i => (i.status || 'disponivel') === 'disponivel').length
+  if (nDisp > 0) {
+    badge.textContent = nDisp
     badge.style.display = 'inline'
   } else {
     badge.style.display = 'none'
@@ -2547,6 +3523,250 @@ function compartilharTermoWA() {
   window.open('https://wa.me/?text=' + encodeURIComponent(msg), '_blank')
 }
 
+/* ══════════════ CONTRATOS (modelos genéricos de documento) ══════════════
+   Gera o TEXTO de modelos de Autorização de Venda/Locação e Proposta de
+   Compra a partir de perfil/leads/imoveis já existentes. O corretor pode
+   editar livremente o texto final num textarea antes de copiar/imprimir —
+   nada aqui é persistido em cpr_user_data (decisão deliberada: menos dado
+   sensível de terceiro guardado na nuvem; o documento é gerado on-demand). */
+let contratoModeloAtual = null // 'autorizacao' | 'proposta_compra'
+
+function resetContratoView() {
+  document.getElementById('contrato-passo-modelo').style.display = ''
+  document.getElementById('form-contrato').style.display = 'none'
+  document.getElementById('contrato-passo-texto').style.display = 'none'
+  document.querySelectorAll('.modelo-card').forEach(c => c.classList.remove('active'))
+  contratoModeloAtual = null
+  popularSelectsContrato()
+}
+
+function popularSelectsContrato() {
+  const selLead = document.getElementById('ct-lead-id')
+  const selIm = document.getElementById('ct-imovel-id')
+  if (selLead) {
+    selLead.innerHTML = '<option value="">— Preencher manualmente —</option>' + leads.map(l =>
+      `<option value="${l.id}">${escH(l.cliente || 'Lead')}${l.imovel ? ' — ' + escH(l.imovel) : ''}</option>`
+    ).join('')
+  }
+  if (selIm) {
+    selIm.innerHTML = '<option value="">— Preencher manualmente —</option>' + imoveis.map(im =>
+      `<option value="${im.id}">${escH((im.tipo || 'Imóvel') + ' — ' + (im.end || ''))}</option>`
+    ).join('')
+  }
+}
+
+function preencherContratoDeLead() {
+  const id = document.getElementById('ct-lead-id').value
+  const l = leads.find(x => String(x.id) === String(id))
+  if (!l) return
+  document.getElementById('ct-parte-nome').value = l.cliente || ''
+  document.getElementById('ct-parte-tel').value = l.tel || ''
+  if (l.imovel && !document.getElementById('ct-im-end').value.trim()) {
+    document.getElementById('ct-im-end').value = l.imovel
+  }
+  if (l.valorEstimado) {
+    document.getElementById('ct-valor').value = l.valorEstimado
+    document.getElementById('ct-valor-prop').value = l.valorEstimado
+  }
+  if (l.imovelId) {
+    const selIm = document.getElementById('ct-imovel-id')
+    if (selIm) { selIm.value = l.imovelId; preencherContratoDeImovel() }
+  }
+}
+
+function preencherContratoDeImovel() {
+  const id = document.getElementById('ct-imovel-id').value
+  const im = imoveis.find(x => String(x.id) === String(id))
+  if (!im) return
+  document.getElementById('ct-im-end').value = im.end || ''
+  document.getElementById('ct-im-tipo').value = im.tipo || ''
+  if (im.valor) {
+    document.getElementById('ct-valor').value = im.valor
+    document.getElementById('ct-valor-prop').value = im.valor
+  }
+  if (im.finalidade === 'locacao') document.getElementById('ct-finalidade').value = 'locacao'
+  else if (im.finalidade === 'venda') document.getElementById('ct-finalidade').value = 'venda'
+}
+
+function escolherModeloContrato(modelo) {
+  contratoModeloAtual = modelo
+  document.querySelectorAll('.modelo-card').forEach(c => c.classList.toggle('active', c.dataset.modelo === modelo))
+  popularSelectsContrato()
+
+  const titulos = {
+    autorizacao: { form:'Dados da Autorização de Venda/Locação', parte:'Proprietário(a) do imóvel' },
+    proposta_compra: { form:'Dados da Proposta de Compra', parte:'Vendedor(a) do imóvel' },
+  }
+  document.getElementById('ctt-form-titulo').textContent = titulos[modelo].form
+  document.getElementById('ctt-parte-titulo').textContent = titulos[modelo].parte
+  document.getElementById('ctt-bloco-autorizacao').style.display = modelo === 'autorizacao' ? '' : 'none'
+  document.getElementById('ctt-bloco-proposta').style.display = modelo === 'proposta_compra' ? '' : 'none'
+  document.getElementById('ct-valor-prop').required = modelo === 'proposta_compra'
+
+  document.getElementById('contrato-passo-modelo').style.display = 'none'
+  document.getElementById('form-contrato').style.display = ''
+  document.getElementById('contrato-passo-texto').style.display = 'none'
+  document.getElementById('form-contrato').scrollIntoView({ behavior:'smooth', block:'start' })
+}
+
+function voltarModeloContrato() {
+  document.getElementById('contrato-passo-modelo').style.display = ''
+  document.getElementById('form-contrato').style.display = 'none'
+  document.getElementById('contrato-passo-texto').style.display = 'none'
+  window.scrollTo({ top:0, behavior:'smooth' })
+}
+
+function voltarFormContrato() {
+  document.getElementById('form-contrato').style.display = ''
+  document.getElementById('contrato-passo-texto').style.display = 'none'
+  document.getElementById('form-contrato').scrollIntoView({ behavior:'smooth', block:'start' })
+}
+
+function fmtMoedaSimples(v) {
+  const n = String(v||'').replace(/[^\d,.]/g,'')
+  return n ? 'R$ ' + n : 'a definir'
+}
+
+function montarTextoAutorizacao(d) {
+  const hoje = new Date().toLocaleDateString('pt-BR', { day:'numeric', month:'long', year:'numeric' })
+  const nomeCorretor = perfil.nome || 'Corretor(a)'
+  const creci = perfil.creci ? `, inscrito(a) no CRECI sob o nº ${perfil.creci}` : ''
+  const docsProp = [d.partCpf ? `CPF/CNPJ nº ${d.partCpf}` : null, d.partRg ? `RG nº ${d.partRg}` : null].filter(Boolean).join(', ')
+  const idProp = d.partNome + (docsProp ? `, portador(a) do ${docsProp}` : '') + (d.partEnd ? `, residente/sediado(a) em ${d.partEnd}` : '')
+  const idImovel = (d.imTipo ? d.imTipo.toLowerCase() + ' ' : 'imóvel ') + `situado em ${d.imEnd}` + (d.imMatricula ? `, matrícula nº ${d.imMatricula}` : '')
+  const finalidadeTxt = d.finalidade === 'locacao' ? 'LOCAÇÃO' : 'VENDA'
+  const exclusividadeTxt = d.exclusividade === 'sim'
+    ? 'com EXCLUSIVIDADE, comprometendo-se o(a) CONTRATANTE a não intermediar nem autorizar terceiros a intermediar o mesmo negócio durante a vigência deste instrumento'
+    : 'em caráter NÃO EXCLUSIVO, podendo o(a) CONTRATANTE contratar outros corretores ou intermediar o negócio por conta própria'
+
+  return [
+    `AUTORIZAÇÃO PARA INTERMEDIAÇÃO DE ${finalidadeTxt}`,
+    '',
+    `Pelo presente instrumento, ${idProp}, doravante denominado(a) CONTRATANTE, autoriza ${nomeCorretor}${creci}, doravante denominado(a) CORRETOR(A), a intermediar a ${finalidadeTxt.toLowerCase()} do(a) ${idImovel}.`,
+    '',
+    `1. OBJETO — Esta autorização tem por objeto a intermediação, pelo(a) CORRETOR(A), da ${finalidadeTxt.toLowerCase()} do imóvel acima identificado, ${exclusividadeTxt}.`,
+    '',
+    `2. VALOR PRETENDIDO — O valor pretendido pelo(a) CONTRATANTE para o negócio é de ${fmtMoedaSimples(d.valor)}, podendo ser ajustado de comum acordo entre as partes durante a vigência desta autorização.`,
+    '',
+    `3. COMISSÃO — Em caso de concretização do negócio, será devida ao(à) CORRETOR(A) a comissão de corretagem de ${d.comissao ? d.comissao + '% sobre o valor da operação' : 'a ser ajustada entre as partes'}, nos termos da legislação aplicável à corretagem imobiliária.`,
+    '',
+    `4. VIGÊNCIA — Esta autorização tem vigência de ${d.prazo || '90'} dias a contar da data abaixo, podendo ser renovada ou encerrada por acordo entre as partes.`,
+    '',
+    `5. OBRIGAÇÕES DO(A) CORRETOR(A) — Promover a divulgação do imóvel, agendar e acompanhar visitas, apresentar propostas recebidas ao(à) CONTRATANTE e prestar informações sobre o andamento das negociações.`,
+    '',
+    `6. DISPOSIÇÕES GERAIS — As partes elegem o foro da comarca de domicílio do(a) CONTRATANTE para dirimir eventuais dúvidas decorrentes deste instrumento, ressalvada disposição legal em contrário.`,
+    d.obs ? `\n7. OBSERVAÇÕES — ${d.obs}` : '',
+    '',
+    (d.cidade ? d.cidade + ', ' : '') + hoje + '.',
+    '',
+    '_______________________________',
+    d.partNome + ' (CONTRATANTE' + (d.partCpf ? ' · CPF/CNPJ ' + d.partCpf : '') + ')',
+    '',
+    '_______________________________',
+    nomeCorretor + (perfil.creci ? ' — CRECI ' + perfil.creci : '') + ' (CORRETOR(A))',
+  ].filter(s => s !== '').join('\n')
+}
+
+function montarTextoPropostaCompra(d) {
+  const hoje = new Date().toLocaleDateString('pt-BR', { day:'numeric', month:'long', year:'numeric' })
+  const nomeCorretor = perfil.nome || 'Corretor(a)'
+  const creci = perfil.creci ? ' — CRECI ' + perfil.creci : ''
+  const docsVend = [d.partCpf ? `CPF/CNPJ nº ${d.partCpf}` : null, d.partRg ? `RG nº ${d.partRg}` : null].filter(Boolean).join(', ')
+  const idVend = d.partNome + (docsVend ? `, portador(a) do ${docsVend}` : '')
+  const idImovel = (d.imTipo ? d.imTipo.toLowerCase() + ' ' : 'imóvel ') + `situado em ${d.imEnd}` + (d.imMatricula ? `, matrícula nº ${d.imMatricula}` : '')
+  const formaTxt = { vista:'pagamento à vista', financiamento:'financiamento bancário', 'entrada+financiamento':'entrada seguida de financiamento bancário', parcelado:'parcelamento direto com o(a) vendedor(a)' }[d.formaPagto] || 'a definir entre as partes'
+
+  return [
+    'PROPOSTA DE COMPRA DE IMÓVEL',
+    '',
+    `Por meio deste instrumento, eu, [NOME DO(A) PROPONENTE COMPRADOR(A)], apresento a ${idVend}, doravante denominado(a) VENDEDOR(A), a presente proposta para aquisição do(a) ${idImovel}.`,
+    '',
+    `1. VALOR DA PROPOSTA — Proponho a aquisição do imóvel pelo valor de ${fmtMoedaSimples(d.valorProp)}.`,
+    '',
+    `2. FORMA DE PAGAMENTO — A proposta considera ${formaTxt}.` + (d.sinal ? ` Como sinal de boa-fé (arras), proponho o pagamento de ${fmtMoedaSimples(d.sinal)} no ato da aceitação, a ser deduzido do valor total na escritura.` : ''),
+    '',
+    `3. VALIDADE — Esta proposta é válida por ${d.validadeProp || '5'} dias a contar da data abaixo, após os quais poderá ser revista ou retirada caso não haja resposta do(a) VENDEDOR(A).`,
+    '',
+    `4. CONDIÇÃO RESOLUTIVA — Esta proposta está condicionada à confirmação da documentação do imóvel (matrícula atualizada, certidões negativas e ausência de ônus) e, quando aplicável, à aprovação do financiamento pretendido junto à instituição financeira.`,
+    '',
+    `5. INTERMEDIAÇÃO — Esta proposta é apresentada por intermédio do(a) corretor(a) de imóveis ${nomeCorretor}${creci}, responsável pela aproximação entre as partes.`,
+    d.obs ? `\n6. OBSERVAÇÕES — ${d.obs}` : '',
+    '',
+    (d.cidade ? d.cidade + ', ' : '') + hoje + '.',
+    '',
+    '_______________________________',
+    '[NOME DO(A) PROPONENTE COMPRADOR(A)] (PROPONENTE)',
+    '',
+    '_______________________________',
+    d.partNome + ' (VENDEDOR(A)' + (d.partCpf ? ' · CPF/CNPJ ' + d.partCpf : '') + ')',
+  ].filter(s => s !== '').join('\n')
+}
+
+function gerarTextoContrato(ev) {
+  ev.preventDefault()
+  const form = document.getElementById('form-contrato')
+  if (!form.checkValidity()) { form.reportValidity(); return }
+
+  const d = {
+    partNome:    document.getElementById('ct-parte-nome').value.trim(),
+    partCpf:     document.getElementById('ct-parte-cpf').value.trim(),
+    partRg:      document.getElementById('ct-parte-rg').value.trim(),
+    partTel:     document.getElementById('ct-parte-tel').value.trim(),
+    partEnd:     document.getElementById('ct-parte-end').value.trim(),
+    imEnd:       document.getElementById('ct-im-end').value.trim(),
+    imTipo:      document.getElementById('ct-im-tipo').value,
+    imMatricula: document.getElementById('ct-im-matricula').value.trim(),
+    finalidade:  document.getElementById('ct-finalidade').value,
+    valor:       document.getElementById('ct-valor').value.trim(),
+    comissao:    document.getElementById('ct-comissao').value.trim(),
+    prazo:       document.getElementById('ct-prazo-aut').value.trim(),
+    exclusividade: document.getElementById('ct-exclusividade').value,
+    valorProp:   document.getElementById('ct-valor-prop').value.trim(),
+    formaPagto:  document.getElementById('ct-forma-pagto').value,
+    sinal:       document.getElementById('ct-sinal').value.trim(),
+    validadeProp: document.getElementById('ct-validade-prop').value.trim(),
+    obs:         document.getElementById('ct-obs').value.trim(),
+    cidade:      '',
+  }
+
+  const texto = contratoModeloAtual === 'proposta_compra'
+    ? montarTextoPropostaCompra(d)
+    : montarTextoAutorizacao(d)
+
+  const titulos = { autorizacao:'Autorização de Venda/Locação', proposta_compra:'Proposta de Compra' }
+  document.getElementById('ctt-edit-titulo').textContent = 'Revise e edite — ' + titulos[contratoModeloAtual]
+  document.getElementById('contrato-texto').value = texto
+
+  document.getElementById('form-contrato').style.display = 'none'
+  document.getElementById('contrato-passo-texto').style.display = ''
+  document.getElementById('contrato-passo-texto').scrollIntoView({ behavior:'smooth', block:'start' })
+}
+
+function copiarContrato() {
+  const txt = document.getElementById('contrato-texto').value
+  if (!txt) return
+  navigator.clipboard.writeText(txt)
+    .then(() => toast('Texto copiado!'))
+    .catch(() => toast('Selecione o texto e use Ctrl+C'))
+}
+
+function baixarContratoPDF() {
+  if (window._DEMO) return demoBloqueio()
+  const txt = document.getElementById('contrato-texto').value
+  if (!txt) return
+  document.getElementById('contrato-print-texto').textContent = txt
+  toast('Abrindo impressão — salve como PDF...')
+  setTimeout(() => window.print(), 400)
+}
+
+function compartilharContratoWA() {
+  if (window._DEMO) return demoBloqueio()
+  const txt = document.getElementById('contrato-texto').value
+  if (!txt) return
+  const msg = txt + '\n\n— Documento gerado como modelo de apoio pelo CorretorPRO. Não substitui orientação jurídica; revise antes de assinar.'
+  window.open('https://wa.me/?text=' + encodeURIComponent(msg), '_blank')
+}
+
 /* ══════════════ AGENDA DE VISITAS / FUNIL DE LEADS ══════════════ */
 
 /* ── Captação pública de leads ── */
@@ -2673,6 +3893,7 @@ async function aceitarCaptura(id) {
     obs: c.mensagem || '',
     status: 'agendada',
     criadoEm: new Date().toLocaleDateString('pt-BR'),
+    ultimaInteracao: new Date().toISOString(),
   })
   localStorage.setItem('cpr_leads', JSON.stringify(leads))
   try {
@@ -2707,6 +3928,7 @@ async function salvarLead(ev) {
     obs:     document.getElementById('l-obs').value.trim(),
     status:  'agendada',
     criadoEm: new Date().toLocaleDateString('pt-BR'),
+    ultimaInteracao: new Date().toISOString(),
   }
   leads.unshift(item)
   localStorage.setItem('cpr_leads', JSON.stringify(leads))
@@ -2735,6 +3957,143 @@ function statusCalculadoLead(l) {
 
 const LEAD_STATUS_LABEL = { agendada:'Agendada', hoje:'Hoje', atrasada:'Atrasada', realizada:'Realizada' }
 
+/* ── ALERTA DE LEAD ESQUECIDO ──
+   Dor real do corretor autônomo: o lead esfria entre o primeiro contato e o
+   fechamento porque não existe nenhum empurrão pra retomar. Aqui calculamos
+   há quantos dias o lead não teve nenhuma interação registrada e destacamos
+   visualmente — sem nenhuma automação de envio, só o alerta + sugestão. */
+const LEAD_DIAS_ATENCAO = 3
+const LEAD_DIAS_CRITICO = 7
+
+function diasSemContatoLead(l) {
+  // ultimaInteracao é o campo novo; leads antigos (antes desta versão) usam
+  // criadoEm como fallback pra não quebrar leads já salvos no jsonb.
+  const ref = l.ultimaInteracao || l.criadoEmISO || null
+  let dataRef
+  if (ref) {
+    dataRef = new Date(ref)
+  } else if (l.criadoEm) {
+    // criadoEm está em pt-BR (dd/mm/aaaa)
+    const [d, m, a] = l.criadoEm.split('/')
+    dataRef = new Date(`${a}-${m}-${d}T00:00:00`)
+  } else {
+    return 0
+  }
+  if (isNaN(dataRef.getTime())) return 0
+  const ms = Date.now() - dataRef.getTime()
+  return Math.max(0, Math.floor(ms / 86400000))
+}
+
+// Retorna { nivel: 'atencao'|'critico'|null, dias } — só alerta leads ainda
+// em aberto (realizada não esfria, já virou Registro de Visita/Proposta).
+function alertaLead(l) {
+  if (l.status === 'realizada') return { nivel: null, dias: 0 }
+  const dias = diasSemContatoLead(l)
+  if (dias >= LEAD_DIAS_CRITICO) return { nivel: 'critico', dias }
+  if (dias >= LEAD_DIAS_ATENCAO) return { nivel: 'atencao', dias }
+  return { nivel: null, dias }
+}
+
+// Marca "falei com o cliente agora" — reseta o contador do alerta sem
+// precisar mudar status nem data da visita.
+async function marcarContatoLead(id) {
+  const l = leads.find(x => x.id === id)
+  if (!l) return
+  l.ultimaInteracao = new Date().toISOString()
+  localStorage.setItem('cpr_leads', JSON.stringify(leads))
+  renderAgenda()
+  try { await salvarRemoto() } catch(_) {}
+  toast('Contato registrado — alerta zerado')
+}
+
+// Gera uma sugestão de mensagem de follow-up por template local (sem IA
+// externa), variando o tom conforme quantos dias o lead está sem contato.
+function gerarMensagemFollowUp(l) {
+  const nome = (l.cliente || '').trim().split(' ')[0] || ''
+  const imovel = (l.imovel || '').trim()
+  const dias = diasSemContatoLead(l)
+  const saudacao = nome ? `Oi, ${nome}!` : 'Oi!'
+  const refImovel = imovel ? ` sobre o imóvel ${imovel}` : ''
+
+  if (dias >= LEAD_DIAS_CRITICO) {
+    return `${saudacao} Faz um tempo que a gente não troca uma palavra${refImovel} — quero ter certeza de que você não perdeu a oportunidade. Ainda está em busca? Se quiser, consigo agendar uma nova visita ou te mandar opções atualizadas ainda hoje.`
+  }
+  if (dias >= LEAD_DIAS_ATENCAO) {
+    return `${saudacao} Passando pra saber como você está${refImovel}. Ficou alguma dúvida que eu possa resolver, ou quer que eu separe mais opções parecidas?`
+  }
+  return `${saudacao} Tudo bem? Só confirmando se ainda está interessado${refImovel} — qualquer dúvida me chama por aqui.`
+}
+
+// Limpa o telefone do lead pro padrão wa.me, mesma lógica usada no
+// hotmart-webhook (DDI 55 já embutido vs. só DDD+número).
+function telefoneParaWhatsapp(tel) {
+  const rawDigits = (tel || '').replace(/\D/g, '')
+  if (!rawDigits) return null
+  const digits = rawDigits.startsWith('55') && rawDigits.length >= 12
+    ? rawDigits.slice(2)
+    : rawDigits
+  return digits ? '55' + digits : null
+}
+
+// Abre o modal com a mensagem sugerida — corretor revisa e decide enviar.
+function abrirFollowUpLead(id) {
+  const l = leads.find(x => x.id === id)
+  if (!l) return
+  const antigo = document.getElementById('followup-modal-back')
+  if (antigo) antigo.remove()
+
+  const dias = diasSemContatoLead(l)
+  const mensagem = gerarMensagemFollowUp(l)
+  const waNumero = telefoneParaWhatsapp(l.tel)
+
+  const back = document.createElement('div')
+  back.id = 'followup-modal-back'
+  back.className = 'followup-modal-back'
+  back.onclick = (e) => { if (e.target === back) back.remove() }
+  back.innerHTML = `
+    <div class="followup-modal">
+      <h3>Retomar contato com ${escH(l.cliente || 'o cliente')}</h3>
+      <p class="fu-sub">${dias > 0 ? `Sem interação há ${dias} dia${dias === 1 ? '' : 's'}.` : 'Sem registro de contato ainda.'} Revise a mensagem antes de enviar.</p>
+      <textarea id="fu-texto">${escH(mensagem)}</textarea>
+      <div class="fu-actions">
+        <button class="btn btn-ghost btn-sm" onclick="document.getElementById('followup-modal-back').remove()">Fechar</button>
+        <button class="btn btn-ghost btn-sm" onclick="marcarContatoLead(${l.id});document.getElementById('followup-modal-back').remove()" title="Já falei com o cliente por outro canal (ligação, presencial)">Já contatei (outro canal)</button>
+        <button class="btn btn-ghost btn-sm" onclick="copiarMensagemFollowUp()">Copiar texto</button>
+        <button class="btn btn-green btn-sm" onclick="enviarFollowUpWhatsapp(${l.id})" ${waNumero ? '' : 'disabled title="Lead sem telefone cadastrado"'}>
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 11.5a8.38 8.38 0 01-.9 3.8 8.5 8.5 0 01-7.6 4.7 8.38 8.38 0 01-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 01-.9-3.8 8.5 8.5 0 014.7-7.6 8.38 8.38 0 013.8-.9h.5a8.48 8.48 0 018 8v.5z"/></svg>
+          Enviar no WhatsApp
+        </button>
+      </div>
+    </div>`
+  document.body.appendChild(back)
+}
+
+function copiarMensagemFollowUp() {
+  const ta = document.getElementById('fu-texto')
+  if (!ta) return
+  ta.select()
+  try { document.execCommand('copy'); toast('Mensagem copiada!') } catch(_) {}
+}
+
+// Abre o wa.me com o texto (editado ou não) já preenchido. Não envia nada
+// automaticamente — é o corretor que confirma o envio dentro do WhatsApp.
+async function enviarFollowUpWhatsapp(id) {
+  const l = leads.find(x => x.id === id)
+  if (!l) return
+  const waNumero = telefoneParaWhatsapp(l.tel)
+  if (!waNumero) { toast('Lead sem telefone cadastrado', true); return }
+  const ta = document.getElementById('fu-texto')
+  const texto = (ta && ta.value.trim()) || gerarMensagemFollowUp(l)
+  window.open(`https://wa.me/${waNumero}?text=${encodeURIComponent(texto)}`, '_blank')
+  // Marca como contatado: corretor revisou e decidiu agir agora.
+  l.ultimaInteracao = new Date().toISOString()
+  localStorage.setItem('cpr_leads', JSON.stringify(leads))
+  const back = document.getElementById('followup-modal-back')
+  if (back) back.remove()
+  renderAgenda()
+  try { await salvarRemoto() } catch(_) {}
+}
+
 function renderAgenda() {
   const el = document.getElementById('agenda-content')
   if (!el) return
@@ -2759,6 +4118,7 @@ function renderAgenda() {
   el.innerHTML = `<div class="hist-list">${ordenados.map(l => {
     const st = statusCalculadoLead(l)
     const dataFmt = fmtDataBR(l.dataVisita) + (l.hora ? ' às ' + l.hora : '')
+    const alerta = alertaLead(l)
     const acoes = st === 'realizada'
       ? `<button class="btn btn-ghost btn-sm" onclick="usarLeadParaVisita(${l.id})" title="Gerar Registro de Visita">
            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 01-2 2H5a2 2 0 01-2-2V5a2 2 0 012-2h11"/></svg>
@@ -2769,10 +4129,18 @@ function renderAgenda() {
       : `<button class="btn btn-ghost btn-sm" onclick="marcarRealizada(${l.id})" title="Marcar como realizada">
            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg>
          </button>`
+    const cardClass = alerta.nivel === 'critico' ? 'hist-card lead-esquecido' : (alerta.nivel === 'atencao' ? 'hist-card lead-atencao' : 'hist-card')
+    const alertaBadge = alerta.nivel
+      ? `<button class="lead-alert" data-nivel="${alerta.nivel}" onclick="abrirFollowUpLead(${l.id})" title="Ver sugestão de mensagem de follow-up">
+           <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
+           ${alerta.dias}d sem contato
+         </button>`
+      : ''
     return `
-    <div class="hist-card">
+    <div class="${cardClass}">
       <div class="hist-main-row">
         <span class="lead-status" data-s="${st}">${escH(LEAD_STATUS_LABEL[st])}</span>
+        ${alertaBadge}
         <div class="hist-info">
           <div class="hist-cliente">${escH(l.cliente||'—')}</div>
           <div class="hist-imovel">${escH(l.imovel||'')}</div>
@@ -2792,11 +4160,19 @@ function renderAgenda() {
 }
 
 async function marcarRealizada(id) {
+  if (window._DEMO) return demoBloqueio()
   const l = leads.find(x => x.id === id)
   if (!l) return
   l.status = 'realizada'
+  // Avança também o estágio do Funil, mas só se ainda não tiver passado de
+  // "visita realizada" (não retrocede quem já está em proposta/negociação/venda).
+  const idxAtual = FUNIL_KEYS.indexOf(estagioFunilLead(l))
+  const idxRealizada = FUNIL_KEYS.indexOf('visita_realizada')
+  if (idxAtual < idxRealizada) l.estagioFunil = 'visita_realizada'
+  l.ultimaInteracao = new Date().toISOString()
   localStorage.setItem('cpr_leads', JSON.stringify(leads))
   atualizarBadgeAgenda()
+  atualizarBadgeFunil()
   renderAgenda()
   try { await salvarRemoto() } catch(_) {}
   toast('Visita realizada — gerando o Registro de Visita...')
@@ -2805,14 +4181,888 @@ async function marcarRealizada(id) {
 }
 
 async function excluirLead(id) {
+  if (window._DEMO) return demoBloqueio()
   const i = leads.findIndex(x => x.id === id)
   if (i === -1) return
   leads.splice(i, 1)
   localStorage.setItem('cpr_leads', JSON.stringify(leads))
   atualizarBadgeAgenda()
+  atualizarBadgeFunil()
   renderAgenda()
   try { await salvarRemoto() } catch(_) {}
   toast('Agendamento removido')
+}
+
+/* ── FUNIL DE VENDAS (KANBAN) ──
+   Camada visual nova sobre o mesmo array `leads` (jsonb já existente) — não
+   cria array novo nem coluna nova no Supabase. Cada lead ganha um campo
+   `estagioFunil`; leads antigos (sem esse campo) são mapeados automaticamente
+   a partir do `status` clássico da Agenda (agendada/hoje/atrasada/realizada),
+   sem nunca sobrescrever o `status` em si — a Agenda continua funcionando
+   exatamente como antes. */
+const FUNIL_ESTAGIOS = [
+  { key:'novo_contato',       label:'Novo contato',      cor:'#7BA3FF' },
+  { key:'visita_agendada',    label:'Visita agendada',   cor:'#60A5FA' },
+  { key:'visita_realizada',   label:'Visita realizada',  cor:'#EAB308' },
+  { key:'proposta_enviada',   label:'Proposta enviada',  cor:'#C084FC' },
+  { key:'negociacao',         label:'Negociação',        cor:'#FB923C' },
+  { key:'venda_fechada',      label:'Venda fechada',     cor:'#22C55E' },
+]
+const FUNIL_KEYS = FUNIL_ESTAGIOS.map(e => e.key)
+
+// Retorna o estágio efetivo do lead sem mutar nada — usa `estagioFunil` se já
+// foi definido; senão deriva do `status` antigo (compatibilidade retroativa).
+function estagioFunilLead(l) {
+  if (l.estagioFunil && FUNIL_KEYS.includes(l.estagioFunil)) return l.estagioFunil
+  const st = statusCalculadoLead(l)
+  if (st === 'realizada') return 'visita_realizada'
+  if (st === 'agendada' || st === 'hoje' || st === 'atrasada') return 'visita_agendada'
+  return 'novo_contato'
+}
+
+// Persiste o estágio explicitamente no lead (1ª vez que isso acontece, o
+// valor migrado pelo cálculo automático passa a ficar gravado).
+// Caso especial: mover para "Venda fechada" abre o modal de registro da
+// venda (módulo Vendas) antes de persistir o estágio — sem o modal sendo
+// confirmado, o lead permanece no estágio atual (não se move "no vazio").
+async function moverEstagioLead(id, novoEstagio) {
+  if (window._DEMO) return demoBloqueio()
+  const l = leads.find(x => x.id === id)
+  if (!l || !FUNIL_KEYS.includes(novoEstagio)) return
+
+  if (novoEstagio === 'venda_fechada' && estagioFunilLead(l) !== 'venda_fechada') {
+    abrirModalVenda(id)
+    renderFunil() // garante que o <select> volte a refletir o estágio atual (modal ainda não confirmado)
+    return
+  }
+
+  l.estagioFunil = novoEstagio
+  l.ultimaInteracao = new Date().toISOString()
+  localStorage.setItem('cpr_leads', JSON.stringify(leads))
+  renderFunil()
+  atualizarBadgeFunil()
+  try { await salvarRemoto() } catch(_) { toast('Salvo localmente — verifique sua conexão', true); return }
+  toast('Lead movido para "' + (FUNIL_ESTAGIOS.find(e => e.key === novoEstagio)?.label || novoEstagio) + '"')
+}
+
+// Avança para o próximo estágio da sequência (botão rápido no card).
+function avancarEstagioLead(id) {
+  const l = leads.find(x => x.id === id)
+  if (!l) return
+  const atual = estagioFunilLead(l)
+  const i = FUNIL_KEYS.indexOf(atual)
+  if (i === -1 || i >= FUNIL_KEYS.length - 1) return
+  moverEstagioLead(id, FUNIL_KEYS[i + 1])
+}
+
+// Preenche o <select> de imóveis do catálogo no formulário de novo contato.
+function popularSelectImoveisFunil() {
+  const sel = document.getElementById('fl-imovel-id')
+  if (!sel) return
+  const atual = sel.value
+  sel.innerHTML = '<option value="">— Nenhum / fora do catálogo —</option>' + imoveis.map(im =>
+    `<option value="${im.id}">${escH((im.tipo || 'Imóvel') + ' — ' + (im.end || ''))}</option>`
+  ).join('')
+  sel.value = atual
+}
+
+// Quando o corretor escolhe um imóvel do catálogo, preenche o campo de texto
+// livre automaticamente (mas deixa editável, caso queira complementar).
+document.getElementById('fl-imovel-id')?.addEventListener('change', (e) => {
+  const im = imoveis.find(x => String(x.id) === String(e.target.value))
+  const campoTexto = document.getElementById('fl-imovel')
+  if (im && campoTexto && !campoTexto.value.trim()) {
+    campoTexto.value = (im.tipo || 'Imóvel') + ' — ' + (im.end || '')
+  }
+})
+
+// Cria um lead novo já no estágio "Novo contato" — não interfere na Agenda
+// porque não tem `dataVisita`; só aparece lá se/quando o lead avançar e
+// ganhar uma visita agendada pelo fluxo normal da Agenda.
+async function salvarLeadFunil(ev) {
+  ev.preventDefault()
+  if (window._DEMO) return demoBloqueio()
+  const form = document.getElementById('form-funil-lead')
+  if (!form.checkValidity()) { form.reportValidity(); return }
+
+  const imovelId = document.getElementById('fl-imovel-id').value || null
+  const item = {
+    id: Date.now(),
+    cliente: document.getElementById('fl-cliente').value.trim(),
+    tel:     document.getElementById('fl-tel').value.trim(),
+    imovel:  document.getElementById('fl-imovel').value.trim(),
+    imovelId,
+    valorEstimado: document.getElementById('fl-valor').value.trim(),
+    estagioFunil: 'novo_contato',
+    criadoEm: new Date().toLocaleDateString('pt-BR'),
+    ultimaInteracao: new Date().toISOString(),
+  }
+  leads.unshift(item)
+  localStorage.setItem('cpr_leads', JSON.stringify(leads))
+  atualizarBadgeFunil()
+  atualizarBadgeAgenda()
+  renderFunil()
+  form.reset()
+  try {
+    await salvarRemoto()
+    toast('Lead adicionado ao funil!')
+  } catch(_) {
+    toast('Salvo localmente — verifique sua conexão', true)
+  }
+}
+
+function atualizarBadgeFunil() {
+  const badge = document.getElementById('sb-count-funil')
+  if (!badge) return
+  // Badge mostra negociações em aberto (tudo exceto venda fechada) — é o que pede atenção
+  const nAberto = leads.filter(l => estagioFunilLead(l) !== 'venda_fechada').length
+  if (nAberto > 0) {
+    badge.textContent = nAberto
+    badge.style.display = 'inline'
+  } else {
+    badge.style.display = 'none'
+  }
+}
+
+function renderFunil() {
+  const el = document.getElementById('funil-board')
+  if (!el) return
+
+  if (leads.length === 0) {
+    el.innerHTML = `<div class="hist-empty">
+      <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M22 3H2l8 9.46V19l4 2v-8.54L22 3z"/></svg>
+      <h3>Nenhum lead no funil ainda</h3>
+      <p>Adicione um novo contato acima ou cadastre uma visita na Agenda — os leads aparecem aqui automaticamente.</p>
+    </div>`
+    return
+  }
+
+  el.innerHTML = `<div class="funil-board">${FUNIL_ESTAGIOS.map(estagio => {
+    const doEstagio = leads.filter(l => estagioFunilLead(l) === estagio.key)
+    return `
+    <div class="funil-col">
+      <div class="funil-col-head" style="--fc:${estagio.cor}">
+        <span>${escH(estagio.label)}</span>
+        <span class="funil-col-count">${doEstagio.length}</span>
+      </div>
+      <div class="funil-col-body">
+        ${doEstagio.length === 0 ? '<div class="funil-col-empty">Sem leads aqui</div>' : doEstagio.map(l => {
+          const alerta = alertaLead(l)
+          const valorFmt = l.valorEstimado ? 'R$ ' + l.valorEstimado : ''
+          const proximoIdx = FUNIL_KEYS.indexOf(estagio.key) + 1
+          const proximoLabel = proximoIdx < FUNIL_ESTAGIOS.length ? FUNIL_ESTAGIOS[proximoIdx].label : null
+          const alertaBadge = alerta.nivel
+            ? `<button class="lead-alert" data-nivel="${alerta.nivel}" onclick="abrirFollowUpLead(${l.id})" title="Ver sugestão de mensagem de follow-up">
+                 <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
+                 ${alerta.dias}d
+               </button>`
+            : ''
+          return `
+          <div class="funil-card">
+            <div class="funil-card-top">
+              <span class="funil-card-cliente">${escH(l.cliente || '—')}</span>
+              ${alertaBadge}
+            </div>
+            ${l.imovel ? `<div class="funil-card-imovel">${escH(l.imovel)}</div>` : ''}
+            ${valorFmt ? `<div class="funil-card-valor">${escH(valorFmt)}</div>` : ''}
+            <div class="funil-card-actions">
+              <select class="sel funil-card-select" onchange="moverEstagioLead(${l.id}, this.value)" title="Mover para outro estágio">
+                ${FUNIL_ESTAGIOS.map(e => `<option value="${e.key}" ${e.key === estagio.key ? 'selected' : ''}>${escH(e.label)}</option>`).join('')}
+              </select>
+              ${proximoLabel ? `<button class="btn btn-ghost btn-sm" onclick="avancarEstagioLead(${l.id})" title="Avançar para ${escH(proximoLabel)}">
+                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
+              </button>` : ''}
+            </div>
+          </div>`
+        }).join('')}
+      </div>
+    </div>`
+  }).join('')}</div>`
+}
+
+/* ── VENDAS ──
+   Terceiro módulo do pivô para CRM imobiliário: registro comercial das
+   vendas fechadas no Funil. Mesmo padrão de array no jsonb (igual
+   `leads`/`imoveis`) — cada venda referencia leadId/imovelId pra
+   rastreabilidade, mas guarda os dados principais (cliente, imóvel texto,
+   valor, comissão) direto no objeto, pra não depender de lookup se o lead
+   ou o imóvel forem excluídos depois. */
+let _vendaLeadIdAtual = null   // lead em registro de venda no modal aberto, se vier do Funil
+let _vendaEdicaoId = null      // id da venda em edição (null = nova venda manual, sem lead)
+
+// Converte "450.000" / "450000" / "450.000,50" (texto livre, mesmo padrão
+// dos outros campos de valor do app) num número para cálculo.
+function valorParaNumero(v) {
+  if (!v) return 0
+  const limpo = String(v).trim().replace(/[^\d,.-]/g, '')
+  if (!limpo) return 0
+  // Se tem vírgula, assume formato BR (1.234.567,89); senão, ponto é separador de milhar solto
+  if (limpo.includes(',')) {
+    return parseFloat(limpo.replace(/\./g, '').replace(',', '.')) || 0
+  }
+  return parseFloat(limpo.replace(/\.(?=\d{3}(\D|$))/g, '')) || 0
+}
+
+function formatarMoedaBR(n) {
+  return (n || 0).toLocaleString('pt-BR', { style:'currency', currency:'BRL', maximumFractionDigits:2 })
+}
+
+// Abre o modal de registro de venda. Se `leadId` for passado, vem do Funil
+// (mover lead para "Venda fechada") e o lead/imóvel ficam pré-preenchidos;
+// se não, é um registro manual a partir da aba Vendas.
+function abrirModalVenda(leadId) {
+  const antigo = document.getElementById('venda-modal-back')
+  if (antigo) antigo.remove()
+  _vendaLeadIdAtual = leadId || null
+  _vendaEdicaoId = null
+
+  const l = leadId ? leads.find(x => x.id === leadId) : null
+  const clienteIni = l ? (l.cliente || '') : ''
+  const imovelIni  = l ? (l.imovel || '') : ''
+  const valorIni   = l ? (l.valorEstimado || '') : ''
+  const hoje = new Date().toISOString().slice(0, 10)
+
+  const back = document.createElement('div')
+  back.id = 'venda-modal-back'
+  back.className = 'venda-modal-back'
+  back.onclick = (e) => { if (e.target === back) fecharModalVenda() }
+  back.innerHTML = `
+    <div class="venda-modal">
+      <h3>Registrar venda${clienteIni ? ' — ' + escH(clienteIni) : ''}</h3>
+      <p class="vm-sub">Preencha os dados comerciais do fechamento. A comissão é calculada automaticamente.</p>
+      <div class="vm-field">
+        <label for="vm-cliente">Cliente <span class="req">*</span></label>
+        <input id="vm-cliente" type="text" class="inp" value="${escH(clienteIni)}" placeholder="Ex: João Silva" required>
+      </div>
+      <div class="vm-field">
+        <label for="vm-imovel">Imóvel</label>
+        <input id="vm-imovel" type="text" class="inp" value="${escH(imovelIni)}" placeholder="Ex: Apartamento — Av. Paulista, 1000">
+      </div>
+      <div class="vm-field">
+        <label for="vm-valor">Valor final da venda <span class="req">*</span></label>
+        <div class="pfx"><span class="pfx-l">R$</span>
+          <input id="vm-valor" type="text" class="inp" value="${escH(valorIni)}" placeholder="450.000" required inputmode="numeric" oninput="atualizarResumoVenda()">
+        </div>
+      </div>
+      <div class="vm-field">
+        <label for="vm-perc">Comissão (%) <span class="req">*</span></label>
+        <input id="vm-perc" type="text" class="inp" value="6" placeholder="6" required inputmode="decimal" oninput="atualizarResumoVenda()">
+      </div>
+      <div class="vm-field">
+        <label for="vm-data">Data de fechamento <span class="req">*</span></label>
+        <input id="vm-data" type="date" class="inp" value="${hoje}" required>
+      </div>
+      <div class="vm-resumo" id="vm-resumo">Valor da comissão: <b>R$ 0,00</b></div>
+      <div class="vm-actions">
+        <button class="btn btn-ghost btn-sm" onclick="fecharModalVenda()">Cancelar</button>
+        <button class="btn btn-green btn-sm" onclick="confirmarVenda()">Registrar venda</button>
+      </div>
+    </div>`
+  document.body.appendChild(back)
+  atualizarResumoVenda()
+}
+
+function fecharModalVenda() {
+  const el = document.getElementById('venda-modal-back')
+  if (el) el.remove()
+  _vendaLeadIdAtual = null
+  _vendaEdicaoId = null
+}
+
+function atualizarResumoVenda() {
+  const valor = valorParaNumero(document.getElementById('vm-valor')?.value)
+  const perc = parseFloat((document.getElementById('vm-perc')?.value || '0').replace(',', '.')) || 0
+  const comissao = valor * (perc / 100)
+  const resumo = document.getElementById('vm-resumo')
+  if (resumo) resumo.innerHTML = `Valor da comissão: <b>${formatarMoedaBR(comissao)}</b>`
+}
+
+// Confirma o registro da venda (nova ou edição), persiste no array `vendas`
+// e, se o lead estava vinculado a um imóvel do catálogo, oferece marcar o
+// imóvel como Vendido/Locado — sem forçar.
+async function confirmarVenda() {
+  if (window._DEMO) return demoBloqueio()
+  const cliente = document.getElementById('vm-cliente').value.trim()
+  const imovelTxt = document.getElementById('vm-imovel').value.trim()
+  const valorTxt = document.getElementById('vm-valor').value.trim()
+  const percTxt = document.getElementById('vm-perc').value.trim()
+  const dataFechamento = document.getElementById('vm-data').value
+
+  if (!cliente || !valorTxt || !percTxt || !dataFechamento) {
+    toast('Preencha cliente, valor, comissão e data', true)
+    return
+  }
+
+  const valor = valorParaNumero(valorTxt)
+  const perc = parseFloat(percTxt.replace(',', '.')) || 0
+  const comissaoValor = valor * (perc / 100)
+
+  const l = _vendaLeadIdAtual ? leads.find(x => x.id === _vendaLeadIdAtual) : null
+  const imovelId = l ? (l.imovelId || null) : (_vendaEdicaoId ? vendas.find(v => v.id === _vendaEdicaoId)?.imovelId || null : null)
+  // Captura ANTES de fecharModalVenda() zerar _vendaEdicaoId: a sugestão de
+  // marcar o imóvel como vendido só vale em venda NOVA — ao apenas editar uma
+  // venda existente não devemos reabrir o prompt (corretor pode já ter recusado).
+  const ehEdicao = !!_vendaEdicaoId
+
+  if (_vendaEdicaoId) {
+    const v = vendas.find(x => x.id === _vendaEdicaoId)
+    if (v) {
+      Object.assign(v, { cliente, imovel: imovelTxt, valor: valorTxt, percComissao: perc, comissaoValor, dataFechamento })
+    }
+  } else {
+    vendas.unshift({
+      id: Date.now(),
+      leadId: _vendaLeadIdAtual || null,
+      imovelId,
+      cliente,
+      imovel: imovelTxt,
+      valor: valorTxt,
+      percComissao: perc,
+      comissaoValor,
+      dataFechamento,
+      criadoEm: new Date().toISOString(),
+    })
+  }
+
+  // Move o lead de origem para "Venda fechada" no Funil, se vier de lá.
+  if (l) {
+    l.estagioFunil = 'venda_fechada'
+    l.ultimaInteracao = new Date().toISOString()
+    localStorage.setItem('cpr_leads', JSON.stringify(leads))
+  }
+
+  localStorage.setItem('cpr_vendas', JSON.stringify(vendas))
+  fecharModalVenda()
+  renderFunil()
+  atualizarBadgeFunil()
+  renderVendas()
+  atualizarBadgeVendas()
+
+  try {
+    await salvarRemoto()
+    toast('Venda registrada!')
+  } catch(_) {
+    toast('Salvo localmente — verifique sua conexão', true)
+  }
+
+  // Sugere marcar o imóvel do catálogo como Vendido/Locado, sem forçar.
+  if (imovelId && !ehEdicao) {
+    const im = imoveis.find(x => String(x.id) === String(imovelId))
+    if (im && im.status !== 'vendido' && im.status !== 'locado') {
+      ofereceMarcarImovelStatus(imovelId)
+    }
+  }
+}
+
+// Pergunta (inline, mesmo padrão da jornada de proposta) se o corretor quer
+// marcar o imóvel vinculado como Vendido ou Locado conforme a finalidade.
+function ofereceMarcarImovelStatus(imovelId) {
+  const im = imoveis.find(x => String(x.id) === String(imovelId))
+  if (!im) return
+  const novoStatus = im.finalidade === 'locacao' ? 'locado' : 'vendido'
+  const label = IMOVEL_STATUS_LABEL[novoStatus]
+  const antigo = document.getElementById('venda-imovel-toast'); if (antigo) antigo.remove()
+  const box = document.createElement('div')
+  box.id = 'venda-imovel-toast'
+  box.style.cssText = 'position:fixed;bottom:90px;left:50%;transform:translateX(-50%);z-index:9998;background:#0E2C3D;border:1px solid rgba(77,126,255,.4);border-radius:12px;padding:14px 18px;display:flex;align-items:center;gap:12px;flex-wrap:wrap;justify-content:center;max-width:92vw;box-shadow:0 18px 50px rgba(0,0,0,.5)'
+  box.innerHTML =
+    '<span style="font-size:13.5px;color:#EAF0FF">Marcar <b style="color:#fff">' + escH(im.tipo || 'imóvel') + ' — ' + escH(im.end || '') + '</b> como <b style="color:#7BA3FF">' + escH(label) + '</b>?</span>' +
+    '<span style="display:flex;gap:8px">' +
+      '<button class="btn btn-ghost btn-sm" onclick="document.getElementById(\'venda-imovel-toast\').remove()">Agora não</button>' +
+      '<button class="btn btn-green btn-sm" onclick="marcarImovelComoVendido(\'' + String(imovelId).replace(/'/g, "\\'") + '\',\'' + novoStatus + '\')">Marcar como ' + escH(label) + '</button>' +
+    '</span>'
+  document.body.appendChild(box)
+}
+
+async function marcarImovelComoVendido(imovelId, novoStatus) {
+  const im = imoveis.find(x => String(x.id) === String(imovelId))
+  const aviso = document.getElementById('venda-imovel-toast'); if (aviso) aviso.remove()
+  if (!im) return
+  im.status = novoStatus
+  localStorage.setItem('cpr_imoveis', JSON.stringify(imoveis))
+  renderImoveis()
+  atualizarBadgeImoveis()
+  try { await salvarRemoto() } catch(_) {}
+  toast('Imóvel marcado como ' + IMOVEL_STATUS_LABEL[novoStatus])
+}
+
+function editarVenda(id) {
+  const v = vendas.find(x => x.id === id)
+  if (!v) return
+  _vendaLeadIdAtual = null
+  _vendaEdicaoId = id
+
+  const antigo = document.getElementById('venda-modal-back')
+  if (antigo) antigo.remove()
+
+  const back = document.createElement('div')
+  back.id = 'venda-modal-back'
+  back.className = 'venda-modal-back'
+  back.onclick = (e) => { if (e.target === back) fecharModalVenda() }
+  back.innerHTML = `
+    <div class="venda-modal">
+      <h3>Editar venda — ${escH(v.cliente || '')}</h3>
+      <p class="vm-sub">Ajuste os dados comerciais do fechamento. A comissão é recalculada automaticamente.</p>
+      <div class="vm-field">
+        <label for="vm-cliente">Cliente <span class="req">*</span></label>
+        <input id="vm-cliente" type="text" class="inp" value="${escH(v.cliente || '')}" required>
+      </div>
+      <div class="vm-field">
+        <label for="vm-imovel">Imóvel</label>
+        <input id="vm-imovel" type="text" class="inp" value="${escH(v.imovel || '')}">
+      </div>
+      <div class="vm-field">
+        <label for="vm-valor">Valor final da venda <span class="req">*</span></label>
+        <div class="pfx"><span class="pfx-l">R$</span>
+          <input id="vm-valor" type="text" class="inp" value="${escH(v.valor || '')}" required inputmode="numeric" oninput="atualizarResumoVenda()">
+        </div>
+      </div>
+      <div class="vm-field">
+        <label for="vm-perc">Comissão (%) <span class="req">*</span></label>
+        <input id="vm-perc" type="text" class="inp" value="${escH(String(v.percComissao ?? ''))}" required inputmode="decimal" oninput="atualizarResumoVenda()">
+      </div>
+      <div class="vm-field">
+        <label for="vm-data">Data de fechamento <span class="req">*</span></label>
+        <input id="vm-data" type="date" class="inp" value="${escH(v.dataFechamento || '')}" required>
+      </div>
+      <div class="vm-resumo" id="vm-resumo">Valor da comissão: <b>R$ 0,00</b></div>
+      <div class="vm-actions">
+        <button class="btn btn-ghost btn-sm" onclick="fecharModalVenda()">Cancelar</button>
+        <button class="btn btn-green btn-sm" onclick="confirmarVenda()">Salvar alterações</button>
+      </div>
+    </div>`
+  document.body.appendChild(back)
+  atualizarResumoVenda()
+}
+
+async function excluirVenda(id) {
+  if (window._DEMO) return demoBloqueio()
+  const i = vendas.findIndex(x => x.id === id)
+  if (i === -1) return
+  if (!confirm('Excluir este registro de venda? Isso não afeta o lead nem o imóvel vinculados.')) return
+  vendas.splice(i, 1)
+  localStorage.setItem('cpr_vendas', JSON.stringify(vendas))
+  renderVendas()
+  atualizarBadgeVendas()
+  try { await salvarRemoto() } catch(_) {}
+  toast('Venda removida')
+}
+
+// Parse de data "YYYY-MM-DD" como meia-noite LOCAL (não UTC). Sem o sufixo
+// 'T00:00:00', new Date('2026-06-01') é interpretado como UTC e vira
+// 31/maio em fusos negativos (America/Sao_Paulo = UTC-3), jogando a venda
+// do dia 1º para o mês anterior em todos os agregadores. Invalid Date se a
+// string for vazia (os filtros já testam isNaN/comparações dão false).
+function parseDataLocal(s) {
+  return new Date((s || '') + 'T00:00:00')
+}
+
+function atualizarBadgeVendas() {
+  const badge = document.getElementById('sb-count-vendas')
+  if (!badge) return
+  const hoje = new Date()
+  const nMes = vendas.filter(v => {
+    const d = parseDataLocal(v.dataFechamento)
+    return d.getFullYear() === hoje.getFullYear() && d.getMonth() === hoje.getMonth()
+  }).length
+  if (nMes > 0) {
+    badge.textContent = nMes
+    badge.style.display = 'inline'
+  } else {
+    badge.style.display = 'none'
+  }
+}
+
+/* ── DASHBOARD ──
+   4º módulo do pivô para CRM: cruza leads/imoveis/vendas (já existentes,
+   sem array novo) numa visão agregada. Gráfico de barras em SVG puro,
+   gerado por JS — sem dependência nova, mesmo princípio dos módulos
+   anteriores (Funil, Vendas, Meus Imóveis). */
+function renderDashboard() {
+  const elKpis = document.getElementById('dash-kpis')
+  if (!elKpis) return // view ainda não está no DOM (proteção defensiva)
+
+  const hoje = new Date()
+
+  // ── KPIs ──
+  const leadsAtivos = leads.filter(l => estagioFunilLead(l) !== 'venda_fechada').length
+  const leadsAlerta = leads.filter(l => alertaLead(l).nivel).length
+  const imoveisDisponiveis = imoveis.filter(i => (i.status || 'disponivel') === 'disponivel').length
+  const vendasDoMes = vendas.filter(v => {
+    const d = parseDataLocal(v.dataFechamento)
+    return !isNaN(d) && d.getFullYear() === hoje.getFullYear() && d.getMonth() === hoje.getMonth()
+  })
+  const vendasDoAno = vendas.filter(v => {
+    const d = parseDataLocal(v.dataFechamento)
+    return !isNaN(d) && d.getFullYear() === hoje.getFullYear()
+  })
+  const comissaoMes = vendasDoMes.reduce((s, v) => s + (v.comissaoValor || 0), 0)
+  const comissaoAno = vendasDoAno.reduce((s, v) => s + (v.comissaoValor || 0), 0)
+
+  const kpis = [
+    { l: 'Leads ativos',            v: String(leadsAtivos),                 alerta:false },
+    { l: 'Leads em alerta',         v: String(leadsAlerta),                 alerta:leadsAlerta>0 },
+    { l: 'Imóveis disponíveis',     v: String(imoveisDisponiveis),          alerta:false },
+    { l: 'Vendas fechadas no mês',  v: String(vendasDoMes.length),          alerta:false },
+    { l: 'Comissão no mês',         v: formatarMoedaBR(comissaoMes),        alerta:false },
+    { l: 'Comissão no ano',         v: formatarMoedaBR(comissaoAno),        alerta:false },
+  ]
+  elKpis.innerHTML = kpis.map(k => `
+    <div class="dash-kpi${k.alerta ? ' alerta' : ''}">
+      <span class="dash-kpi-l">${escH(k.l)}</span>
+      <span class="dash-kpi-v">${escH(k.v)}</span>
+    </div>`).join('')
+
+  renderDashboardChart()
+  renderDashboardFunilResumo()
+  renderDashboardAtencao()
+}
+
+// Gráfico de barras dos últimos 6 meses (volume de vendas fechadas), SVG
+// puro — sem biblioteca de gráfico nova.
+function renderDashboardChart() {
+  const el = document.getElementById('dash-chart')
+  if (!el) return
+
+  const hoje = new Date()
+  const meses = []
+  for (let i = 5; i >= 0; i--) {
+    const d = new Date(hoje.getFullYear(), hoje.getMonth() - i, 1)
+    meses.push({ ano: d.getFullYear(), mes: d.getMonth(), label: d.toLocaleDateString('pt-BR', { month:'short' }).replace('.','') })
+  }
+  const valores = meses.map(m => {
+    const doMes = vendas.filter(v => {
+      const d = parseDataLocal(v.dataFechamento)
+      return !isNaN(d) && d.getFullYear() === m.ano && d.getMonth() === m.mes
+    })
+    return doMes.reduce((s, v) => s + valorParaNumero(v.valor), 0)
+  })
+
+  const max = Math.max(...valores, 1)
+  const W = 480, H = 200, padTop = 24, padBottom = 28, padSide = 16
+  const larguraUtil = W - padSide * 2
+  const n = meses.length
+  const gap = 14
+  const barW = (larguraUtil - gap * (n - 1)) / n
+  const alturaUtil = H - padTop - padBottom
+
+  const barras = meses.map((m, i) => {
+    const valor = valores[i]
+    const h = max > 0 ? (valor / max) * alturaUtil : 0
+    const x = padSide + i * (barW + gap)
+    const y = padTop + (alturaUtil - h)
+    const cor = valor > 0 ? 'var(--p, #4D7EFF)' : 'rgba(255,255,255,.08)'
+    const valorLabel = valor > 0 ? formatarMoedaBR(valor).replace('R$', '').trim() : ''
+    return `
+      <rect x="${x.toFixed(1)}" y="${y.toFixed(1)}" width="${barW.toFixed(1)}" height="${Math.max(h,2).toFixed(1)}" rx="4" fill="${cor}"></rect>
+      ${valorLabel ? `<text class="dash-chart-val-label" x="${(x+barW/2).toFixed(1)}" y="${(y-7).toFixed(1)}">${escH(valorLabel)}</text>` : ''}
+      <text class="dash-chart-bar-label" x="${(x+barW/2).toFixed(1)}" y="${H-8}">${escH(m.label)}</text>`
+  }).join('')
+
+  el.innerHTML = `<svg viewBox="0 0 ${W} ${H}" width="100%" height="${H}" style="display:block;min-width:320px">${barras}</svg>`
+}
+
+// Mini visualização do Funil: contagem por estágio, em barras horizontais.
+function renderDashboardFunilResumo() {
+  const el = document.getElementById('dash-funil-resumo')
+  if (!el) return
+
+  if (leads.length === 0) {
+    el.innerHTML = `<p style="font-size:13px;color:var(--t3)">Nenhum lead cadastrado ainda.</p>`
+    return
+  }
+
+  const total = leads.length
+  el.innerHTML = FUNIL_ESTAGIOS.map(estagio => {
+    const n = leads.filter(l => estagioFunilLead(l) === estagio.key).length
+    const pct = total > 0 ? Math.round((n / total) * 100) : 0
+    return `
+    <div class="dash-funil-row">
+      <span class="dash-funil-label">${escH(estagio.label)}</span>
+      <div class="dash-funil-bar-track"><div class="dash-funil-bar-fill" style="width:${pct}%;background:${estagio.cor}"></div></div>
+      <span class="dash-funil-count">${n}</span>
+    </div>`
+  }).join('')
+}
+
+// Top 5 leads com alerta (crítico primeiro), com atalho direto pro follow-up.
+function renderDashboardAtencao() {
+  const el = document.getElementById('dash-atencao')
+  if (!el) return
+
+  const comAlerta = leads
+    .map(l => ({ l, alerta: alertaLead(l) }))
+    .filter(x => x.alerta.nivel)
+    .sort((a, b) => b.alerta.dias - a.alerta.dias)
+    .slice(0, 5)
+
+  if (comAlerta.length === 0) {
+    el.innerHTML = `<p style="font-size:13px;color:var(--t3)">Nenhum lead pedindo atenção agora — tudo em dia.</p>`
+    return
+  }
+
+  el.innerHTML = comAlerta.map(({ l, alerta }) => `
+    <div class="dash-atencao-item">
+      <button class="lead-alert" data-nivel="${alerta.nivel}" onclick="abrirFollowUpLead(${l.id})" title="Ver sugestão de mensagem de follow-up">
+        <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
+        ${alerta.dias}d
+      </button>
+      <div class="dash-atencao-info">
+        <div class="dash-atencao-cliente">${escH(l.cliente || '—')}</div>
+        <div class="dash-atencao-meta">${escH(l.imovel || 'Sem imóvel vinculado')}</div>
+      </div>
+      <button class="btn btn-ghost btn-sm" onclick="showView('funil')" title="Ver no Funil">
+        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
+      </button>
+    </div>`).join('')
+}
+
+function renderVendas() {
+  const el = document.getElementById('vendas-content')
+  if (!el) return
+
+  const hoje = new Date()
+  const doMes = vendas.filter(v => {
+    const d = parseDataLocal(v.dataFechamento)
+    return !isNaN(d) && d.getFullYear() === hoje.getFullYear() && d.getMonth() === hoje.getMonth()
+  })
+  const doAno = vendas.filter(v => {
+    const d = parseDataLocal(v.dataFechamento)
+    return !isNaN(d) && d.getFullYear() === hoje.getFullYear()
+  })
+  const vendidoMes = doMes.reduce((s, v) => s + valorParaNumero(v.valor), 0)
+  const comissaoMes = doMes.reduce((s, v) => s + (v.comissaoValor || 0), 0)
+
+  const kpiVendido = document.getElementById('kpi-vendido-mes')
+  const kpiComissao = document.getElementById('kpi-comissao-mes')
+  const kpiAno = document.getElementById('kpi-vendas-ano')
+  if (kpiVendido) kpiVendido.textContent = formatarMoedaBR(vendidoMes)
+  if (kpiComissao) kpiComissao.textContent = formatarMoedaBR(comissaoMes)
+  if (kpiAno) kpiAno.textContent = String(doAno.length)
+
+  if (vendas.length === 0) {
+    el.innerHTML = `<div class="hist-empty">
+      <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 000 7h5a3.5 3.5 0 010 7H6"/></svg>
+      <h3>Nenhuma venda registrada ainda</h3>
+      <p>Mova um lead para "Venda fechada" no Funil para registrar a primeira venda automaticamente.</p>
+    </div>`
+    return
+  }
+
+  const ordenadas = vendas.slice().sort((a, b) => new Date(b.dataFechamento || 0) - new Date(a.dataFechamento || 0))
+  el.innerHTML = `<div class="hist-list">${ordenadas.map(v => {
+    const dataFmt = v.dataFechamento ? new Date(v.dataFechamento + 'T00:00:00').toLocaleDateString('pt-BR') : '—'
+    return `
+    <div class="hist-card">
+      <div class="hist-main-row">
+        <span class="hist-tipo">Venda</span>
+        <div class="hist-info">
+          <div class="hist-cliente">${escH(v.cliente || '—')}</div>
+          ${v.imovel ? `<div class="venda-card-imovel">${escH(v.imovel)}</div>` : ''}
+        </div>
+        <div class="hist-valor">R$ ${escH(v.valor || '0')}</div>
+        <div class="hist-actions">
+          <button class="btn btn-ghost btn-sm" onclick="editarVenda(${v.id})" title="Editar venda">
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 4H4a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2v-7"/><path d="M18.5 2.5a2.12 2.12 0 013 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
+          </button>
+          <button class="btn btn-ghost btn-sm" onclick="excluirVenda(${v.id})" aria-label="Excluir">
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 01-2 2H8a2 2 0 01-2-2L5 6"/><path d="M10 11v6M14 11v6"/><path d="M9 6V4h6v2"/></svg>
+          </button>
+        </div>
+      </div>
+      <div class="hist-bottom-row">
+        <div class="hist-meta">${escH(dataFmt)}</div>
+        <div class="venda-card-comissao">Comissão: ${formatarMoedaBR(v.comissaoValor || 0)} (${escH(String(v.percComissao ?? 0))}%)</div>
+      </div>
+    </div>`
+  }).join('')}</div>`
+}
+
+/* ── MEUS IMÓVEIS ──
+   Primeiro módulo do pivô para CRM imobiliário: catálogo dos imóveis em
+   carteira do corretor. Mesmo padrão de array no jsonb (igual `leads`),
+   mesmo padrão de upload de foto (canvas redimensionado, igual a foto
+   da proposta), mesmo padrão visual de card/badge da Agenda/Histórico. */
+const IMOVEL_STATUS_LABEL = { disponivel:'Disponível', reservado:'Reservado', vendido:'Vendido', locado:'Locado' }
+let fotoCapaAtual = null   // foto em edição no formulário, ainda não salva no array
+
+function limparFormImovel() {
+  const form = document.getElementById('form-imovel')
+  if (form) form.reset()
+  document.getElementById('im-id').value = ''
+  fotoCapaAtual = null
+  document.getElementById('im-foto').value = ''
+  document.getElementById('im-foto-prev').innerHTML = `<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>`
+  document.getElementById('imovel-form-titulo').textContent = 'Novo imóvel'
+  document.getElementById('btn-imovel-txt').textContent = 'Cadastrar imóvel'
+  document.getElementById('btn-imovel-cancelar').style.display = 'none'
+}
+
+async function salvarImovel(ev) {
+  ev.preventDefault()
+  if (window._DEMO) return demoBloqueio()
+  const form = document.getElementById('form-imovel')
+  if (!form.checkValidity()) { form.reportValidity(); return }
+
+  const idEdicao = document.getElementById('im-id').value
+  const dados = {
+    tipo:        document.getElementById('im-tipo').value,
+    finalidade:  document.getElementById('im-finalidade').value,
+    end:         document.getElementById('im-end').value.trim(),
+    bairro:      document.getElementById('im-bairro').value.trim(),
+    valor:       document.getElementById('im-valor').value.trim(),
+    area:        document.getElementById('im-area').value,
+    dorms:       document.getElementById('im-dorms').value,
+    vagas:       document.getElementById('im-vagas').value,
+    status:      document.getElementById('im-status').value || 'disponivel',
+    foto:        fotoCapaAtual,
+  }
+
+  if (idEdicao) {
+    const i = imoveis.findIndex(x => String(x.id) === String(idEdicao))
+    if (i !== -1) {
+      imoveis[i] = Object.assign({}, imoveis[i], dados)
+    }
+  } else {
+    imoveis.unshift(Object.assign({ id: Date.now(), criadoEm: new Date().toLocaleDateString('pt-BR') }, dados))
+  }
+
+  localStorage.setItem('cpr_imoveis', JSON.stringify(imoveis))
+  atualizarBadgeImoveis()
+  renderImoveis()
+  limparFormImovel()
+  try {
+    await salvarRemoto()
+    toast(idEdicao ? 'Imóvel atualizado!' : 'Imóvel cadastrado!')
+  } catch(_) {
+    toast('Salvo localmente — verifique sua conexão', true)
+  }
+  document.getElementById('imoveis-content').scrollIntoView({ behavior:'smooth', block:'start' })
+}
+
+function editarImovel(id) {
+  const im = imoveis.find(x => x.id === id)
+  if (!im) return
+  document.getElementById('im-id').value = im.id
+  document.getElementById('im-tipo').value = im.tipo || ''
+  document.getElementById('im-finalidade').value = im.finalidade || ''
+  document.getElementById('im-end').value = im.end || ''
+  document.getElementById('im-bairro').value = im.bairro || ''
+  document.getElementById('im-valor').value = im.valor || ''
+  document.getElementById('im-area').value = im.area || ''
+  document.getElementById('im-dorms').value = im.dorms || ''
+  document.getElementById('im-vagas').value = im.vagas || ''
+  document.getElementById('im-status').value = im.status || 'disponivel'
+  fotoCapaAtual = im.foto || null
+  document.getElementById('im-foto-prev').innerHTML = fotoCapaAtual
+    ? `<img src="${fotoCapaAtual}" alt="Foto do imóvel">`
+    : `<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>`
+  document.getElementById('imovel-form-titulo').textContent = 'Editar imóvel'
+  document.getElementById('btn-imovel-txt').textContent = 'Salvar alterações'
+  document.getElementById('btn-imovel-cancelar').style.display = ''
+  document.getElementById('form-imovel').scrollIntoView({ behavior:'smooth', block:'start' })
+}
+
+function cancelarEdicaoImovel() {
+  limparFormImovel()
+}
+
+async function excluirImovel(id) {
+  if (window._DEMO) return demoBloqueio()
+  const i = imoveis.findIndex(x => x.id === id)
+  if (i === -1) return
+  if (!confirm('Excluir este imóvel do catálogo?')) return
+  imoveis.splice(i, 1)
+  localStorage.setItem('cpr_imoveis', JSON.stringify(imoveis))
+  atualizarBadgeImoveis()
+  renderImoveis()
+  try { await salvarRemoto() } catch(_) {}
+  toast('Imóvel removido')
+}
+
+function renderImoveis() {
+  const el = document.getElementById('imoveis-content')
+  if (!el) return
+
+  if (imoveis.length === 0) {
+    el.innerHTML = `<div class="hist-empty">
+      <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M3 9l9-7 9 7"/><path d="M9 22V12h6v10"/><path d="M5 10v10a1 1 0 001 1h12a1 1 0 001-1V10"/></svg>
+      <h3>Nenhum imóvel cadastrado</h3>
+      <p>Cadastre o primeiro imóvel da sua carteira para começar seu catálogo.</p>
+    </div>`
+    return
+  }
+
+  el.innerHTML = `<div class="im-grid">${imoveis.map(im => {
+    const valorFmt = im.valor ? 'R$ ' + im.valor : '—'
+    const metaParts = []
+    if (im.area) metaParts.push(im.area + ' m²')
+    if (im.dorms) metaParts.push(im.dorms + ' dorm.')
+    if (im.vagas) metaParts.push(im.vagas + ' vaga' + (im.vagas === '1' ? '' : 's'))
+    const fotoHtml = im.foto
+      ? `<img src="${im.foto}" alt="Foto do imóvel">`
+      : `<svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>`
+    return `
+    <div class="im-card">
+      <div class="im-card-foto">${fotoHtml}</div>
+      <div class="im-card-body">
+        <div class="im-card-top">
+          <span class="im-card-tipo">${escH(im.tipo || '—')}</span>
+          <span class="im-card-status" data-s="${im.status || 'disponivel'}">${escH(IMOVEL_STATUS_LABEL[im.status] || 'Disponível')}</span>
+        </div>
+        <div class="im-card-end">${escH(im.end || '—')}</div>
+        ${im.bairro ? `<div class="im-card-bairro">${escH(im.bairro)}</div>` : ''}
+        ${metaParts.length ? `<div class="im-card-meta">${escH(metaParts.join(' · '))}</div>` : ''}
+        <div class="im-card-valor">${escH(valorFmt)}</div>
+        <div class="im-card-actions">
+          <button type="button" class="btn btn-ghost btn-sm" style="flex:1" onclick="editarImovel(${im.id})">
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 4H4a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2v-7"/><path d="M18.5 2.5a2.12 2.12 0 013 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
+            Editar
+          </button>
+          <button type="button" class="btn btn-ghost btn-sm" onclick="excluirImovel(${im.id})" aria-label="Excluir">
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 01-2 2H8a2 2 0 01-2-2L5 6"/><path d="M10 11v6M14 11v6"/><path d="M9 6V4h6v2"/></svg>
+          </button>
+        </div>
+      </div>
+    </div>`
+  }).join('')}</div>`
+}
+
+// Mesmo padrão da foto da proposta: redimensiona em canvas antes de
+// guardar em base64 (JPEG, sem necessidade de transparência) para manter
+// o jsonb leve.
+function carregarFotoCapaImovel(ev) {
+  const file = ev.target.files[0]
+  if (!file) return
+  if (file.size > 4 * 1024 * 1024) { toast('Foto muito grande — máx 4MB', true); return }
+  const reader = new FileReader()
+  reader.onload = e => {
+    const img = new Image()
+    img.onload = () => {
+      const MAX = 800
+      let { width, height } = img
+      if (width > MAX || height > MAX) {
+        const escala = Math.min(MAX / width, MAX / height)
+        width = Math.round(width * escala)
+        height = Math.round(height * escala)
+      }
+      const canvas = document.createElement('canvas')
+      canvas.width = width; canvas.height = height
+      canvas.getContext('2d').drawImage(img, 0, 0, width, height)
+      fotoCapaAtual = canvas.toDataURL('image/jpeg', 0.72)
+      document.getElementById('im-foto-prev').innerHTML = `<img src="${fotoCapaAtual}" alt="Foto do imóvel">`
+      toast('Foto carregada')
+    }
+    img.onerror = () => toast('Arquivo de imagem inválido', true)
+    img.src = e.target.result
+  }
+  reader.readAsDataURL(file)
+}
+
+function removerFotoCapaImovel() {
+  fotoCapaAtual = null
+  document.getElementById('im-foto').value = ''
+  document.getElementById('im-foto-prev').innerHTML = `<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>`
 }
 
 // Jornada: a partir de um lead com visita realizada, preenche E gera o
