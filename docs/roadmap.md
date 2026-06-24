@@ -36,6 +36,11 @@ pesquisadas na internet, e implementa um por vez.
 - **Histórico por cliente** — agrupar todas as propostas de um mesmo cliente.
 
 ## Já entregue
+- **Fase 1 do pivô para CRM imobiliário completo — CONCLUÍDA (2026-06-24)**
+  Sequência completa: alerta de lead esquecido → gerador de descrição com IA → Meus Imóveis → Funil de Vendas (Kanban) → Vendas (comissão) → Dashboard → Tutoriais/Ajuda (último módulo, fecha o ciclo de onboarding/referência da ferramenta).
+- **Tutoriais / Ajuda — guia de referência para cada módulo — 5º e último módulo do pivô para CRM completo**
+  _Dor:_ a ferramenta cresceu rápido (Dashboard, Proposta, Histórico, Agenda, Funil, Meus Imóveis, Vendas, Captação) e um corretor novo pode se perder sem um material de consulta — pesquisa de onboarding digital de corretores recomenda justamente "materiais de fácil consulta" para reduzir curva de aprendizado e dependência de suporte.
+  _Valor:_ nova aba "Tutoriais / Ajuda" + botão "?" fixo, com 6 guias em accordion (passo a passo numerado) cobrindo proposta, imóveis, funil, follow-up, captação e dashboard — referência permanente que complementa o tour guiado existente, sem duplicar conteúdo.
 - **Dashboard — visão geral cruzando leads, imóveis e vendas — 4º módulo do pivô para CRM completo**
   _Dor:_ corretor controla seus números "de cabeça" ou em telas separadas (Funil, Imóveis, Vendas), sem visão rápida de gargalo (lead esfriando, estoque curto, mês fraco de comissão) — pesquisa de mercado mostra demanda crescente por dashboards/indicadores em CRM imobiliário justamente por isso.
   _Valor:_ tela inicial com KPIs (leads ativos, leads em alerta, imóveis disponíveis, vendas e comissão do mês/ano), gráfico de vendas dos últimos 6 meses (SVG puro), resumo do Funil por estágio e lista dos 5 leads mais críticos com atalho pro follow-up — tudo calculado em cima dos dados já existentes, sem array novo. (2026-06-24)

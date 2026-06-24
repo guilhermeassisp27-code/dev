@@ -88,6 +88,28 @@ body{font-family:var(--font);background:var(--bg);color:var(--t);-webkit-font-sm
 .card-t{font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.09em;color:var(--t3);margin-bottom:16px;display:flex;align-items:center;gap:8px}
 .card-t::after{content:'';flex:1;height:1px;background:var(--b)}
 
+/* ── TUTORIAIS (accordion) ── */
+.tut-item{background:var(--s1);border:1px solid var(--b);border-radius:var(--radl);margin-bottom:10px;overflow:hidden}
+.tut-head{display:flex;align-items:center;gap:14px;padding:16px 18px;cursor:pointer;width:100%;background:none;border:none;text-align:left;font-family:var(--font)}
+.tut-head:hover{background:rgba(255,255,255,.03)}
+.tut-ic{width:36px;height:36px;border-radius:10px;background:var(--ps);color:var(--p);display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.tut-head-t{flex:1;min-width:0}
+.tut-head-t b{font-size:14px;font-weight:700;color:var(--t);display:block}
+.tut-head-t span{font-size:12.5px;color:var(--t2)}
+.tut-chev{color:var(--t3);transition:transform .2s ease;flex-shrink:0}
+.tut-item.open .tut-chev{transform:rotate(180deg)}
+.tut-body{display:none;padding:0 18px 20px 68px}
+.tut-item.open .tut-body{display:block}
+.tut-body ol{display:flex;flex-direction:column;gap:10px;margin-top:4px}
+.tut-body ol li{font-size:13.5px;line-height:1.55;color:var(--t2);counter-increment:tut-step;position:relative;padding-left:28px}
+.tut-body ol{counter-reset:tut-step}
+.tut-body ol li::before{content:counter(tut-step);position:absolute;left:0;top:-1px;width:20px;height:20px;border-radius:50%;background:var(--ps);color:var(--p);font-size:11px;font-weight:800;display:flex;align-items:center;justify-content:center}
+.tut-body p.tut-dica{margin-top:10px;font-size:13px;color:var(--t2);background:rgba(255,255,255,.03);border:1px solid var(--b);border-radius:8px;padding:10px 12px}
+.tut-body p.tut-dica b{color:var(--t)}
+.help-fab{position:fixed;right:24px;bottom:24px;width:46px;height:46px;border-radius:50%;background:var(--p);color:#fff;border:none;display:flex;align-items:center;justify-content:center;font-size:18px;font-weight:800;cursor:pointer;box-shadow:0 8px 22px rgba(77,126,255,.35);z-index:60;transition:transform .15s ease}
+.help-fab:hover{transform:scale(1.06)}
+.cpr-demo .help-fab{bottom:84px}
+
 /* ── FORM GRID ── */
 .fg{display:grid;grid-template-columns:1fr 1fr;gap:12px}
 .fg1{grid-template-columns:1fr}
@@ -613,6 +635,10 @@ input[type=color]{opacity:0;width:0;height:0;position:absolute}
       <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 00.33 1.82l.06.06a2 2 0 010 2.83 2 2 0 01-2.83 0l-.06-.06a1.65 1.65 0 00-1.82-.33 1.65 1.65 0 00-1 1.51V21a2 2 0 01-2 2 2 2 0 01-2-2v-.09A1.65 1.65 0 009 19.4a1.65 1.65 0 00-1.82.33l-.06.06a2 2 0 01-2.83 0 2 2 0 010-2.83l.06-.06A1.65 1.65 0 004.68 15a1.65 1.65 0 00-1.51-1H3a2 2 0 01-2-2 2 2 0 012-2h.09A1.65 1.65 0 004.6 9a1.65 1.65 0 00-.33-1.82l-.06-.06a2 2 0 010-2.83 2 2 0 012.83 0l.06.06A1.65 1.65 0 009 4.68a1.65 1.65 0 001-1.51V3a2 2 0 012-2 2 2 0 012 2v.09a1.65 1.65 0 001 1.51 1.65 1.65 0 001.82-.33l.06-.06a2 2 0 012.83 0 2 2 0 010 2.83l-.06.06A1.65 1.65 0 0019.4 9a1.65 1.65 0 001.51 1H21a2 2 0 012 2 2 2 0 01-2 2h-.09a1.65 1.65 0 00-1.51 1z"/></svg>
       Configurações
     </button>
+    <button class="sb-item" data-view="ajuda" onclick="showView('ajuda')">
+      <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M9.09 9a3 3 0 015.83 1c0 2-3 3-3 3"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
+      Tutoriais / Ajuda
+    </button>
   </nav>
   <div class="sb-foot">
     <button class="sb-user" onclick="showView('config')" aria-label="Ir para configurações">
@@ -628,6 +654,8 @@ input[type=color]{opacity:0;width:0;height:0;position:absolute}
     </button>
   </div>
 </aside>
+
+<button class="help-fab" onclick="showView('ajuda')" title="Tutoriais e ajuda" aria-label="Abrir Tutoriais e Ajuda">?</button>
 
 <div class="main">
   <div class="topbar">
@@ -1570,6 +1598,20 @@ input[type=color]{opacity:0;width:0;height:0;position:absolute}
       </form>
     </div><!-- /view-config -->
 
+    <!-- ══════════════════ VIEW: TUTORIAIS / AJUDA ══════════════════
+         Conteúdo de referência permanente — complementa o tour guiado do
+         modo demo (iniciarTourDemo), que só roda uma vez em ?demo=1. Aqui
+         o corretor volta sempre que precisar, com o passo a passo de cada
+         módulo já em produção. Sem array novo, sem dado no jsonb: é 100%
+         apresentação (HTML estático renderizado por renderAjuda()). -->
+    <div class="view" id="view-ajuda">
+      <div class="ph">
+        <h1>Tutoriais e Ajuda</h1>
+        <p>Guias rápidos de cada parte do CorretorPRO. Clique num tópico para abrir o passo a passo.</p>
+      </div>
+      <div id="ajuda-content"></div>
+    </div><!-- /view-ajuda -->
+
   </main>
 </div>
 
@@ -1778,6 +1820,7 @@ function iniciarTourDemo() {
     { t:'Agenda de visitas', x:'Organize suas visitas e nunca perca um follow-up: agendadas, de hoje, atrasadas e realizadas — separadas automaticamente.', sel:'.sb-item[data-view="agenda"]', view:'agenda' },
     { t:'Registro de Visita (jurídico)', x:'O documento com amparo legal que comprova sua intermediação e protege a sua comissão se o cliente fechar direto com o dono.', sel:'.sb-item[data-view="visita"]', view:'visita' },
     { t:'Sua marca, 3 modelos', x:'Coloque seu logo, CRECI e cor, e escolha entre 3 modelos de proposta: Clássico, Moderno e Minimalista. Suas propostas com a sua identidade.', sel:'.sb-item[data-view="config"]', view:'config' },
+    { t:'Sempre que precisar, tem ajuda aqui', x:'Esse tour é só a primeira passada. Depois, sempre que tiver dúvida em algum módulo, clique no botão "?" ou em "Tutoriais / Ajuda" no menu — tem o passo a passo de cada parte da ferramenta.', sel:'.sb-item[data-view="ajuda"]', view:'ajuda' },
     { t:'Pronto pra usar de verdade?', x:'Salvar, baixar em PDF e enviar no WhatsApp são liberados ao assinar — com garantia de 7 dias. Comece agora.', sel:'#demo-banner', cta:true },
   ]
   let i = 0
@@ -1823,6 +1866,134 @@ function iniciarTourDemo() {
   }
   render()
   window.addEventListener('resize', render)
+}
+
+/* ── TUTORIAIS / AJUDA ──
+   Conteúdo de referência permanente sobre cada módulo já em produção.
+   Complementa (não substitui) o tour guiado (iniciarTourDemo), que só
+   roda na primeira visita do modo demo. Aqui o corretor sempre pode
+   voltar para reler o passo a passo. 100% estático — não lê nem grava
+   nada em leads/imoveis/vendas/historico/perfil. */
+const TUTORIAIS = [
+  {
+    id: 'proposta',
+    icone: '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>',
+    titulo: 'Como gerar sua primeira proposta',
+    resumo: 'Do formulário ao PDF pronto para enviar, em menos de 1 minuto.',
+    passos: [
+      'Clique em <b>"Nova Proposta"</b> no menu lateral.',
+      'Preencha os dados do cliente, do imóvel e da negociação (compra, venda ou locação). Se quiser só testar, use o botão <b>"Carregar exemplo"</b> no topo da página.',
+      'No campo de condições/observações, clique em <b>"✨ Gerar descrição com IA"</b> para preencher um parágrafo comercial automático — você pode editar o texto depois.',
+      'Confira a simulação de financiamento (SAC e Price) gerada automaticamente quando o valor do imóvel é informado.',
+      'Clique em <b>"Gerar Proposta"</b>. A proposta abre formatada com sua marca (logo, CRECI e cor, se já configurados em Configurações).',
+      'Use os botões de baixar em PDF ou enviar direto no WhatsApp para mandar ao cliente.',
+      'A proposta é salva automaticamente em <b>"Minhas Propostas"</b> com status "Nova" — você acompanha o andamento por lá.'
+    ],
+    dica: 'Sem perfil configurado (nome/CRECI/logo), a proposta sai sem a sua marca. Configure uma vez em <b>Configurações</b> e todas as próximas propostas já saem prontas.'
+  },
+  {
+    id: 'imoveis',
+    icone: '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 9l9-7 9 7"/><path d="M9 22V12h6v10"/><path d="M5 10v10a1 1 0 001 1h12a1 1 0 001-1V10"/></svg>',
+    titulo: 'Como cadastrar um imóvel em "Meus Imóveis"',
+    resumo: 'Monte seu catálogo com foto, valor e status de disponibilidade.',
+    passos: [
+      'No menu lateral, clique em <b>"Meus Imóveis"</b>.',
+      'Clique em <b>"Novo imóvel"</b> e preencha tipo (apartamento, casa, comercial, terreno), finalidade (venda, locação ou permuta), endereço, bairro, valor, área, dormitórios e vagas.',
+      'Escolha o <b>status</b>: disponível, reservado, vendido ou locado — esse status aparece como badge colorido no card do imóvel.',
+      'Adicione uma foto de capa (opcional, mas recomendado — imóvel com foto é mais fácil de reconhecer na sua lista).',
+      'Salve. O imóvel aparece em grade na tela de "Meus Imóveis" e pode ser vinculado a um lead no Funil de Vendas.',
+      'Para editar ou excluir, use os botões no próprio card.'
+    ],
+    dica: 'Quando uma venda é fechada no Funil para um imóvel cadastrado, a ferramenta sugere automaticamente marcar esse imóvel como "Vendido" ou "Locado" — você só confirma.'
+  },
+  {
+    id: 'funil',
+    icone: '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 3H2l8 9.46V19l4 2v-8.54L22 3z"/></svg>',
+    titulo: 'Como funciona o Funil de Vendas',
+    resumo: 'Do primeiro contato até a venda fechada, em 6 etapas visuais.',
+    passos: [
+      'Abra <b>"Funil de Vendas"</b> no menu lateral. Você verá 6 colunas: Novo contato, Visita agendada, Visita realizada, Proposta enviada, Negociação e Venda fechada.',
+      'Cada lead aparece como um card com nome do cliente, imóvel de interesse (se vinculado a um imóvel cadastrado) e valor estimado.',
+      'Para mover um lead de etapa, use o seletor de estágio no card ou o botão <b>"avançar"</b> — não é preciso arrastar.',
+      'Leads parados aparecem com o badge de <b>"X dias sem contato"</b> — o mesmo alerta de lead esquecido da Agenda.',
+      'Ao mover um lead para <b>"Venda fechada"</b>, abre um modal pedindo o valor da venda, a % de comissão e a data — a comissão é calculada na hora e o registro vai automaticamente para a aba "Vendas".',
+      'Se você cancelar esse modal, o lead permanece no estágio anterior — nada é fechado sem sua confirmação.'
+    ],
+    dica: 'O Funil usa os mesmos leads da Agenda de Visitas — você não cadastra a mesma pessoa duas vezes em lugares diferentes.'
+  },
+  {
+    id: 'followup',
+    icone: '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M9.09 9a3 3 0 015.83 1c0 2-3 3-3 3"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>',
+    titulo: 'Como funciona o alerta de lead esquecido e o follow-up no WhatsApp',
+    resumo: 'A ferramenta avisa quando um lead esfria e já te entrega a mensagem pronta.',
+    passos: [
+      'Na <b>Agenda de Visitas</b> (e também no Funil), cada lead mostra um badge de dias desde a última interação.',
+      'A partir de <b>3 dias</b> sem contato, o badge fica em tom de atenção. A partir de <b>7 dias</b>, fica em destaque (crítico).',
+      'Clique no badge de um lead "frio" para abrir uma mensagem de retomada já escrita — o tom da mensagem varia conforme quantos dias o lead está parado.',
+      'Revise o texto (edite se quiser personalizar) e clique em <b>"Enviar no WhatsApp"</b> — o link abre o WhatsApp Web/app já com o número e a mensagem preenchidos.',
+      'Nada é enviado automaticamente: você sempre confere e aperta enviar dentro do próprio WhatsApp.',
+      'A data de "última interação" do lead é atualizada sempre que você agenda, registra contato, marca visita como realizada ou usa o follow-up — então o contador reinicia.'
+    ],
+    dica: 'O follow-up é a etapa mais esquecida do funil imobiliário — reserve 10 minutos por dia só para revisar os leads com alerta antes que fiquem mais de 7 dias parados.'
+  },
+  {
+    id: 'captacao',
+    icone: '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15.3 15.3 0 014 10 15.3 15.3 0 01-4 10 15.3 15.3 0 01-4-10 15.3 15.3 0 014-10z"/></svg>',
+    titulo: 'Como configurar seu link de captação de leads',
+    resumo: 'Um link com a sua marca para colocar na bio do Instagram ou no status do WhatsApp.',
+    passos: [
+      'Vá em <b>Configurações</b> e defina seu identificador (slug) de captação — geralmente seu nome ou nome comercial.',
+      'Copie o link gerado na tela de Configurações ou na Agenda de Visitas (seção de captação).',
+      'Cole esse link na bio do Instagram, no status do WhatsApp, em anúncios ou no seu cartão digital.',
+      'Quando um cliente preenche o formulário pelo link, o lead cai automaticamente na sua <b>Agenda de Visitas</b> como novo contato — pronto para você aceitar e agendar a visita.',
+      'A partir daí, o lead segue o fluxo normal: visita, registro, proposta e Funil de Vendas.'
+    ],
+    dica: 'Quanto mais visível o link (bio do Instagram, status do WhatsApp, assinatura de email), mais leads chegam organizados direto na ferramenta — sem você precisar redigitar nada que o cliente já preencheu.'
+  },
+  {
+    id: 'dashboard',
+    icone: '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="9"/><rect x="14" y="3" width="7" height="5"/><rect x="14" y="12" width="7" height="9"/><rect x="3" y="16" width="7" height="5"/></svg>',
+    titulo: 'Como ler o Dashboard',
+    resumo: 'A tela inicial cruza leads, imóveis e vendas num só painel.',
+    passos: [
+      'Os <b>6 cards no topo</b> mostram: leads ativos, leads em alerta (esquecidos), imóveis disponíveis, vendas fechadas no mês, comissão no mês e comissão no ano.',
+      'O <b>gráfico de barras</b> mostra o total vendido nos últimos 6 meses — útil para ver se o ritmo está subindo ou caindo.',
+      'O <b>resumo do Funil</b> mostra quantos leads estão em cada estágio (barras horizontais) — ajuda a identificar gargalo, por exemplo muitos leads parados em "Proposta enviada".',
+      'A lista de <b>"leads mais críticos"</b> traz os 5 com mais dias sem contato — clique para ir direto ao follow-up no Funil.',
+      'Os botões de atalho ("Nova proposta", "Novo lead", "Novo imóvel") levam direto para a tela de cadastro correspondente.'
+    ],
+    dica: 'Comece o dia pelo Dashboard: se houver leads em alerta, resolva o follow-up deles antes de qualquer outra tarefa — é onde mais se perde venda por demora.'
+  }
+]
+
+let _ajudaAberto = null
+function renderAjuda() {
+  const el = document.getElementById('ajuda-content')
+  if (!el) return
+  el.innerHTML = TUTORIAIS.map(t => {
+    const aberto = _ajudaAberto === t.id
+    return (
+      '<div class="tut-item' + (aberto ? ' open' : '') + '" id="tut-' + t.id + '">' +
+        '<button class="tut-head" onclick="toggleAjuda(\'' + t.id + '\')">' +
+          '<span class="tut-ic">' + t.icone + '</span>' +
+          '<span class="tut-head-t"><b>' + escH(t.titulo) + '</b><span>' + escH(t.resumo) + '</span></span>' +
+          '<svg class="tut-chev" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg>' +
+        '</button>' +
+        '<div class="tut-body">' +
+          '<ol>' + t.passos.map(p => '<li>' + p + '</li>').join('') + '</ol>' +
+          (t.dica ? '<p class="tut-dica">💡 ' + t.dica + '</p>' : '') +
+        '</div>' +
+      '</div>'
+    )
+  }).join('')
+}
+function toggleAjuda(id) {
+  _ajudaAberto = (_ajudaAberto === id) ? null : id
+  renderAjuda()
+  if (_ajudaAberto) {
+    const card = document.getElementById('tut-' + id)
+    if (card) card.scrollIntoView({ behavior: 'smooth', block: 'nearest' })
+  }
 }
 
 /* ── ESC HTML ── */
@@ -1940,8 +2111,8 @@ function showView(name) {
   document.querySelectorAll('.view').forEach(v => v.classList.remove('active'))
   document.getElementById('view-' + name).classList.add('active')
   document.querySelectorAll('.sb-item[data-view]').forEach(i => i.classList.toggle('active', i.dataset.view === name))
-  const labels = { dashboard:'Dashboard', agenda:'Agenda de Visitas', form:'Nova Proposta', history:'Minhas Propostas', visita:'Registro de Visita', config:'Configurações', imoveis:'Meus Imóveis', funil:'Funil de Vendas', vendas:'Vendas' }
-  const roots  = { dashboard:'Visão geral', agenda:'Funil', form:'Propostas', history:'Propostas', visita:'Documentos', config:'Conta', imoveis:'Imóveis', funil:'Funil', vendas:'Funil' }
+  const labels = { dashboard:'Dashboard', agenda:'Agenda de Visitas', form:'Nova Proposta', history:'Minhas Propostas', visita:'Registro de Visita', config:'Configurações', imoveis:'Meus Imóveis', funil:'Funil de Vendas', vendas:'Vendas', ajuda:'Tutoriais e Ajuda' }
+  const roots  = { dashboard:'Visão geral', agenda:'Funil', form:'Propostas', history:'Propostas', visita:'Documentos', config:'Conta', imoveis:'Imóveis', funil:'Funil', vendas:'Funil', ajuda:'Conta' }
   document.getElementById('crumb-page').textContent = labels[name] || name
   document.getElementById('crumb-root').textContent = roots[name] || name
   // topbar buttons only for form
@@ -1977,6 +2148,9 @@ function showView(name) {
   }
   if (name === 'dashboard') {
     renderDashboard()
+  }
+  if (name === 'ajuda') {
+    renderAjuda()
   }
   closeSidebar()
   window.scrollTo({ top: 0, behavior: 'smooth' })
