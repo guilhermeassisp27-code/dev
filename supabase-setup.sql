@@ -156,3 +156,16 @@ as $$
 $$;
 
 grant execute on function public.cpr_resolve_slug(text) to service_role;
+
+-- ============================================================
+-- Migração: Gestão de Imóveis / catálogo (2026-06-24)
+-- Primeiro módulo do pivô para CRM imobiliário completo (próximos:
+-- Funil de Vendas, Gestão de Vendas, Dashboard). Nova coluna jsonb
+-- seguindo o MESMO padrão de `leads`/`historico` — sem tabela nova,
+-- RLS já cobre a tabela inteira por user_id. Idempotente.
+-- ============================================================
+alter table public.cpr_user_data
+  add column if not exists imoveis jsonb not null default '[]'::jsonb;
+
+-- Sem GRANT adicional necessário: a coluna nova já está coberta pelo
+-- grant select/insert/update on public.cpr_user_data feito acima.

@@ -372,6 +372,27 @@ input[type=color]{opacity:0;width:0;height:0;position:absolute}
 .hist-card.lead-atencao{border-color:rgba(234,179,8,.35)}
 .followup-modal-back{position:fixed;inset:0;z-index:10000;background:rgba(8,18,28,.65);display:flex;align-items:center;justify-content:center;padding:18px}
 .followup-modal{width:min(440px,94vw);background:#0E2C3D;border:1px solid rgba(255,255,255,.14);border-radius:14px;padding:22px;box-shadow:0 18px 50px rgba(0,0,0,.5);font-family:inherit}
+
+/* ── MEUS IMÓVEIS ── */
+.im-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:14px}
+.im-card{background:var(--s1);border:1px solid var(--b);border-radius:var(--radl);overflow:hidden;transition:border-color .15s;display:flex;flex-direction:column}
+.im-card:hover{border-color:var(--bm)}
+.im-card-foto{width:100%;height:140px;background:var(--s2);display:flex;align-items:center;justify-content:center;overflow:hidden;flex-shrink:0}
+.im-card-foto img{width:100%;height:100%;object-fit:cover}
+.im-card-foto svg{color:var(--t3)}
+.im-card-body{padding:14px 16px;display:flex;flex-direction:column;gap:6px;flex:1}
+.im-card-top{display:flex;align-items:center;gap:8px}
+.im-card-tipo{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.06em;color:var(--p);background:var(--ps);padding:3px 8px;border-radius:5px}
+.im-card-status{margin-left:auto;display:inline-flex;align-items:center;gap:4px;padding:3px 8px;border-radius:5px;font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.06em;flex-shrink:0}
+.im-card-status[data-s="disponivel"]{background:rgba(34,197,94,.13);color:#22C55E}
+.im-card-status[data-s="reservado"]{background:rgba(234,179,8,.13);color:#EAB308}
+.im-card-status[data-s="vendido"]{background:rgba(77,126,255,.15);color:#7BA3FF}
+.im-card-status[data-s="locado"]{background:rgba(168,85,247,.15);color:#C084FC}
+.im-card-end{font-size:14px;font-weight:700;line-height:1.35;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.im-card-bairro{font-size:12px;color:var(--t2);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.im-card-meta{font-size:11px;color:var(--t3);margin-top:2px}
+.im-card-valor{font-size:15px;font-weight:800;color:var(--t);margin-top:4px}
+.im-card-actions{display:flex;gap:6px;margin-top:auto;padding-top:10px}
 .followup-modal h3{font-size:16px;font-weight:800;color:#EEF2FF;margin:0 0 4px}
 .followup-modal .fu-sub{font-size:12.5px;color:#A9BBD0;margin:0 0 14px}
 .followup-modal textarea{width:100%;min-height:120px;resize:vertical;background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.14);border-radius:10px;color:#EEF2FF;font-size:13.5px;line-height:1.55;padding:12px;font-family:inherit}
@@ -484,6 +505,12 @@ input[type=color]{opacity:0;width:0;height:0;position:absolute}
       <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
       Agenda de Visitas
       <span class="sb-badge" id="sb-count-agenda" style="margin-left:auto;background:var(--ps);color:var(--p);font-size:10px;font-weight:700;padding:2px 7px;border-radius:100px;display:none"></span>
+    </button>
+    <div class="sb-sec">Imóveis</div>
+    <button class="sb-item" data-view="imoveis" onclick="showView('imoveis')">
+      <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 9l9-7 9 7"/><path d="M9 22V12h6v10"/><path d="M5 10v10a1 1 0 001 1h12a1 1 0 001-1V10"/></svg>
+      Meus Imóveis
+      <span class="sb-badge" id="sb-count-imoveis" style="margin-left:auto;background:var(--ps);color:var(--p);font-size:10px;font-weight:700;padding:2px 7px;border-radius:100px;display:none"></span>
     </button>
     <div class="sb-sec">Propostas</div>
     <button class="sb-item active" data-view="form" onclick="showView('form')">
@@ -619,6 +646,117 @@ input[type=color]{opacity:0;width:0;height:0;position:absolute}
         <div id="agenda-content"></div>
       </div>
     </div><!-- /view-agenda -->
+
+    <!-- ══════════════════ VIEW: MEUS IMÓVEIS ══════════════════ -->
+    <div class="view" id="view-imoveis">
+      <div class="ph">
+        <h1>Meus Imóveis</h1>
+        <p>Seu catálogo de imóveis em carteira — a base para gerar propostas e acompanhar vendas e locações sem redigitar nada.</p>
+      </div>
+
+      <form id="form-imovel" onsubmit="salvarImovel(event)" novalidate>
+        <div class="card">
+          <div class="card-t" id="imovel-form-titulo">Novo imóvel</div>
+          <input type="hidden" id="im-id" value="">
+          <div class="fg">
+            <div class="field">
+              <label class="lbl" for="im-tipo">Tipo <span class="req">*</span></label>
+              <select id="im-tipo" class="sel" required>
+                <option value="" disabled selected>Selecione</option>
+                <option>Apartamento</option>
+                <option>Casa</option>
+                <option>Comercial</option>
+                <option>Terreno</option>
+              </select>
+            </div>
+            <div class="field">
+              <label class="lbl" for="im-finalidade">Finalidade <span class="req">*</span></label>
+              <select id="im-finalidade" class="sel" required>
+                <option value="" disabled selected>Selecione</option>
+                <option value="venda">Venda</option>
+                <option value="locacao">Locação</option>
+                <option value="permuta">Permuta</option>
+              </select>
+            </div>
+            <div class="field f2">
+              <label class="lbl" for="im-end">Endereço <span class="req">*</span></label>
+              <input id="im-end" type="text" class="inp" placeholder="Ex: Av. Paulista, 1000 — São Paulo, SP" required>
+            </div>
+            <div class="field">
+              <label class="lbl" for="im-bairro">Bairro</label>
+              <input id="im-bairro" type="text" class="inp" placeholder="Ex: Bela Vista">
+            </div>
+            <div class="field">
+              <label class="lbl" for="im-valor">Valor <span class="req">*</span></label>
+              <div class="pfx">
+                <span class="pfx-l">R$</span>
+                <input id="im-valor" type="text" class="inp" placeholder="450.000" required inputmode="numeric">
+              </div>
+            </div>
+            <div class="field">
+              <label class="lbl" for="im-area">Área (m²)</label>
+              <input id="im-area" type="number" class="inp" placeholder="78" min="1" step="0.5">
+            </div>
+            <div class="field">
+              <label class="lbl" for="im-dorms">Dormitórios</label>
+              <select id="im-dorms" class="sel">
+                <option value="">—</option>
+                <option>Studio</option>
+                <option>1</option><option>2</option><option>3</option>
+                <option>4</option><option>5+</option>
+              </select>
+            </div>
+            <div class="field">
+              <label class="lbl" for="im-vagas">Vagas de garagem</label>
+              <select id="im-vagas" class="sel">
+                <option value="">—</option>
+                <option>0</option><option>1</option><option>2</option>
+                <option>3</option><option>4+</option>
+              </select>
+            </div>
+            <div class="field">
+              <label class="lbl" for="im-status">Status</label>
+              <select id="im-status" class="sel">
+                <option value="disponivel">Disponível</option>
+                <option value="reservado">Reservado</option>
+                <option value="vendido">Vendido</option>
+                <option value="locado">Locado</option>
+              </select>
+            </div>
+            <div class="field f2">
+              <label class="lbl">Foto de capa (opcional)</label>
+              <div class="foto-upload">
+                <div class="foto-preview" id="im-foto-prev">
+                  <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>
+                </div>
+                <div class="foto-actions">
+                  <label class="btn btn-ghost btn-sm" style="cursor:pointer">
+                    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
+                    Enviar foto
+                    <input type="file" id="im-foto" accept="image/*" style="display:none" onchange="carregarFotoCapaImovel(event)">
+                  </label>
+                  <button type="button" class="btn btn-ghost btn-sm" onclick="removerFotoCapaImovel()">Remover</button>
+                </div>
+              </div>
+              <span class="hint">Aparece no card da listagem. Máx 4MB.</span>
+            </div>
+          </div>
+        </div>
+
+        <div style="display:flex;gap:10px">
+          <button type="submit" class="gen-btn" id="btn-imovel" style="flex:1">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+            <span id="btn-imovel-txt">Cadastrar imóvel</span>
+          </button>
+          <button type="button" class="btn btn-ghost" id="btn-imovel-cancelar" style="display:none" onclick="cancelarEdicaoImovel()">Cancelar edição</button>
+        </div>
+      </form>
+
+      <div style="margin-top:28px">
+        <div class="card-t" style="margin-bottom:12px">Imóveis cadastrados</div>
+        <div id="imoveis-content"></div>
+      </div>
+    </div><!-- /view-imoveis -->
 
     <!-- ══════════════════ VIEW: NOVA PROPOSTA ══════════════════ -->
     <div class="view active" id="view-form">
@@ -1403,12 +1541,20 @@ function seedDemoData() {
     { id:base-13, cliente:'Marcos Vinícius', tel:'(11) 97333-4455', imovel:'Casa — Granja Viana',              dataVisita:iso(2),  hora:'16:00', obs:'Confirmar documentação',            status:'agendada',  criadoEm:diaBR(3), ultimaInteracao:isoTs(4) },
     { id:base-14, cliente:'Fernanda Souza',  tel:'(11) 96444-5566', imovel:'Apto — Higienópolis',             dataVisita:iso(3),  hora:'11:00', obs:'Visita realizada — gerou proposta', status:'realizada', criadoEm:diaBR(5), ultimaInteracao:isoTs(3) },
   ]
+
+  imoveis = [
+    { id:base-21, tipo:'Apartamento', finalidade:'venda',   end:'Av. Faria Lima, 3000 — São Paulo, SP',           bairro:'Itaim Bibi',     valor:'620.000',   area:'78',  dorms:'3', vagas:'2', status:'disponivel', foto:null, criadoEm:diaBR(4) },
+    { id:base-22, tipo:'Casa',        finalidade:'venda',   end:'Alameda dos Anjos, 145, Alphaville — Barueri, SP', bairro:'Alphaville',     valor:'1.450.000', area:'210', dorms:'4', vagas:'4', status:'reservado',  foto:null, criadoEm:diaBR(2) },
+    { id:base-23, tipo:'Apartamento', finalidade:'locacao', end:'Av. Paulista, 1500 — São Paulo, SP',              bairro:'Bela Vista',     valor:'4.200',     area:'55',  dorms:'2', vagas:'1', status:'locado',     foto:null, criadoEm:diaBR(6) },
+    { id:base-24, tipo:'Comercial',   finalidade:'venda',   end:'Rua Oscar Freire, 820 — São Paulo, SP',           bairro:'Jardins',        valor:'2.300.000', area:'140', dorms:'',  vagas:'3', status:'disponivel', foto:null, criadoEm:diaBR(1) },
+  ]
 }
 
 /* ── TOUR GUIADO (só no modo demo): destaca cada funcionalidade em passos ── */
 function iniciarTourDemo() {
   const PASSOS = [
     { t:'Bem-vindo 👋', x:'Esta é a plataforma real do CorretorPRO — já preenchida com dados de exemplo pra você explorar. Em poucos passos eu mostro tudo que ela faz.', sel:null, view:'form' },
+    { t:'Meus Imóveis', x:'Cadastre cada imóvel da sua carteira com foto, valor e status — disponível, reservado, vendido ou locado. É a base do seu catálogo.', sel:'.sb-item[data-view="imoveis"]', view:'imoveis' },
     { t:'Proposta em 60 segundos', x:'Preencha os dados e gere uma proposta profissional com a sua marca — já com simulação de financiamento SAC e Price calculada. Clique em “Gerar Proposta” pra ver.', sel:'#gen-btn', view:'form' },
     { t:'Funil de vendas (CRM)', x:'Cada negociação vira um card e caminha pelo funil: Nova → Enviada → Em negociação → Fechada. Você acompanha todas num lugar só.', sel:'.sb-item[data-view="history"]', view:'history' },
     { t:'Agenda de visitas', x:'Organize suas visitas e nunca perca um follow-up: agendadas, de hoje, atrasadas e realizadas — separadas automaticamente.', sel:'.sb-item[data-view="agenda"]', view:'agenda' },
@@ -1468,6 +1614,7 @@ const escH = s => String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').repla
 let perfil = JSON.parse(localStorage.getItem('cpr_perfil') || 'null') || { nome:'',creci:'',tel:'',email:'',cor:'#4D7EFF',logo:null,modelo:'classico',slug:'' }
 let historico = JSON.parse(localStorage.getItem('cpr_hist') || '[]')
 let leads = JSON.parse(localStorage.getItem('cpr_leads') || '[]')
+let imoveis = JSON.parse(localStorage.getItem('cpr_imoveis') || '[]')
 let snapProposta = null
 let fotoAtual = null
 let _toastT = null
@@ -1494,6 +1641,7 @@ function initApp() {
   renderSidebarUser()
   atualizarBadgeHist()
   atualizarBadgeAgenda()
+  atualizarBadgeImoveis()
   if (!perfil.nome) {
     document.getElementById('banner-profile').classList.add('show')
   }
@@ -1505,7 +1653,7 @@ function initApp() {
 async function sair() {
   if (window._sb) await window._sb.auth.signOut()
   // Limpa o cache local para não deixar PII (perfil/histórico/leads) no dispositivo
-  try { localStorage.removeItem('cpr_perfil'); localStorage.removeItem('cpr_hist'); localStorage.removeItem('cpr_leads') } catch(_) {}
+  try { localStorage.removeItem('cpr_perfil'); localStorage.removeItem('cpr_hist'); localStorage.removeItem('cpr_leads'); localStorage.removeItem('cpr_imoveis') } catch(_) {}
   location.replace(_LOGIN_URL)
 }
 
@@ -1517,7 +1665,7 @@ async function carregarRemoto() {
   try {
     const { data, error } = await window._sb
       .from('cpr_user_data')
-      .select('perfil,historico,leads')
+      .select('perfil,historico,leads,imoveis')
       .eq('user_id', window._uid)
       .maybeSingle()
     if (error) return
@@ -1535,7 +1683,12 @@ async function carregarRemoto() {
         leads = data.leads
         localStorage.setItem('cpr_leads', JSON.stringify(leads))
       }
-    } else if (perfil.nome || historico.length || leads.length) {
+      // Coluna nova — pode não existir ainda em contas antigas/antes da migração SQL
+      if (Array.isArray(data.imoveis)) {
+        imoveis = data.imoveis
+        localStorage.setItem('cpr_imoveis', JSON.stringify(imoveis))
+      }
+    } else if (perfil.nome || historico.length || leads.length || imoveis.length) {
       // Primeiro acesso desta conta: migra os dados locais para a nuvem
       await salvarRemoto()
     }
@@ -1546,7 +1699,7 @@ async function salvarRemoto() {
   if (!window._sb || !window._uid) return
   try {
     const { error } = await window._sb.from('cpr_user_data').upsert(
-      { user_id: window._uid, perfil, historico, leads, updated_at: new Date().toISOString() },
+      { user_id: window._uid, perfil, historico, leads, imoveis, updated_at: new Date().toISOString() },
       { onConflict: 'user_id' }
     )
     if (error) throw error
@@ -1560,8 +1713,8 @@ function showView(name) {
   document.querySelectorAll('.view').forEach(v => v.classList.remove('active'))
   document.getElementById('view-' + name).classList.add('active')
   document.querySelectorAll('.sb-item[data-view]').forEach(i => i.classList.toggle('active', i.dataset.view === name))
-  const labels = { agenda:'Agenda de Visitas', form:'Nova Proposta', history:'Minhas Propostas', visita:'Registro de Visita', config:'Configurações' }
-  const roots  = { agenda:'Funil', form:'Propostas', history:'Propostas', visita:'Documentos', config:'Conta' }
+  const labels = { agenda:'Agenda de Visitas', form:'Nova Proposta', history:'Minhas Propostas', visita:'Registro de Visita', config:'Configurações', imoveis:'Meus Imóveis' }
+  const roots  = { agenda:'Funil', form:'Propostas', history:'Propostas', visita:'Documentos', config:'Conta', imoveis:'Imóveis' }
   document.getElementById('crumb-page').textContent = labels[name] || name
   document.getElementById('crumb-root').textContent = roots[name] || name
   // topbar buttons only for form
@@ -1585,6 +1738,9 @@ function showView(name) {
     renderAgenda()
     renderCaptacao()
   }
+  if (name === 'imoveis') {
+    renderImoveis()
+  }
   closeSidebar()
   window.scrollTo({ top: 0, behavior: 'smooth' })
 }
@@ -1600,6 +1756,7 @@ const fmtInput = id => {
 }
 fmtInput('f-valor')
 fmtInput('f-complem')
+fmtInput('im-valor')
 
 // Se o corretor editar manualmente o texto gerado pela IA, esconde o aviso
 // "gerado por IA" — deixou de ser exatamente o texto sugerido.
@@ -2152,6 +2309,19 @@ function atualizarBadgeAgenda() {
   const nPend = leads.filter(l => l.status !== 'realizada').length
   if (nPend > 0) {
     badge.textContent = nPend
+    badge.style.display = 'inline'
+  } else {
+    badge.style.display = 'none'
+  }
+}
+
+function atualizarBadgeImoveis() {
+  const badge = document.getElementById('sb-count-imoveis')
+  if (!badge) return
+  // Badge mostra só os disponíveis — é o que pede atenção (catálogo ativo)
+  const nDisp = imoveis.filter(i => i.status === 'disponivel').length
+  if (nDisp > 0) {
+    badge.textContent = nDisp
     badge.style.display = 'inline'
   } else {
     badge.style.display = 'none'
@@ -3100,6 +3270,192 @@ async function excluirLead(id) {
   renderAgenda()
   try { await salvarRemoto() } catch(_) {}
   toast('Agendamento removido')
+}
+
+/* ── MEUS IMÓVEIS ──
+   Primeiro módulo do pivô para CRM imobiliário: catálogo dos imóveis em
+   carteira do corretor. Mesmo padrão de array no jsonb (igual `leads`),
+   mesmo padrão de upload de foto (canvas redimensionado, igual a foto
+   da proposta), mesmo padrão visual de card/badge da Agenda/Histórico. */
+const IMOVEL_STATUS_LABEL = { disponivel:'Disponível', reservado:'Reservado', vendido:'Vendido', locado:'Locado' }
+let fotoCapaAtual = null   // foto em edição no formulário, ainda não salva no array
+
+function limparFormImovel() {
+  const form = document.getElementById('form-imovel')
+  if (form) form.reset()
+  document.getElementById('im-id').value = ''
+  fotoCapaAtual = null
+  document.getElementById('im-foto').value = ''
+  document.getElementById('im-foto-prev').innerHTML = `<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>`
+  document.getElementById('imovel-form-titulo').textContent = 'Novo imóvel'
+  document.getElementById('btn-imovel-txt').textContent = 'Cadastrar imóvel'
+  document.getElementById('btn-imovel-cancelar').style.display = 'none'
+}
+
+async function salvarImovel(ev) {
+  ev.preventDefault()
+  if (window._DEMO) return demoBloqueio()
+  const form = document.getElementById('form-imovel')
+  if (!form.checkValidity()) { form.reportValidity(); return }
+
+  const idEdicao = document.getElementById('im-id').value
+  const dados = {
+    tipo:        document.getElementById('im-tipo').value,
+    finalidade:  document.getElementById('im-finalidade').value,
+    end:         document.getElementById('im-end').value.trim(),
+    bairro:      document.getElementById('im-bairro').value.trim(),
+    valor:       document.getElementById('im-valor').value.trim(),
+    area:        document.getElementById('im-area').value,
+    dorms:       document.getElementById('im-dorms').value,
+    vagas:       document.getElementById('im-vagas').value,
+    status:      document.getElementById('im-status').value || 'disponivel',
+    foto:        fotoCapaAtual,
+  }
+
+  if (idEdicao) {
+    const i = imoveis.findIndex(x => String(x.id) === String(idEdicao))
+    if (i !== -1) {
+      imoveis[i] = Object.assign({}, imoveis[i], dados)
+    }
+  } else {
+    imoveis.unshift(Object.assign({ id: Date.now(), criadoEm: new Date().toLocaleDateString('pt-BR') }, dados))
+  }
+
+  localStorage.setItem('cpr_imoveis', JSON.stringify(imoveis))
+  atualizarBadgeImoveis()
+  renderImoveis()
+  limparFormImovel()
+  try {
+    await salvarRemoto()
+    toast(idEdicao ? 'Imóvel atualizado!' : 'Imóvel cadastrado!')
+  } catch(_) {
+    toast('Salvo localmente — verifique sua conexão', true)
+  }
+  document.getElementById('imoveis-content').scrollIntoView({ behavior:'smooth', block:'start' })
+}
+
+function editarImovel(id) {
+  const im = imoveis.find(x => x.id === id)
+  if (!im) return
+  document.getElementById('im-id').value = im.id
+  document.getElementById('im-tipo').value = im.tipo || ''
+  document.getElementById('im-finalidade').value = im.finalidade || ''
+  document.getElementById('im-end').value = im.end || ''
+  document.getElementById('im-bairro').value = im.bairro || ''
+  document.getElementById('im-valor').value = im.valor || ''
+  document.getElementById('im-area').value = im.area || ''
+  document.getElementById('im-dorms').value = im.dorms || ''
+  document.getElementById('im-vagas').value = im.vagas || ''
+  document.getElementById('im-status').value = im.status || 'disponivel'
+  fotoCapaAtual = im.foto || null
+  document.getElementById('im-foto-prev').innerHTML = fotoCapaAtual
+    ? `<img src="${fotoCapaAtual}" alt="Foto do imóvel">`
+    : `<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>`
+  document.getElementById('imovel-form-titulo').textContent = 'Editar imóvel'
+  document.getElementById('btn-imovel-txt').textContent = 'Salvar alterações'
+  document.getElementById('btn-imovel-cancelar').style.display = ''
+  document.getElementById('form-imovel').scrollIntoView({ behavior:'smooth', block:'start' })
+}
+
+function cancelarEdicaoImovel() {
+  limparFormImovel()
+}
+
+async function excluirImovel(id) {
+  const i = imoveis.findIndex(x => x.id === id)
+  if (i === -1) return
+  if (!confirm('Excluir este imóvel do catálogo?')) return
+  imoveis.splice(i, 1)
+  localStorage.setItem('cpr_imoveis', JSON.stringify(imoveis))
+  atualizarBadgeImoveis()
+  renderImoveis()
+  try { await salvarRemoto() } catch(_) {}
+  toast('Imóvel removido')
+}
+
+function renderImoveis() {
+  const el = document.getElementById('imoveis-content')
+  if (!el) return
+
+  if (imoveis.length === 0) {
+    el.innerHTML = `<div class="hist-empty">
+      <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M3 9l9-7 9 7"/><path d="M9 22V12h6v10"/><path d="M5 10v10a1 1 0 001 1h12a1 1 0 001-1V10"/></svg>
+      <h3>Nenhum imóvel cadastrado</h3>
+      <p>Cadastre o primeiro imóvel da sua carteira para começar seu catálogo.</p>
+    </div>`
+    return
+  }
+
+  el.innerHTML = `<div class="im-grid">${imoveis.map(im => {
+    const valorFmt = im.valor ? 'R$ ' + im.valor : '—'
+    const metaParts = []
+    if (im.area) metaParts.push(im.area + ' m²')
+    if (im.dorms) metaParts.push(im.dorms + ' dorm.')
+    if (im.vagas) metaParts.push(im.vagas + ' vaga' + (im.vagas === '1' ? '' : 's'))
+    const fotoHtml = im.foto
+      ? `<img src="${im.foto}" alt="Foto do imóvel">`
+      : `<svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>`
+    return `
+    <div class="im-card">
+      <div class="im-card-foto">${fotoHtml}</div>
+      <div class="im-card-body">
+        <div class="im-card-top">
+          <span class="im-card-tipo">${escH(im.tipo || '—')}</span>
+          <span class="im-card-status" data-s="${im.status || 'disponivel'}">${escH(IMOVEL_STATUS_LABEL[im.status] || 'Disponível')}</span>
+        </div>
+        <div class="im-card-end">${escH(im.end || '—')}</div>
+        ${im.bairro ? `<div class="im-card-bairro">${escH(im.bairro)}</div>` : ''}
+        ${metaParts.length ? `<div class="im-card-meta">${escH(metaParts.join(' · '))}</div>` : ''}
+        <div class="im-card-valor">${escH(valorFmt)}</div>
+        <div class="im-card-actions">
+          <button type="button" class="btn btn-ghost btn-sm" style="flex:1" onclick="editarImovel(${im.id})">
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 4H4a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2v-7"/><path d="M18.5 2.5a2.12 2.12 0 013 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
+            Editar
+          </button>
+          <button type="button" class="btn btn-ghost btn-sm" onclick="excluirImovel(${im.id})" aria-label="Excluir">
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 01-2 2H8a2 2 0 01-2-2L5 6"/><path d="M10 11v6M14 11v6"/><path d="M9 6V4h6v2"/></svg>
+          </button>
+        </div>
+      </div>
+    </div>`
+  }).join('')}</div>`
+}
+
+// Mesmo padrão da foto da proposta: redimensiona em canvas antes de
+// guardar em base64 (JPEG, sem necessidade de transparência) para manter
+// o jsonb leve.
+function carregarFotoCapaImovel(ev) {
+  const file = ev.target.files[0]
+  if (!file) return
+  if (file.size > 4 * 1024 * 1024) { toast('Foto muito grande — máx 4MB', true); return }
+  const reader = new FileReader()
+  reader.onload = e => {
+    const img = new Image()
+    img.onload = () => {
+      const MAX = 800
+      let { width, height } = img
+      if (width > MAX || height > MAX) {
+        const escala = Math.min(MAX / width, MAX / height)
+        width = Math.round(width * escala)
+        height = Math.round(height * escala)
+      }
+      const canvas = document.createElement('canvas')
+      canvas.width = width; canvas.height = height
+      canvas.getContext('2d').drawImage(img, 0, 0, width, height)
+      fotoCapaAtual = canvas.toDataURL('image/jpeg', 0.72)
+      document.getElementById('im-foto-prev').innerHTML = `<img src="${fotoCapaAtual}" alt="Foto do imóvel">`
+      toast('Foto carregada')
+    }
+    img.onerror = () => toast('Arquivo de imagem inválido', true)
+    img.src = e.target.result
+  }
+  reader.readAsDataURL(file)
+}
+
+function removerFotoCapaImovel() {
+  fotoCapaAtual = null
+  document.getElementById('im-foto').value = ''
+  document.getElementById('im-foto-prev').innerHTML = `<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>`
 }
 
 // Jornada: a partir de um lead com visita realizada, preenche E gera o

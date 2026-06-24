@@ -36,6 +36,9 @@ pesquisadas na internet, e implementa um por vez.
 - **Histórico por cliente** — agrupar todas as propostas de um mesmo cliente.
 
 ## Já entregue
+- **Gestão de Imóveis (catálogo) — 1º módulo do pivô para CRM completo**
+  _Dor:_ corretor autônomo ainda controla a carteira de imóveis em "Wix + WhatsApp + planilha" — bagunça de disponibilidade/reservas e tabela de vendas desatualizada são queixas recorrentes do mercado.
+  _Valor:_ cadastro de imóvel (tipo, finalidade, endereço, valor, área, dorms, vagas, status) com foto de capa, listado em grid de cards com badge de status; editar e excluir. Base para os próximos módulos do pivô (Funil de Vendas, Gestão de Vendas, Dashboard). (2026-06-24)
 - **Gerador de descrição do imóvel com IA** — botão "✨ Gerar descrição com IA" no formulário de proposta que preenche o campo de condições/observações com um parágrafo comercial por template local (sem API paga), citando os diferenciais reais informados. _Dor:_ paridade competitiva — Tecimob e Kenlo (LYA) já têm camada de IA visível no cadastro de imóvel; sem isso o CorretorPRO parecia datado na comparação, além de resolver o "não saber por onde começar a descrição". (2026-06-24)
 - **Alerta de lead esquecido + sugestão de follow-up no WhatsApp** — badge de "X dias sem contato" nos leads parados (3d atenção, 7d+ crítico) e mensagem de retomada gerada por template local, com botão "Enviar no WhatsApp" pré-preenchido. _Dor:_ o dinheiro está no follow-up, e ele esquece — confirmada como dor #1 do corretor autônomo em pesquisa de mercado (WAX, Tecimob já resolvem com lembretes automáticos). (2026-06-24)
 - **Modelos de proposta (Clássico, Moderno, Minimalista)** — seletor em Configurações que troca o visual da proposta gerada, salvo no perfil junto com logo/cor. _Dor:_ corretores têm estilos diferentes; um único layout não serve para todos os imóveis (alto padrão vs popular). (2026-06-17)
