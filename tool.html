@@ -393,6 +393,22 @@ input[type=color]{opacity:0;width:0;height:0;position:absolute}
 .im-card-meta{font-size:11px;color:var(--t3);margin-top:2px}
 .im-card-valor{font-size:15px;font-weight:800;color:var(--t);margin-top:4px}
 .im-card-actions{display:flex;gap:6px;margin-top:auto;padding-top:10px}
+
+/* ── FUNIL DE VENDAS (KANBAN) ── */
+.funil-board{display:flex;gap:14px;overflow-x:auto;padding-bottom:8px;align-items:flex-start}
+.funil-col{flex:0 0 250px;min-width:250px;background:var(--s2);border:1px solid var(--b);border-radius:var(--radl);display:flex;flex-direction:column;max-height:calc(100vh - 280px)}
+.funil-col-head{display:flex;align-items:center;justify-content:space-between;gap:8px;padding:12px 14px;border-bottom:2px solid var(--fc,var(--p));font-size:12px;font-weight:800;text-transform:uppercase;letter-spacing:.04em;color:var(--t)}
+.funil-col-count{background:var(--s1);color:var(--t2);font-size:11px;font-weight:700;padding:1px 8px;border-radius:100px;flex-shrink:0}
+.funil-col-body{padding:10px;display:flex;flex-direction:column;gap:10px;overflow-y:auto;flex:1}
+.funil-col-empty{font-size:12px;color:var(--t3);text-align:center;padding:18px 4px}
+.funil-card{background:var(--s1);border:1px solid var(--b);border-radius:10px;padding:12px;display:flex;flex-direction:column;gap:6px}
+.funil-card-top{display:flex;align-items:center;justify-content:space-between;gap:6px}
+.funil-card-cliente{font-size:13px;font-weight:700;color:var(--t);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.funil-card-imovel{font-size:11.5px;color:var(--t2);line-height:1.4;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.funil-card-valor{font-size:13px;font-weight:800;color:var(--p)}
+.funil-card-actions{display:flex;gap:6px;margin-top:4px}
+.funil-card-select{flex:1;font-size:11px;padding:6px 8px}
+@media (max-width:760px){.funil-col{flex:0 0 220px;min-width:220px;max-height:none}}
 .followup-modal h3{font-size:16px;font-weight:800;color:#EEF2FF;margin:0 0 4px}
 .followup-modal .fu-sub{font-size:12.5px;color:#A9BBD0;margin:0 0 14px}
 .followup-modal textarea{width:100%;min-height:120px;resize:vertical;background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.14);border-radius:10px;color:#EEF2FF;font-size:13.5px;line-height:1.55;padding:12px;font-family:inherit}
@@ -505,6 +521,11 @@ input[type=color]{opacity:0;width:0;height:0;position:absolute}
       <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
       Agenda de Visitas
       <span class="sb-badge" id="sb-count-agenda" style="margin-left:auto;background:var(--ps);color:var(--p);font-size:10px;font-weight:700;padding:2px 7px;border-radius:100px;display:none"></span>
+    </button>
+    <button class="sb-item" data-view="funil" onclick="showView('funil')">
+      <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 3H2l8 9.46V19l4 2v-8.54L22 3z"/></svg>
+      Funil de Vendas
+      <span class="sb-badge" id="sb-count-funil" style="margin-left:auto;background:var(--ps);color:var(--p);font-size:10px;font-weight:700;padding:2px 7px;border-radius:100px;display:none"></span>
     </button>
     <div class="sb-sec">Imóveis</div>
     <button class="sb-item" data-view="imoveis" onclick="showView('imoveis')">
@@ -646,6 +667,57 @@ input[type=color]{opacity:0;width:0;height:0;position:absolute}
         <div id="agenda-content"></div>
       </div>
     </div><!-- /view-agenda -->
+
+    <!-- ══════════════════ VIEW: FUNIL DE VENDAS (KANBAN) ══════════════════
+         Camada nova sobre o mesmo array `leads` — não substitui a Agenda de
+         Visitas, nem o status agendada/hoje/atrasada/realizada usado nela.
+         Cada lead ganha um campo `estagioFunil`, mapeado automaticamente a
+         partir do `status` antigo para quem já tinha leads salvos. -->
+    <div class="view" id="view-funil">
+      <div class="ph">
+        <h1>Funil de Vendas</h1>
+        <p>Acompanhe cada lead pelas etapas do processo comercial, do primeiro contato até a venda fechada — sem precisar reorganizar nada na Agenda de Visitas.</p>
+      </div>
+
+      <div class="card" id="card-funil-novo">
+        <div class="card-t">Novo contato</div>
+        <form id="form-funil-lead" onsubmit="salvarLeadFunil(event)" novalidate>
+          <div class="fg">
+            <div class="field">
+              <label class="lbl" for="fl-cliente">Nome do cliente <span class="req">*</span></label>
+              <input id="fl-cliente" type="text" class="inp" placeholder="Ex: João Silva" required autocomplete="name">
+            </div>
+            <div class="field">
+              <label class="lbl" for="fl-tel">Telefone</label>
+              <input id="fl-tel" type="tel" class="inp" placeholder="(11) 99999-9999">
+            </div>
+            <div class="field">
+              <label class="lbl" for="fl-imovel-id">Imóvel de interesse (do catálogo)</label>
+              <select id="fl-imovel-id" class="sel"><option value="">— Nenhum / fora do catálogo —</option></select>
+            </div>
+            <div class="field">
+              <label class="lbl" for="fl-imovel">Imóvel (texto livre, se não estiver no catálogo)</label>
+              <input id="fl-imovel" type="text" class="inp" placeholder="Ex: Apartamento — Av. Paulista, 1000">
+            </div>
+            <div class="field">
+              <label class="lbl" for="fl-valor">Valor estimado da negociação</label>
+              <div class="pfx">
+                <span class="pfx-l">R$</span>
+                <input id="fl-valor" type="text" class="inp" placeholder="450.000" inputmode="numeric">
+              </div>
+            </div>
+          </div>
+          <button type="submit" class="gen-btn" id="btn-funil-lead">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+            Adicionar ao funil
+          </button>
+        </form>
+      </div>
+
+      <div style="margin-top:24px">
+        <div id="funil-board"></div>
+      </div>
+    </div><!-- /view-funil -->
 
     <!-- ══════════════════ VIEW: MEUS IMÓVEIS ══════════════════ -->
     <div class="view" id="view-imoveis">
@@ -1556,7 +1628,8 @@ function iniciarTourDemo() {
     { t:'Bem-vindo 👋', x:'Esta é a plataforma real do CorretorPRO — já preenchida com dados de exemplo pra você explorar. Em poucos passos eu mostro tudo que ela faz.', sel:null, view:'form' },
     { t:'Meus Imóveis', x:'Cadastre cada imóvel da sua carteira com foto, valor e status — disponível, reservado, vendido ou locado. É a base do seu catálogo.', sel:'.sb-item[data-view="imoveis"]', view:'imoveis' },
     { t:'Proposta em 60 segundos', x:'Preencha os dados e gere uma proposta profissional com a sua marca — já com simulação de financiamento SAC e Price calculada. Clique em “Gerar Proposta” pra ver.', sel:'#gen-btn', view:'form' },
-    { t:'Funil de vendas (CRM)', x:'Cada negociação vira um card e caminha pelo funil: Nova → Enviada → Em negociação → Fechada. Você acompanha todas num lugar só.', sel:'.sb-item[data-view="history"]', view:'history' },
+    { t:'Status das propostas (CRM)', x:'Cada proposta vira um card e caminha pelo status: Nova → Enviada → Em negociação → Fechada. Você acompanha todas num lugar só.', sel:'.sb-item[data-view="history"]', view:'history' },
+    { t:'Funil de Vendas', x:'Acompanhe cada lead num Kanban visual — do primeiro contato até a venda fechada — sem perder o fio da negociação.', sel:'.sb-item[data-view="funil"]', view:'funil' },
     { t:'Agenda de visitas', x:'Organize suas visitas e nunca perca um follow-up: agendadas, de hoje, atrasadas e realizadas — separadas automaticamente.', sel:'.sb-item[data-view="agenda"]', view:'agenda' },
     { t:'Registro de Visita (jurídico)', x:'O documento com amparo legal que comprova sua intermediação e protege a sua comissão se o cliente fechar direto com o dono.', sel:'.sb-item[data-view="visita"]', view:'visita' },
     { t:'Sua marca, 3 modelos', x:'Coloque seu logo, CRECI e cor, e escolha entre 3 modelos de proposta: Clássico, Moderno e Minimalista. Suas propostas com a sua identidade.', sel:'.sb-item[data-view="config"]', view:'config' },
@@ -1642,6 +1715,7 @@ function initApp() {
   atualizarBadgeHist()
   atualizarBadgeAgenda()
   atualizarBadgeImoveis()
+  atualizarBadgeFunil()
   if (!perfil.nome) {
     document.getElementById('banner-profile').classList.add('show')
   }
@@ -1713,8 +1787,8 @@ function showView(name) {
   document.querySelectorAll('.view').forEach(v => v.classList.remove('active'))
   document.getElementById('view-' + name).classList.add('active')
   document.querySelectorAll('.sb-item[data-view]').forEach(i => i.classList.toggle('active', i.dataset.view === name))
-  const labels = { agenda:'Agenda de Visitas', form:'Nova Proposta', history:'Minhas Propostas', visita:'Registro de Visita', config:'Configurações', imoveis:'Meus Imóveis' }
-  const roots  = { agenda:'Funil', form:'Propostas', history:'Propostas', visita:'Documentos', config:'Conta', imoveis:'Imóveis' }
+  const labels = { agenda:'Agenda de Visitas', form:'Nova Proposta', history:'Minhas Propostas', visita:'Registro de Visita', config:'Configurações', imoveis:'Meus Imóveis', funil:'Funil de Vendas' }
+  const roots  = { agenda:'Funil', form:'Propostas', history:'Propostas', visita:'Documentos', config:'Conta', imoveis:'Imóveis', funil:'Funil' }
   document.getElementById('crumb-page').textContent = labels[name] || name
   document.getElementById('crumb-root').textContent = roots[name] || name
   // topbar buttons only for form
@@ -1741,6 +1815,10 @@ function showView(name) {
   if (name === 'imoveis') {
     renderImoveis()
   }
+  if (name === 'funil') {
+    popularSelectImoveisFunil()
+    renderFunil()
+  }
   closeSidebar()
   window.scrollTo({ top: 0, behavior: 'smooth' })
 }
@@ -1757,6 +1835,7 @@ const fmtInput = id => {
 fmtInput('f-valor')
 fmtInput('f-complem')
 fmtInput('im-valor')
+fmtInput('fl-valor')
 
 // Se o corretor editar manualmente o texto gerado pela IA, esconde o aviso
 // "gerado por IA" — deixou de ser exatamente o texto sugerido.
@@ -3251,9 +3330,15 @@ async function marcarRealizada(id) {
   const l = leads.find(x => x.id === id)
   if (!l) return
   l.status = 'realizada'
+  // Avança também o estágio do Funil, mas só se ainda não tiver passado de
+  // "visita realizada" (não retrocede quem já está em proposta/negociação/venda).
+  const idxAtual = FUNIL_KEYS.indexOf(estagioFunilLead(l))
+  const idxRealizada = FUNIL_KEYS.indexOf('visita_realizada')
+  if (idxAtual < idxRealizada) l.estagioFunil = 'visita_realizada'
   l.ultimaInteracao = new Date().toISOString()
   localStorage.setItem('cpr_leads', JSON.stringify(leads))
   atualizarBadgeAgenda()
+  atualizarBadgeFunil()
   renderAgenda()
   try { await salvarRemoto() } catch(_) {}
   toast('Visita realizada — gerando o Registro de Visita...')
@@ -3267,9 +3352,187 @@ async function excluirLead(id) {
   leads.splice(i, 1)
   localStorage.setItem('cpr_leads', JSON.stringify(leads))
   atualizarBadgeAgenda()
+  atualizarBadgeFunil()
   renderAgenda()
   try { await salvarRemoto() } catch(_) {}
   toast('Agendamento removido')
+}
+
+/* ── FUNIL DE VENDAS (KANBAN) ──
+   Camada visual nova sobre o mesmo array `leads` (jsonb já existente) — não
+   cria array novo nem coluna nova no Supabase. Cada lead ganha um campo
+   `estagioFunil`; leads antigos (sem esse campo) são mapeados automaticamente
+   a partir do `status` clássico da Agenda (agendada/hoje/atrasada/realizada),
+   sem nunca sobrescrever o `status` em si — a Agenda continua funcionando
+   exatamente como antes. */
+const FUNIL_ESTAGIOS = [
+  { key:'novo_contato',       label:'Novo contato',      cor:'#7BA3FF' },
+  { key:'visita_agendada',    label:'Visita agendada',   cor:'#60A5FA' },
+  { key:'visita_realizada',   label:'Visita realizada',  cor:'#EAB308' },
+  { key:'proposta_enviada',   label:'Proposta enviada',  cor:'#C084FC' },
+  { key:'negociacao',         label:'Negociação',        cor:'#FB923C' },
+  { key:'venda_fechada',      label:'Venda fechada',     cor:'#22C55E' },
+]
+const FUNIL_KEYS = FUNIL_ESTAGIOS.map(e => e.key)
+
+// Retorna o estágio efetivo do lead sem mutar nada — usa `estagioFunil` se já
+// foi definido; senão deriva do `status` antigo (compatibilidade retroativa).
+function estagioFunilLead(l) {
+  if (l.estagioFunil && FUNIL_KEYS.includes(l.estagioFunil)) return l.estagioFunil
+  const st = statusCalculadoLead(l)
+  if (st === 'realizada') return 'visita_realizada'
+  if (st === 'agendada' || st === 'hoje' || st === 'atrasada') return 'visita_agendada'
+  return 'novo_contato'
+}
+
+// Persiste o estágio explicitamente no lead (1ª vez que isso acontece, o
+// valor migrado pelo cálculo automático passa a ficar gravado).
+async function moverEstagioLead(id, novoEstagio) {
+  if (window._DEMO) return demoBloqueio()
+  const l = leads.find(x => x.id === id)
+  if (!l || !FUNIL_KEYS.includes(novoEstagio)) return
+  l.estagioFunil = novoEstagio
+  l.ultimaInteracao = new Date().toISOString()
+  localStorage.setItem('cpr_leads', JSON.stringify(leads))
+  renderFunil()
+  atualizarBadgeFunil()
+  try { await salvarRemoto() } catch(_) { toast('Salvo localmente — verifique sua conexão', true); return }
+  toast('Lead movido para "' + (FUNIL_ESTAGIOS.find(e => e.key === novoEstagio)?.label || novoEstagio) + '"')
+}
+
+// Avança para o próximo estágio da sequência (botão rápido no card).
+function avancarEstagioLead(id) {
+  const l = leads.find(x => x.id === id)
+  if (!l) return
+  const atual = estagioFunilLead(l)
+  const i = FUNIL_KEYS.indexOf(atual)
+  if (i === -1 || i >= FUNIL_KEYS.length - 1) return
+  moverEstagioLead(id, FUNIL_KEYS[i + 1])
+}
+
+// Preenche o <select> de imóveis do catálogo no formulário de novo contato.
+function popularSelectImoveisFunil() {
+  const sel = document.getElementById('fl-imovel-id')
+  if (!sel) return
+  const atual = sel.value
+  sel.innerHTML = '<option value="">— Nenhum / fora do catálogo —</option>' + imoveis.map(im =>
+    `<option value="${im.id}">${escH((im.tipo || 'Imóvel') + ' — ' + (im.end || ''))}</option>`
+  ).join('')
+  sel.value = atual
+}
+
+// Quando o corretor escolhe um imóvel do catálogo, preenche o campo de texto
+// livre automaticamente (mas deixa editável, caso queira complementar).
+document.getElementById('fl-imovel-id')?.addEventListener('change', (e) => {
+  const im = imoveis.find(x => String(x.id) === String(e.target.value))
+  const campoTexto = document.getElementById('fl-imovel')
+  if (im && campoTexto && !campoTexto.value.trim()) {
+    campoTexto.value = (im.tipo || 'Imóvel') + ' — ' + (im.end || '')
+  }
+})
+
+// Cria um lead novo já no estágio "Novo contato" — não interfere na Agenda
+// porque não tem `dataVisita`; só aparece lá se/quando o lead avançar e
+// ganhar uma visita agendada pelo fluxo normal da Agenda.
+async function salvarLeadFunil(ev) {
+  ev.preventDefault()
+  if (window._DEMO) return demoBloqueio()
+  const form = document.getElementById('form-funil-lead')
+  if (!form.checkValidity()) { form.reportValidity(); return }
+
+  const imovelId = document.getElementById('fl-imovel-id').value || null
+  const item = {
+    id: Date.now(),
+    cliente: document.getElementById('fl-cliente').value.trim(),
+    tel:     document.getElementById('fl-tel').value.trim(),
+    imovel:  document.getElementById('fl-imovel').value.trim(),
+    imovelId,
+    valorEstimado: document.getElementById('fl-valor').value.trim(),
+    estagioFunil: 'novo_contato',
+    criadoEm: new Date().toLocaleDateString('pt-BR'),
+    ultimaInteracao: new Date().toISOString(),
+  }
+  leads.unshift(item)
+  localStorage.setItem('cpr_leads', JSON.stringify(leads))
+  atualizarBadgeFunil()
+  atualizarBadgeAgenda()
+  renderFunil()
+  form.reset()
+  try {
+    await salvarRemoto()
+    toast('Lead adicionado ao funil!')
+  } catch(_) {
+    toast('Salvo localmente — verifique sua conexão', true)
+  }
+}
+
+function atualizarBadgeFunil() {
+  const badge = document.getElementById('sb-count-funil')
+  if (!badge) return
+  // Badge mostra negociações em aberto (tudo exceto venda fechada) — é o que pede atenção
+  const nAberto = leads.filter(l => estagioFunilLead(l) !== 'venda_fechada').length
+  if (nAberto > 0) {
+    badge.textContent = nAberto
+    badge.style.display = 'inline'
+  } else {
+    badge.style.display = 'none'
+  }
+}
+
+function renderFunil() {
+  const el = document.getElementById('funil-board')
+  if (!el) return
+
+  if (leads.length === 0) {
+    el.innerHTML = `<div class="hist-empty">
+      <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M22 3H2l8 9.46V19l4 2v-8.54L22 3z"/></svg>
+      <h3>Nenhum lead no funil ainda</h3>
+      <p>Adicione um novo contato acima ou cadastre uma visita na Agenda — os leads aparecem aqui automaticamente.</p>
+    </div>`
+    return
+  }
+
+  el.innerHTML = `<div class="funil-board">${FUNIL_ESTAGIOS.map(estagio => {
+    const doEstagio = leads.filter(l => estagioFunilLead(l) === estagio.key)
+    return `
+    <div class="funil-col">
+      <div class="funil-col-head" style="--fc:${estagio.cor}">
+        <span>${escH(estagio.label)}</span>
+        <span class="funil-col-count">${doEstagio.length}</span>
+      </div>
+      <div class="funil-col-body">
+        ${doEstagio.length === 0 ? '<div class="funil-col-empty">Sem leads aqui</div>' : doEstagio.map(l => {
+          const alerta = alertaLead(l)
+          const valorFmt = l.valorEstimado ? 'R$ ' + l.valorEstimado : ''
+          const proximoIdx = FUNIL_KEYS.indexOf(estagio.key) + 1
+          const proximoLabel = proximoIdx < FUNIL_ESTAGIOS.length ? FUNIL_ESTAGIOS[proximoIdx].label : null
+          const alertaBadge = alerta.nivel
+            ? `<button class="lead-alert" data-nivel="${alerta.nivel}" onclick="abrirFollowUpLead(${l.id})" title="Ver sugestão de mensagem de follow-up">
+                 <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
+                 ${alerta.dias}d
+               </button>`
+            : ''
+          return `
+          <div class="funil-card">
+            <div class="funil-card-top">
+              <span class="funil-card-cliente">${escH(l.cliente || '—')}</span>
+              ${alertaBadge}
+            </div>
+            ${l.imovel ? `<div class="funil-card-imovel">${escH(l.imovel)}</div>` : ''}
+            ${valorFmt ? `<div class="funil-card-valor">${escH(valorFmt)}</div>` : ''}
+            <div class="funil-card-actions">
+              <select class="sel funil-card-select" onchange="moverEstagioLead(${l.id}, this.value)" title="Mover para outro estágio">
+                ${FUNIL_ESTAGIOS.map(e => `<option value="${e.key}" ${e.key === estagio.key ? 'selected' : ''}>${escH(e.label)}</option>`).join('')}
+              </select>
+              ${proximoLabel ? `<button class="btn btn-ghost btn-sm" onclick="avancarEstagioLead(${l.id})" title="Avançar para ${escH(proximoLabel)}">
+                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
+              </button>` : ''}
+            </div>
+          </div>`
+        }).join('')}
+      </div>
+    </div>`
+  }).join('')}</div>`
 }
 
 /* ── MEUS IMÓVEIS ──

@@ -36,6 +36,9 @@ pesquisadas na internet, e implementa um por vez.
 - **Histórico por cliente** — agrupar todas as propostas de um mesmo cliente.
 
 ## Já entregue
+- **Funil de Vendas (Kanban) — 2º módulo do pivô para CRM completo**
+  _Dor:_ a maior queda do funil imobiliário acontece entre "Proposta enviada" e "Negociação", em grande parte por falta de follow-up estruturado e por não existir uma visão clara de em que etapa cada lead está — hoje o corretor controla isso "de cabeça" ou em planilha solta, desconectada da agenda.
+  _Valor:_ quadro Kanban com 6 estágios (Novo contato → Visita agendada → Visita realizada → Proposta enviada → Negociação → Venda fechada), cards com cliente/imóvel/valor/alerta de dias sem contato, e botão simples para mover o lead de estágio. Reaproveita o mesmo array `leads` (jsonb) e mapeia automaticamente os leads antigos para o novo funil, sem quebrar a Agenda de Visitas.
 - **Gestão de Imóveis (catálogo) — 1º módulo do pivô para CRM completo**
   _Dor:_ corretor autônomo ainda controla a carteira de imóveis em "Wix + WhatsApp + planilha" — bagunça de disponibilidade/reservas e tabela de vendas desatualizada são queixas recorrentes do mercado.
   _Valor:_ cadastro de imóvel (tipo, finalidade, endereço, valor, área, dorms, vagas, status) com foto de capa, listado em grid de cards com badge de status; editar e excluir. Base para os próximos módulos do pivô (Funil de Vendas, Gestão de Vendas, Dashboard). (2026-06-24)
