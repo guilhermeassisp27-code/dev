@@ -1,0 +1,11 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 200" width="640" height="200">
+  <rect x="0" y="0" width="640" height="200" fill="#ffffff"/>
+  <g transform="translate(34 34) scale(0.2734375)">
+    <path d="M107.05 142 L231.75 70 Q256 56 280.25 70 L404.95 142 Q429.2 156 429.2 184 L429.2 328 Q429.2 356 404.95 370 L280.25 442 Q256 456 231.75 442 L107.05 370 Q82.8 356 82.8 328 L82.8 184 Q82.8 156 107.05 142 Z" fill="#00C9B1"/>
+    <path d="M256 168 L330 230 L312 230 L312 244 L200 244 L200 230 L182 230 Z" fill="#ffffff"/>
+    <rect x="200" y="244" width="112" height="98" fill="#ffffff"/>
+    <rect x="294" y="186" width="20" height="34" fill="#ffffff"/>
+    <rect x="238" y="296" width="36" height="46" fill="#FF6B4A"/>
+  </g>
+  <text x="184" y="124" font-family="Poppins,Nunito,'Helvetica Neue',Arial,sans-serif" font-size="76" font-weight="800" fill="#1F2A37">selo</text>
+</svg>
