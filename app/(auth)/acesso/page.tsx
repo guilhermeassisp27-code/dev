@@ -95,61 +95,31 @@ export default function AcessoPage() {
   }
 
   return (
-    <div
-      style={{
-        minHeight: '100vh',
-        background: '#040D1C',
-        display: 'flex',
-        alignItems: 'center',
-        justifyContent: 'center',
-        padding: '24px',
-        fontFamily: "'Inter', -apple-system, sans-serif",
-      }}
-    >
-      <div style={{ width: '100%', maxWidth: '360px' }}>
+    <div className="auth-page">
+      <div className="auth-shell">
         {/* Logo */}
-        <div style={{ textAlign: 'center', marginBottom: '32px' }}>
-          <div style={{ fontSize: '22px', fontWeight: 800, letterSpacing: '-0.5px', color: '#EEF2FF' }}>
-            Corretor<span style={{ color: '#4D7EFF' }}>PRO</span>
+        <div className="auth-brand">
+          <div className="auth-logo">
+            Corretor<span>PRO</span>
           </div>
-          <p style={{ color: '#7B93B8', fontSize: '13px', marginTop: '6px' }}>
+          <p className="auth-subtitle">
             {modo === 'login' ? 'Acesse sua conta' : 'Recuperar senha'}
           </p>
         </div>
 
         {/* Card */}
-        <div
-          style={{
-            background: '#050E1B',
-            border: '1px solid rgba(255,255,255,0.07)',
-            borderRadius: '12px',
-            padding: '28px',
-          }}
-        >
+        <div className="auth-card">
           {modo === 'recuperar' && recEnviado ? (
-            <div style={{ textAlign: 'center', padding: '8px 0' }}>
-              <div
-                style={{
-                  width: '48px',
-                  height: '48px',
-                  background: 'rgba(34,197,94,0.1)',
-                  borderRadius: '50%',
-                  display: 'flex',
-                  alignItems: 'center',
-                  justifyContent: 'center',
-                  margin: '0 auto 16px',
-                }}
-              >
+            <div className="auth-success">
+              <div className="auth-success-icon">
                 <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#22C55E" strokeWidth="2.5">
                   <polyline points="20 6 9 17 4 12" />
                 </svg>
               </div>
-              <h2 style={{ color: '#EEF2FF', fontSize: '16px', fontWeight: 700, marginBottom: '8px' }}>
-                Email enviado!
-              </h2>
-              <p style={{ color: '#7B93B8', fontSize: '13px', lineHeight: 1.6 }}>
+              <h2 className="auth-success-title">Email enviado!</h2>
+              <p className="auth-success-text">
                 Enviamos um link para redefinir a senha de{' '}
-                <strong style={{ color: '#EEF2FF' }}>{email}</strong>.
+                <strong>{email}</strong>.
                 <br />
                 Verifique sua caixa de entrada.
               </p>
@@ -159,77 +129,40 @@ export default function AcessoPage() {
                   setRecEnviado(false)
                   setErro('')
                 }}
-                style={{
-                  marginTop: '20px',
-                  background: 'none',
-                  border: 'none',
-                  color: '#4D7EFF',
-                  fontSize: '13px',
-                  cursor: 'pointer',
-                  fontFamily: 'inherit',
-                }}
+                className="auth-link-btn"
               >
                 Voltar para o login
               </button>
             </div>
           ) : (
             <form onSubmit={modo === 'login' ? handleLogin : handleRecuperar}>
-              <label style={labelStyle}>Email</label>
+              <label className="auth-label">Email</label>
               <input
                 type="email"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
                 required
                 placeholder="seu@email.com"
-                style={inputStyle}
-                onFocus={(e) => (e.target.style.borderColor = '#4D7EFF')}
-                onBlur={(e) => (e.target.style.borderColor = 'rgba(255,255,255,0.1)')}
+                className="auth-input"
               />
 
               {modo === 'login' && (
                 <>
-                  <label style={labelStyle}>Senha</label>
+                  <label className="auth-label">Senha</label>
                   <input
                     type="password"
                     value={senha}
                     onChange={(e) => setSenha(e.target.value)}
                     required
                     placeholder="••••••••"
-                    style={inputStyle}
-                    onFocus={(e) => (e.target.style.borderColor = '#4D7EFF')}
-                    onBlur={(e) => (e.target.style.borderColor = 'rgba(255,255,255,0.1)')}
+                    className="auth-input"
                   />
                 </>
               )}
 
-              {erro && (
-                <p style={{ color: '#EF4444', fontSize: '12px', marginBottom: '12px' }}>{erro}</p>
-              )}
+              {erro && <p className="auth-error">{erro}</p>}
 
-              <button
-                type="submit"
-                disabled={loading}
-                style={{
-                  width: '100%',
-                  background: '#4D7EFF',
-                  color: '#fff',
-                  border: 'none',
-                  borderRadius: '8px',
-                  padding: '11px',
-                  fontSize: '14px',
-                  fontWeight: 600,
-                  cursor: loading ? 'not-allowed' : 'pointer',
-                  opacity: loading ? 0.6 : 1,
-                  fontFamily: 'inherit',
-                  transition: 'background .15s',
-                }}
-                onMouseEnter={(e) => {
-                  if (!loading) e.currentTarget.style.background = '#3567E8'
-                }}
-                onMouseLeave={(e) => {
-                  if (!loading) e.currentTarget.style.background = '#4D7EFF'
-                }}
-              >
+              <button type="submit" disabled={loading} className="auth-submit">
                 {loading
                   ? modo === 'login'
                     ? 'Entrando...'
@@ -239,21 +172,14 @@ export default function AcessoPage() {
                     : 'Enviar link de recuperação'}
               </button>
 
-              <div style={{ textAlign: 'center', marginTop: '16px' }}>
+              <div className="auth-switch">
                 <button
                   type="button"
                   onClick={() => {
                     setModo(modo === 'login' ? 'recuperar' : 'login')
                     setErro('')
                   }}
-                  style={{
-                    background: 'none',
-                    border: 'none',
-                    color: '#4D7EFF',
-                    fontSize: '13px',
-                    cursor: 'pointer',
-                    fontFamily: 'inherit',
-                  }}
+                  className="auth-link-btn"
                 >
                   {modo === 'login' ? 'Esqueci minha senha' : 'Voltar para o login'}
                 </button>
@@ -262,35 +188,225 @@ export default function AcessoPage() {
           )}
         </div>
 
-        <p style={{ textAlign: 'center', color: '#3D5470', fontSize: '12px', marginTop: '20px' }}>
-          Acesso exclusivo para assinantes CorretorPRO
-        </p>
+        <p className="auth-footer-note">Acesso exclusivo para assinantes CorretorPRO</p>
       </div>
+
+      <style jsx>{`
+        .auth-page {
+          --bg: #000000;
+          --bg-2: #0a0a0c;
+          --surface: #1c1c1e;
+          --text: #f5f5f7;
+          --text-2: #86868b;
+          --border: rgba(255, 255, 255, 0.08);
+          --brand: #4d7eff;
+          --brand-2: #7c5cfc;
+
+          min-height: 100vh;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          padding: 24px;
+          background: radial-gradient(120% 120% at 50% -10%, var(--bg-2), var(--bg));
+          font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Display', 'SF Pro Text',
+            'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+        }
+
+        @media (prefers-color-scheme: light) {
+          .auth-page {
+            --bg: #ffffff;
+            --bg-2: #f5f5f7;
+            --surface: #ffffff;
+            --text: #1d1d1f;
+            --text-2: #6e6e73;
+            --border: rgba(0, 0, 0, 0.08);
+          }
+        }
+
+        .auth-shell {
+          width: 100%;
+          max-width: 380px;
+          animation: auth-rise 0.5s ease both;
+        }
+
+        @keyframes auth-rise {
+          from {
+            opacity: 0;
+            transform: translateY(14px);
+          }
+          to {
+            opacity: 1;
+            transform: translateY(0);
+          }
+        }
+
+        .auth-brand {
+          text-align: center;
+          margin-bottom: 36px;
+        }
+
+        .auth-logo {
+          font-size: 26px;
+          font-weight: 700;
+          letter-spacing: -0.02em;
+          color: var(--text);
+        }
+
+        .auth-logo span {
+          background: linear-gradient(135deg, var(--brand), var(--brand-2));
+          -webkit-background-clip: text;
+          background-clip: text;
+          color: transparent;
+        }
+
+        .auth-subtitle {
+          color: var(--text-2);
+          font-size: 15px;
+          margin-top: 8px;
+          letter-spacing: -0.01em;
+        }
+
+        .auth-card {
+          background: var(--surface);
+          border: 1px solid var(--border);
+          border-radius: 20px;
+          padding: 32px 28px;
+          box-shadow: 0 24px 60px rgba(0, 0, 0, 0.35);
+        }
+
+        @media (prefers-color-scheme: light) {
+          .auth-card {
+            box-shadow: 0 16px 40px rgba(0, 0, 0, 0.08);
+          }
+        }
+
+        .auth-label {
+          display: block;
+          font-size: 12px;
+          font-weight: 600;
+          color: var(--text-2);
+          margin-bottom: 8px;
+          letter-spacing: 0.04em;
+          text-transform: uppercase;
+        }
+
+        .auth-input {
+          width: 100%;
+          background: rgba(127, 127, 127, 0.08);
+          border: 1px solid var(--border);
+          border-radius: 12px;
+          padding: 13px 14px;
+          color: var(--text);
+          font-size: 15px;
+          font-family: inherit;
+          outline: none;
+          margin-bottom: 18px;
+          transition: border-color 0.18s ease, box-shadow 0.18s ease;
+          box-sizing: border-box;
+        }
+
+        .auth-input::placeholder {
+          color: var(--text-2);
+        }
+
+        .auth-input:focus {
+          border-color: var(--brand);
+          box-shadow: 0 0 0 4px rgba(77, 126, 255, 0.16);
+        }
+
+        .auth-error {
+          color: #ff6b6b;
+          font-size: 13px;
+          margin: -4px 0 14px;
+        }
+
+        .auth-submit {
+          width: 100%;
+          background: linear-gradient(135deg, var(--brand), var(--brand-2));
+          color: #fff;
+          border: none;
+          border-radius: 980px;
+          padding: 14px;
+          font-size: 15px;
+          font-weight: 600;
+          cursor: pointer;
+          font-family: inherit;
+          letter-spacing: -0.01em;
+          transition: transform 0.18s ease, box-shadow 0.18s ease, opacity 0.18s ease;
+          box-shadow: 0 12px 28px rgba(77, 126, 255, 0.3);
+        }
+
+        .auth-submit:disabled {
+          opacity: 0.6;
+          cursor: not-allowed;
+        }
+
+        .auth-submit:not(:disabled):hover {
+          transform: translateY(-1px);
+          box-shadow: 0 16px 34px rgba(77, 126, 255, 0.4);
+        }
+
+        .auth-switch {
+          text-align: center;
+          margin-top: 20px;
+        }
+
+        .auth-link-btn {
+          background: none;
+          border: none;
+          color: var(--brand);
+          font-size: 13px;
+          cursor: pointer;
+          font-family: inherit;
+          font-weight: 500;
+          transition: opacity 0.15s ease;
+        }
+
+        .auth-link-btn:hover {
+          opacity: 0.75;
+        }
+
+        .auth-success {
+          text-align: center;
+          padding: 8px 0;
+        }
+
+        .auth-success-icon {
+          width: 52px;
+          height: 52px;
+          background: rgba(34, 197, 94, 0.12);
+          border-radius: 50%;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          margin: 0 auto 18px;
+        }
+
+        .auth-success-title {
+          color: var(--text);
+          font-size: 17px;
+          font-weight: 700;
+          margin-bottom: 10px;
+        }
+
+        .auth-success-text {
+          color: var(--text-2);
+          font-size: 14px;
+          line-height: 1.6;
+        }
+
+        .auth-success-text strong {
+          color: var(--text);
+        }
+
+        .auth-footer-note {
+          text-align: center;
+          color: var(--text-2);
+          font-size: 12px;
+          margin-top: 24px;
+          opacity: 0.75;
+        }
+      `}</style>
     </div>
   )
-}
-
-const labelStyle: React.CSSProperties = {
-  display: 'block',
-  fontSize: '12px',
-  fontWeight: 600,
-  color: '#7B93B8',
-  marginBottom: '6px',
-  letterSpacing: '.04em',
-  textTransform: 'uppercase',
-}
-
-const inputStyle: React.CSSProperties = {
-  width: '100%',
-  background: '#081526',
-  border: '1px solid rgba(255,255,255,0.1)',
-  borderRadius: '8px',
-  padding: '10px 12px',
-  color: '#EEF2FF',
-  fontSize: '14px',
-  fontFamily: 'inherit',
-  outline: 'none',
-  marginBottom: '16px',
-  transition: 'border-color .15s',
-  boxSizing: 'border-box',
 }
