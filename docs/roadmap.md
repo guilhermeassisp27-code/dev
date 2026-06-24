@@ -36,6 +36,9 @@ pesquisadas na internet, e implementa um por vez.
 - **Histórico por cliente** — agrupar todas as propostas de um mesmo cliente.
 
 ## Já entregue
+- **Vendas — registro de comissão e resumo comercial — 3º módulo do pivô para CRM completo**
+  _Dor:_ corretor autônomo ainda controla vendas e comissões em planilha de Excel separada do CRM (modelos de "planilha de controle de vendas/comissão para corretor" amplamente usados no mercado) — retrabalho de digitar tudo de novo, risco de erro no cálculo manual da comissão (padrão de mercado ~6%, Cofeci) e nenhuma visão automática de "quanto fechei esse mês".
+  _Valor:_ ao mover um lead para "Venda fechada" no Funil, modal pede valor, % de comissão e data, calcula a comissão automaticamente, e registra no novo array `vendas`. Nova aba lista todas as vendas com totais de mês/ano, permite editar/excluir, e sugere marcar o imóvel do catálogo como vendido/locado. (2026-06-24)
 - **Funil de Vendas (Kanban) — 2º módulo do pivô para CRM completo**
   _Dor:_ a maior queda do funil imobiliário acontece entre "Proposta enviada" e "Negociação", em grande parte por falta de follow-up estruturado e por não existir uma visão clara de em que etapa cada lead está — hoje o corretor controla isso "de cabeça" ou em planilha solta, desconectada da agenda.
   _Valor:_ quadro Kanban com 6 estágios (Novo contato → Visita agendada → Visita realizada → Proposta enviada → Negociação → Venda fechada), cards com cliente/imóvel/valor/alerta de dias sem contato, e botão simples para mover o lead de estágio. Reaproveita o mesmo array `leads` (jsonb) e mapeia automaticamente os leads antigos para o novo funil, sem quebrar a Agenda de Visitas.

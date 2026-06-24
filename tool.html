@@ -414,6 +414,26 @@ input[type=color]{opacity:0;width:0;height:0;position:absolute}
 .followup-modal textarea{width:100%;min-height:120px;resize:vertical;background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.14);border-radius:10px;color:#EEF2FF;font-size:13.5px;line-height:1.55;padding:12px;font-family:inherit}
 .followup-modal .fu-actions{display:flex;gap:8px;margin-top:16px;flex-wrap:wrap;justify-content:flex-end}
 
+/* ── VENDAS ── */
+.vendas-kpis{display:grid;grid-template-columns:repeat(3,1fr);gap:14px}
+@media(max-width:700px){.vendas-kpis{grid-template-columns:1fr}}
+.vendas-kpi{background:var(--s1);border:1px solid var(--b);border-radius:var(--radl);padding:18px 20px;display:flex;flex-direction:column;gap:6px}
+.vendas-kpi-l{font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.07em;color:var(--t3)}
+.vendas-kpi-v{font-size:21px;font-weight:800;color:var(--t)}
+.venda-card-imovel{font-size:11.5px;color:var(--t2);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.venda-card-comissao{font-size:12px;color:#22C55E;font-weight:700}
+.venda-modal-back{position:fixed;inset:0;z-index:10000;background:rgba(8,18,28,.65);display:flex;align-items:center;justify-content:center;padding:18px}
+.venda-modal{width:min(460px,94vw);background:#0E2C3D;border:1px solid rgba(255,255,255,.14);border-radius:14px;padding:22px;box-shadow:0 18px 50px rgba(0,0,0,.5);font-family:inherit;max-height:92vh;overflow-y:auto}
+.venda-modal h3{font-size:16px;font-weight:800;color:#EEF2FF;margin:0 0 4px}
+.venda-modal .vm-sub{font-size:12.5px;color:#A9BBD0;margin:0 0 16px}
+.venda-modal .vm-field{display:flex;flex-direction:column;gap:5px;margin-bottom:12px}
+.venda-modal .vm-field label{font-size:12px;font-weight:600;color:#A9BBD0}
+.venda-modal .vm-resumo{background:rgba(34,197,94,.1);border:1px solid rgba(34,197,94,.3);border-radius:10px;padding:12px 14px;margin:6px 0 14px;font-size:13px;color:#EAF6EF}
+.venda-modal .vm-resumo b{color:#22C55E;font-size:15px}
+.venda-modal .vm-actions{display:flex;gap:8px;margin-top:6px;flex-wrap:wrap;justify-content:flex-end}
+.venda-modal .vm-imovel-opt{display:flex;align-items:flex-start;gap:8px;background:rgba(77,126,255,.1);border:1px solid rgba(77,126,255,.28);border-radius:10px;padding:12px 14px;margin:4px 0 14px;font-size:12.5px;color:#D5E1F5}
+.venda-modal .vm-imovel-opt input{margin-top:2px}
+
 /* ── REGISTRO DE VISITA ── */
 .termo-decl{font-size:14px;line-height:1.85;color:var(--t2);text-align:justify}
 .termo-decl b{color:var(--t)}
@@ -526,6 +546,11 @@ input[type=color]{opacity:0;width:0;height:0;position:absolute}
       <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 3H2l8 9.46V19l4 2v-8.54L22 3z"/></svg>
       Funil de Vendas
       <span class="sb-badge" id="sb-count-funil" style="margin-left:auto;background:var(--ps);color:var(--p);font-size:10px;font-weight:700;padding:2px 7px;border-radius:100px;display:none"></span>
+    </button>
+    <button class="sb-item" data-view="vendas" onclick="showView('vendas')">
+      <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 000 7h5a3.5 3.5 0 010 7H6"/></svg>
+      Vendas
+      <span class="sb-badge" id="sb-count-vendas" style="margin-left:auto;background:var(--ps);color:var(--p);font-size:10px;font-weight:700;padding:2px 7px;border-radius:100px;display:none"></span>
     </button>
     <div class="sb-sec">Imóveis</div>
     <button class="sb-item" data-view="imoveis" onclick="showView('imoveis')">
@@ -829,6 +854,39 @@ input[type=color]{opacity:0;width:0;height:0;position:absolute}
         <div id="imoveis-content"></div>
       </div>
     </div><!-- /view-imoveis -->
+
+    <!-- ══════════════════ VIEW: VENDAS ══════════════════
+         Registro comercial das vendas fechadas no Funil. Mesmo padrão de
+         array no jsonb (igual `leads`/`imoveis`) — cada venda referencia
+         leadId/imovelId para rastreabilidade, mas guarda os dados principais
+         direto no objeto pra não depender de lookup se o lead/imóvel for
+         excluído depois. -->
+    <div class="view" id="view-vendas">
+      <div class="ph">
+        <h1>Vendas</h1>
+        <p>Toda venda fechada no Funil cai aqui automaticamente — com valor, comissão e data — pra você acompanhar seu resultado comercial sem planilha.</p>
+      </div>
+
+      <div class="vendas-kpis">
+        <div class="vendas-kpi">
+          <span class="vendas-kpi-l">Vendido no mês</span>
+          <span class="vendas-kpi-v" id="kpi-vendido-mes">R$ 0</span>
+        </div>
+        <div class="vendas-kpi">
+          <span class="vendas-kpi-l">Comissão no mês</span>
+          <span class="vendas-kpi-v" id="kpi-comissao-mes">R$ 0</span>
+        </div>
+        <div class="vendas-kpi">
+          <span class="vendas-kpi-l">Vendas no ano</span>
+          <span class="vendas-kpi-v" id="kpi-vendas-ano">0</span>
+        </div>
+      </div>
+
+      <div style="margin-top:24px">
+        <div class="card-t" style="margin-bottom:12px">Vendas registradas</div>
+        <div id="vendas-content"></div>
+      </div>
+    </div><!-- /view-vendas -->
 
     <!-- ══════════════════ VIEW: NOVA PROPOSTA ══════════════════ -->
     <div class="view active" id="view-form">
@@ -1620,6 +1678,11 @@ function seedDemoData() {
     { id:base-23, tipo:'Apartamento', finalidade:'locacao', end:'Av. Paulista, 1500 — São Paulo, SP',              bairro:'Bela Vista',     valor:'4.200',     area:'55',  dorms:'2', vagas:'1', status:'locado',     foto:null, criadoEm:diaBR(6) },
     { id:base-24, tipo:'Comercial',   finalidade:'venda',   end:'Rua Oscar Freire, 820 — São Paulo, SP',           bairro:'Jardins',        valor:'2.300.000', area:'140', dorms:'',  vagas:'3', status:'disponivel', foto:null, criadoEm:diaBR(1) },
   ]
+
+  vendas = [
+    { id:base-31, leadId:null, imovelId:null, cliente:'Ana Beatriz', imovel:'Apartamento — Av. Paulista, 1500', valor:'4.200', percComissao:8, comissaoValor:336, dataFechamento:iso(5), criadoEm:isoTs(5) },
+    { id:base-32, leadId:null, imovelId:null, cliente:'Roberto Lima', imovel:'Casa — Alameda dos Anjos, 145, Alphaville', valor:'1.450.000', percComissao:6, comissaoValor:87000, dataFechamento:iso(12), criadoEm:isoTs(12) },
+  ]
 }
 
 /* ── TOUR GUIADO (só no modo demo): destaca cada funcionalidade em passos ── */
@@ -1688,6 +1751,7 @@ let perfil = JSON.parse(localStorage.getItem('cpr_perfil') || 'null') || { nome:
 let historico = JSON.parse(localStorage.getItem('cpr_hist') || '[]')
 let leads = JSON.parse(localStorage.getItem('cpr_leads') || '[]')
 let imoveis = JSON.parse(localStorage.getItem('cpr_imoveis') || '[]')
+let vendas = JSON.parse(localStorage.getItem('cpr_vendas') || '[]')
 let snapProposta = null
 let fotoAtual = null
 let _toastT = null
@@ -1716,6 +1780,7 @@ function initApp() {
   atualizarBadgeAgenda()
   atualizarBadgeImoveis()
   atualizarBadgeFunil()
+  atualizarBadgeVendas()
   if (!perfil.nome) {
     document.getElementById('banner-profile').classList.add('show')
   }
@@ -1739,7 +1804,7 @@ async function carregarRemoto() {
   try {
     const { data, error } = await window._sb
       .from('cpr_user_data')
-      .select('perfil,historico,leads,imoveis')
+      .select('perfil,historico,leads,imoveis,vendas')
       .eq('user_id', window._uid)
       .maybeSingle()
     if (error) return
@@ -1762,7 +1827,12 @@ async function carregarRemoto() {
         imoveis = data.imoveis
         localStorage.setItem('cpr_imoveis', JSON.stringify(imoveis))
       }
-    } else if (perfil.nome || historico.length || leads.length || imoveis.length) {
+      // Coluna nova — pode não existir ainda em contas antigas/antes da migração SQL
+      if (Array.isArray(data.vendas)) {
+        vendas = data.vendas
+        localStorage.setItem('cpr_vendas', JSON.stringify(vendas))
+      }
+    } else if (perfil.nome || historico.length || leads.length || imoveis.length || vendas.length) {
       // Primeiro acesso desta conta: migra os dados locais para a nuvem
       await salvarRemoto()
     }
@@ -1773,7 +1843,7 @@ async function salvarRemoto() {
   if (!window._sb || !window._uid) return
   try {
     const { error } = await window._sb.from('cpr_user_data').upsert(
-      { user_id: window._uid, perfil, historico, leads, imoveis, updated_at: new Date().toISOString() },
+      { user_id: window._uid, perfil, historico, leads, imoveis, vendas, updated_at: new Date().toISOString() },
       { onConflict: 'user_id' }
     )
     if (error) throw error
@@ -1787,8 +1857,8 @@ function showView(name) {
   document.querySelectorAll('.view').forEach(v => v.classList.remove('active'))
   document.getElementById('view-' + name).classList.add('active')
   document.querySelectorAll('.sb-item[data-view]').forEach(i => i.classList.toggle('active', i.dataset.view === name))
-  const labels = { agenda:'Agenda de Visitas', form:'Nova Proposta', history:'Minhas Propostas', visita:'Registro de Visita', config:'Configurações', imoveis:'Meus Imóveis', funil:'Funil de Vendas' }
-  const roots  = { agenda:'Funil', form:'Propostas', history:'Propostas', visita:'Documentos', config:'Conta', imoveis:'Imóveis', funil:'Funil' }
+  const labels = { agenda:'Agenda de Visitas', form:'Nova Proposta', history:'Minhas Propostas', visita:'Registro de Visita', config:'Configurações', imoveis:'Meus Imóveis', funil:'Funil de Vendas', vendas:'Vendas' }
+  const roots  = { agenda:'Funil', form:'Propostas', history:'Propostas', visita:'Documentos', config:'Conta', imoveis:'Imóveis', funil:'Funil', vendas:'Funil' }
   document.getElementById('crumb-page').textContent = labels[name] || name
   document.getElementById('crumb-root').textContent = roots[name] || name
   // topbar buttons only for form
@@ -1818,6 +1888,9 @@ function showView(name) {
   if (name === 'funil') {
     popularSelectImoveisFunil()
     renderFunil()
+  }
+  if (name === 'vendas') {
+    renderVendas()
   }
   closeSidebar()
   window.scrollTo({ top: 0, behavior: 'smooth' })
@@ -3387,10 +3460,20 @@ function estagioFunilLead(l) {
 
 // Persiste o estágio explicitamente no lead (1ª vez que isso acontece, o
 // valor migrado pelo cálculo automático passa a ficar gravado).
+// Caso especial: mover para "Venda fechada" abre o modal de registro da
+// venda (módulo Vendas) antes de persistir o estágio — sem o modal sendo
+// confirmado, o lead permanece no estágio atual (não se move "no vazio").
 async function moverEstagioLead(id, novoEstagio) {
   if (window._DEMO) return demoBloqueio()
   const l = leads.find(x => x.id === id)
   if (!l || !FUNIL_KEYS.includes(novoEstagio)) return
+
+  if (novoEstagio === 'venda_fechada' && estagioFunilLead(l) !== 'venda_fechada') {
+    abrirModalVenda(id)
+    renderFunil() // garante que o <select> volte a refletir o estágio atual (modal ainda não confirmado)
+    return
+  }
+
   l.estagioFunil = novoEstagio
   l.ultimaInteracao = new Date().toISOString()
   localStorage.setItem('cpr_leads', JSON.stringify(leads))
@@ -3530,6 +3613,346 @@ function renderFunil() {
             </div>
           </div>`
         }).join('')}
+      </div>
+    </div>`
+  }).join('')}</div>`
+}
+
+/* ── VENDAS ──
+   Terceiro módulo do pivô para CRM imobiliário: registro comercial das
+   vendas fechadas no Funil. Mesmo padrão de array no jsonb (igual
+   `leads`/`imoveis`) — cada venda referencia leadId/imovelId pra
+   rastreabilidade, mas guarda os dados principais (cliente, imóvel texto,
+   valor, comissão) direto no objeto, pra não depender de lookup se o lead
+   ou o imóvel forem excluídos depois. */
+let _vendaLeadIdAtual = null   // lead em registro de venda no modal aberto, se vier do Funil
+let _vendaEdicaoId = null      // id da venda em edição (null = nova venda manual, sem lead)
+
+// Converte "450.000" / "450000" / "450.000,50" (texto livre, mesmo padrão
+// dos outros campos de valor do app) num número para cálculo.
+function valorParaNumero(v) {
+  if (!v) return 0
+  const limpo = String(v).trim().replace(/[^\d,.-]/g, '')
+  if (!limpo) return 0
+  // Se tem vírgula, assume formato BR (1.234.567,89); senão, ponto é separador de milhar solto
+  if (limpo.includes(',')) {
+    return parseFloat(limpo.replace(/\./g, '').replace(',', '.')) || 0
+  }
+  return parseFloat(limpo.replace(/\.(?=\d{3}(\D|$))/g, '')) || 0
+}
+
+function formatarMoedaBR(n) {
+  return (n || 0).toLocaleString('pt-BR', { style:'currency', currency:'BRL', maximumFractionDigits:2 })
+}
+
+// Abre o modal de registro de venda. Se `leadId` for passado, vem do Funil
+// (mover lead para "Venda fechada") e o lead/imóvel ficam pré-preenchidos;
+// se não, é um registro manual a partir da aba Vendas.
+function abrirModalVenda(leadId) {
+  const antigo = document.getElementById('venda-modal-back')
+  if (antigo) antigo.remove()
+  _vendaLeadIdAtual = leadId || null
+  _vendaEdicaoId = null
+
+  const l = leadId ? leads.find(x => x.id === leadId) : null
+  const clienteIni = l ? (l.cliente || '') : ''
+  const imovelIni  = l ? (l.imovel || '') : ''
+  const valorIni   = l ? (l.valorEstimado || '') : ''
+  const hoje = new Date().toISOString().slice(0, 10)
+
+  const back = document.createElement('div')
+  back.id = 'venda-modal-back'
+  back.className = 'venda-modal-back'
+  back.onclick = (e) => { if (e.target === back) fecharModalVenda() }
+  back.innerHTML = `
+    <div class="venda-modal">
+      <h3>Registrar venda${clienteIni ? ' — ' + escH(clienteIni) : ''}</h3>
+      <p class="vm-sub">Preencha os dados comerciais do fechamento. A comissão é calculada automaticamente.</p>
+      <div class="vm-field">
+        <label for="vm-cliente">Cliente <span class="req">*</span></label>
+        <input id="vm-cliente" type="text" class="inp" value="${escH(clienteIni)}" placeholder="Ex: João Silva" required>
+      </div>
+      <div class="vm-field">
+        <label for="vm-imovel">Imóvel</label>
+        <input id="vm-imovel" type="text" class="inp" value="${escH(imovelIni)}" placeholder="Ex: Apartamento — Av. Paulista, 1000">
+      </div>
+      <div class="vm-field">
+        <label for="vm-valor">Valor final da venda <span class="req">*</span></label>
+        <div class="pfx"><span class="pfx-l">R$</span>
+          <input id="vm-valor" type="text" class="inp" value="${escH(valorIni)}" placeholder="450.000" required inputmode="numeric" oninput="atualizarResumoVenda()">
+        </div>
+      </div>
+      <div class="vm-field">
+        <label for="vm-perc">Comissão (%) <span class="req">*</span></label>
+        <input id="vm-perc" type="text" class="inp" value="6" placeholder="6" required inputmode="decimal" oninput="atualizarResumoVenda()">
+      </div>
+      <div class="vm-field">
+        <label for="vm-data">Data de fechamento <span class="req">*</span></label>
+        <input id="vm-data" type="date" class="inp" value="${hoje}" required>
+      </div>
+      <div class="vm-resumo" id="vm-resumo">Valor da comissão: <b>R$ 0,00</b></div>
+      <div class="vm-actions">
+        <button class="btn btn-ghost btn-sm" onclick="fecharModalVenda()">Cancelar</button>
+        <button class="btn btn-green btn-sm" onclick="confirmarVenda()">Registrar venda</button>
+      </div>
+    </div>`
+  document.body.appendChild(back)
+  atualizarResumoVenda()
+}
+
+function fecharModalVenda() {
+  const el = document.getElementById('venda-modal-back')
+  if (el) el.remove()
+  _vendaLeadIdAtual = null
+  _vendaEdicaoId = null
+}
+
+function atualizarResumoVenda() {
+  const valor = valorParaNumero(document.getElementById('vm-valor')?.value)
+  const perc = parseFloat((document.getElementById('vm-perc')?.value || '0').replace(',', '.')) || 0
+  const comissao = valor * (perc / 100)
+  const resumo = document.getElementById('vm-resumo')
+  if (resumo) resumo.innerHTML = `Valor da comissão: <b>${formatarMoedaBR(comissao)}</b>`
+}
+
+// Confirma o registro da venda (nova ou edição), persiste no array `vendas`
+// e, se o lead estava vinculado a um imóvel do catálogo, oferece marcar o
+// imóvel como Vendido/Locado — sem forçar.
+async function confirmarVenda() {
+  if (window._DEMO) return demoBloqueio()
+  const cliente = document.getElementById('vm-cliente').value.trim()
+  const imovelTxt = document.getElementById('vm-imovel').value.trim()
+  const valorTxt = document.getElementById('vm-valor').value.trim()
+  const percTxt = document.getElementById('vm-perc').value.trim()
+  const dataFechamento = document.getElementById('vm-data').value
+
+  if (!cliente || !valorTxt || !percTxt || !dataFechamento) {
+    toast('Preencha cliente, valor, comissão e data', true)
+    return
+  }
+
+  const valor = valorParaNumero(valorTxt)
+  const perc = parseFloat(percTxt.replace(',', '.')) || 0
+  const comissaoValor = valor * (perc / 100)
+
+  const l = _vendaLeadIdAtual ? leads.find(x => x.id === _vendaLeadIdAtual) : null
+  const imovelId = l ? (l.imovelId || null) : (_vendaEdicaoId ? vendas.find(v => v.id === _vendaEdicaoId)?.imovelId || null : null)
+
+  if (_vendaEdicaoId) {
+    const v = vendas.find(x => x.id === _vendaEdicaoId)
+    if (v) {
+      Object.assign(v, { cliente, imovel: imovelTxt, valor: valorTxt, percComissao: perc, comissaoValor, dataFechamento })
+    }
+  } else {
+    vendas.unshift({
+      id: Date.now(),
+      leadId: _vendaLeadIdAtual || null,
+      imovelId,
+      cliente,
+      imovel: imovelTxt,
+      valor: valorTxt,
+      percComissao: perc,
+      comissaoValor,
+      dataFechamento,
+      criadoEm: new Date().toISOString(),
+    })
+  }
+
+  // Move o lead de origem para "Venda fechada" no Funil, se vier de lá.
+  if (l) {
+    l.estagioFunil = 'venda_fechada'
+    l.ultimaInteracao = new Date().toISOString()
+    localStorage.setItem('cpr_leads', JSON.stringify(leads))
+  }
+
+  localStorage.setItem('cpr_vendas', JSON.stringify(vendas))
+  fecharModalVenda()
+  renderFunil()
+  atualizarBadgeFunil()
+  renderVendas()
+  atualizarBadgeVendas()
+
+  try {
+    await salvarRemoto()
+    toast('Venda registrada!')
+  } catch(_) {
+    toast('Salvo localmente — verifique sua conexão', true)
+  }
+
+  // Sugere marcar o imóvel do catálogo como Vendido/Locado, sem forçar.
+  if (imovelId) {
+    const im = imoveis.find(x => String(x.id) === String(imovelId))
+    if (im && im.status !== 'vendido' && im.status !== 'locado') {
+      ofereceMarcarImovelStatus(imovelId)
+    }
+  }
+}
+
+// Pergunta (inline, mesmo padrão da jornada de proposta) se o corretor quer
+// marcar o imóvel vinculado como Vendido ou Locado conforme a finalidade.
+function ofereceMarcarImovelStatus(imovelId) {
+  const im = imoveis.find(x => String(x.id) === String(imovelId))
+  if (!im) return
+  const novoStatus = im.finalidade === 'locacao' ? 'locado' : 'vendido'
+  const label = IMOVEL_STATUS_LABEL[novoStatus]
+  const antigo = document.getElementById('venda-imovel-toast'); if (antigo) antigo.remove()
+  const box = document.createElement('div')
+  box.id = 'venda-imovel-toast'
+  box.style.cssText = 'position:fixed;bottom:90px;left:50%;transform:translateX(-50%);z-index:9998;background:#0E2C3D;border:1px solid rgba(77,126,255,.4);border-radius:12px;padding:14px 18px;display:flex;align-items:center;gap:12px;flex-wrap:wrap;justify-content:center;max-width:92vw;box-shadow:0 18px 50px rgba(0,0,0,.5)'
+  box.innerHTML =
+    '<span style="font-size:13.5px;color:#EAF0FF">Marcar <b style="color:#fff">' + escH(im.tipo || 'imóvel') + ' — ' + escH(im.end || '') + '</b> como <b style="color:#7BA3FF">' + escH(label) + '</b>?</span>' +
+    '<span style="display:flex;gap:8px">' +
+      '<button class="btn btn-ghost btn-sm" onclick="document.getElementById(\'venda-imovel-toast\').remove()">Agora não</button>' +
+      '<button class="btn btn-green btn-sm" onclick="marcarImovelComoVendido(\'' + String(imovelId).replace(/'/g, "\\'") + '\',\'' + novoStatus + '\')">Marcar como ' + escH(label) + '</button>' +
+    '</span>'
+  document.body.appendChild(box)
+}
+
+async function marcarImovelComoVendido(imovelId, novoStatus) {
+  const im = imoveis.find(x => String(x.id) === String(imovelId))
+  const aviso = document.getElementById('venda-imovel-toast'); if (aviso) aviso.remove()
+  if (!im) return
+  im.status = novoStatus
+  localStorage.setItem('cpr_imoveis', JSON.stringify(imoveis))
+  renderImoveis()
+  atualizarBadgeImoveis()
+  try { await salvarRemoto() } catch(_) {}
+  toast('Imóvel marcado como ' + IMOVEL_STATUS_LABEL[novoStatus])
+}
+
+function editarVenda(id) {
+  const v = vendas.find(x => x.id === id)
+  if (!v) return
+  _vendaLeadIdAtual = null
+  _vendaEdicaoId = id
+
+  const antigo = document.getElementById('venda-modal-back')
+  if (antigo) antigo.remove()
+
+  const back = document.createElement('div')
+  back.id = 'venda-modal-back'
+  back.className = 'venda-modal-back'
+  back.onclick = (e) => { if (e.target === back) fecharModalVenda() }
+  back.innerHTML = `
+    <div class="venda-modal">
+      <h3>Editar venda — ${escH(v.cliente || '')}</h3>
+      <p class="vm-sub">Ajuste os dados comerciais do fechamento. A comissão é recalculada automaticamente.</p>
+      <div class="vm-field">
+        <label for="vm-cliente">Cliente <span class="req">*</span></label>
+        <input id="vm-cliente" type="text" class="inp" value="${escH(v.cliente || '')}" required>
+      </div>
+      <div class="vm-field">
+        <label for="vm-imovel">Imóvel</label>
+        <input id="vm-imovel" type="text" class="inp" value="${escH(v.imovel || '')}">
+      </div>
+      <div class="vm-field">
+        <label for="vm-valor">Valor final da venda <span class="req">*</span></label>
+        <div class="pfx"><span class="pfx-l">R$</span>
+          <input id="vm-valor" type="text" class="inp" value="${escH(v.valor || '')}" required inputmode="numeric" oninput="atualizarResumoVenda()">
+        </div>
+      </div>
+      <div class="vm-field">
+        <label for="vm-perc">Comissão (%) <span class="req">*</span></label>
+        <input id="vm-perc" type="text" class="inp" value="${escH(String(v.percComissao ?? ''))}" required inputmode="decimal" oninput="atualizarResumoVenda()">
+      </div>
+      <div class="vm-field">
+        <label for="vm-data">Data de fechamento <span class="req">*</span></label>
+        <input id="vm-data" type="date" class="inp" value="${escH(v.dataFechamento || '')}" required>
+      </div>
+      <div class="vm-resumo" id="vm-resumo">Valor da comissão: <b>R$ 0,00</b></div>
+      <div class="vm-actions">
+        <button class="btn btn-ghost btn-sm" onclick="fecharModalVenda()">Cancelar</button>
+        <button class="btn btn-green btn-sm" onclick="confirmarVenda()">Salvar alterações</button>
+      </div>
+    </div>`
+  document.body.appendChild(back)
+  atualizarResumoVenda()
+}
+
+async function excluirVenda(id) {
+  const i = vendas.findIndex(x => x.id === id)
+  if (i === -1) return
+  if (!confirm('Excluir este registro de venda? Isso não afeta o lead nem o imóvel vinculados.')) return
+  vendas.splice(i, 1)
+  localStorage.setItem('cpr_vendas', JSON.stringify(vendas))
+  renderVendas()
+  atualizarBadgeVendas()
+  try { await salvarRemoto() } catch(_) {}
+  toast('Venda removida')
+}
+
+function atualizarBadgeVendas() {
+  const badge = document.getElementById('sb-count-vendas')
+  if (!badge) return
+  const hoje = new Date()
+  const nMes = vendas.filter(v => {
+    const d = new Date(v.dataFechamento)
+    return d.getFullYear() === hoje.getFullYear() && d.getMonth() === hoje.getMonth()
+  }).length
+  if (nMes > 0) {
+    badge.textContent = nMes
+    badge.style.display = 'inline'
+  } else {
+    badge.style.display = 'none'
+  }
+}
+
+function renderVendas() {
+  const el = document.getElementById('vendas-content')
+  if (!el) return
+
+  const hoje = new Date()
+  const doMes = vendas.filter(v => {
+    const d = new Date(v.dataFechamento)
+    return !isNaN(d) && d.getFullYear() === hoje.getFullYear() && d.getMonth() === hoje.getMonth()
+  })
+  const doAno = vendas.filter(v => {
+    const d = new Date(v.dataFechamento)
+    return !isNaN(d) && d.getFullYear() === hoje.getFullYear()
+  })
+  const vendidoMes = doMes.reduce((s, v) => s + valorParaNumero(v.valor), 0)
+  const comissaoMes = doMes.reduce((s, v) => s + (v.comissaoValor || 0), 0)
+
+  const kpiVendido = document.getElementById('kpi-vendido-mes')
+  const kpiComissao = document.getElementById('kpi-comissao-mes')
+  const kpiAno = document.getElementById('kpi-vendas-ano')
+  if (kpiVendido) kpiVendido.textContent = formatarMoedaBR(vendidoMes)
+  if (kpiComissao) kpiComissao.textContent = formatarMoedaBR(comissaoMes)
+  if (kpiAno) kpiAno.textContent = String(doAno.length)
+
+  if (vendas.length === 0) {
+    el.innerHTML = `<div class="hist-empty">
+      <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 000 7h5a3.5 3.5 0 010 7H6"/></svg>
+      <h3>Nenhuma venda registrada ainda</h3>
+      <p>Mova um lead para "Venda fechada" no Funil para registrar a primeira venda automaticamente.</p>
+    </div>`
+    return
+  }
+
+  const ordenadas = vendas.slice().sort((a, b) => new Date(b.dataFechamento || 0) - new Date(a.dataFechamento || 0))
+  el.innerHTML = `<div class="hist-list">${ordenadas.map(v => {
+    const dataFmt = v.dataFechamento ? new Date(v.dataFechamento + 'T00:00:00').toLocaleDateString('pt-BR') : '—'
+    return `
+    <div class="hist-card">
+      <div class="hist-main-row">
+        <span class="hist-tipo">Venda</span>
+        <div class="hist-info">
+          <div class="hist-cliente">${escH(v.cliente || '—')}</div>
+          ${v.imovel ? `<div class="venda-card-imovel">${escH(v.imovel)}</div>` : ''}
+        </div>
+        <div class="hist-valor">R$ ${escH(v.valor || '0')}</div>
+        <div class="hist-actions">
+          <button class="btn btn-ghost btn-sm" onclick="editarVenda(${v.id})" title="Editar venda">
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 4H4a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2v-7"/><path d="M18.5 2.5a2.12 2.12 0 013 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
+          </button>
+          <button class="btn btn-ghost btn-sm" onclick="excluirVenda(${v.id})" aria-label="Excluir">
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 01-2 2H8a2 2 0 01-2-2L5 6"/><path d="M10 11v6M14 11v6"/><path d="M9 6V4h6v2"/></svg>
+          </button>
+        </div>
+      </div>
+      <div class="hist-bottom-row">
+        <div class="hist-meta">${escH(dataFmt)}</div>
+        <div class="venda-card-comissao">Comissão: ${formatarMoedaBR(v.comissaoValor || 0)} (${escH(String(v.percComissao ?? 0))}%)</div>
       </div>
     </div>`
   }).join('')}</div>`

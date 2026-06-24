@@ -169,3 +169,17 @@ alter table public.cpr_user_data
 
 -- Sem GRANT adicional necessário: a coluna nova já está coberta pelo
 -- grant select/insert/update on public.cpr_user_data feito acima.
+
+-- ============================================================
+-- Migração: Vendas / registro de comissão (2026-06-24)
+-- Terceiro módulo do pivô para CRM imobiliário completo. Nova coluna
+-- jsonb seguindo o MESMO padrão de `leads`/`imoveis`/`historico` — sem
+-- tabela nova, RLS já cobre a tabela inteira por user_id. Idempotente.
+-- Cada venda referencia leadId/imovelId (rastreabilidade) mas guarda os
+-- dados principais (cliente, imóvel, valor, comissão) direto no objeto.
+-- ============================================================
+alter table public.cpr_user_data
+  add column if not exists vendas jsonb not null default '[]'::jsonb;
+
+-- Sem GRANT adicional necessário: a coluna nova já está coberta pelo
+-- grant select/insert/update on public.cpr_user_data feito acima.
