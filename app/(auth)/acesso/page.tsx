@@ -100,7 +100,14 @@ export default function AcessoPage() {
         {/* Logo */}
         <div className="auth-brand">
           <div className="auth-logo">
-            Corretor<span>PRO</span>
+            <svg width="150" height="40" viewBox="0 0 300 80" fill="none" role="img" aria-label="Selo" style={{ color: 'var(--text)' }}>
+              <g transform="translate(10,12) scale(0.875)">
+                <circle cx="32" cy="32" r="29" stroke="#C9882A" strokeWidth="1.4" strokeDasharray="1.4 5.1" strokeLinecap="round" />
+                <circle cx="32" cy="32" r="23.5" stroke="#C9882A" strokeWidth="2.4" />
+                <path d="M22.5 32.8l6.2 6.2 12.4-14.6" stroke="#C9882A" strokeWidth="3.4" strokeLinecap="round" strokeLinejoin="round" />
+              </g>
+              <text x="86" y="53" textAnchor="start" fontFamily="Geist, ui-sans-serif, system-ui, -apple-system, 'Segoe UI', sans-serif" fontWeight="600" fontSize="40" letterSpacing="6" fill="currentColor">SELO</text>
+            </svg>
           </div>
           <p className="auth-subtitle">
             {modo === 'login' ? 'Acesse sua conta' : 'Recuperar senha'}
@@ -188,19 +195,19 @@ export default function AcessoPage() {
           )}
         </div>
 
-        <p className="auth-footer-note">Acesso exclusivo para assinantes CorretorPRO</p>
+        <p className="auth-footer-note">Acesso exclusivo para assinantes Selo</p>
       </div>
 
       <style jsx>{`
         .auth-page {
-          --bg: #000000;
-          --bg-2: #0a0a0c;
-          --surface: #1c1c1e;
-          --text: #f5f5f7;
-          --text-2: #86868b;
-          --border: rgba(255, 255, 255, 0.08);
-          --brand: #4d7eff;
-          --brand-2: #7c5cfc;
+          --bg: #0a2138;
+          --bg-2: #0f2d4a;
+          --surface: #152538;
+          --text: #e8edf2;
+          --text-2: #8fa0b2;
+          --border: rgba(232, 237, 242, 0.08);
+          --brand: #c9882a;
+          --brand-2: #d6a24a;
 
           min-height: 100vh;
           display: flex;
@@ -208,18 +215,17 @@ export default function AcessoPage() {
           justify-content: center;
           padding: 24px;
           background: radial-gradient(120% 120% at 50% -10%, var(--bg-2), var(--bg));
-          font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Display', 'SF Pro Text',
-            'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+          font-family: Geist, ui-sans-serif, system-ui, -apple-system, 'Segoe UI', sans-serif;
         }
 
         @media (prefers-color-scheme: light) {
           .auth-page {
-            --bg: #ffffff;
-            --bg-2: #f5f5f7;
+            --bg: #f5f0e8;
+            --bg-2: #f5f0e8;
             --surface: #ffffff;
-            --text: #1d1d1f;
-            --text-2: #6e6e73;
-            --border: rgba(0, 0, 0, 0.08);
+            --text: #15202b;
+            --text-2: #5b6b7a;
+            --border: rgba(15, 45, 74, 0.1);
           }
         }
 
@@ -246,17 +252,8 @@ export default function AcessoPage() {
         }
 
         .auth-logo {
-          font-size: 26px;
-          font-weight: 700;
-          letter-spacing: -0.02em;
-          color: var(--text);
-        }
-
-        .auth-logo span {
-          background: linear-gradient(135deg, var(--brand), var(--brand-2));
-          -webkit-background-clip: text;
-          background-clip: text;
-          color: transparent;
+          display: flex;
+          justify-content: center;
         }
 
         .auth-subtitle {
@@ -311,7 +308,7 @@ export default function AcessoPage() {
 
         .auth-input:focus {
           border-color: var(--brand);
-          box-shadow: 0 0 0 4px rgba(77, 126, 255, 0.16);
+          box-shadow: 0 0 0 4px rgba(201, 136, 42, 0.16);
         }
 
         .auth-error {
@@ -333,7 +330,7 @@ export default function AcessoPage() {
           font-family: inherit;
           letter-spacing: -0.01em;
           transition: transform 0.18s ease, box-shadow 0.18s ease, opacity 0.18s ease;
-          box-shadow: 0 12px 28px rgba(77, 126, 255, 0.3);
+          box-shadow: 0 12px 28px rgba(201, 136, 42, 0.3);
         }
 
         .auth-submit:disabled {
@@ -343,7 +340,7 @@ export default function AcessoPage() {
 
         .auth-submit:not(:disabled):hover {
           transform: translateY(-1px);
-          box-shadow: 0 16px 34px rgba(77, 126, 255, 0.4);
+          box-shadow: 0 16px 34px rgba(201, 136, 42, 0.4);
         }
 
         .auth-switch {

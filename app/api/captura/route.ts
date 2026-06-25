@@ -23,7 +23,7 @@ function brandFrom(row: OwnerRow) {
     ownerId: row.user_id,
     nome: String(perfil.nome ?? ''),
     creci: String(perfil.creci ?? ''),
-    cor: String(perfil.cor ?? '#4D7EFF'),
+    cor: String(perfil.cor ?? '#0F2D4A'),
     logo: (perfil.logo as string | null) ?? null,
   }
 }

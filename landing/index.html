@@ -3,10 +3,10 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>CorretorPRO — Proposta profissional com a sua marca em 60 segundos</title>
-<meta name="description" content="Gere propostas imobiliárias profissionais com o seu logo, CRECI e cor em menos de 60 segundos. Impressione o cliente antes do concorrente e feche mais.">
-<meta property="og:title" content="CorretorPRO — Proposta profissional em 60 segundos">
-<meta property="og:description" content="Pare de perder venda por proposta lenta e amadora. Gere propostas com a sua marca em segundos.">
+<title>Selo — Sua comissão, garantida</title>
+<meta name="description" content="Selo blinda a comissão do corretor de imóveis autônomo: gere propostas profissionais com o seu logo, CRECI e cor em menos de 60 segundos, do primeiro contato à assinatura.">
+<meta property="og:title" content="Selo — Sua comissão, garantida">
+<meta property="og:description" content="Pare de perder venda por proposta lenta e amadora. Selo garante a sua comissão com propostas profissionais em segundos.">
 <meta property="og:type" content="website">
 <meta property="og:image" content="https://guilhermeassisp27-code.github.io/dev/og-image.png">
 <meta property="og:image:width" content="1200">
@@ -15,33 +15,33 @@
 <meta name="twitter:image" content="https://guilhermeassisp27-code.github.io/dev/og-image.png">
 <style>
   :root{
-    --navy:#000000;
-    --navy-2:#0a0a0c;
-    --navy-3:#1c1c1e;
-    --card:#1c1c1e;
-    --line:rgba(255,255,255,.08);
-    --line-2:rgba(255,255,255,.14);
-    --amber:#4D7EFF;
-    --amber-h:#6e98ff;
-    --amber-soft:rgba(77,126,255,.14);
-    --purple-soft:rgba(124,92,252,.14);
+    --navy:#0A2138;
+    --navy-2:#0F2D4A;
+    --navy-3:#1B2733;
+    --card:#152538;
+    --line:rgba(232,237,242,.08);
+    --line-2:rgba(232,237,242,.14);
+    --amber:#C9882A;
+    --amber-h:#D6A24A;
+    --amber-soft:rgba(201,136,42,.14);
+    --purple-soft:rgba(15,45,74,.24);
     --white:#FFFFFF;
-    --t:#f5f5f7;
-    --t2:#86868b;
-    --t3:#6e6e73;
+    --t:#E8EDF2;
+    --t2:#8FA0B2;
+    --t3:#6e7e8e;
     --green:#22C55E;
     --green-soft:rgba(34,197,94,.13);
-    --blue:#4D7EFF;
-    --purple:#7C5CFC;
+    --blue:#C9882A;
+    --purple:#0F2D4A;
     --red:#F87171;
     --shadow:0 30px 70px rgba(0,0,0,.55);
-    --shadow-amber:0 16px 38px rgba(77,126,255,.32);
+    --shadow-amber:0 16px 38px rgba(201,136,42,.32);
     --rad:14px;
     --rad-l:20px;
     --rad-xl:28px;
     --maxw:680px;
-    --font:-apple-system,BlinkMacSystemFont,'SF Pro Display','SF Pro Text','Segoe UI',Roboto,Helvetica,Arial,sans-serif;
-    --font-h:-apple-system,BlinkMacSystemFont,'SF Pro Display','SF Pro Text','Segoe UI',Roboto,Helvetica,Arial,sans-serif;
+    --font:Geist,ui-sans-serif,system-ui,-apple-system,'Segoe UI',sans-serif;
+    --font-h:Geist,ui-sans-serif,system-ui,-apple-system,'Segoe UI',sans-serif;
   }
 
   *{margin:0;padding:0;box-sizing:border-box}
@@ -96,8 +96,8 @@
     border-bottom:1px solid var(--line);
   }
   .nav{display:flex;align-items:center;justify-content:space-between;height:56px}
-  .logo{font-family:var(--font-h);font-size:19px;font-weight:600;letter-spacing:-.02em;color:var(--white)}
-  .logo span{color:var(--amber)}
+  .logo{display:flex;align-items:center}
+  .logo svg{height:22px;width:auto;display:block}
   .nav-cta{
     display:inline-flex;align-items:center;gap:8px;height:36px;padding:0 18px;
     background:var(--amber);color:#fff;border-radius:980px;
@@ -147,7 +147,7 @@
     width:42px;height:42px;border-radius:12px;background:rgba(255,255,255,.95);
     display:flex;align-items:center;justify-content:center;flex-shrink:0;
   }
-  .mock-avatar svg{width:24px;height:24px;color:#3556C7}
+  .mock-avatar svg{width:24px;height:24px;color:#0F2D4A}
   .mock-head .l1{height:11px;width:130px;border-radius:6px;background:rgba(255,255,255,.95)}
   .mock-head .l2{height:8px;width:84px;border-radius:5px;background:rgba(255,255,255,.55);margin-top:7px}
   .mock-timer{
@@ -338,8 +338,8 @@
 
   /* ---------- footer ---------- */
   footer{border-top:1px solid var(--line);padding:44px 0;text-align:center}
-  .footer-logo{font-family:var(--font-h);font-weight:600;font-size:18px;color:var(--white);margin-bottom:12px}
-  .footer-logo span{color:var(--amber)}
+  .footer-logo{display:flex;align-items:center;justify-content:center;margin-bottom:12px}
+  .footer-logo svg{height:24px;width:auto;display:block}
   footer p{font-size:13px;color:var(--t3)}
   .footer-links{margin-top:16px;display:flex;gap:20px;justify-content:center;flex-wrap:wrap}
   .footer-links a{font-size:13px;color:var(--t2);transition:color .2s}
@@ -387,7 +387,14 @@ src="https://www.facebook.com/tr?id=2015826029060952&ev=PageView&noscript=1"/></
 <!-- ===================== HEADER ===================== -->
 <header>
   <div class="wrap nav">
-    <div class="logo">Corretor<span>PRO</span></div>
+    <div class="logo">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 300 80" width="160" height="43" fill="none" role="img" aria-label="Selo">
+        <g transform="translate(10,12) scale(0.875)"><circle cx="32" cy="32" r="29" stroke="#C9882A" stroke-width="1.4" stroke-dasharray="1.4 5.1" stroke-linecap="round"></circle>
+        <circle cx="32" cy="32" r="23.5" stroke="#C9882A" stroke-width="2.4"></circle>
+        <path d="M22.5 32.8l6.2 6.2 12.4-14.6" stroke="#C9882A" stroke-width="3.4" stroke-linecap="round" stroke-linejoin="round"></path></g>
+        <text x="86" y="53" text-anchor="start" font-family="Geist, ui-sans-serif, system-ui, -apple-system, 'Segoe UI', sans-serif" font-weight="600" font-size="40" letter-spacing="6" fill="#E8EDF2">SELO</text>
+      </svg>
+    </div>
     <a class="nav-cta" href="#planos">Ver planos</a>
   </div>
 </header>
@@ -400,12 +407,12 @@ src="https://www.facebook.com/tr?id=2015826029060952&ev=PageView&noscript=1"/></
       Feito para corretores de imóveis
     </div>
     <h1>Enquanto você formata a proposta, o concorrente <em>já fechou a venda</em>.</h1>
-    <p class="sub">O CorretorPRO gera a sua proposta profissional — com <strong>seu logo, CRECI e cor</strong> — em menos de 60 segundos. Direto do celular, pronta pra enviar no WhatsApp.</p>
+    <p class="sub">O Selo gera a sua proposta profissional — com <strong>seu logo, CRECI e cor</strong> — em menos de 60 segundos. Direto do celular, pronta pra enviar no WhatsApp.</p>
     <a class="cta" href="#planos">
       Quero fechar mais
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
     </a>
-    <span class="cta-note"><strong>A partir de R$ 41/mês.</strong> Garantia de 7 dias · Sem instalar nada.</span>
+    <span class="cta-note"><strong>Selo. Sua comissão, garantida.</strong> A partir de R$ 41/mês · Garantia de 7 dias · Sem instalar nada.</span>
 
     <!-- tool UI mockup (pure CSS, sem foto de banco de imagens) -->
     <div class="mock">
@@ -452,7 +459,7 @@ src="https://www.facebook.com/tr?id=2015826029060952&ev=PageView&noscript=1"/></
       <svg viewBox="0 0 24 24" fill="currentColor"><path d="m12 2 3 6.6 7.3.7-5.4 4.9 1.6 7.1L12 17.8 5.5 21.3l1.6-7.1L1.7 9.3 9 8.6z"/></svg>
       <svg viewBox="0 0 24 24" fill="currentColor"><path d="m12 2 3 6.6 7.3.7-5.4 4.9 1.6 7.1L12 17.8 5.5 21.3l1.6-7.1L1.7 9.3 9 8.6z"/></svg>
     </div>
-    <div class="proof-line">A ferramenta de propostas que faz o corretor solo parecer uma imobiliária inteira.</div>
+    <div class="proof-line">A plataforma que blinda a comissão do corretor solo, do primeiro contato à assinatura.</div>
     <div class="proof-grid">
       <div class="proof-item"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg> Sua marca em cada proposta</div>
       <div class="proof-item"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg> Pronta em menos de 60s</div>
@@ -507,9 +514,9 @@ src="https://www.facebook.com/tr?id=2015826029060952&ev=PageView&noscript=1"/></
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="m12 3 1.9 5.8H20l-4.9 3.6 1.9 5.8L12 14.6 7 18.2l1.9-5.8L4 8.8h6.1z"/></svg>
       A virada
     </div>
-    <h2 class="reveal">Apresento o <em>CorretorPRO</em></h2>
+    <h2 class="reveal">Apresento o <em>Selo</em></h2>
     <p class="big reveal">Imagina só: você termina a visita, abre o celular, preenche os dados do imóvel e em segundos tem uma proposta linda, com a sua marca, pronta pra mandar no WhatsApp.</p>
-    <p class="reveal">É exatamente isso. Sem Word, sem complicação, sem parecer amador. Do jeito que você merece ser visto pelo cliente.</p>
+    <p class="reveal">É exatamente isso. Sem Word, sem complicação, sem parecer amador. Do jeito que você merece ser visto pelo cliente. O Selo é o seu carimbo de garantia — do primeiro contato até a comissão cair na conta.</p>
   </div>
 </section>
 
@@ -619,7 +626,7 @@ src="https://www.facebook.com/tr?id=2015826029060952&ev=PageView&noscript=1"/></
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M9.1 9a3 3 0 0 1 5.8 1c0 2-3 3-3 3"/><path d="M12 17h.01"/></svg>
         <h3>É difícil de usar?</h3>
       </div>
-      <p><b>Não.</b> Se você usa WhatsApp, você usa o CorretorPRO. Entra, preenche, envia.</p>
+      <p><b>Não.</b> Se você usa WhatsApp, você usa o Selo. Entra, preenche, envia.</p>
     </div>
 
     <div class="obj-card reveal">
@@ -644,7 +651,7 @@ src="https://www.facebook.com/tr?id=2015826029060952&ev=PageView&noscript=1"/></
 <section class="section final">
   <div class="wrap">
     <h2 class="reveal">O próximo cliente que você perder <em>pode ser o último</em>.</h2>
-    <p class="reveal">Cada proposta lenta é uma comissão na mão do concorrente. Vire esse jogo agora.</p>
+    <p class="reveal">Cada proposta lenta é uma comissão na mão do concorrente. Selo. Sua comissão, garantida.</p>
     <a class="cta" href="#planos">
       Quero começar agora
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
@@ -662,15 +669,22 @@ src="https://www.facebook.com/tr?id=2015826029060952&ev=PageView&noscript=1"/></
 <!-- ===================== FOOTER ===================== -->
 <footer>
   <div class="wrap">
-    <div class="footer-logo">Corretor<span>PRO</span></div>
-    <p>Propostas imobiliárias profissionais com a sua marca, em segundos.</p>
+    <div class="footer-logo">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 300 80" width="170" height="45" fill="none" role="img" aria-label="Selo">
+        <g transform="translate(10,12) scale(0.875)"><circle cx="32" cy="32" r="29" stroke="#C9882A" stroke-width="1.4" stroke-dasharray="1.4 5.1" stroke-linecap="round"></circle>
+        <circle cx="32" cy="32" r="23.5" stroke="#C9882A" stroke-width="2.4"></circle>
+        <path d="M22.5 32.8l6.2 6.2 12.4-14.6" stroke="#C9882A" stroke-width="3.4" stroke-linecap="round" stroke-linejoin="round"></path></g>
+        <text x="86" y="53" text-anchor="start" font-family="Geist, ui-sans-serif, system-ui, -apple-system, 'Segoe UI', sans-serif" font-weight="600" font-size="40" letter-spacing="6" fill="#E8EDF2">SELO</text>
+      </svg>
+    </div>
+    <p>Selo. Sua comissão, garantida.</p>
     <div class="footer-links">
       <a href="https://guilhermeassisp27-code.github.io/dev/tool.html">Já sou cliente — entrar</a>
       <a href="https://guilhermeassisp27-code.github.io/dev/termos.html">Termos de uso</a>
       <a href="https://guilhermeassisp27-code.github.io/dev/privacidade.html">Privacidade</a>
       <a href="mailto:guilherme.assisp27@gmail.com">Suporte</a>
     </div>
-    <p style="margin-top:16px">© 2026 CorretorPRO. Todos os direitos reservados.</p>
+    <p style="margin-top:16px">© 2026 Selo. Todos os direitos reservados.</p>
   </div>
 </footer>
 
