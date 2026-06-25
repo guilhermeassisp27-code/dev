@@ -1,0 +1,87 @@
+{
+  "brand": {
+    "name": "SELO",
+    "tagline": "Comissão blindada, do primeiro contato à assinatura",
+    "direction": "A — Navy + Âmbar"
+  },
+  "color": {
+    "brand/600": {
+      "hex": "#0F2D4A",
+      "role": "Brand Primary — fundos sólidos, sidebar, headers"
+    },
+    "brand/800": {
+      "hex": "#0A2138",
+      "role": "Brand Deep — pressionado, sombras de navy"
+    },
+    "accent/500": {
+      "hex": "#C9882A",
+      "role": "Brand Accent — CTA, status ativo, badge, lacre"
+    },
+    "accent/400": {
+      "hex": "#D6A24A",
+      "role": "Accent Light — ícone sobre navy escuro"
+    },
+    "surface/light": {
+      "hex": "#F5F0E8",
+      "role": "Surface Light — fundo de tela clara, off-white quente"
+    },
+    "surface/dark": {
+      "hex": "#1B2733",
+      "role": "Surface Dark — superfície neutra escura"
+    },
+    "text/primary": {
+      "hex": "#15202B",
+      "role": "Text Primary — texto sobre claro"
+    },
+    "text/on-dark": {
+      "hex": "#E8EDF2",
+      "role": "Texto sobre navy/escuro"
+    },
+    "text/muted": {
+      "hex": "#8FA0B2",
+      "role": "Texto secundário sobre escuro"
+    }
+  },
+  "typography": {
+    "family": "Geist",
+    "weights": [
+      "Regular 400",
+      "Semibold 600"
+    ],
+    "fallback": "ui-sans-serif, system-ui, -apple-system, 'Segoe UI', sans-serif",
+    "scale": {
+      "display": {
+        "size": "32px+",
+        "weight": 600,
+        "tracking": "-0.01em"
+      },
+      "heading": {
+        "size": "20–24px",
+        "weight": 600
+      },
+      "body": {
+        "size": "14–16px",
+        "weight": 400,
+        "line": "1.4"
+      },
+      "caption": {
+        "size": "11–12px",
+        "weight": 500,
+        "tracking": "0.08em",
+        "transform": "uppercase"
+      }
+    }
+  },
+  "radius": {
+    "card": "14px",
+    "control": "9px",
+    "appIcon": "230/1024"
+  },
+  "reference": {
+    "Brand Primary": "#0F2D4A",
+    "Brand Accent": "#C9882A",
+    "Surface Light": "#F5F0E8",
+    "Surface Dark": "#1B2733",
+    "Text Primary": "#15202B"
+  }
+}
