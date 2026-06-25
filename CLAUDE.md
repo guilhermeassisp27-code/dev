@@ -1,9 +1,17 @@
-# CorretorPRO — Guia para Agentes
+# Selo — Guia para Agentes
 
 ## O que é este projeto
 
-SaaS para corretores de imóveis: gera propostas comerciais profissionais em segundos.
+Selo. Sua comissão, garantida.
+
+Selo não é um gerador de propostas — é a plataforma que blinda a comissão do corretor de
+imóveis autônomo do primeiro contato até a assinatura. SaaS para corretores de imóveis,
+com geração de propostas comerciais profissionais em segundos como uma das frentes.
 Monetização via Hotmart (assinatura recorrente). Dois planos: Mensal (`hgn79gvq`) e Anual (`mcjyy7ub`).
+
+> Nota: o produto foi renomeado de "CorretorPRO" para "Selo". Nomes técnicos legados
+> (domínio `usecorretorpro.vercel.app`, tabela `cpr_user_data`, prefixos `cpr_*`) seguem
+> com o nome antigo internamente — não renomear infraestrutura sem planejamento dedicado.
 
 ## Arquitetura
 
@@ -48,6 +56,7 @@ Next.js app (Vercel: https://usecorretorpro.vercel.app)
 | `middleware.ts` | Redireciona sessão ativa para tool.html |
 | `supabase-setup.sql` | SQL para criar tabela cpr_user_data + RLS + GRANT |
 | `marketing/` | Materiais de marketing (imagens, plano de tráfego) |
+| `marketing/logo/selo/` | Kit de marca oficial do Selo (logos, cores, tipografia) — ver `brand-tokens.json` como fonte única de cor/tipografia e `LEIA-ME.md` para o mapa de arquivos |
 | `landing/` | Landing page (se existir) |
 
 ## Variáveis de ambiente (Vercel)
@@ -137,3 +146,4 @@ curl -X POST http://localhost:3000/api/hotmart-webhook \
 - **Por que tokens no hash fragment?** Cross-domain (Vercel ↔ GitHub Pages) sem cookies.
 - **Por que app_metadata e não user_metadata?** `app_metadata` não é editável pelo usuário via client SDK — mais seguro para controle de acesso.
 - **Por que não deletar usuário ao cancelar?** Preservar histórico de propostas; reassinatura reativa sem perda de dados.
+- **Por que "CorretorPRO" virou "Selo"?** Reposicionamento de marca: de "gerador de propostas" para "plataforma que blinda a comissão do corretor autônomo do primeiro contato até a assinatura". Slogan oficial: "Selo. Sua comissão, garantida." Identidade visual em `marketing/logo/selo/` (paleta navy `#0F2D4A` + âmbar `#C9882A`, fonte Geist).

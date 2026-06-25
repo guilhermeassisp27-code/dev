@@ -50,13 +50,13 @@ async function enviarEmailRecuperacao(destino: string, nome: string, plano: stri
         'content-type': 'application/json',
       },
       body: JSON.stringify({
-        sender: { name: 'CorretorPRO', email: process.env.BREVO_SENDER_EMAIL },
+        sender: { name: 'Selo', email: process.env.BREVO_SENDER_EMAIL },
         to: [{ email: destino, name: nome || undefined }],
-        subject: 'Você quase assinou — e agora o CorretorPRO faz ainda mais',
+        subject: 'Você quase assinou — e agora o Selo faz ainda mais',
         htmlContent: `
           <p>Oi, ${primeiroNome}!</p>
-          <p>Vi que você começou a assinar o CorretorPRO e não finalizou — sem problema. Queria te contar uma novidade que talvez mude a sua decisão.</p>
-          <p>Agora o CorretorPRO cobre <b>toda a jornada do corretor autônomo</b>, num lugar só:</p>
+          <p>Vi que você começou a assinar o Selo e não finalizou — sem problema. Queria te contar uma novidade que talvez mude a sua decisão.</p>
+          <p>Agora o Selo cobre <b>toda a jornada do corretor autônomo</b>, num lugar só:</p>
           <ul>
             <li><b>Capta o cliente</b> — um link com a sua marca pra bio do Instagram e status do WhatsApp; o lead cai direto na sua agenda, até enquanto você dorme.</li>
             <li><b>Organiza a visita</b> — Agenda de Visitas pra você nunca mais perder um follow-up.</li>
@@ -230,7 +230,7 @@ export async function POST(req: NextRequest) {
     const phoneDigits = rawDigits.startsWith('55') && rawDigits.length >= 12 ? rawDigits.slice(2) : rawDigits
     const whatsappLink = phoneDigits
       ? `https://wa.me/55${phoneDigits}?text=${encodeURIComponent(
-          `Oi ${buyer?.name?.split(' ')[0] ?? ''}! Aqui é do CorretorPRO. Vi que você começou a assinar e não finalizou — ficou alguma dúvida? Acabamos de lançar o link de captação de leads: o cliente preenche e cai direto na sua agenda, aí é só agendar a visita, emitir o Registro de Visita (que protege sua comissão) e mandar a proposta. Posso te mostrar funcionando em 2 min?`
+          `Oi ${buyer?.name?.split(' ')[0] ?? ''}! Aqui é do Selo. Vi que você começou a assinar e não finalizou — ficou alguma dúvida? Acabamos de lançar o link de captação de leads: o cliente preenche e cai direto na sua agenda, aí é só agendar a visita, emitir o Registro de Visita (que protege sua comissão) e mandar a proposta. Posso te mostrar funcionando em 2 min?`
         )}`
       : null
 
