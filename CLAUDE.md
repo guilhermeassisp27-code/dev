@@ -9,9 +9,10 @@ imóveis autônomo do primeiro contato até a assinatura. SaaS para corretores d
 com geração de propostas comerciais profissionais em segundos como uma das frentes.
 Monetização via Hotmart (assinatura recorrente). Dois planos: Mensal (`hgn79gvq`) e Anual (`mcjyy7ub`).
 
-> Nota: o produto foi renomeado de "CorretorPRO" para "Selo". Nomes técnicos legados
-> (domínio `usecorretorpro.vercel.app`, tabela `cpr_user_data`, prefixos `cpr_*`) seguem
-> com o nome antigo internamente — não renomear infraestrutura sem planejamento dedicado.
+> Nota: o produto foi renomeado de "CorretorPRO" para "Selo". O domínio da Vercel foi
+> migrado de `usecorretorpro.vercel.app` para `selosales.vercel.app`. Nomes técnicos legados
+> (tabela `cpr_user_data`, prefixos `cpr_*`) seguem com o nome antigo internamente — não
+> renomear infraestrutura sem planejamento dedicado.
 
 ## Arquitetura
 
@@ -30,7 +31,7 @@ tool.html (GitHub Pages: https://guilhermeassisp27-code.github.io/dev/tool.html)
   ├─ salva propostas em cpr_user_data (tabela Supabase)
   └─ verifica app_metadata.subscription_status === 'active' para liberar uso
 
-Next.js app (Vercel: https://usecorretorpro.vercel.app)
+Next.js app (Vercel: https://selosales.vercel.app)
   ├─ /acesso       — login (email + senha)
   ├─ /definir-senha — define senha via link do email
   └─ /api/hotmart-webhook — webhook Hotmart
@@ -57,7 +58,7 @@ Next.js app (Vercel: https://usecorretorpro.vercel.app)
 | `supabase-setup.sql` | SQL para criar tabela cpr_user_data + RLS + GRANT |
 | `marketing/` | Materiais de marketing (imagens, plano de tráfego) |
 | `marketing/logo/selo/` | Kit de marca oficial do Selo (logos, cores, tipografia) — ver `brand-tokens.json` como fonte única de cor/tipografia e `LEIA-ME.md` para o mapa de arquivos |
-| `landing/` | Landing page (se existir) |
+| `public/landing.html` | Landing page servida na raiz do app Vercel (via rewrite em `next.config.js`) |
 
 ## Variáveis de ambiente (Vercel)
 
@@ -65,7 +66,7 @@ Next.js app (Vercel: https://usecorretorpro.vercel.app)
 NEXT_PUBLIC_SUPABASE_URL=https://kdudodqmijlzqwnkxpjo.supabase.co
 NEXT_PUBLIC_SUPABASE_ANON_KEY=sb_publishable_...
 SUPABASE_SERVICE_ROLE_KEY=sb_secret_...       # NUNCA committar
-NEXT_PUBLIC_APP_URL=https://usecorretorpro.vercel.app
+NEXT_PUBLIC_APP_URL=https://selosales.vercel.app
 NEXT_PUBLIC_TOOL_URL=https://guilhermeassisp27-code.github.io/dev/tool.html
 HOTMART_WEBHOOK_TOKEN=...                      # NUNCA committar
 ```

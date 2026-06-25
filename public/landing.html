@@ -3,52 +3,52 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>CorretorPRO — Proposta profissional com a sua marca em 60 segundos</title>
-<meta name="description" content="Gere propostas imobiliárias profissionais com o seu logo, CRECI e cor em menos de 60 segundos. Impressione o cliente antes do concorrente e feche mais.">
-<meta property="og:title" content="CorretorPRO — Proposta profissional em 60 segundos">
-<meta property="og:description" content="Pare de perder venda por proposta lenta e amadora. Gere propostas com a sua marca em segundos.">
+<title>Selo — Sua comissão, garantida</title>
+<meta name="description" content="Selo blinda a comissão do corretor de imóveis autônomo: gere propostas profissionais com o seu logo, CRECI e cor em menos de 60 segundos, do primeiro contato à assinatura.">
+<meta property="og:title" content="Selo — Sua comissão, garantida">
+<meta property="og:description" content="Pare de perder venda por proposta lenta e amadora. Selo garante a sua comissão com propostas profissionais em segundos.">
 <meta property="og:type" content="website">
-<meta property="og:url" content="https://usecorretorpro.vercel.app/">
-<meta property="og:image" content="https://usecorretorpro.vercel.app/og-image.png">
+<meta property="og:url" content="https://selosales.vercel.app/">
+<meta property="og:image" content="https://selosales.vercel.app/og-image.png">
 <meta property="og:image:width" content="1200">
 <meta property="og:image:height" content="630">
 <meta name="twitter:card" content="summary_large_image">
-<meta name="twitter:image" content="https://usecorretorpro.vercel.app/og-image.png">
+<meta name="twitter:image" content="https://selosales.vercel.app/og-image.png">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Sora:wght@600;700;800&display=swap" rel="stylesheet">
 <style>
   :root{
-    --navy:#0F172A;
-    --navy-2:#131E36;
-    --navy-3:#1B2944;
-    --card:#16223C;
-    --line:rgba(255,255,255,.08);
-    --line-2:rgba(255,255,255,.14);
-    --amber:#F59E0B;
-    --amber-h:#FBBF24;
-    --amber-soft:rgba(245,158,11,.12);
+    --navy:#0A2138;
+    --navy-2:#0F2D4A;
+    --navy-3:#1B2733;
+    --card:#152538;
+    --line:rgba(232,237,242,.08);
+    --line-2:rgba(232,237,242,.14);
+    --amber:#C9882A;
+    --amber-h:#D6A24A;
+    --amber-soft:rgba(201,136,42,.14);
     --white:#FFFFFF;
-    --t:#F1F5F9;
-    --t2:#94A3B8;
-    --t3:#64748B;
+    --t:#E8EDF2;
+    --t2:#8FA0B2;
+    --t3:#6e7e8e;
     --green:#22C55E;
     --green-soft:rgba(34,197,94,.13);
-    --blue:#4D7EFF;
-    --purple:#7C5CFC;
+    --blue:#C9882A;
+    --purple:#0F2D4A;
     --red:#F87171;
     --urgency:#EF4444;
     --urgency-h:#FCA5A5;
     --urgency-soft:rgba(239,68,68,.16);
-    --shadow:0 24px 60px rgba(0,0,0,.45);
-    --shadow-amber:0 14px 34px rgba(245,158,11,.34);
+    --shadow:0 30px 70px rgba(0,0,0,.55);
+    --shadow-amber:0 16px 38px rgba(201,136,42,.32);
     --rad:12px;
     --rad-l:18px;
     --rad-xl:24px;
     --maxw:1140px;
     --maxw-n:720px;
-    --font:'Inter',-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;
-    --font-h:'Sora','Inter',sans-serif;
+    --font:Geist,'Inter',-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;
+    --font-h:Geist,'Sora','Inter',sans-serif;
   }
 
   *{margin:0;padding:0;box-sizing:border-box}
@@ -85,7 +85,7 @@
     box-shadow:var(--shadow-amber);
     transition:transform .16s ease,background .16s ease,box-shadow .16s ease;
   }
-  .cta:hover{background:var(--amber-h);transform:translateY(-2px);box-shadow:0 18px 40px rgba(245,158,11,.45)}
+  .cta:hover{background:var(--amber-h);transform:translateY(-2px);box-shadow:0 18px 40px rgba(201,136,42,.45)}
   .cta:active{transform:translateY(0)}
   .cta svg{width:20px;height:20px}
   .cta-row{display:flex;gap:14px;flex-wrap:wrap;align-items:center}
@@ -128,7 +128,7 @@
   .hero::before{
     content:"";position:absolute;top:-120px;left:50%;transform:translateX(-50%);
     width:560px;height:560px;border-radius:50%;
-    background:radial-gradient(circle,rgba(245,158,11,.16),transparent 65%);
+    background:radial-gradient(circle,rgba(201,136,42,.16),transparent 65%);
     pointer-events:none;z-index:0;
   }
   .hero::after{
@@ -151,13 +151,13 @@
   .badge{
     display:inline-flex;align-items:center;gap:8px;
     padding:7px 16px;border-radius:999px;
-    background:var(--amber-soft);border:1px solid rgba(245,158,11,.32);
+    background:var(--amber-soft);border:1px solid rgba(201,136,42,.32);
     color:var(--amber);font-size:13px;font-weight:700;letter-spacing:.04em;
     margin-bottom:24px;
   }
   .badge svg{width:15px;height:15px}
   .hero h1{font-size:44px;font-weight:800;margin-bottom:20px}
-  .hero h1 em{font-style:normal;color:var(--amber);background:linear-gradient(92deg,var(--amber),#FBBF24 60%,#FDE68A);-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent}
+  .hero h1 em{font-style:normal;color:var(--amber);background:linear-gradient(92deg,var(--amber),var(--amber-h) 60%,#E8C384);-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent}
   .hero .sub{font-size:19px;max-width:560px;margin:0 auto 32px;color:var(--t2)}
   .hero .sub strong{color:var(--t);font-weight:600}
 
@@ -182,18 +182,18 @@
   }
   .mock-glow{
     position:absolute;inset:0;border-radius:var(--rad-xl);
-    background:linear-gradient(160deg,rgba(245,158,11,.10),transparent 40%);
+    background:linear-gradient(160deg,rgba(201,136,42,.10),transparent 40%);
     pointer-events:none;
   }
   .mock-head{
     display:flex;align-items:center;gap:12px;padding:18px 20px;
-    background:linear-gradient(135deg,#1E3A8A,#3556C7);
+    background:linear-gradient(135deg,#0F2D4A,#1B2733);
   }
   .mock-avatar{
     width:42px;height:42px;border-radius:12px;background:rgba(255,255,255,.95);
     display:flex;align-items:center;justify-content:center;flex-shrink:0;
   }
-  .mock-avatar svg{width:24px;height:24px;color:#1E3A8A}
+  .mock-avatar svg{width:24px;height:24px;color:#0F2D4A}
   .mock-head .l1{height:11px;width:130px;border-radius:6px;background:rgba(255,255,255,.95)}
   .mock-head .l2{height:8px;width:84px;border-radius:5px;background:rgba(255,255,255,.55);margin-top:7px}
   .mock-timer{
@@ -208,7 +208,7 @@
   .sk.s{height:8px;width:44%;background:#243a5e;margin-top:9px}
   .mock-value{
     margin:18px 0;padding:14px 16px;border-radius:12px;
-    background:var(--amber-soft);border:1px solid rgba(245,158,11,.22);
+    background:var(--amber-soft);border:1px solid rgba(201,136,42,.22);
   }
   .mock-value .cap{font-size:11px;letter-spacing:.1em;text-transform:uppercase;color:var(--amber);font-weight:700}
   .mock-value .big{height:16px;width:120px;border-radius:6px;background:var(--amber);margin-top:8px;opacity:.85}
@@ -222,7 +222,7 @@
   .pay-row .val{height:8px;width:46px;border-radius:4px;background:#56708f;margin-left:auto}
   .mock-send{
     margin-top:16px;height:44px;border-radius:11px;
-    background:linear-gradient(135deg,#1E3A8A,#3556C7);
+    background:linear-gradient(135deg,#0F2D4A,#1B2733);
     display:flex;align-items:center;justify-content:center;gap:8px;
   }
   .mock-send span{height:9px;width:90px;border-radius:5px;background:rgba(255,255,255,.92)}
@@ -312,7 +312,7 @@
   /* trilho vertical que conecta os momentos da jornada */
   .jr-rail::before{
     content:"";position:absolute;left:27px;top:16px;bottom:16px;width:2px;
-    background:linear-gradient(180deg,var(--amber) 0%,rgba(245,158,11,.12) 100%);
+    background:linear-gradient(180deg,var(--amber) 0%,rgba(201,136,42,.12) 100%);
   }
   .jr-step{position:relative;display:flex;gap:22px;align-items:flex-start}
   .jr-dot{
@@ -413,7 +413,7 @@
   .final::before{
     content:"";position:absolute;top:0;left:50%;transform:translateX(-50%);
     width:600px;height:400px;border-radius:50%;
-    background:radial-gradient(circle,rgba(245,158,11,.14),transparent 65%);
+    background:radial-gradient(circle,rgba(201,136,42,.14),transparent 65%);
     pointer-events:none;
   }
   .final .wrap{position:relative;z-index:1}
@@ -423,7 +423,7 @@
   .urgency{
     display:inline-flex;align-items:center;gap:8px;
     padding:8px 18px;border-radius:999px;margin-top:26px;
-    background:var(--amber-soft);border:1px solid rgba(245,158,11,.3);
+    background:var(--amber-soft);border:1px solid rgba(201,136,42,.3);
     color:var(--amber);font-size:14px;font-weight:700;
   }
   .urgency svg{width:16px;height:16px}
@@ -470,7 +470,7 @@
   /* moldura de navegador no print real */
   .shot-frame{
     max-width:420px;margin:48px auto 0;border-radius:18px;overflow:hidden;
-    border:1px solid var(--line-2);box-shadow:var(--shadow),0 0 80px rgba(245,158,11,.07);
+    border:1px solid var(--line-2);box-shadow:var(--shadow),0 0 80px rgba(201,136,42,.07);
     background:var(--navy-3);
   }
   @media(min-width:760px){.shot-frame{max-width:580px}}
@@ -492,7 +492,7 @@
     background:var(--card);border:1px solid var(--line);
     transition:border-color .2s ease,transform .2s ease,box-shadow .2s ease;
   }
-  .feat-card:hover{border-color:rgba(245,158,11,.35);transform:translateY(-3px);box-shadow:0 18px 44px rgba(0,0,0,.35)}
+  .feat-card:hover{border-color:rgba(201,136,42,.35);transform:translateY(-3px);box-shadow:0 18px 44px rgba(0,0,0,.35)}
   .feat-ico{width:42px;height:42px;border-radius:12px;display:flex;align-items:center;justify-content:center;margin-bottom:14px}
   .feat-ico svg{width:22px;height:22px}
   .feat-card h3{font-size:16.5px;font-family:var(--font);font-weight:700;color:var(--white);margin-bottom:6px;display:flex;align-items:center;gap:8px;flex-wrap:wrap}
@@ -517,7 +517,7 @@
     padding:12px 14px;font-size:15px;color:var(--t);font-family:var(--font);outline:none;
     transition:border-color .15s ease,box-shadow .15s ease;
   }
-  .demo-inp:focus{border-color:var(--amber);box-shadow:0 0 0 3px rgba(245,158,11,.12)}
+  .demo-inp:focus{border-color:var(--amber);box-shadow:0 0 0 3px rgba(201,136,42,.12)}
   .demo-inp::placeholder{color:var(--t3)}
   .demo-btn{width:100%;min-height:52px;font-size:16.5px}
   .demo-note{text-align:center;font-size:12.5px;color:var(--t3);margin-top:12px}
@@ -530,8 +530,8 @@
     background:#fff;border-radius:var(--rad-l);overflow:hidden;
     box-shadow:0 30px 70px rgba(0,0,0,.5);text-align:left;
   }
-  .dp-head{display:flex;align-items:center;gap:12px;padding:16px 20px;background:linear-gradient(135deg,#1E3A8A,#3556C7)}
-  .dp-av{width:40px;height:40px;border-radius:11px;background:rgba(255,255,255,.95);display:flex;align-items:center;justify-content:center;font-family:var(--font-h);font-weight:800;font-size:18px;color:#1E3A8A;flex-shrink:0}
+  .dp-head{display:flex;align-items:center;gap:12px;padding:16px 20px;background:linear-gradient(135deg,#0F2D4A,#1B2733)}
+  .dp-av{width:40px;height:40px;border-radius:11px;background:rgba(255,255,255,.95);display:flex;align-items:center;justify-content:center;font-family:var(--font-h);font-weight:800;font-size:18px;color:#0F2D4A;flex-shrink:0}
   .dp-nome{font-size:15px;font-weight:800;color:#fff;line-height:1.25}
   .dp-creci{font-size:11px;color:rgba(255,255,255,.75)}
   .dp-tag{margin-left:auto;background:rgba(0,0,0,.22);color:#fff;font-size:10.5px;font-weight:700;padding:5px 11px;border-radius:999px;white-space:nowrap}
@@ -594,7 +594,7 @@
   /* demo interativo — Registro de Visita (documento jurídico) */
   .rv-doc{background:#fff;border-radius:var(--rad-l);overflow:hidden;box-shadow:0 30px 70px rgba(0,0,0,.5);text-align:left}
   .rv-head{display:flex;align-items:center;gap:12px;padding:16px 20px;border-bottom:1px solid #E2E8F0}
-  .rv-av{width:40px;height:40px;border-radius:11px;background:linear-gradient(135deg,#1E3A8A,#3556C7);display:flex;align-items:center;justify-content:center;font-family:var(--font-h);font-weight:800;font-size:18px;color:#fff;flex-shrink:0}
+  .rv-av{width:40px;height:40px;border-radius:11px;background:linear-gradient(135deg,#0F2D4A,#1B2733);display:flex;align-items:center;justify-content:center;font-family:var(--font-h);font-weight:800;font-size:18px;color:#fff;flex-shrink:0}
   .rv-corretor .n{font-size:14px;font-weight:800;color:#0F172A;line-height:1.25}
   .rv-corretor .c{font-size:11px;color:#64748B}
   .rv-badge{margin-left:auto;display:inline-flex;align-items:center;gap:6px;background:#ECFDF3;color:#15803D;font-size:10.5px;font-weight:800;letter-spacing:.03em;padding:5px 11px;border-radius:999px;white-space:nowrap}
@@ -651,7 +651,7 @@
   .testi-author{display:flex;align-items:center;gap:12px;padding-top:16px;border-top:1px solid var(--line)}
   .testi-av{
     width:40px;height:40px;border-radius:12px;flex-shrink:0;
-    background:linear-gradient(135deg,#1E3A8A,#3556C7);
+    background:linear-gradient(135deg,#0F2D4A,#1B2733);
     display:flex;align-items:center;justify-content:center;color:#fff;
   }
   .testi-av svg{width:20px;height:20px}
@@ -661,8 +661,8 @@
 
   /* ---------- ROI anchor ---------- */
   .roi-anchor{
-    background:linear-gradient(135deg,rgba(245,158,11,.11),rgba(245,158,11,.03));
-    border:1px solid rgba(245,158,11,.3);border-radius:var(--rad-l);
+    background:linear-gradient(135deg,rgba(201,136,42,.11),rgba(201,136,42,.03));
+    border:1px solid rgba(201,136,42,.3);border-radius:var(--rad-l);
     padding:24px 28px;margin-bottom:44px;
     display:flex;align-items:center;gap:24px;flex-wrap:wrap;
   }
@@ -675,7 +675,7 @@
   .roi-anchor-body h3{font-size:17px;font-family:var(--font);font-weight:700;color:var(--white);margin-bottom:5px}
   .roi-anchor-body p{font-size:14.5px;color:var(--t2);line-height:1.6}
   .roi-anchor-body p strong{color:var(--amber);font-weight:700}
-  .roi-stat{text-align:center;flex-shrink:0;padding:12px 20px;background:var(--amber-soft);border-radius:12px;border:1px solid rgba(245,158,11,.2)}
+  .roi-stat{text-align:center;flex-shrink:0;padding:12px 20px;background:var(--amber-soft);border-radius:12px;border:1px solid rgba(201,136,42,.2)}
   .roi-stat .big{font-family:var(--font-h);font-size:30px;font-weight:800;color:var(--amber);line-height:1}
   .roi-stat .lbl{font-size:11px;color:var(--t3);margin-top:4px;font-weight:600;letter-spacing:.04em;text-transform:uppercase}
   @media(max-width:560px){.roi-anchor{flex-direction:column;text-align:center}.roi-anchor-ico{margin:0 auto}}
@@ -703,7 +703,7 @@
   @media(min-width:860px){.vdemo-grid{grid-template-columns:minmax(0,300px) minmax(0,1fr);justify-items:start}}
   .phone{
     position:relative;width:100%;max-width:288px;border-radius:38px;
-    background:#0a0f1d;padding:11px;box-shadow:var(--shadow),0 0 70px rgba(245,158,11,.08);
+    background:#0a0f1d;padding:11px;box-shadow:var(--shadow),0 0 70px rgba(201,136,42,.08);
     border:1px solid var(--line-2);
   }
   .phone::before{content:"";position:absolute;top:18px;left:50%;transform:translateX(-50%);width:90px;height:6px;border-radius:99px;background:rgba(255,255,255,.18);z-index:2}
@@ -750,7 +750,7 @@ src="https://www.facebook.com/tr?id=2015826029060952&ev=PageView&noscript=1"/></
 <!-- ===================== HEADER ===================== -->
 <header>
   <div class="wrap nav">
-    <div class="logo">Corretor<span>PRO</span></div>
+    <div class="logo">Se<span>lo</span></div>
     <nav class="nav-links" aria-label="Navegação principal">
       <a href="#demo">Teste grátis</a>
       <a href="#protecao">Proteção jurídica</a>
@@ -788,10 +788,10 @@ src="https://www.facebook.com/tr?id=2015826029060952&ev=PageView&noscript=1"/></
   <div class="hero-visual">
     <!-- print real da ferramenta (gerado pelo workflow); se ainda não existir, cai no mockup CSS abaixo -->
     <div class="shot-frame" id="shot-frame">
-      <div class="shot-frame-bar"><i></i><i></i><i></i><span class="shot-frame-url">corretorpro · sua proposta em 60s</span></div>
+      <div class="shot-frame-bar"><i></i><i></i><i></i><span class="shot-frame-url">selo · sua proposta em 60s</span></div>
     <picture class="hero-pic">
       <source media="(min-width:760px)" srcset="/print-ferramenta-desktop.png">
-      <img class="hero-shot" src="/print-ferramenta-mobile.png" alt="Exemplo de proposta gerada no CorretorPRO — com a marca do corretor e simulação de financiamento SAC e Price" onerror="var f=document.getElementById('shot-frame');if(f)f.remove();var m=document.getElementById('hero-mock');if(m)m.style.display=''">
+      <img class="hero-shot" src="/print-ferramenta-mobile.png" alt="Exemplo de proposta gerada no Selo — com a marca do corretor e simulação de financiamento SAC e Price" onerror="var f=document.getElementById('shot-frame');if(f)f.remove();var m=document.getElementById('hero-mock');if(m)m.style.display=''">
     </picture>
     </div>
     <!-- tool UI mockup (pure CSS) — fallback enquanto o print real não é gerado -->
@@ -892,7 +892,7 @@ src="https://www.facebook.com/tr?id=2015826029060952&ev=PageView&noscript=1"/></
       Como foi construído
     </div>
     <h2>As dores que deram origem ao produto</h2>
-    <p class="testi-lead">Durante o desenvolvimento, corretores de diferentes cidades testaram o CorretorPRO e levantaram dois problemas que moldaram a ferramenta.</p>
+    <p class="testi-lead">Durante o desenvolvimento, corretores de diferentes cidades testaram o Selo e levantaram dois problemas que moldaram a ferramenta.</p>
 
     <div class="testi-grid">
       <div class="testi-card">
@@ -931,7 +931,7 @@ src="https://www.facebook.com/tr?id=2015826029060952&ev=PageView&noscript=1"/></
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="m12 3 1.9 5.8H20l-4.9 3.6 1.9 5.8L12 14.6 7 18.2l1.9-5.8L4 8.8h6.1z"/></svg>
       A virada
     </div>
-    <h2>Apresento o <em>CorretorPRO</em></h2>
+    <h2>Apresento o <em>Selo</em></h2>
     <p class="big">Imagina só: você termina a visita, abre o celular, preenche os dados do imóvel e em segundos tem uma proposta linda, com a sua marca, pronta pra mandar no WhatsApp.</p>
     <p>É exatamente isso. Sem Word, sem complicação, sem parecer amador. Do jeito que você merece ser visto pelo cliente.</p>
   </div>
@@ -944,7 +944,7 @@ src="https://www.facebook.com/tr?id=2015826029060952&ev=PageView&noscript=1"/></
     <p class="vdemo-lead">Esta é a ferramenta de verdade, rodando aqui na página. Preencha, gere a proposta, troque o modelo, veja o Registro de Visita e a Agenda de Visitas com a captação de leads. Para salvar e enviar, é só assinar.</p>
 
     <style>
-      .live-demo{max-width:1020px;margin:0 auto;border-radius:18px;overflow:hidden;border:1px solid var(--line-2);box-shadow:var(--shadow),0 0 80px rgba(245,158,11,.07);background:var(--navy-3)}
+      .live-demo{max-width:1020px;margin:0 auto;border-radius:18px;overflow:hidden;border:1px solid var(--line-2);box-shadow:var(--shadow),0 0 80px rgba(201,136,42,.07);background:var(--navy-3)}
       .live-demo-bar{display:flex;align-items:center;gap:6px;padding:10px 14px;background:var(--navy-2);border-bottom:1px solid var(--line)}
       .live-demo-bar i{width:10px;height:10px;border-radius:50%;display:block}
       .live-demo-bar i:nth-child(1){background:#F87171}.live-demo-bar i:nth-child(2){background:#FBBF24}.live-demo-bar i:nth-child(3){background:#34D399}
@@ -957,10 +957,10 @@ src="https://www.facebook.com/tr?id=2015826029060952&ev=PageView&noscript=1"/></
     <div class="live-demo">
       <div class="live-demo-bar">
         <i></i><i></i><i></i>
-        <span class="live-demo-url">CorretorPRO · modo demonstração</span>
+        <span class="live-demo-url">Selo · modo demonstração</span>
         <a class="live-demo-full" href="https://guilhermeassisp27-code.github.io/dev/tool.html?demo=1&v=5" target="_blank" rel="noopener" onclick="if(typeof fbq==='function')fbq('trackCustom','DemoAppFullscreen')">Abrir em tela cheia ↗</a>
       </div>
-      <iframe class="live-demo-frame" src="https://guilhermeassisp27-code.github.io/dev/tool.html?demo=1&v=5" title="Demonstração da plataforma CorretorPRO" loading="lazy" referrerpolicy="no-referrer-when-downgrade"></iframe>
+      <iframe class="live-demo-frame" src="https://guilhermeassisp27-code.github.io/dev/tool.html?demo=1&v=5" title="Demonstração da plataforma Selo" loading="lazy" referrerpolicy="no-referrer-when-downgrade"></iframe>
     </div>
 
     <ul class="vdemo-points" style="margin:36px auto 0;max-width:980px;flex-direction:row;flex-wrap:wrap;justify-content:center;gap:22px">
@@ -1020,7 +1020,7 @@ src="https://www.facebook.com/tr?id=2015826029060952&ev=PageView&noscript=1"/></
         <p>Um link com a sua marca pra colocar na bio do Instagram ou no status do WhatsApp. O cliente preenche e o lead já cai na sua Agenda de Visitas.</p>
       </div>
       <div class="feat-card">
-        <div class="feat-ico" style="background:rgba(77,126,255,.13)"><svg viewBox="0 0 24 24" fill="none" stroke="var(--blue)" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg></div>
+        <div class="feat-ico" style="background:rgba(201,136,42,.13)"><svg viewBox="0 0 24 24" fill="none" stroke="var(--blue)" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg></div>
         <h3>Simulação SAC × Price</h3>
         <p>"Quanto fica a parcela?" respondido na própria proposta — primeira, última e total, lado a lado.</p>
       </div>
@@ -1030,7 +1030,7 @@ src="https://www.facebook.com/tr?id=2015826029060952&ev=PageView&noscript=1"/></
         <p>O termo que documenta a sua intermediação e protege a sua comissão. <a href="#protecao" style="color:var(--amber);font-weight:600">Entenda a base legal ↓</a></p>
       </div>
       <div class="feat-card">
-        <div class="feat-ico" style="background:rgba(124,92,252,.13)"><svg viewBox="0 0 24 24" fill="none" stroke="var(--purple)" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg></div>
+        <div class="feat-ico" style="background:rgba(15,45,74,.35)"><svg viewBox="0 0 24 24" fill="none" stroke="var(--purple)" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg></div>
         <h3>Painel de negociações <span class="feat-new">NOVO</span></h3>
         <p>Status de cada proposta — do envio ao fechamento — sem planilha e sem perder follow-up.</p>
       </div>
@@ -1040,12 +1040,12 @@ src="https://www.facebook.com/tr?id=2015826029060952&ev=PageView&noscript=1"/></
         <p>O cliente recebe na hora, no canal onde a venda acontece. Sem anexo pesado, sem fricção.</p>
       </div>
       <div class="feat-card">
-        <div class="feat-ico" style="background:rgba(77,126,255,.13)"><svg viewBox="0 0 24 24" fill="none" stroke="var(--blue)" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M17.5 19a4.5 4.5 0 1 0-1.6-8.7 6 6 0 1 0-11.3 2.4A4 4 0 0 0 6 19z"/></svg></div>
+        <div class="feat-ico" style="background:rgba(201,136,42,.13)"><svg viewBox="0 0 24 24" fill="none" stroke="var(--blue)" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M17.5 19a4.5 4.5 0 1 0-1.6-8.7 6 6 0 1 0-11.3 2.4A4 4 0 0 0 6 19z"/></svg></div>
         <h3>Tudo salvo na nuvem</h3>
         <p>Histórico de propostas e visitas sempre à mão — troque de celular sem perder nada.</p>
       </div>
       <div class="feat-card">
-        <div class="feat-ico" style="background:rgba(124,92,252,.13)"><svg viewBox="0 0 24 24" fill="none" stroke="var(--purple)" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg></div>
+        <div class="feat-ico" style="background:rgba(15,45,74,.35)"><svg viewBox="0 0 24 24" fill="none" stroke="var(--purple)" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg></div>
         <h3>3 modelos de proposta <span class="feat-new">NOVO</span></h3>
         <p>Clássico, Moderno ou Minimalista — escolha o visual que mais combina com o seu imóvel e a sua marca, em 1 clique.</p>
       </div>
@@ -1062,7 +1062,7 @@ src="https://www.facebook.com/tr?id=2015826029060952&ev=PageView&noscript=1"/></
         Proteção da comissão
       </div>
       <h2>O cliente fechou direto com o proprietário? <em>Você tem o documento.</em></h2>
-      <p>Toda visita que você faz sem registro é uma comissão desprotegida. O Registro de Visita do CorretorPRO documenta a sua intermediação com os elementos que a Justiça considera na hora de decidir.</p>
+      <p>Toda visita que você faz sem registro é uma comissão desprotegida. O Registro de Visita do Selo documenta a sua intermediação com os elementos que a Justiça considera na hora de decidir.</p>
     </div>
 
     <div class="legal-grid">
@@ -1093,7 +1093,7 @@ src="https://www.facebook.com/tr?id=2015826029060952&ev=PageView&noscript=1"/></
       </div>
     </div>
 
-    <p class="legal-note">O CorretorPRO gera o documento com os elementos reconhecidos pela legislação e pela jurisprudência. A força probatória em cada caso depende do preenchimento correto e das assinaturas. Este conteúdo não substitui aconselhamento jurídico.</p>
+    <p class="legal-note">O Selo gera o documento com os elementos reconhecidos pela legislação e pela jurisprudência. A força probatória em cada caso depende do preenchimento correto e das assinaturas. Este conteúdo não substitui aconselhamento jurídico.</p>
   </div>
 </section>
 
@@ -1105,7 +1105,7 @@ src="https://www.facebook.com/tr?id=2015826029060952&ev=PageView&noscript=1"/></
       A sua operação completa
     </div>
     <h2 class="jr-title">Um corretor sozinho. <em>A estrutura de uma imobiliária inteira.</em></h2>
-    <p class="jr-sub">Da primeira mensagem do cliente ao "fechou", tudo acontece dentro do CorretorPRO. Sem planilha, sem Word, sem perder lead no caminho — e parecendo muito maior do que um corretor só.</p>
+    <p class="jr-sub">Da primeira mensagem do cliente ao "fechou", tudo acontece dentro do Selo. Sem planilha, sem Word, sem perder lead no caminho — e parecendo muito maior do que um corretor só.</p>
 
     <div class="jr-rail">
 
@@ -1178,7 +1178,7 @@ src="https://www.facebook.com/tr?id=2015826029060952&ev=PageView&noscript=1"/></
       </div>
       <div class="roi-anchor-body">
         <h3>Quanto vale uma comissão protegida?</h3>
-        <p>A comissão de uma venda de R$ 500 mil gira em torno de <strong>R$ 15.000</strong>. O CorretorPRO por um ano custa <strong>R$ 497</strong>. Uma única comissão cobrada graças ao Registro de Visita paga <strong>30 anos de assinatura</strong>.</p>
+        <p>A comissão de uma venda de R$ 500 mil gira em torno de <strong>R$ 15.000</strong>. O Selo por um ano custa <strong>R$ 497</strong>. Uma única comissão cobrada graças ao Registro de Visita paga <strong>30 anos de assinatura</strong>.</p>
       </div>
       <div class="roi-stat">
         <div class="big">30×</div>
@@ -1280,7 +1280,7 @@ src="https://www.facebook.com/tr?id=2015826029060952&ev=PageView&noscript=1"/></
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M9.1 9a3 3 0 0 1 5.8 1c0 2-3 3-3 3"/><path d="M12 17h.01"/></svg>
         <h3>É difícil de usar?</h3>
       </div>
-      <p><b>Não.</b> Se você usa WhatsApp, você usa o CorretorPRO. Entra, preenche, envia.</p>
+      <p><b>Não.</b> Se você usa WhatsApp, você usa o Selo. Entra, preenche, envia.</p>
     </div>
 
     <div class="obj-card">
@@ -1342,8 +1342,8 @@ src="https://www.facebook.com/tr?id=2015826029060952&ev=PageView&noscript=1"/></
   <div class="wrap">
     <div class="footer-grid">
       <div class="footer-brand">
-        <div class="footer-logo">Corretor<span>PRO</span></div>
-        <p>Propostas profissionais e proteção da comissão para corretores de imóveis — em segundos, direto do celular.</p>
+        <div class="footer-logo">Se<span>lo</span></div>
+        <p>Selo. Sua comissão, garantida. Propostas profissionais e proteção da comissão para corretores de imóveis — em segundos, direto do celular.</p>
       </div>
       <div class="footer-col">
         <div class="footer-col-t">Produto</div>
@@ -1359,7 +1359,7 @@ src="https://www.facebook.com/tr?id=2015826029060952&ev=PageView&noscript=1"/></
         <a href="mailto:usecorretorpro@gmail.com">Suporte</a>
       </div>
     </div>
-    <p class="footer-copy">© 2026 CorretorPRO. Todos os direitos reservados.</p>
+    <p class="footer-copy">© 2026 Selo. Todos os direitos reservados.</p>
   </div>
 </footer>
 

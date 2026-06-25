@@ -42,5 +42,5 @@ jobs:
         env:
           DEMO_EMAIL: ${{ secrets.DEMO_EMAIL }}
           DEMO_PASSWORD: ${{ secrets.DEMO_PASSWORD }}
-          APP_URL: https://usecorretorpro.vercel.app
+          APP_URL: https://selosales.vercel.app
         run: node scripts/qa-smoke.mjs

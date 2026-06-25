@@ -29,8 +29,6 @@ jobs:
       - name: Prepare site
         run: |
           mkdir -p _site
-          # Canonical CorretorPRO landing served at the root
-          cp landing/index.html _site/index.html
           # Legal pages (required for Hotmart)
           cp termos.html _site/termos.html
           cp privacidade.html _site/privacidade.html
