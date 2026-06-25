@@ -32,6 +32,9 @@
 :root{
   --p:#0F2D4A; --ph:#0A2138; --ps:rgba(15,45,74,.12);
   --p2:#C9882A;
+  /* Cor de marca PESSOAL do corretor (logo/proposta) — variável própria para nunca
+     sobrescrever a identidade visual do app (--p/--ph/--ps são sempre Selo navy). */
+  --bp:#4D7EFF; --bph:#3567E8; --bps:rgba(77,126,255,.12);
   --g:#22C55E; --gs:rgba(34,197,94,.12); --r:#EF4444;
   --sw:240px; --th:60px; --rad:10px; --radl:18px;
   --font:Geist,ui-sans-serif,system-ui,-apple-system,BlinkMacSystemFont,"SF Pro Display","SF Pro Text","Segoe UI",Roboto,Helvetica,Arial,sans-serif;
@@ -65,7 +68,7 @@ body{font-family:var(--font);background:var(--bg);color:var(--t);-webkit-font-sm
 .sidebar{position:fixed;left:0;top:0;width:var(--sw);height:100vh;background:var(--sb);border-right:1px solid var(--b);display:flex;flex-direction:column;z-index:100;transition:transform .25s ease,background-color .25s ease}
 .sb-head{height:var(--th);padding:0 20px;display:flex;align-items:center;gap:8px;border-bottom:1px solid var(--b);flex-shrink:0}
 .sb-logo{font-size:17px;font-weight:700;letter-spacing:-.5px;color:var(--t);text-decoration:none}
-.sb-logo em{color:var(--p);font-style:normal}
+.sb-logo em{color:var(--p2);font-style:normal}
 .theme-toggle{margin-left:auto;width:30px;height:30px;border-radius:50%;border:1px solid var(--b);background:var(--s2);color:var(--t2);display:flex;align-items:center;justify-content:center;cursor:pointer;flex-shrink:0;transition:background-color .2s ease,border-color .2s ease,color .2s ease,transform .15s ease}
 .theme-toggle:hover{color:var(--p);border-color:var(--bm);transform:scale(1.06)}
 .theme-toggle svg{transition:transform .35s cubic-bezier(.4,0,.2,1),opacity .25s ease}
@@ -305,22 +308,22 @@ input[type=color]{opacity:0;width:0;height:0;position:absolute}
    a lógica de cálculo/preenchimento que fica em construirProposta(d). */
 
 /* Tema MODERNO: cabeçalho com cor de marca em destaque, cards de valor mais ousados */
-.proposta.tema-moderno .prop-corretor{background:linear-gradient(120deg,var(--p),var(--ph));border-bottom:none}
+.proposta.tema-moderno .prop-corretor{background:linear-gradient(120deg,var(--bp),var(--bph));border-bottom:none}
 .proposta.tema-moderno .prop-corretor-nome{color:#fff}
 .proposta.tema-moderno .prop-corretor-creci,.proposta.tema-moderno .prop-corretor-contato{color:rgba(255,255,255,.85)}
 .proposta.tema-moderno .prop-corretor-logo{background:rgba(255,255,255,.18)}
-.proposta.tema-moderno .prop-head{background:linear-gradient(120deg,var(--p) 0%,var(--p2) 100%);border-bottom:none}
+.proposta.tema-moderno .prop-head{background:linear-gradient(120deg,var(--bp) 0%,var(--bph) 100%);border-bottom:none}
 .proposta.tema-moderno .prop-h2,.proposta.tema-moderno .prop-sub{color:#fff}
 .proposta.tema-moderno .prop-sub{opacity:.9}
 .proposta.tema-moderno .prop-badge{background:rgba(255,255,255,.18);color:#fff}
 .proposta.tema-moderno .prop-badge-dot{background:#fff}
 .proposta.tema-moderno .prop-tag{background:rgba(255,255,255,.16);border-color:rgba(255,255,255,.25);color:#fff}
 .proposta.tema-moderno .mod{border-radius:var(--radl);border-width:1px}
-.proposta.tema-moderno .mod.hl{background:linear-gradient(135deg,var(--p),var(--ph));border-color:transparent}
+.proposta.tema-moderno .mod.hl{background:linear-gradient(135deg,var(--bp),var(--bph));border-color:transparent}
 .proposta.tema-moderno .mod.hl .mod-label,.proposta.tema-moderno .mod.hl .mod-note{color:rgba(255,255,255,.8)}
 .proposta.tema-moderno .mod.hl .mod-val{color:#fff}
 .proposta.tema-moderno .mod.hl .mod-parcela{color:#fff}
-.proposta.tema-moderno .sim-row.tot{background:var(--ps);border-radius:6px;padding:6px 8px;border-top:none}
+.proposta.tema-moderno .sim-row.tot{background:var(--bps);border-radius:6px;padding:6px 8px;border-top:none}
 
 /* Tema MINIMALISTA: menos cor, tipografia maior, mais espaço em branco */
 .proposta.tema-minimalista{border:none;background:transparent}
@@ -348,7 +351,7 @@ input[type=color]{opacity:0;width:0;height:0;position:absolute}
 .modelo-card.sel-m{border-color:var(--p);background:var(--ps)}
 .modelo-preview{height:46px;border-radius:6px;margin-bottom:10px;display:flex;flex-direction:column;gap:4px;padding:6px 8px;justify-content:center}
 .modelo-preview-classico{background:linear-gradient(135deg,rgba(15,45,74,.18),rgba(201,136,42,.08));border:1px solid var(--b)}
-.modelo-preview-moderno{background:linear-gradient(120deg,var(--p),var(--p2))}
+.modelo-preview-moderno{background:linear-gradient(120deg,var(--bp),var(--bph))}
 .modelo-preview-minimalista{background:var(--s1);border:1px solid var(--bm)}
 .modelo-preview-bar{height:5px;border-radius:3px;background:rgba(255,255,255,.4);width:60%}
 .modelo-preview-minimalista .modelo-preview-bar{background:var(--t3);width:40%}
@@ -572,7 +575,7 @@ input[type=color]{opacity:0;width:0;height:0;position:absolute}
 /* ── MOBILE ── */
 .mob-bar{display:none;position:fixed;top:0;left:0;right:0;z-index:110;height:56px;background:var(--sb);border-bottom:1px solid var(--b);padding:0 14px;align-items:center;gap:10px}
 .mob-logo{font-size:16px;font-weight:800;letter-spacing:-.4px}
-.mob-logo em{color:var(--p);font-style:normal}
+.mob-logo em{color:var(--p2);font-style:normal}
 .ham{background:none;border:none;cursor:pointer;color:var(--t2);padding:6px;display:flex;align-items:center;border-radius:var(--rad)}
 .ham:hover{background:var(--s2)}
 .overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.65);z-index:95;backdrop-filter:blur(4px)}
@@ -1855,7 +1858,7 @@ input[type=color]{opacity:0;width:0;height:0;position:absolute}
             <div class="field f2">
               <label class="lbl">Cor da marca</label>
               <div class="color-row">
-                <div class="color-swatch" id="color-swatch" onclick="document.getElementById('c-cor').click()" style="background:var(--p)"></div>
+                <div class="color-swatch" id="color-swatch" onclick="document.getElementById('c-cor').click()" style="background:var(--bp)"></div>
                 <input type="color" id="c-cor" value="#4D7EFF" oninput="atualizarCor(this.value)">
                 <div class="color-presets">
                   <div class="preset" data-cor="#4D7EFF" style="background:#4D7EFF" onclick="atualizarCor('#4D7EFF')" title="Azul"></div>
@@ -4826,7 +4829,7 @@ function renderDashboardChart() {
     const h = max > 0 ? (valor / max) * alturaUtil : 0
     const x = padSide + i * (barW + gap)
     const y = padTop + (alturaUtil - h)
-    const cor = valor > 0 ? 'var(--p, #4D7EFF)' : 'var(--b)'
+    const cor = valor > 0 ? 'var(--p, #0F2D4A)' : 'var(--b)'
     const valorLabel = valor > 0 ? formatarMoedaBR(valor).replace('R$', '').trim() : ''
     return `
       <rect x="${x.toFixed(1)}" y="${y.toFixed(1)}" width="${barW.toFixed(1)}" height="${Math.max(h,2).toFixed(1)}" rx="4" fill="${cor}"></rect>
@@ -5275,12 +5278,14 @@ function escurecer(hex, amt) {
 }
 
 function aplicarPerfil() {
-  // aplica a cor da marca nas CSS vars
+  // aplica a cor de marca PESSOAL do corretor só nas vars --bp* (proposta/preview).
+  // Nunca em --p/--ph/--ps — essas são a identidade visual do app (Selo) e não
+  // podem ser substituídas pela cor que o corretor escolher para a própria proposta.
   if (perfil.cor) {
-    document.documentElement.style.setProperty('--p', perfil.cor)
+    document.documentElement.style.setProperty('--bp', perfil.cor)
     // hover é uma versão ~12% mais escura para dar feedback no clique
-    document.documentElement.style.setProperty('--ph', escurecer(perfil.cor, 0.12))
-    document.documentElement.style.setProperty('--ps', perfil.cor + '1F')
+    document.documentElement.style.setProperty('--bph', escurecer(perfil.cor, 0.12))
+    document.documentElement.style.setProperty('--bps', perfil.cor + '1F')
   }
 }
 
