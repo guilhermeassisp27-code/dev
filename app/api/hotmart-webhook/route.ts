@@ -5,9 +5,15 @@ import { createClient } from '@supabase/supabase-js'
 const HOTTOK_HEADER = 'x-hotmart-hottok'
 
 // Mapeamento dos códigos de oferta (off=) dos links de pagamento -> plano
-//   Mensal: https://pay.hotmart.com/L106145948O?off=hgn79gvq
-//   Anual:  https://pay.hotmart.com/L106145948O?off=mcjyy7ub
+//   Produto novo (Selo):
+//     Mensal: https://pay.hotmart.com/Y106494635I?off=35qlpvdb
+//     Anual:  https://pay.hotmart.com/Y106494635I?off=xs8grn1m
+//   Produto antigo (CorretorPRO — mantido para assinantes já ativos):
+//     Mensal: https://pay.hotmart.com/L106145948O?off=hgn79gvq
+//     Anual:  https://pay.hotmart.com/L106145948O?off=mcjyy7ub
 const OFFER_PLANS: Record<string, string> = {
+  '35qlpvdb': 'mensal',
+  'xs8grn1m': 'anual',
   hgn79gvq: 'mensal',
   mcjyy7ub: 'anual',
 }
@@ -39,8 +45,8 @@ async function enviarEmailRecuperacao(destino: string, nome: string, plano: stri
     return false
   }
   const primeiroNome = escHtmlEmail(nome.split(' ')[0] || 'tudo bem')
-  const offerCode = plano === 'anual' ? 'mcjyy7ub' : 'hgn79gvq'
-  const checkoutUrl = `https://pay.hotmart.com/L106145948O?off=${offerCode}`
+  const offerCode = plano === 'anual' ? 'xs8grn1m' : '35qlpvdb'
+  const checkoutUrl = `https://pay.hotmart.com/Y106494635I?off=${offerCode}`
 
   try {
     const resp = await fetch('https://api.brevo.com/v3/smtp/email', {
