@@ -85,10 +85,17 @@ export async function POST(req: NextRequest) {
     req.headers.get(HOTTOK_HEADER) ||
     req.nextUrl.searchParams.get('hottok')
 
-  if (!process.env.HOTMART_WEBHOOK_TOKEN) {
+  // Aceita uma lista separada por vírgula: durante a transição CorretorPRO -> Selo,
+  // os dois produtos Hotmart (antigo, com assinantes ativos, e o novo) enviam hottoks
+  // diferentes para este mesmo endpoint.
+  const tokensValidos = (process.env.HOTMART_WEBHOOK_TOKEN ?? '')
+    .split(',')
+    .map((t) => t.trim())
+    .filter(Boolean)
+  if (tokensValidos.length === 0) {
     return NextResponse.json({ error: 'HOTMART_WEBHOOK_TOKEN not configured on server' }, { status: 500 })
   }
-  if (token !== process.env.HOTMART_WEBHOOK_TOKEN) {
+  if (!token || !tokensValidos.includes(token)) {
     return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
   }
 
