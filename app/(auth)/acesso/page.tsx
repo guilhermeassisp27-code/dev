@@ -102,9 +102,9 @@ export default function AcessoPage() {
           <div className="auth-logo">
             <svg width="150" height="40" viewBox="0 0 300 80" fill="none" role="img" aria-label="Selo" style={{ color: 'var(--text)' }}>
               <g transform="translate(10,12) scale(0.875)">
-                <circle cx="32" cy="32" r="29" stroke="#C9882A" strokeWidth="1.4" strokeDasharray="1.4 5.1" strokeLinecap="round" />
-                <circle cx="32" cy="32" r="23.5" stroke="#C9882A" strokeWidth="2.4" />
-                <path d="M22.5 32.8l6.2 6.2 12.4-14.6" stroke="#C9882A" strokeWidth="3.4" strokeLinecap="round" strokeLinejoin="round" />
+                <circle cx="32" cy="32" r="29" stroke="currentColor" strokeWidth="1.4" strokeDasharray="1.4 5.1" strokeLinecap="round" />
+                <circle cx="32" cy="32" r="23.5" stroke="currentColor" strokeWidth="2.4" />
+                <path d="M22.5 32.8l6.2 6.2 12.4-14.6" stroke="currentColor" strokeWidth="3.4" strokeLinecap="round" strokeLinejoin="round" />
               </g>
               <text x="86" y="53" textAnchor="start" fontFamily="Geist, ui-sans-serif, system-ui, -apple-system, 'Segoe UI', sans-serif" fontWeight="600" fontSize="40" letterSpacing="6" fill="currentColor">SELO</text>
             </svg>

@@ -89,7 +89,14 @@ export default function DefinirSenhaPage() {
       <div className="auth-shell">
         <div className="auth-brand">
           <div className="auth-logo">
-            Corretor<span>PRO</span>
+            <svg width="150" height="40" viewBox="0 0 300 80" fill="none" role="img" aria-label="Selo" style={{ color: 'var(--text)' }}>
+              <g transform="translate(10,12) scale(0.875)">
+                <circle cx="32" cy="32" r="29" stroke="currentColor" strokeWidth="1.4" strokeDasharray="1.4 5.1" strokeLinecap="round" />
+                <circle cx="32" cy="32" r="23.5" stroke="currentColor" strokeWidth="2.4" />
+                <path d="M22.5 32.8l6.2 6.2 12.4-14.6" stroke="currentColor" strokeWidth="3.4" strokeLinecap="round" strokeLinejoin="round" />
+              </g>
+              <text x="86" y="53" textAnchor="start" fontFamily="Geist, ui-sans-serif, system-ui, -apple-system, 'Segoe UI', sans-serif" fontWeight="600" fontSize="40" letterSpacing="6" fill="currentColor">SELO</text>
+            </svg>
           </div>
           <p className="auth-subtitle">Defina sua senha</p>
         </div>
@@ -194,17 +201,8 @@ export default function DefinirSenhaPage() {
         }
 
         .auth-logo {
-          font-size: 26px;
-          font-weight: 700;
-          letter-spacing: -0.02em;
-          color: var(--text);
-        }
-
-        .auth-logo span {
-          background: linear-gradient(135deg, var(--brand), var(--brand-2));
-          -webkit-background-clip: text;
-          background-clip: text;
-          color: transparent;
+          display: flex;
+          justify-content: center;
         }
 
         .auth-subtitle {
