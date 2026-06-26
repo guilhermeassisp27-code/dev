@@ -465,15 +465,44 @@ input[type=color]{opacity:0;width:0;height:0;position:absolute}
 .funil-col-count{background:var(--s1);color:var(--t2);font-size:11px;font-weight:700;padding:1px 8px;border-radius:100px;flex-shrink:0}
 .funil-col-body{padding:10px;display:flex;flex-direction:column;gap:10px;overflow-y:auto;flex:1}
 .funil-col-empty{font-size:12px;color:var(--t3);text-align:center;padding:18px 4px}
-.funil-card{background:var(--s1);border:1px solid var(--b);border-radius:14px;padding:13px;display:flex;flex-direction:column;gap:6px;box-shadow:var(--shadow-sm);transition:transform .15s ease,box-shadow .15s ease}
+.funil-card{background:var(--s1);border:1px solid var(--b);border-radius:14px;padding:13px;display:flex;flex-direction:column;gap:6px;box-shadow:var(--shadow-sm);transition:transform .15s ease,box-shadow .15s ease,opacity .15s ease;cursor:grab}
 .funil-card:hover{transform:translateY(-2px);box-shadow:var(--shadow-lg)}
+.funil-card.dragging{opacity:.4;cursor:grabbing}
+.funil-col-body.drag-over{background:var(--ps);outline:2px dashed var(--p2);outline-offset:-4px;border-radius:8px}
 .funil-card-top{display:flex;align-items:center;justify-content:space-between;gap:6px}
-.funil-card-cliente{font-size:13px;font-weight:700;color:var(--t);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.funil-card-cliente{font-size:13px;font-weight:700;color:var(--t);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;cursor:pointer}
+.funil-card-cliente:hover{color:var(--p2);text-decoration:underline}
 .funil-card-imovel{font-size:11.5px;color:var(--t2);line-height:1.4;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .funil-card-valor{font-size:13px;font-weight:800;color:var(--p)}
 .funil-card-actions{display:flex;gap:6px;margin-top:4px}
 .funil-card-select{flex:1;font-size:11px;padding:6px 8px}
+.funil-card-badges{display:flex;gap:6px;flex-wrap:wrap;margin-top:2px}
+.funil-mini-badge{display:inline-flex;align-items:center;gap:3px;padding:2px 7px;border-radius:5px;font-size:10px;font-weight:700;background:var(--s2);color:var(--t2);border:1px solid var(--b);cursor:pointer}
+.funil-mini-badge.lembrete-vencido{background:rgba(239,68,68,.16);color:#EF4444;border-color:transparent}
 @media (max-width:760px){.funil-col{flex:0 0 220px;min-width:220px;max-height:none}}
+
+/* ── MODAL DO LEAD (notas + lembretes) ── */
+.lead-modal{width:min(520px,94vw);max-height:88vh;overflow-y:auto;background:var(--s1);border:1px solid var(--bm);border-radius:18px;padding:24px;box-shadow:var(--shadow-lg);font-family:inherit;animation:modalScale .22s ease}
+.lead-modal h3{font-size:17px;font-weight:700;color:var(--t);margin:0 0 4px}
+.lead-modal .lm-sub{font-size:12.5px;color:var(--t2);margin:0 0 16px}
+.lm-section{margin-top:18px}
+.lm-section-t{font-size:12px;font-weight:800;text-transform:uppercase;letter-spacing:.04em;color:var(--t3);margin-bottom:8px}
+.lm-add-row{display:flex;gap:8px;margin-bottom:10px;flex-wrap:wrap}
+.lm-add-row textarea{flex:1;min-width:160px;min-height:54px;resize:vertical;background:var(--s2);border:1px solid var(--b);border-radius:10px;color:var(--t);font-size:13px;line-height:1.5;padding:9px 11px;font-family:inherit}
+.lm-add-row input[type="date"]{background:var(--s2);border:1px solid var(--b);border-radius:10px;color:var(--t);font-size:13px;padding:9px 11px;font-family:inherit}
+.lm-list{display:flex;flex-direction:column;gap:8px;max-height:180px;overflow-y:auto}
+.lm-note-item{background:var(--s2);border:1px solid var(--b);border-radius:10px;padding:9px 11px;font-size:12.5px;color:var(--t);line-height:1.5}
+.lm-note-meta{font-size:10.5px;color:var(--t3);margin-top:4px}
+.lm-empty{font-size:12px;color:var(--t3);padding:6px 0}
+.lm-reminder-item{display:flex;align-items:center;gap:10px;background:var(--s2);border:1px solid var(--b);border-radius:10px;padding:8px 11px}
+.lm-reminder-item.vencido{border-color:rgba(239,68,68,.4)}
+.lm-reminder-item.concluido{opacity:.55}
+.lm-reminder-info{flex:1;min-width:0}
+.lm-reminder-txt{font-size:12.5px;color:var(--t);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.lm-reminder-txt.concluido{text-decoration:line-through}
+.lm-reminder-data{font-size:10.5px;color:var(--t3)}
+.lm-reminder-data.vencido{color:#EF4444;font-weight:700}
+.lm-actions{display:flex;gap:8px;margin-top:18px;flex-wrap:wrap;justify-content:flex-end}
 .followup-modal h3{font-size:17px;font-weight:700;color:var(--t);margin:0 0 4px}
 .followup-modal .fu-sub{font-size:12.5px;color:var(--t2);margin:0 0 14px}
 .followup-modal textarea{width:100%;min-height:120px;resize:vertical;background:var(--s2);border:1px solid var(--b);border-radius:12px;color:var(--t);font-size:13.5px;line-height:1.55;padding:12px;font-family:inherit}
@@ -508,6 +537,20 @@ input[type=color]{opacity:0;width:0;height:0;position:absolute}
 .dash-atencao-cliente{font-size:13.5px;font-weight:700;color:var(--t);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .dash-atencao-meta{font-size:11.5px;color:var(--t3);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .dash-atalhos{display:flex;gap:10px;flex-wrap:wrap;margin-top:4px}
+.dash-chart-head{display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap;margin-bottom:10px}
+.dash-period-btns{display:flex;gap:6px}
+.dash-period-btn{font-size:11px;font-weight:700;padding:5px 10px;border-radius:7px;border:1px solid var(--b);background:var(--s2);color:var(--t2);cursor:pointer;transition:background-color .15s,color .15s}
+.dash-period-btn.active{background:var(--p);color:#fff;border-color:var(--p)}
+.dash-rank-item{display:flex;align-items:center;gap:10px;padding:9px 0;border-bottom:1px solid var(--b)}
+.dash-rank-item:last-child{border-bottom:none}
+.dash-rank-pos{font-size:12px;font-weight:800;color:var(--p2);width:18px;flex:0 0 18px}
+.dash-rank-info{min-width:0;flex:1}
+.dash-rank-cliente{font-size:13px;font-weight:700;color:var(--t);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.dash-rank-meta{font-size:11px;color:var(--t3);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.dash-rank-valor{font-size:12.5px;font-weight:800;color:var(--p);flex-shrink:0}
+.dash-extra-kpis{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-top:20px}
+@media(max-width:900px){.dash-extra-kpis{grid-template-columns:1fr 1fr}}
+@media(max-width:560px){.dash-extra-kpis{grid-template-columns:1fr}}
 
 /* ── VENDAS ── */
 .vendas-kpis{display:grid;grid-template-columns:repeat(3,1fr);gap:14px}
@@ -775,9 +818,18 @@ input[type=color]{opacity:0;width:0;height:0;position:absolute}
 
       <div class="dash-kpis" id="dash-kpis"></div>
 
+      <div class="dash-extra-kpis" id="dash-extra-kpis"></div>
+
       <div class="dash-grid">
         <div class="card">
-          <div class="card-t">Vendas nos últimos 6 meses</div>
+          <div class="dash-chart-head">
+            <div class="card-t" style="margin:0" id="dash-chart-titulo">Vendas no período</div>
+            <div class="dash-period-btns" id="dash-period-btns">
+              <button class="dash-period-btn" data-periodo="6m" onclick="mudarPeriodoDashboard('6m')">6 meses</button>
+              <button class="dash-period-btn" data-periodo="12m" onclick="mudarPeriodoDashboard('12m')">12 meses</button>
+              <button class="dash-period-btn" data-periodo="ano" onclick="mudarPeriodoDashboard('ano')">Ano corrente</button>
+            </div>
+          </div>
           <div class="dash-chart-wrap" id="dash-chart"></div>
         </div>
         <div class="card">
@@ -790,6 +842,17 @@ input[type=color]{opacity:0;width:0;height:0;position:absolute}
         <div class="card">
           <div class="card-t">Leads que precisam de atenção agora</div>
           <div id="dash-atencao"></div>
+        </div>
+        <div class="card">
+          <div class="card-t">Top 5 leads ativos mais valiosos</div>
+          <div id="dash-ranking"></div>
+        </div>
+      </div>
+
+      <div class="dash-grid">
+        <div class="card">
+          <div class="card-t">Lembretes de hoje e atrasados</div>
+          <div id="dash-lembretes"></div>
         </div>
         <div class="card">
           <div class="card-t">Atalhos rápidos</div>
@@ -4423,7 +4486,7 @@ function renderFunil() {
         <span>${escH(estagio.label)}</span>
         <span class="funil-col-count">${doEstagio.length}</span>
       </div>
-      <div class="funil-col-body">
+      <div class="funil-col-body" data-estagio="${estagio.key}" ondragover="funilDragOver(event)" ondragleave="funilDragLeave(event)" ondrop="funilDrop(event, '${estagio.key}')">
         ${doEstagio.length === 0 ? '<div class="funil-col-empty">Sem leads aqui</div>' : doEstagio.map(l => {
           const alerta = alertaLead(l)
           const valorFmt = l.valorEstimado ? 'R$ ' + l.valorEstimado : ''
@@ -4435,14 +4498,26 @@ function renderFunil() {
                  ${alerta.dias}d
                </button>`
             : ''
+          const nNotas = (l.notas || []).length
+          const lembretesVencidos = (l.lembretes || []).filter(r => !r.concluido && r.data && r.data <= new Date().toISOString().slice(0,10)).length
+          const nLembretesAbertos = (l.lembretes || []).filter(r => !r.concluido).length
+          const badgesMini = `
+            ${nNotas > 0 ? `<button class="funil-mini-badge" onclick="abrirLeadModal(${l.id})" title="${nNotas} nota(s)">
+              <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>${nNotas}
+            </button>` : ''}
+            ${nLembretesAbertos > 0 ? `<button class="funil-mini-badge${lembretesVencidos > 0 ? ' lembrete-vencido' : ''}" onclick="abrirLeadModal(${l.id})" title="${lembretesVencidos > 0 ? lembretesVencidos + ' lembrete(s) vencido(s)' : nLembretesAbertos + ' lembrete(s)'}">
+              <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>${nLembretesAbertos}
+            </button>` : ''}
+          `
           return `
-          <div class="funil-card">
+          <div class="funil-card" draggable="true" data-lead-id="${l.id}" ondragstart="funilDragStart(event, ${l.id})" ondragend="funilDragEnd(event)">
             <div class="funil-card-top">
-              <span class="funil-card-cliente">${escH(l.cliente || '—')}</span>
+              <span class="funil-card-cliente" onclick="abrirLeadModal(${l.id})" title="Ver detalhes, notas e lembretes">${escH(l.cliente || '—')}</span>
               ${alertaBadge}
             </div>
             ${l.imovel ? `<div class="funil-card-imovel">${escH(l.imovel)}</div>` : ''}
             ${valorFmt ? `<div class="funil-card-valor">${escH(valorFmt)}</div>` : ''}
+            ${badgesMini.trim() ? `<div class="funil-card-badges">${badgesMini}</div>` : ''}
             <div class="funil-card-actions">
               <select class="sel funil-card-select" onchange="moverEstagioLead(${l.id}, this.value)" title="Mover para outro estágio">
                 ${FUNIL_ESTAGIOS.map(e => `<option value="${e.key}" ${e.key === estagio.key ? 'selected' : ''}>${escH(e.label)}</option>`).join('')}
@@ -4456,6 +4531,209 @@ function renderFunil() {
       </div>
     </div>`
   }).join('')}</div>`
+}
+
+/* ── DRAG AND DROP (HTML5 nativo, sem biblioteca) ──
+   Arrastar um card entre colunas chama exatamente a mesma moverEstagioLead()
+   usada pelo <select> — sem duplicar a lógica de "venda fechada" que abre o
+   modal de registro de venda. O <select> continua funcionando normalmente
+   como alternativa acessível (touch/teclado). */
+let _funilDragLeadId = null
+
+function funilDragStart(ev, leadId) {
+  if (window._DEMO) { ev.preventDefault(); return }
+  _funilDragLeadId = leadId
+  ev.dataTransfer.effectAllowed = 'move'
+  try { ev.dataTransfer.setData('text/plain', String(leadId)) } catch(_) {}
+  ev.currentTarget.classList.add('dragging')
+}
+
+function funilDragEnd(ev) {
+  ev.currentTarget.classList.remove('dragging')
+  _funilDragLeadId = null
+  document.querySelectorAll('.funil-col-body.drag-over').forEach(el => el.classList.remove('drag-over'))
+}
+
+function funilDragOver(ev) {
+  ev.preventDefault() // necessário para permitir o drop
+  ev.currentTarget.classList.add('drag-over')
+}
+
+function funilDragLeave(ev) {
+  ev.currentTarget.classList.remove('drag-over')
+}
+
+function funilDrop(ev, novoEstagio) {
+  ev.preventDefault()
+  ev.currentTarget.classList.remove('drag-over')
+  let leadId = _funilDragLeadId
+  if (leadId == null) {
+    const raw = ev.dataTransfer.getData('text/plain')
+    leadId = raw ? Number(raw) : null
+  }
+  if (leadId == null) return
+  moverEstagioLead(leadId, novoEstagio)
+}
+
+/* ── NOTAS E LEMBRETES POR LEAD ──
+   Histórico de anotações livres e lembretes com data, igual a um CRM
+   profissional (Kommo/Pipedrive). Tudo fica dentro do próprio objeto do
+   lead (campos `notas` e `lembretes`) — sem array novo, sem chave de
+   localStorage nova: persiste junto com `cpr_leads` e via salvarRemoto(). */
+let _leadModalId = null
+
+function abrirLeadModal(id) {
+  const l = leads.find(x => x.id === id)
+  if (!l) return
+  _leadModalId = id
+  const antigo = document.getElementById('lead-modal-back')
+  if (antigo) antigo.remove()
+
+  const back = document.createElement('div')
+  back.id = 'lead-modal-back'
+  back.className = 'followup-modal-back'
+  back.onclick = (e) => { if (e.target === back) fecharLeadModal() }
+  back.innerHTML = `
+    <div class="lead-modal">
+      <h3>${escH(l.cliente || 'Lead')}</h3>
+      <p class="lm-sub">${escH(l.imovel || 'Sem imóvel vinculado')}${l.valorEstimado ? ' · R$ ' + escH(l.valorEstimado) : ''}</p>
+
+      <div class="lm-section">
+        <div class="lm-section-t">Adicionar lembrete</div>
+        <div class="lm-add-row">
+          <textarea id="lm-lembrete-texto" placeholder="Ex: Ligar para confirmar visita, enviar opções novas..." style="min-height:38px"></textarea>
+          <input id="lm-lembrete-data" type="date" value="${new Date().toISOString().slice(0,10)}">
+          <button class="btn btn-green btn-sm" onclick="adicionarLembreteLead()">Adicionar</button>
+        </div>
+        <div class="lm-list" id="lm-lembretes-list"></div>
+      </div>
+
+      <div class="lm-section">
+        <div class="lm-section-t">Anotações</div>
+        <div class="lm-add-row">
+          <textarea id="lm-nota-texto" placeholder="Anote aqui qualquer informação relevante sobre o lead..."></textarea>
+          <button class="btn btn-green btn-sm" onclick="adicionarNotaLead()">Salvar nota</button>
+        </div>
+        <div class="lm-list" id="lm-notas-list"></div>
+      </div>
+
+      <div class="lm-actions">
+        <button class="btn btn-ghost btn-sm" onclick="fecharLeadModal()">Fechar</button>
+      </div>
+    </div>`
+  document.body.appendChild(back)
+  renderLeadModalConteudo()
+}
+
+function fecharLeadModal() {
+  const el = document.getElementById('lead-modal-back')
+  if (el) el.remove()
+  _leadModalId = null
+}
+
+function renderLeadModalConteudo() {
+  const l = leads.find(x => x.id === _leadModalId)
+  if (!l) return
+
+  const hojeStr = new Date().toISOString().slice(0,10)
+  const lembretes = (l.lembretes || [])
+  const elLembretes = document.getElementById('lm-lembretes-list')
+  if (elLembretes) {
+    if (lembretes.length === 0) {
+      elLembretes.innerHTML = '<div class="lm-empty">Nenhum lembrete cadastrado ainda.</div>'
+    } else {
+      const ordenados = [...lembretes].sort((a, b) => (a.data || '').localeCompare(b.data || ''))
+      elLembretes.innerHTML = ordenados.map((r) => {
+        const idx = lembretes.indexOf(r)
+        const vencido = !r.concluido && r.data && r.data <= hojeStr
+        return `
+        <div class="lm-reminder-item${vencido ? ' vencido' : ''}${r.concluido ? ' concluido' : ''}">
+          <input type="checkbox" ${r.concluido ? 'checked' : ''} onchange="toggleLembreteLead(${idx})" title="Marcar como concluído">
+          <div class="lm-reminder-info">
+            <div class="lm-reminder-txt${r.concluido ? ' concluido' : ''}">${escH(r.texto)}</div>
+            <div class="lm-reminder-data${vencido ? ' vencido' : ''}">${r.data ? fmtDataBR(r.data) : 'Sem data'}${vencido ? ' — atrasado' : ''}</div>
+          </div>
+          <button class="btn btn-ghost btn-sm" onclick="removerLembreteLead(${idx})" aria-label="Remover lembrete">
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 01-2 2H8a2 2 0 01-2-2L5 6"/></svg>
+          </button>
+        </div>`
+      }).join('')
+    }
+  }
+
+  const notas = (l.notas || [])
+  const elNotas = document.getElementById('lm-notas-list')
+  if (elNotas) {
+    if (notas.length === 0) {
+      elNotas.innerHTML = '<div class="lm-empty">Nenhuma anotação ainda.</div>'
+    } else {
+      // Mais recente primeiro — é histórico, nunca sobrescreve.
+      elNotas.innerHTML = notas.map(n => `
+        <div class="lm-note-item">
+          ${escH(n.texto)}
+          <div class="lm-note-meta">${escH(new Date(n.criadoEm).toLocaleString('pt-BR'))}</div>
+        </div>`).join('')
+    }
+  }
+}
+
+async function persistirLead(l, msgSucesso) {
+  localStorage.setItem('cpr_leads', JSON.stringify(leads))
+  renderFunil()
+  try {
+    await salvarRemoto()
+    if (msgSucesso) toast(msgSucesso)
+  } catch(_) {
+    toast('Salvo localmente — verifique sua conexão', true)
+  }
+}
+
+async function adicionarNotaLead() {
+  if (window._DEMO) return demoBloqueio()
+  const l = leads.find(x => x.id === _leadModalId)
+  if (!l) return
+  const ta = document.getElementById('lm-nota-texto')
+  const texto = (ta?.value || '').trim()
+  if (!texto) { toast('Escreva algo antes de salvar a nota', true); return }
+  if (!l.notas) l.notas = []
+  l.notas.unshift({ texto, criadoEm: new Date().toISOString() })
+  if (ta) ta.value = ''
+  renderLeadModalConteudo()
+  await persistirLead(l, 'Nota adicionada')
+}
+
+async function adicionarLembreteLead() {
+  if (window._DEMO) return demoBloqueio()
+  const l = leads.find(x => x.id === _leadModalId)
+  if (!l) return
+  const ta = document.getElementById('lm-lembrete-texto')
+  const dataInp = document.getElementById('lm-lembrete-data')
+  const texto = (ta?.value || '').trim()
+  const data = dataInp?.value || ''
+  if (!texto) { toast('Escreva o lembrete antes de adicionar', true); return }
+  if (!l.lembretes) l.lembretes = []
+  l.lembretes.push({ texto, data, concluido: false })
+  if (ta) ta.value = ''
+  renderLeadModalConteudo()
+  await persistirLead(l, 'Lembrete adicionado')
+}
+
+async function toggleLembreteLead(idx) {
+  if (window._DEMO) return demoBloqueio()
+  const l = leads.find(x => x.id === _leadModalId)
+  if (!l || !l.lembretes || !l.lembretes[idx]) return
+  l.lembretes[idx].concluido = !l.lembretes[idx].concluido
+  renderLeadModalConteudo()
+  await persistirLead(l)
+}
+
+async function removerLembreteLead(idx) {
+  if (window._DEMO) return demoBloqueio()
+  const l = leads.find(x => x.id === _leadModalId)
+  if (!l || !l.lembretes || !l.lembretes[idx]) return
+  l.lembretes.splice(idx, 1)
+  renderLeadModalConteudo()
+  await persistirLead(l, 'Lembrete removido')
 }
 
 /* ── VENDAS ──
@@ -4791,22 +5069,103 @@ function renderDashboard() {
       <span class="dash-kpi-v">${escH(k.v)}</span>
     </div>`).join('')
 
+  renderDashboardExtraKpis()
   renderDashboardChart()
   renderDashboardFunilResumo()
   renderDashboardAtencao()
+  renderDashboardRanking()
+  renderDashboardLembretes()
 }
 
-// Gráfico de barras dos últimos 6 meses (volume de vendas fechadas), SVG
+// Converte "dd/mm/aaaa" (formato pt-BR usado em lead.criadoEm) para Date.
+function parseDataBR(s) {
+  if (!s) return new Date(NaN)
+  const [d, m, a] = String(s).split('/')
+  if (!d || !m || !a) return new Date(NaN)
+  return new Date(`${a}-${m.padStart(2,'0')}-${d.padStart(2,'0')}T00:00:00`)
+}
+
+// Taxa de conversão geral (leads que chegaram a "venda fechada" sobre o
+// total já cadastrado) e tempo médio até o fechamento (dias entre
+// criadoEm do lead e dataFechamento da venda vinculada), métricas comuns
+// em qualquer CRM profissional e que faltavam no dashboard anterior.
+function renderDashboardExtraKpis() {
+  const el = document.getElementById('dash-extra-kpis')
+  if (!el) return
+
+  const totalLeads = leads.length
+  const leadsFechados = leads.filter(l => estagioFunilLead(l) === 'venda_fechada').length
+  const taxaConversao = totalLeads > 0 ? Math.round((leadsFechados / totalLeads) * 100) : 0
+
+  const temposFechamento = vendas
+    .filter(v => v.leadId)
+    .map(v => {
+      const lead = leads.find(l => l.id === v.leadId)
+      if (!lead || !lead.criadoEm || !v.dataFechamento) return null
+      const dIni = parseDataBR(lead.criadoEm)
+      const dFim = parseDataLocal(v.dataFechamento)
+      if (isNaN(dIni) || isNaN(dFim)) return null
+      const dias = Math.round((dFim - dIni) / 86400000)
+      return dias >= 0 ? dias : null
+    })
+    .filter(d => d !== null)
+  const tempoMedio = temposFechamento.length > 0
+    ? Math.round(temposFechamento.reduce((s, d) => s + d, 0) / temposFechamento.length)
+    : null
+
+  const ticketMedioVendas = vendas.length > 0
+    ? vendas.reduce((s, v) => s + valorParaNumero(v.valor), 0) / vendas.length
+    : 0
+
+  const extraKpis = [
+    { l: 'Taxa de conversão (geral)', v: totalLeads > 0 ? `${taxaConversao}%` : '—' },
+    { l: 'Tempo médio até fechar',    v: tempoMedio !== null ? `${tempoMedio} dia${tempoMedio === 1 ? '' : 's'}` : '—' },
+    { l: 'Ticket médio das vendas',   v: vendas.length > 0 ? formatarMoedaBR(ticketMedioVendas) : '—' },
+  ]
+  el.innerHTML = extraKpis.map(k => `
+    <div class="dash-kpi">
+      <span class="dash-kpi-l">${escH(k.l)}</span>
+      <span class="dash-kpi-v">${escH(k.v)}</span>
+    </div>`).join('')
+}
+
+// Período do gráfico de vendas, selecionável por botões (sem date picker
+// externo) — guarda a escolha em memória, default 6 meses como antes.
+let _dashPeriodo = '6m'
+function mudarPeriodoDashboard(periodo) {
+  _dashPeriodo = periodo
+  renderDashboardChart()
+}
+
+// Gráfico de barras do período escolhido (volume de vendas fechadas), SVG
 // puro — sem biblioteca de gráfico nova.
 function renderDashboardChart() {
   const el = document.getElementById('dash-chart')
   if (!el) return
 
+  document.querySelectorAll('#dash-period-btns .dash-period-btn').forEach(b => {
+    b.classList.toggle('active', b.dataset.periodo === _dashPeriodo)
+  })
+  const titulo = document.getElementById('dash-chart-titulo')
+  if (titulo) {
+    titulo.textContent = _dashPeriodo === '6m' ? 'Vendas nos últimos 6 meses'
+      : _dashPeriodo === '12m' ? 'Vendas nos últimos 12 meses'
+      : 'Vendas no ano corrente'
+  }
+
   const hoje = new Date()
   const meses = []
-  for (let i = 5; i >= 0; i--) {
-    const d = new Date(hoje.getFullYear(), hoje.getMonth() - i, 1)
-    meses.push({ ano: d.getFullYear(), mes: d.getMonth(), label: d.toLocaleDateString('pt-BR', { month:'short' }).replace('.','') })
+  if (_dashPeriodo === 'ano') {
+    for (let mes = 0; mes <= hoje.getMonth(); mes++) {
+      const d = new Date(hoje.getFullYear(), mes, 1)
+      meses.push({ ano: d.getFullYear(), mes: d.getMonth(), label: d.toLocaleDateString('pt-BR', { month:'short' }).replace('.','') })
+    }
+  } else {
+    const n = _dashPeriodo === '12m' ? 12 : 6
+    for (let i = n - 1; i >= 0; i--) {
+      const d = new Date(hoje.getFullYear(), hoje.getMonth() - i, 1)
+      meses.push({ ano: d.getFullYear(), mes: d.getMonth(), label: d.toLocaleDateString('pt-BR', { month:'short' }).replace('.','') })
+    }
   }
   const valores = meses.map(m => {
     const doMes = vendas.filter(v => {
@@ -4817,7 +5176,7 @@ function renderDashboardChart() {
   })
 
   const max = Math.max(...valores, 1)
-  const W = 480, H = 200, padTop = 24, padBottom = 28, padSide = 16
+  const W = Math.max(480, meses.length * 56), H = 200, padTop = 24, padBottom = 28, padSide = 16
   const larguraUtil = W - padSide * 2
   const n = meses.length
   const gap = 14
@@ -4838,6 +5197,75 @@ function renderDashboardChart() {
   }).join('')
 
   el.innerHTML = `<svg viewBox="0 0 ${W} ${H}" width="100%" height="${H}" style="display:block;min-width:320px">${barras}</svg>`
+}
+
+// Top 5 leads ativos (fora vendidos) por valor estimado — ajuda o corretor
+// a saber onde focar energia em negociações de maior potencial.
+function renderDashboardRanking() {
+  const el = document.getElementById('dash-ranking')
+  if (!el) return
+
+  const ranking = leads
+    .filter(l => estagioFunilLead(l) !== 'venda_fechada')
+    .map(l => ({ l, valor: valorParaNumero(l.valorEstimado) }))
+    .filter(x => x.valor > 0)
+    .sort((a, b) => b.valor - a.valor)
+    .slice(0, 5)
+
+  if (ranking.length === 0) {
+    el.innerHTML = `<p style="font-size:13px;color:var(--t3)">Cadastre o valor estimado dos leads no Funil para ver o ranking aqui.</p>`
+    return
+  }
+
+  el.innerHTML = ranking.map(({ l, valor }, i) => `
+    <div class="dash-rank-item">
+      <span class="dash-rank-pos">${i + 1}º</span>
+      <div class="dash-rank-info">
+        <div class="dash-rank-cliente">${escH(l.cliente || '—')}</div>
+        <div class="dash-rank-meta">${escH(l.imovel || 'Sem imóvel vinculado')}</div>
+      </div>
+      <span class="dash-rank-valor">${escH(formatarMoedaBR(valor))}</span>
+    </div>`).join('')
+}
+
+// Lembretes de hoje/atrasados de todos os leads — mesmo padrão visual de
+// listagem do renderDashboardAtencao(), conceito diferente: alerta de "dias
+// sem contato" é automático; lembrete é uma tarefa que o corretor mesmo
+// agendou (ex: "ligar dia 10", "enviar contrato").
+function renderDashboardLembretes() {
+  const el = document.getElementById('dash-lembretes')
+  if (!el) return
+
+  const hojeStr = new Date().toISOString().slice(0,10)
+  const pendentes = []
+  leads.forEach(l => {
+    (l.lembretes || []).forEach((r, idx) => {
+      if (!r.concluido && r.data && r.data <= hojeStr) {
+        pendentes.push({ l, r, idx, atrasado: r.data < hojeStr })
+      }
+    })
+  })
+  pendentes.sort((a, b) => (a.r.data || '').localeCompare(b.r.data || ''))
+
+  if (pendentes.length === 0) {
+    el.innerHTML = `<p style="font-size:13px;color:var(--t3)">Nenhum lembrete para hoje ou atrasado — tudo em dia.</p>`
+    return
+  }
+
+  el.innerHTML = pendentes.slice(0, 8).map(({ l, r, atrasado }) => `
+    <div class="dash-atencao-item">
+      <span class="lead-alert" data-nivel="${atrasado ? 'critico' : 'atencao'}" title="${atrasado ? 'Lembrete atrasado' : 'Lembrete de hoje'}">
+        <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+        ${atrasado ? 'Atrasado' : 'Hoje'}
+      </span>
+      <div class="dash-atencao-info">
+        <div class="dash-atencao-cliente">${escH(l.cliente || '—')}</div>
+        <div class="dash-atencao-meta">${escH(r.texto)}</div>
+      </div>
+      <button class="btn btn-ghost btn-sm" onclick="abrirLeadModal(${l.id});showView('funil')" title="Ver lead no Funil">
+        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
+      </button>
+    </div>`).join('')
 }
 
 // Mini visualização do Funil: contagem por estágio, em barras horizontais.
