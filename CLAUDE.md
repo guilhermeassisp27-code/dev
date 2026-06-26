@@ -1,9 +1,18 @@
-# CorretorPRO — Guia para Agentes
+# Selo — Guia para Agentes
 
 ## O que é este projeto
 
-SaaS para corretores de imóveis: gera propostas comerciais profissionais em segundos.
+Selo. Sua comissão, garantida.
+
+Selo não é um gerador de propostas — é a plataforma que blinda a comissão do corretor de
+imóveis autônomo do primeiro contato até a assinatura. SaaS para corretores de imóveis,
+com geração de propostas comerciais profissionais em segundos como uma das frentes.
 Monetização via Hotmart (assinatura recorrente). Dois planos: Mensal (`hgn79gvq`) e Anual (`mcjyy7ub`).
+
+> Nota: o produto foi renomeado de "CorretorPRO" para "Selo". O domínio da Vercel foi
+> migrado de `usecorretorpro.vercel.app` para `selosales.vercel.app`. Nomes técnicos legados
+> (tabela `cpr_user_data`, prefixos `cpr_*`) seguem com o nome antigo internamente — não
+> renomear infraestrutura sem planejamento dedicado.
 
 ## Arquitetura
 
@@ -22,7 +31,7 @@ tool.html (GitHub Pages: https://guilhermeassisp27-code.github.io/dev/tool.html)
   ├─ salva propostas em cpr_user_data (tabela Supabase)
   └─ verifica app_metadata.subscription_status === 'active' para liberar uso
 
-Next.js app (Vercel: https://usecorretorpro.vercel.app)
+Next.js app (Vercel: https://selosales.vercel.app)
   ├─ /acesso       — login (email + senha)
   ├─ /definir-senha — define senha via link do email
   └─ /api/hotmart-webhook — webhook Hotmart
@@ -48,7 +57,8 @@ Next.js app (Vercel: https://usecorretorpro.vercel.app)
 | `middleware.ts` | Redireciona sessão ativa para tool.html |
 | `supabase-setup.sql` | SQL para criar tabela cpr_user_data + RLS + GRANT |
 | `marketing/` | Materiais de marketing (imagens, plano de tráfego) |
-| `landing/` | Landing page (se existir) |
+| `marketing/logo/selo/` | Kit de marca oficial do Selo (logos, cores, tipografia) — ver `brand-tokens.json` como fonte única de cor/tipografia e `LEIA-ME.md` para o mapa de arquivos |
+| `public/landing.html` | Landing page servida na raiz do app Vercel (via rewrite em `next.config.js`) |
 
 ## Variáveis de ambiente (Vercel)
 
@@ -56,7 +66,7 @@ Next.js app (Vercel: https://usecorretorpro.vercel.app)
 NEXT_PUBLIC_SUPABASE_URL=https://kdudodqmijlzqwnkxpjo.supabase.co
 NEXT_PUBLIC_SUPABASE_ANON_KEY=sb_publishable_...
 SUPABASE_SERVICE_ROLE_KEY=sb_secret_...       # NUNCA committar
-NEXT_PUBLIC_APP_URL=https://usecorretorpro.vercel.app
+NEXT_PUBLIC_APP_URL=https://selosales.vercel.app
 NEXT_PUBLIC_TOOL_URL=https://guilhermeassisp27-code.github.io/dev/tool.html
 HOTMART_WEBHOOK_TOKEN=...                      # NUNCA committar
 ```
@@ -137,3 +147,4 @@ curl -X POST http://localhost:3000/api/hotmart-webhook \
 - **Por que tokens no hash fragment?** Cross-domain (Vercel ↔ GitHub Pages) sem cookies.
 - **Por que app_metadata e não user_metadata?** `app_metadata` não é editável pelo usuário via client SDK — mais seguro para controle de acesso.
 - **Por que não deletar usuário ao cancelar?** Preservar histórico de propostas; reassinatura reativa sem perda de dados.
+- **Por que "CorretorPRO" virou "Selo"?** Reposicionamento de marca: de "gerador de propostas" para "plataforma que blinda a comissão do corretor autônomo do primeiro contato até a assinatura". Slogan oficial: "Selo. Sua comissão, garantida." Identidade visual em `marketing/logo/selo/` (paleta navy `#0F2D4A` + âmbar `#C9882A`, fonte Geist).

@@ -85,137 +85,259 @@ export default function DefinirSenhaPage() {
   }
 
   return (
-    <div
-      style={{
-        minHeight: '100vh',
-        background: '#040D1C',
-        display: 'flex',
-        alignItems: 'center',
-        justifyContent: 'center',
-        padding: '24px',
-        fontFamily: "'Inter', -apple-system, sans-serif",
-      }}
-    >
-      <div style={{ width: '100%', maxWidth: '360px' }}>
-        <div style={{ textAlign: 'center', marginBottom: '32px' }}>
-          <div style={{ fontSize: '22px', fontWeight: 800, letterSpacing: '-0.5px', color: '#EEF2FF' }}>
-            Corretor<span style={{ color: '#4D7EFF' }}>PRO</span>
+    <div className="auth-page">
+      <div className="auth-shell">
+        <div className="auth-brand">
+          <div className="auth-logo">
+            Corretor<span>PRO</span>
           </div>
-          <p style={{ color: '#7B93B8', fontSize: '13px', marginTop: '6px' }}>Defina sua senha</p>
+          <p className="auth-subtitle">Defina sua senha</p>
         </div>
 
-        <div
-          style={{
-            background: '#050E1B',
-            border: '1px solid rgba(255,255,255,0.07)',
-            borderRadius: '12px',
-            padding: '28px',
-          }}
-        >
+        <div className="auth-card">
           {verificando ? (
-            <p style={{ color: '#7B93B8', fontSize: '13px', textAlign: 'center' }}>
-              Verificando link...
-            </p>
+            <p className="auth-verifying">Verificando link...</p>
           ) : !temSessao ? (
-            <div style={{ textAlign: 'center' }}>
-              <p style={{ color: '#EEF2FF', fontSize: '14px', fontWeight: 600, marginBottom: '8px' }}>
-                Link inválido ou expirado
-              </p>
-              <p style={{ color: '#7B93B8', fontSize: '13px', lineHeight: 1.6, marginBottom: '16px' }}>
+            <div className="auth-success">
+              <p className="auth-success-title">Link inválido ou expirado</p>
+              <p className="auth-success-text" style={{ marginBottom: '18px' }}>
                 Solicite um novo link de acesso na tela de login.
               </p>
-              <a
-                href="/acesso"
-                style={{ color: '#4D7EFF', fontSize: '13px', textDecoration: 'none' }}
-              >
+              <a href="/acesso" className="auth-link-btn auth-link-inline">
                 Ir para o login
               </a>
             </div>
           ) : (
             <form onSubmit={handleSubmit}>
-              <label style={labelStyle}>Nova senha</label>
+              <label className="auth-label">Nova senha</label>
               <input
                 type="password"
                 value={senha}
                 onChange={(e) => setSenha(e.target.value)}
                 required
                 placeholder="Mínimo 8 caracteres"
-                style={inputStyle}
-                onFocus={(e) => (e.target.style.borderColor = '#4D7EFF')}
-                onBlur={(e) => (e.target.style.borderColor = 'rgba(255,255,255,0.1)')}
+                className="auth-input"
               />
 
-              <label style={labelStyle}>Confirmar senha</label>
+              <label className="auth-label">Confirmar senha</label>
               <input
                 type="password"
                 value={confirma}
                 onChange={(e) => setConfirma(e.target.value)}
                 required
                 placeholder="Repita a senha"
-                style={inputStyle}
-                onFocus={(e) => (e.target.style.borderColor = '#4D7EFF')}
-                onBlur={(e) => (e.target.style.borderColor = 'rgba(255,255,255,0.1)')}
+                className="auth-input"
               />
 
-              {erro && (
-                <p style={{ color: '#EF4444', fontSize: '12px', marginBottom: '12px' }}>{erro}</p>
-              )}
+              {erro && <p className="auth-error">{erro}</p>}
 
-              <button
-                type="submit"
-                disabled={loading}
-                style={{
-                  width: '100%',
-                  background: '#4D7EFF',
-                  color: '#fff',
-                  border: 'none',
-                  borderRadius: '8px',
-                  padding: '11px',
-                  fontSize: '14px',
-                  fontWeight: 600,
-                  cursor: loading ? 'not-allowed' : 'pointer',
-                  opacity: loading ? 0.6 : 1,
-                  fontFamily: 'inherit',
-                  transition: 'background .15s',
-                }}
-                onMouseEnter={(e) => {
-                  if (!loading) e.currentTarget.style.background = '#3567E8'
-                }}
-                onMouseLeave={(e) => {
-                  if (!loading) e.currentTarget.style.background = '#4D7EFF'
-                }}
-              >
+              <button type="submit" disabled={loading} className="auth-submit">
                 {loading ? 'Salvando...' : 'Salvar e entrar'}
               </button>
             </form>
           )}
         </div>
       </div>
+
+      <style jsx>{`
+        .auth-page {
+          --bg: #000000;
+          --bg-2: #0a0a0c;
+          --surface: #1c1c1e;
+          --text: #f5f5f7;
+          --text-2: #86868b;
+          --border: rgba(255, 255, 255, 0.08);
+          --brand: #4d7eff;
+          --brand-2: #7c5cfc;
+
+          min-height: 100vh;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          padding: 24px;
+          background: radial-gradient(120% 120% at 50% -10%, var(--bg-2), var(--bg));
+          font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Display', 'SF Pro Text',
+            'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+        }
+
+        @media (prefers-color-scheme: light) {
+          .auth-page {
+            --bg: #ffffff;
+            --bg-2: #f5f5f7;
+            --surface: #ffffff;
+            --text: #1d1d1f;
+            --text-2: #6e6e73;
+            --border: rgba(0, 0, 0, 0.08);
+          }
+        }
+
+        .auth-shell {
+          width: 100%;
+          max-width: 380px;
+          animation: auth-rise 0.5s ease both;
+        }
+
+        @keyframes auth-rise {
+          from {
+            opacity: 0;
+            transform: translateY(14px);
+          }
+          to {
+            opacity: 1;
+            transform: translateY(0);
+          }
+        }
+
+        .auth-brand {
+          text-align: center;
+          margin-bottom: 36px;
+        }
+
+        .auth-logo {
+          font-size: 26px;
+          font-weight: 700;
+          letter-spacing: -0.02em;
+          color: var(--text);
+        }
+
+        .auth-logo span {
+          background: linear-gradient(135deg, var(--brand), var(--brand-2));
+          -webkit-background-clip: text;
+          background-clip: text;
+          color: transparent;
+        }
+
+        .auth-subtitle {
+          color: var(--text-2);
+          font-size: 15px;
+          margin-top: 8px;
+          letter-spacing: -0.01em;
+        }
+
+        .auth-card {
+          background: var(--surface);
+          border: 1px solid var(--border);
+          border-radius: 20px;
+          padding: 32px 28px;
+          box-shadow: 0 24px 60px rgba(0, 0, 0, 0.35);
+        }
+
+        @media (prefers-color-scheme: light) {
+          .auth-card {
+            box-shadow: 0 16px 40px rgba(0, 0, 0, 0.08);
+          }
+        }
+
+        .auth-label {
+          display: block;
+          font-size: 12px;
+          font-weight: 600;
+          color: var(--text-2);
+          margin-bottom: 8px;
+          letter-spacing: 0.04em;
+          text-transform: uppercase;
+        }
+
+        .auth-input {
+          width: 100%;
+          background: rgba(127, 127, 127, 0.08);
+          border: 1px solid var(--border);
+          border-radius: 12px;
+          padding: 13px 14px;
+          color: var(--text);
+          font-size: 15px;
+          font-family: inherit;
+          outline: none;
+          margin-bottom: 18px;
+          transition: border-color 0.18s ease, box-shadow 0.18s ease;
+          box-sizing: border-box;
+        }
+
+        .auth-input::placeholder {
+          color: var(--text-2);
+        }
+
+        .auth-input:focus {
+          border-color: var(--brand);
+          box-shadow: 0 0 0 4px rgba(77, 126, 255, 0.16);
+        }
+
+        .auth-error {
+          color: #ff6b6b;
+          font-size: 13px;
+          margin: -4px 0 14px;
+        }
+
+        .auth-submit {
+          width: 100%;
+          background: linear-gradient(135deg, var(--brand), var(--brand-2));
+          color: #fff;
+          border: none;
+          border-radius: 980px;
+          padding: 14px;
+          font-size: 15px;
+          font-weight: 600;
+          cursor: pointer;
+          font-family: inherit;
+          letter-spacing: -0.01em;
+          transition: transform 0.18s ease, box-shadow 0.18s ease, opacity 0.18s ease;
+          box-shadow: 0 12px 28px rgba(77, 126, 255, 0.3);
+        }
+
+        .auth-submit:disabled {
+          opacity: 0.6;
+          cursor: not-allowed;
+        }
+
+        .auth-submit:not(:disabled):hover {
+          transform: translateY(-1px);
+          box-shadow: 0 16px 34px rgba(77, 126, 255, 0.4);
+        }
+
+        .auth-link-btn {
+          background: none;
+          border: none;
+          color: var(--brand);
+          font-size: 13px;
+          cursor: pointer;
+          font-family: inherit;
+          font-weight: 500;
+          transition: opacity 0.15s ease;
+          text-decoration: none;
+        }
+
+        .auth-link-btn:hover {
+          opacity: 0.75;
+        }
+
+        .auth-link-inline {
+          display: inline-block;
+        }
+
+        .auth-verifying {
+          color: var(--text-2);
+          font-size: 14px;
+          text-align: center;
+        }
+
+        .auth-success {
+          text-align: center;
+          padding: 8px 0;
+        }
+
+        .auth-success-title {
+          color: var(--text);
+          font-size: 15px;
+          font-weight: 700;
+          margin-bottom: 8px;
+        }
+
+        .auth-success-text {
+          color: var(--text-2);
+          font-size: 14px;
+          line-height: 1.6;
+        }
+      `}</style>
     </div>
   )
-}
-
-const labelStyle: React.CSSProperties = {
-  display: 'block',
-  fontSize: '12px',
-  fontWeight: 600,
-  color: '#7B93B8',
-  marginBottom: '6px',
-  letterSpacing: '.04em',
-  textTransform: 'uppercase',
-}
-
-const inputStyle: React.CSSProperties = {
-  width: '100%',
-  background: '#081526',
-  border: '1px solid rgba(255,255,255,0.1)',
-  borderRadius: '8px',
-  padding: '10px 12px',
-  color: '#EEF2FF',
-  fontSize: '14px',
-  fontFamily: 'inherit',
-  outline: 'none',
-  marginBottom: '16px',
-  transition: 'border-color .15s',
-  boxSizing: 'border-box',
 }

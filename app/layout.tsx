@@ -5,8 +5,14 @@ import './globals.css'
 const inter = Inter({ subsets: ['latin'] })
 
 export const metadata: Metadata = {
-  title: 'CorretorPRO',
-  description: 'Gerador de propostas comerciais para corretores de imóveis',
+  title: 'Selo. Sua comissão, garantida.',
+  description:
+    'Selo é a plataforma que blinda a comissão do corretor de imóveis autônomo, do primeiro contato até a assinatura.',
+  openGraph: {
+    title: 'Selo. Sua comissão, garantida.',
+    description:
+      'Selo é a plataforma que blinda a comissão do corretor de imóveis autônomo, do primeiro contato até a assinatura.',
+  },
 }
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {

@@ -5,9 +5,15 @@ import { createClient } from '@supabase/supabase-js'
 const HOTTOK_HEADER = 'x-hotmart-hottok'
 
 // Mapeamento dos códigos de oferta (off=) dos links de pagamento -> plano
-//   Mensal: https://pay.hotmart.com/L106145948O?off=hgn79gvq
-//   Anual:  https://pay.hotmart.com/L106145948O?off=mcjyy7ub
+//   Produto novo (Selo):
+//     Mensal: https://pay.hotmart.com/Y106494635I?off=35qlpvdb
+//     Anual:  https://pay.hotmart.com/Y106494635I?off=xs8grn1m
+//   Produto antigo (CorretorPRO — mantido para assinantes já ativos):
+//     Mensal: https://pay.hotmart.com/L106145948O?off=hgn79gvq
+//     Anual:  https://pay.hotmart.com/L106145948O?off=mcjyy7ub
 const OFFER_PLANS: Record<string, string> = {
+  '35qlpvdb': 'mensal',
+  'xs8grn1m': 'anual',
   hgn79gvq: 'mensal',
   mcjyy7ub: 'anual',
 }
@@ -39,8 +45,8 @@ async function enviarEmailRecuperacao(destino: string, nome: string, plano: stri
     return false
   }
   const primeiroNome = escHtmlEmail(nome.split(' ')[0] || 'tudo bem')
-  const offerCode = plano === 'anual' ? 'mcjyy7ub' : 'hgn79gvq'
-  const checkoutUrl = `https://pay.hotmart.com/L106145948O?off=${offerCode}`
+  const offerCode = plano === 'anual' ? 'xs8grn1m' : '35qlpvdb'
+  const checkoutUrl = `https://pay.hotmart.com/Y106494635I?off=${offerCode}`
 
   try {
     const resp = await fetch('https://api.brevo.com/v3/smtp/email', {
@@ -50,13 +56,13 @@ async function enviarEmailRecuperacao(destino: string, nome: string, plano: stri
         'content-type': 'application/json',
       },
       body: JSON.stringify({
-        sender: { name: 'CorretorPRO', email: process.env.BREVO_SENDER_EMAIL },
+        sender: { name: 'Selo', email: process.env.BREVO_SENDER_EMAIL },
         to: [{ email: destino, name: nome || undefined }],
-        subject: 'Você quase assinou — e agora o CorretorPRO faz ainda mais',
+        subject: 'Você quase assinou — e agora o Selo faz ainda mais',
         htmlContent: `
           <p>Oi, ${primeiroNome}!</p>
-          <p>Vi que você começou a assinar o CorretorPRO e não finalizou — sem problema. Queria te contar uma novidade que talvez mude a sua decisão.</p>
-          <p>Agora o CorretorPRO cobre <b>toda a jornada do corretor autônomo</b>, num lugar só:</p>
+          <p>Vi que você começou a assinar o Selo e não finalizou — sem problema. Queria te contar uma novidade que talvez mude a sua decisão.</p>
+          <p>Agora o Selo cobre <b>toda a jornada do corretor autônomo</b>, num lugar só:</p>
           <ul>
             <li><b>Capta o cliente</b> — um link com a sua marca pra bio do Instagram e status do WhatsApp; o lead cai direto na sua agenda, até enquanto você dorme.</li>
             <li><b>Organiza a visita</b> — Agenda de Visitas pra você nunca mais perder um follow-up.</li>
@@ -85,10 +91,17 @@ export async function POST(req: NextRequest) {
     req.headers.get(HOTTOK_HEADER) ||
     req.nextUrl.searchParams.get('hottok')
 
-  if (!process.env.HOTMART_WEBHOOK_TOKEN) {
+  // Aceita uma lista separada por vírgula: durante a transição CorretorPRO -> Selo,
+  // os dois produtos Hotmart (antigo, com assinantes ativos, e o novo) enviam hottoks
+  // diferentes para este mesmo endpoint.
+  const tokensValidos = (process.env.HOTMART_WEBHOOK_TOKEN ?? '')
+    .split(',')
+    .map((t) => t.trim())
+    .filter(Boolean)
+  if (tokensValidos.length === 0) {
     return NextResponse.json({ error: 'HOTMART_WEBHOOK_TOKEN not configured on server' }, { status: 500 })
   }
-  if (token !== process.env.HOTMART_WEBHOOK_TOKEN) {
+  if (!token || !tokensValidos.includes(token)) {
     return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
   }
 
@@ -123,7 +136,7 @@ export async function POST(req: NextRequest) {
 
   const appUrl =
     (process.env.NEXT_PUBLIC_APP_URL ?? '').replace(/\/$/, '') ||
-    'https://usecorretorpro.vercel.app'
+    'https://selosales.vercel.app'
   // Novo comprador define a senha antes de acessar a ferramenta
   const setPasswordUrl = `${appUrl}/definir-senha`
 
@@ -230,7 +243,7 @@ export async function POST(req: NextRequest) {
     const phoneDigits = rawDigits.startsWith('55') && rawDigits.length >= 12 ? rawDigits.slice(2) : rawDigits
     const whatsappLink = phoneDigits
       ? `https://wa.me/55${phoneDigits}?text=${encodeURIComponent(
-          `Oi ${buyer?.name?.split(' ')[0] ?? ''}! Aqui é do CorretorPRO. Vi que você começou a assinar e não finalizou — ficou alguma dúvida? Acabamos de lançar o link de captação de leads: o cliente preenche e cai direto na sua agenda, aí é só agendar a visita, emitir o Registro de Visita (que protege sua comissão) e mandar a proposta. Posso te mostrar funcionando em 2 min?`
+          `Oi ${buyer?.name?.split(' ')[0] ?? ''}! Aqui é do Selo. Vi que você começou a assinar e não finalizou — ficou alguma dúvida? Acabamos de lançar o link de captação de leads: o cliente preenche e cai direto na sua agenda, aí é só agendar a visita, emitir o Registro de Visita (que protege sua comissão) e mandar a proposta. Posso te mostrar funcionando em 2 min?`
         )}`
       : null
 

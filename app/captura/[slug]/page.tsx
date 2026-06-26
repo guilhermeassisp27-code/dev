@@ -26,7 +26,7 @@ export default function CapturaPage({ params }: { params: { slug: string } }) {
       .finally(() => setCarregando(false))
   }, [slug])
 
-  const cor = branding?.cor || '#4D7EFF'
+  const cor = branding?.cor || '#0F2D4A'
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault()
@@ -224,7 +224,7 @@ function Shell({
         </div>
 
         <p style={{ textAlign: 'center', color: '#94A3B8', fontSize: 11, marginTop: 14 }}>
-          Powered by Corretor<span style={{ fontWeight: 700 }}>PRO</span>
+          Gerado com <span style={{ fontWeight: 700, color: '#C9882A' }}>Selo</span>
         </p>
       </div>
     </div>

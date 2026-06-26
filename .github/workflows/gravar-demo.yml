@@ -40,7 +40,7 @@ jobs:
         env:
           DEMO_EMAIL: ${{ secrets.DEMO_EMAIL }}
           DEMO_PASSWORD: ${{ secrets.DEMO_PASSWORD }}
-          APP_URL: https://usecorretorpro.vercel.app
+          APP_URL: https://selosales.vercel.app
           TOOL_URL: https://guilhermeassisp27-code.github.io/dev/tool.html
         run: node scripts/gravar-demo.mjs
 
