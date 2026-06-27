@@ -15,10 +15,10 @@ Formato de cada entrada:
 
 ---
 
-## [2026-06-27] Mensagens de WhatsApp em 1 toque (boas-vindas e follow-up automáticos)
-**Para o corretor:** assim que você cadastra um lead, o Selo já te oferece mandar uma mensagem de boas-vindas no WhatsApp em 1 toque — e nos follow-ups/lembretes também aparece um botão verde pra disparar a mensagem certa, com o nome do cliente e do imóvel já preenchidos. Você responde rápido e parece uma imobiliária inteira, sem digitar do zero toda vez.
-**O que mudou:** 3 modelos de mensagem editáveis nas Configurações (boas-vindas, follow-up, agendamento) com variáveis automáticas `{cliente}`, `{corretor}`, `{imovel}`, `{creci}`; modal "Enviar boas-vindas?" ao criar lead; botão de WhatsApp no card do Funil e nas listas do Dashboard; o follow-up passou a usar o seu modelo. Tudo via `wa.me` (click-to-send), sem API paga, sem IA e sem custo por mensagem — você confirma cada envio. Persiste no perfil já existente, sem nova configuração.
-**Status:** em PR
+## [2026-06-27] Mensagens de WhatsApp por etapa do funil — o lead certo, na hora certa
+**Para o corretor:** cada lead tem um botão verde de WhatsApp que já manda a mensagem certa pra etapa em que ele está — boas-vindas quando é novo contato, "o que achou?" depois da visita, cobrança da proposta na negociação, parabéns quando fecha. Arrastou o card pra outra coluna, a mensagem muda junto. Na Agenda de Visitas tem um botão pra confirmar a visita. Você responde rápido, com o tom certo, sem digitar do zero — e parece uma imobiliária inteira.
+**O que mudou:** uma mensagem editável para cada etapa do Funil (Novo contato, Visita agendada, Visita realizada, Proposta enviada, Negociação, Venda fechada) + uma para a Agenda, todas nas Configurações, com variáveis automáticas `{cliente}`, `{corretor}`, `{imovel}`, `{creci}`. O botão de cada lead (Funil e Dashboard) resolve a etapa atual e dispara a mensagem daquela etapa; ao criar um lead, o modal "Enviar boas-vindas?" usa a mensagem de novo contato. Tudo via `wa.me` (click-to-send), sem API paga, sem IA e sem custo por mensagem — você confirma cada envio. Persiste no perfil já existente; quem tinha mensagens antigas não perde nada.
+**Status:** publicado
 
 ## [2026-06-26] Funil de Vendas — arrastar entre etapas, notas e lembretes por lead (CRM profissional) + Dashboard com mais indicadores
 **Para o corretor:** agora você arrasta o card do lead direto entre as colunas do Funil (igual Trello/Kommo, sem precisar abrir o seletor toda vez), anota qualquer informação relevante sobre a negociação direto no card, e cria lembretes com data ("ligar dia 10", "enviar contrato") que aparecem destacados quando vencem — e o Dashboard ganhou taxa de conversão, tempo médio até fechar, ranking dos leads mais valiosos e a lista de lembretes do dia, em vez de só 1 gráfico fixo de 6 meses.
