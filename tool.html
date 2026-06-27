@@ -2415,11 +2415,24 @@ const escH = s => String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').repla
 
 /* ── STATE ── */
 const PERFIL_DEFAULT = { nome:'',creci:'',tel:'',email:'',cor:'#4D7EFF',logo:null,modelo:'classico',slug:'',msgBoasVindas:'',msgFollowUp:'',msgAgendamento:'',wppNovoContato:'',wppVisitaAgendada:'',wppVisitaRealizada:'',wppPropostaEnviada:'',wppNegociacao:'',wppVendaFechada:'',wppAgenda:'' }
-let perfil = JSON.parse(localStorage.getItem('cpr_perfil') || 'null') || { ...PERFIL_DEFAULT }
-let historico = JSON.parse(localStorage.getItem('cpr_hist') || '[]')
-let leads = JSON.parse(localStorage.getItem('cpr_leads') || '[]')
-let imoveis = JSON.parse(localStorage.getItem('cpr_imoveis') || '[]')
-let vendas = JSON.parse(localStorage.getItem('cpr_vendas') || '[]')
+// Parse defensivo: se o localStorage corromper (extensão de navegador, quota,
+// dado truncado), JSON.parse lançaria e a ferramenta abriria em tela branca.
+// Aqui caímos no fallback em vez de quebrar (achado de robustez da auditoria).
+function lsParse(key, fallback) {
+  try {
+    const raw = localStorage.getItem(key)
+    if (raw == null) return fallback
+    const v = JSON.parse(raw)
+    return v == null ? fallback : v
+  } catch (_) {
+    return fallback
+  }
+}
+let perfil = { ...PERFIL_DEFAULT, ...lsParse('cpr_perfil', {}) }
+let historico = lsParse('cpr_hist', [])
+let leads = lsParse('cpr_leads', [])
+let imoveis = lsParse('cpr_imoveis', [])
+let vendas = lsParse('cpr_vendas', [])
 let snapProposta = null
 let _propostaJaSalva = false   // trava anti-duplicação: impede salvar a mesma proposta 2x (duplo-clique)
 let fotoAtual = null
@@ -4326,35 +4339,35 @@ function enviarWhatsappEtapa(leadId) {
   enviarTemplateWhatsapp(leadId, tplKey)
 }
 
-// Modal leve "Lead adicionado — Enviar boas-vindas?" — disparado depois de
-// cadastrar um lead (Agenda ou Funil). Não abre o wa.me automaticamente
-// (evita bloqueio de popup); o corretor confirma com 1 clique. Sempre usa o
-// template de "novo_contato" — é a etapa de todo lead recém-criado.
+// Toast NÃO-BLOQUEANTE "Lead adicionado — Enviar boas-vindas?" — disparado
+// depois de cadastrar um lead (Agenda ou Funil). Antes era um modal com
+// backdrop que travava a tela inteira a cada lead (fricção ao cadastrar em
+// série, achado da auditoria). Agora usa o mesmo padrão inline do toast de
+// "marcar imóvel": fica no rodapé, o corretor continua cadastrando outros
+// leads normalmente, e some sozinho em 8s. Não abre o wa.me automaticamente
+// (evita bloqueio de popup). Sempre usa o template de "novo_contato".
 function ofereceBoasVindasWhatsapp(leadId) {
   if (window._DEMO) return
   const l = leads.find(x => x.id === leadId)
   if (!l) return
-  const antigo = document.getElementById('boasvindas-modal-back')
+  const antigo = document.getElementById('boasvindas-toast')
   if (antigo) antigo.remove()
 
   const waNumero = telefoneParaWhatsapp(l.tel)
-  const back = document.createElement('div')
-  back.id = 'boasvindas-modal-back'
-  back.className = 'followup-modal-back'
-  back.onclick = (e) => { if (e.target === back) back.remove() }
-  back.innerHTML = `
-    <div class="followup-modal">
-      <h3>Lead adicionado!</h3>
-      <p class="fu-sub">Quer enviar uma mensagem de boas-vindas para ${escH(l.cliente || 'o cliente')} agora pelo WhatsApp?</p>
-      <div class="fu-actions">
-        <button class="btn btn-ghost btn-sm" onclick="document.getElementById('boasvindas-modal-back').remove()">Agora não</button>
-        <button class="btn btn-green btn-sm" onclick="enviarTemplateWhatsapp(${l.id},'wppNovoContato');document.getElementById('boasvindas-modal-back').remove()" ${waNumero ? '' : 'title="Lead sem telefone — você escolhe o contato no WhatsApp"'}>
-          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 11.5a8.38 8.38 0 01-.9 3.8 8.5 8.5 0 01-7.6 4.7 8.38 8.38 0 01-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 01-.9-3.8 8.5 8.5 0 014.7-7.6 8.38 8.38 0 013.8-.9h.5a8.48 8.48 0 018 8v.5z"/></svg>
-          Enviar boas-vindas
-        </button>
-      </div>
-    </div>`
-  document.body.appendChild(back)
+  const box = document.createElement('div')
+  box.id = 'boasvindas-toast'
+  box.style.cssText = 'position:fixed;bottom:90px;left:50%;transform:translateX(-50%);z-index:9998;background:var(--s1);border:1px solid rgba(15,45,74,.4);border-radius:16px;padding:14px 18px;display:flex;align-items:center;gap:12px;flex-wrap:wrap;justify-content:center;max-width:92vw;box-shadow:var(--shadow-lg)'
+  box.innerHTML =
+    '<span style="font-size:13.5px;color:var(--t2)">Enviar boas-vindas para <b style="color:var(--t)">' + escH(l.cliente || 'o cliente') + '</b> no WhatsApp?</span>' +
+    '<span style="display:flex;gap:8px">' +
+      '<button class="btn btn-ghost btn-sm" onclick="document.getElementById(\'boasvindas-toast\').remove()">Agora não</button>' +
+      '<button class="btn btn-green btn-sm"' + (waNumero ? '' : ' title="Lead sem telefone — você escolhe o contato no WhatsApp"') + ' onclick="enviarTemplateWhatsapp(' + l.id + ',\'wppNovoContato\');document.getElementById(\'boasvindas-toast\').remove()">' +
+        '<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 11.5a8.38 8.38 0 01-.9 3.8 8.5 8.5 0 01-7.6 4.7 8.38 8.38 0 01-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 01-.9-3.8 8.5 8.5 0 014.7-7.6 8.38 8.38 0 013.8-.9h.5a8.48 8.48 0 018 8v.5z"/></svg>' +
+        'Enviar boas-vindas' +
+      '</button>' +
+    '</span>'
+  document.body.appendChild(box)
+  setTimeout(() => { const b = document.getElementById('boasvindas-toast'); if (b) b.remove() }, 8000)
 }
 
 // Abre o modal com a mensagem sugerida — corretor revisa e decide enviar.
