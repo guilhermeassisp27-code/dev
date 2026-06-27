@@ -2204,7 +2204,7 @@ function iniciarTourDemo() {
   card.style.cssText = 'position:fixed;z-index:10002;left:50%;transform:translateX(-50%);bottom:78px;width:min(420px,92vw);background:var(--s1);border:1px solid var(--bm);border-radius:18px;padding:22px 24px;box-shadow:var(--shadow-lg);font-family:inherit'
   back.appendChild(ring); back.appendChild(card); document.body.appendChild(back)
 
-  function fim() { back.remove() }
+  function fim() { back.remove(); window.removeEventListener('resize', render) }
   function render() {
     const p = PASSOS[i]
     if (p.view) { try { showView(p.view) } catch(_) {} }
