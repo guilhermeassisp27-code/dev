@@ -278,7 +278,9 @@
   .solution p.big{font-size:20px;color:var(--ink);font-weight:500}
 
   /* ---------- benefits ---------- */
-  .benefits h2{font-size:32px;text-align:center;margin-bottom:38px}
+  .benefits h2{font-size:32px;text-align:center;margin-bottom:14px}
+  .feat-intro{text-align:center;max-width:620px;margin:0 auto;font-size:17px;line-height:1.5;color:var(--ink-2)}
+  .feat-intro strong{color:var(--navy-2);font-weight:700}
   .ben{
     display:flex;align-items:center;gap:15px;
     padding:18px 20px;border-radius:var(--rad-l);
@@ -1088,6 +1090,8 @@ try { if (localStorage.getItem('selo_cookie_consent') === 'accepted') window.loa
   <div class="wrap feat-wrap">
     <h2>Tudo que o corretor solo precisa pra parecer uma imobiliária inteira</h2>
 
+    <p class="feat-intro">Não é só um gerador de proposta. É o <strong>CRM completo do corretor autônomo</strong> — da captação do lead ao fechamento, com a comissão protegida no caminho.</p>
+
     <div class="feat-grid" style="margin-top:38px">
       <div class="feat-card">
         <div class="feat-ico" style="background:var(--amber-soft)"><svg viewBox="0 0 24 24" fill="none" stroke="var(--amber)" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg></div>
@@ -1095,39 +1099,54 @@ try { if (localStorage.getItem('selo_cookie_consent') === 'accepted') window.loa
         <p>Com seu logo, CRECI e cor — direto do celular, pronta antes do concorrente abrir o Word.</p>
       </div>
       <div class="feat-card">
-        <div class="feat-ico" style="background:var(--green-soft)"><svg viewBox="0 0 24 24" fill="none" stroke="var(--green)" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="4"/><path d="M4 21c0-4 3.5-7 8-7s8 3 8 7"/></svg></div>
-        <h3>Link de captação de leads <span class="feat-new">NOVO</span></h3>
-        <p>Um link com a sua marca pra colocar na bio do Instagram ou no status do WhatsApp. O cliente preenche e o lead já cai na sua Agenda de Visitas.</p>
+        <div class="feat-ico" style="background:var(--green-soft)"><svg viewBox="0 0 24 24" fill="none" stroke="var(--navy-2)" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 4h18l-7 8v7l-4-2v-5z"/></svg></div>
+        <h3>Funil de Vendas que você arrasta <span class="feat-new">NOVO</span></h3>
+        <p>Arraste cada lead de coluna em coluna — do primeiro contato ao "fechou". Anote o que importa e crie lembretes pra nunca mais esquecer um follow-up.</p>
       </div>
       <div class="feat-card">
-        <div class="feat-ico" style="background:rgba(201,136,42,.13)"><svg viewBox="0 0 24 24" fill="none" stroke="var(--blue)" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg></div>
+        <div class="feat-ico" style="background:var(--amber-soft)"><svg viewBox="0 0 24 24" fill="none" stroke="var(--amber)" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg></div>
+        <h3>Dashboard com a sua comissão <span class="feat-new">NOVO</span></h3>
+        <p>Quanto você fechou no mês, taxa de conversão, ticket médio e os leads que precisam de atenção agora. O seu negócio inteiro num olhar.</p>
+      </div>
+      <div class="feat-card">
+        <div class="feat-ico" style="background:var(--green-soft)"><svg viewBox="0 0 24 24" fill="none" stroke="var(--navy-2)" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 11.5a8.38 8.38 0 01-.9 3.8 8.5 8.5 0 01-7.6 4.7 8.38 8.38 0 01-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 01-.9-3.8 8.5 8.5 0 014.7-7.6 8.38 8.38 0 013.8-.9h.5a8.48 8.48 0 018 8v.5z"/></svg></div>
+        <h3>WhatsApp na hora certa <span class="feat-new">NOVO</span></h3>
+        <p>Cada lead tem a mensagem certa pra etapa dele — boas-vindas, "o que achou da visita?", cobrança da proposta — com o nome do cliente já preenchido. Num toque.</p>
+      </div>
+      <div class="feat-card">
+        <div class="feat-ico" style="background:var(--amber-soft)"><svg viewBox="0 0 24 24" fill="none" stroke="var(--amber)" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg></div>
+        <h3>Registro de Visita</h3>
+        <p>O termo que documenta a sua intermediação e protege a sua comissão. <a href="#protecao" style="color:var(--amber);font-weight:600">Entenda a base legal ↓</a></p>
+      </div>
+      <div class="feat-card">
+        <div class="feat-ico" style="background:var(--green-soft)"><svg viewBox="0 0 24 24" fill="none" stroke="var(--navy-2)" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><path d="M14 2v6h6"/><path d="M16 13H8M16 17H8M10 9H8"/></svg></div>
+        <h3>Contratos prontos pra assinar <span class="feat-new">NOVO</span></h3>
+        <p>Autorização de Venda/Locação e Proposta de Compra — geradas com os dados do seu lead e do imóvel, prontas pra enviar em PDF ou WhatsApp.</p>
+      </div>
+      <div class="feat-card">
+        <div class="feat-ico" style="background:var(--amber-soft)"><svg viewBox="0 0 24 24" fill="none" stroke="var(--amber)" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="4"/><path d="M4 21c0-4 3.5-7 8-7s8 3 8 7"/></svg></div>
+        <h3>Link de captação de leads</h3>
+        <p>Um link com a sua marca pra bio do Instagram ou status do WhatsApp. O cliente preenche e o lead já cai na sua Agenda de Visitas.</p>
+      </div>
+      <div class="feat-card">
+        <div class="feat-ico" style="background:var(--green-soft)"><svg viewBox="0 0 24 24" fill="none" stroke="var(--navy-2)" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 11l9-8 9 8"/><path d="M5 10v10h14V10"/><path d="M10 20v-6h4v6"/></svg></div>
+        <h3>Seus imóveis organizados <span class="feat-new">NOVO</span></h3>
+        <p>Um catálogo só seu — foto, valor e status (disponível, reservado, vendido). Puxe o imóvel direto pra proposta ou pro contrato.</p>
+      </div>
+      <div class="feat-card">
+        <div class="feat-ico" style="background:var(--amber-soft)"><svg viewBox="0 0 24 24" fill="none" stroke="var(--amber)" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg></div>
         <h3>Simulação SAC × Price</h3>
         <p>"Quanto fica a parcela?" respondido na própria proposta — primeira, última e total, lado a lado.</p>
       </div>
       <div class="feat-card">
-        <div class="feat-ico" style="background:var(--green-soft)"><svg viewBox="0 0 24 24" fill="none" stroke="var(--green)" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg></div>
-        <h3>Registro de Visita <span class="feat-new">NOVO</span></h3>
-        <p>O termo que documenta a sua intermediação e protege a sua comissão. <a href="#protecao" style="color:var(--amber);font-weight:600">Entenda a base legal ↓</a></p>
+        <div class="feat-ico" style="background:var(--green-soft)"><svg viewBox="0 0 24 24" fill="none" stroke="var(--navy-2)" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg></div>
+        <h3>3 modelos de proposta</h3>
+        <p>Clássico, Moderno ou Minimalista — escolha o visual que mais combina com o imóvel e a sua marca, em 1 clique.</p>
       </div>
       <div class="feat-card">
-        <div class="feat-ico" style="background:rgba(15,45,74,.35)"><svg viewBox="0 0 24 24" fill="none" stroke="var(--purple)" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg></div>
-        <h3>Painel de negociações <span class="feat-new">NOVO</span></h3>
-        <p>Status de cada proposta — do envio ao fechamento — sem planilha e sem perder follow-up.</p>
-      </div>
-      <div class="feat-card">
-        <div class="feat-ico" style="background:var(--green-soft)"><svg viewBox="0 0 24 24" fill="none" stroke="var(--green)" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 11.5a8.38 8.38 0 01-.9 3.8 8.5 8.5 0 01-7.6 4.7 8.38 8.38 0 01-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 01-.9-3.8 8.5 8.5 0 014.7-7.6 8.38 8.38 0 013.8-.9h.5a8.48 8.48 0 018 8v.5z"/></svg></div>
-        <h3>WhatsApp e PDF com 1 clique</h3>
-        <p>O cliente recebe na hora, no canal onde a venda acontece. Sem anexo pesado, sem fricção.</p>
-      </div>
-      <div class="feat-card">
-        <div class="feat-ico" style="background:rgba(201,136,42,.13)"><svg viewBox="0 0 24 24" fill="none" stroke="var(--blue)" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M17.5 19a4.5 4.5 0 1 0-1.6-8.7 6 6 0 1 0-11.3 2.4A4 4 0 0 0 6 19z"/></svg></div>
+        <div class="feat-ico" style="background:var(--amber-soft)"><svg viewBox="0 0 24 24" fill="none" stroke="var(--amber)" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M17.5 19a4.5 4.5 0 1 0-1.6-8.7 6 6 0 1 0-11.3 2.4A4 4 0 0 0 6 19z"/></svg></div>
         <h3>Tudo salvo na nuvem</h3>
-        <p>Histórico de propostas e visitas sempre à mão — troque de celular sem perder nada.</p>
-      </div>
-      <div class="feat-card">
-        <div class="feat-ico" style="background:rgba(15,45,74,.35)"><svg viewBox="0 0 24 24" fill="none" stroke="var(--purple)" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg></div>
-        <h3>3 modelos de proposta <span class="feat-new">NOVO</span></h3>
-        <p>Clássico, Moderno ou Minimalista — escolha o visual que mais combina com o seu imóvel e a sua marca, em 1 clique.</p>
+        <p>Propostas, leads, imóveis e vendas sempre à mão — troque de celular sem perder nada.</p>
       </div>
     </div>
   </div>
@@ -1201,9 +1220,9 @@ try { if (localStorage.getItem('selo_cookie_consent') === 'accepted') window.loa
       <div class="jr-step">
         <div class="jr-dot"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg></div>
         <div class="jr-card">
-          <span class="jr-stage">02 · O follow-up</span>
+          <span class="jr-stage">02 · O funil</span>
           <h3>"Parei de perder venda por esquecimento."</h3>
-          <p>Aceito o lead com um toque e a visita já entra na minha Agenda. A ferramenta me avisa de quem ainda não foi atendido — o follow-up deixou de morar só na minha cabeça.</p>
+          <p>Cada lead vira um card que eu arrasto pelas etapas — do primeiro contato à negociação. Anoto tudo, crio lembretes e mando o WhatsApp certo pra etapa de cada um. O follow-up deixou de morar só na minha cabeça.</p>
         </div>
       </div>
 
@@ -1230,7 +1249,7 @@ try { if (localStorage.getItem('selo_cookie_consent') === 'accepted') window.loa
         <div class="jr-card">
           <span class="jr-stage">05 · O fechamento</span>
           <h3>"Sozinho, mas com a estrutura de um time inteiro."</h3>
-          <p>Cada negociação com o seu status, tudo salvo na nuvem, histórico sempre na mão. Eu fecho mais — e o cliente nem imagina que do outro lado tem um corretor só.</p>
+          <p>Registro a venda, gero o contrato pra assinar e acompanho no Dashboard quanto fechei e quanto de comissão entrou no mês. Eu fecho mais — e o cliente nem imagina que do outro lado tem um corretor só.</p>
         </div>
       </div>
 
