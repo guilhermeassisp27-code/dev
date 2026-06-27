@@ -128,6 +128,9 @@
     font-weight:700;font-size:15px;transition:background .16s ease;
   }
   .nav-cta:hover{background:var(--amber-h)}
+  .nav-right{display:flex;align-items:center;gap:18px}
+  .nav-login{font-size:14px;font-weight:600;color:var(--t2);transition:color .15s ease;white-space:nowrap}
+  .nav-login:hover{color:var(--white)}
   .nav-links{display:none;align-items:center;gap:26px;margin:0 auto}
   .nav-links a{font-size:14px;font-weight:500;color:var(--t2);transition:color .15s ease}
   .nav-links a:hover{color:var(--white)}
@@ -801,7 +804,10 @@ src="https://www.facebook.com/tr?id=2015826029060952&ev=PageView&noscript=1"/></
       <a href="#como-funciona">Como funciona</a>
       <a href="#planos">Preços</a>
     </nav>
-    <a class="nav-cta" href="#planos">Começar agora</a>
+    <div class="nav-right">
+      <a class="nav-login" href="/acesso">Entrar</a>
+      <a class="nav-cta" href="#planos">Começar agora</a>
+    </div>
   </div>
 </header>
 
