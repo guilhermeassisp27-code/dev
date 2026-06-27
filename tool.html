@@ -122,6 +122,27 @@ body{font-family:var(--font);background:var(--bg);color:var(--t);-webkit-font-sm
 #banner-profile{display:none}
 #banner-profile.show{display:flex}
 
+/* ── ONBOARDING (checklist de ativação no Dashboard) ── */
+#onboarding-card{display:none;margin-bottom:18px}
+#onboarding-card.show{display:block}
+.onb{background:var(--s1);border:1px solid var(--bm);border-radius:16px;padding:20px 22px;box-shadow:var(--shadow-sm)}
+.onb-head{display:flex;align-items:flex-start;justify-content:space-between;gap:12px;margin-bottom:4px}
+.onb-title{font-size:16px;font-weight:700;color:var(--t)}
+.onb-sub{font-size:13px;color:var(--t2);margin-top:2px}
+.onb-dismiss{background:none;border:none;color:var(--t3);cursor:pointer;font-size:13px;padding:4px 6px;border-radius:8px;flex-shrink:0}
+.onb-dismiss:hover{background:var(--s2);color:var(--t2)}
+.onb-prog{height:6px;background:var(--s2);border-radius:100px;overflow:hidden;margin:12px 0 16px}
+.onb-prog-fill{height:100%;background:var(--p2);border-radius:100px;transition:width .35s ease}
+.onb-step{display:flex;align-items:center;gap:12px;padding:11px 0;border-top:1px solid var(--b)}
+.onb-step:first-of-type{border-top:none}
+.onb-check{width:22px;height:22px;border-radius:50%;flex-shrink:0;display:flex;align-items:center;justify-content:center;border:2px solid var(--b);color:transparent}
+.onb-step.done .onb-check{background:var(--p2);border-color:var(--p2);color:#1A1205}
+.onb-step-label{flex:1;font-size:14px;color:var(--t);font-weight:500}
+.onb-step.done .onb-step-label{color:var(--t3);text-decoration:line-through}
+.onb-step-cta{font-size:12.5px;font-weight:700;padding:6px 12px;border-radius:8px;border:1px solid var(--p);background:var(--p);color:#fff;cursor:pointer;flex-shrink:0}
+.onb-step-cta:hover{background:var(--ph)}
+.onb-step.done .onb-step-cta{display:none}
+
 /* ── CARD ── */
 .card{background:var(--s1);border:1px solid var(--b);border-radius:var(--radl);padding:26px;margin-bottom:16px;box-shadow:var(--shadow-sm);transition:box-shadow .2s ease,border-color .2s ease,transform .2s ease,background-color .2s ease}
 .card:hover{box-shadow:var(--shadow-lg)}
@@ -823,6 +844,8 @@ input[type=color]{opacity:0;width:0;height:0;position:absolute}
         <h1>Dashboard</h1>
         <p>Visão geral do seu negócio — leads, imóveis e vendas em um só lugar.</p>
       </div>
+
+      <div id="onboarding-card"></div>
 
       <div class="dash-kpis" id="dash-kpis"></div>
 
@@ -2487,7 +2510,10 @@ function initApp() {
   atualizarBadgeFunil()
   atualizarBadgeVendas()
   renderDashboard()
-  if (!perfil.nome) {
+  // O onboarding (renderOnboarding, chamado por renderDashboard) já controla o
+  // banner de perfil: só o exibe como fallback quando o onboarding foi
+  // dispensado. Aqui só reforçamos esse caso, evitando mensagem duplicada.
+  if (!perfil.nome && perfil.onboardingDispensado) {
     document.getElementById('banner-profile').classList.add('show')
   }
   carregarFormConfig()
@@ -5241,9 +5267,73 @@ function atualizarBadgeVendas() {
    sem array novo) numa visão agregada. Gráfico de barras em SVG puro,
    gerado por JS — sem dependência nova, mesmo princípio dos módulos
    anteriores (Funil, Vendas, Meus Imóveis). */
+/* ── ONBOARDING DE PRIMEIRO ACESSO ──
+   Checklist de ativação no topo do Dashboard. O progresso é DERIVADO do
+   estado real (perfil/proposta/lead/imóvel) — não há tracking novo. Some
+   sozinho quando os 4 passos estão feitos ou quando o corretor dispensa
+   (perfil.onboardingDispensado, persistido). Substitui o banner de perfil
+   enquanto ativo, pra não duplicar a mensagem. Achado da auditoria: não
+   existia onboarding para o assinante real (só o tour do modo demo). */
+function passosOnboarding() {
+  return [
+    { done: !!(perfil.nome && perfil.creci), label: 'Complete seu perfil (nome e CRECI)', cta: 'Configurar', view: 'config' },
+    { done: historico.some(h => h.docTipo !== 'visita'), label: 'Gere sua primeira proposta', cta: 'Criar proposta', view: 'form' },
+    { done: (leads || []).length > 0, label: 'Adicione seu primeiro lead no funil', cta: 'Abrir funil', view: 'funil' },
+    { done: (imoveis || []).length > 0, label: 'Cadastre seu primeiro imóvel', cta: 'Cadastrar', view: 'imoveis' },
+  ]
+}
+
+function renderOnboarding() {
+  const el = document.getElementById('onboarding-card')
+  if (!el) return
+  const passos = passosOnboarding()
+  const feitos = passos.filter(p => p.done).length
+  const banner = document.getElementById('banner-profile')
+
+  // Esconde se dispensado ou se tudo está feito.
+  if (perfil.onboardingDispensado || feitos === passos.length) {
+    el.classList.remove('show')
+    el.innerHTML = ''
+    // devolve o banner de perfil como fallback, se ainda faltar nome
+    if (banner) banner.classList.toggle('show', !perfil.nome)
+    return
+  }
+
+  if (banner) banner.classList.remove('show') // evita mensagem duplicada
+  const pct = Math.round((feitos / passos.length) * 100)
+  const check = '<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3.2"><polyline points="20 6 9 17 4 12"/></svg>'
+  el.innerHTML = `
+    <div class="onb">
+      <div class="onb-head">
+        <div>
+          <div class="onb-title">Comece por aqui${perfil.nome ? ', ' + escH(perfil.nome.split(' ')[0]) : ''}</div>
+          <div class="onb-sub">${feitos} de ${passos.length} passos — leva uns 2 minutos pra deixar tudo pronto.</div>
+        </div>
+        <button class="onb-dismiss" onclick="dispensarOnboarding()" title="Não mostrar mais">Dispensar</button>
+      </div>
+      <div class="onb-prog"><div class="onb-prog-fill" style="width:${pct}%"></div></div>
+      ${passos.map(p => `
+        <div class="onb-step${p.done ? ' done' : ''}">
+          <span class="onb-check">${check}</span>
+          <span class="onb-step-label">${escH(p.label)}</span>
+          <button class="onb-step-cta" onclick="showView('${p.view}')">${escH(p.cta)}</button>
+        </div>`).join('')}
+    </div>`
+  el.classList.add('show')
+}
+
+async function dispensarOnboarding() {
+  perfil.onboardingDispensado = true
+  localStorage.setItem('cpr_perfil', JSON.stringify(perfil))
+  renderOnboarding()
+  try { await salvarRemoto() } catch (_) {}
+}
+
 function renderDashboard() {
   const elKpis = document.getElementById('dash-kpis')
   if (!elKpis) return // view ainda não está no DOM (proteção defensiva)
+
+  renderOnboarding()
 
   const hoje = new Date()
 
