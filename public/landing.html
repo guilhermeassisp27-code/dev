@@ -769,26 +769,54 @@
   /* itens de benefício e passos da jornada deslizam no hover (já tinham base) */
   .ben:hover .ben-check,.jr-card:hover .jr-stage{transform:translateX(2px)}
   .ben-check,.jr-stage{transition:transform .2s ease}
+
+  /* ════════ banner de cookies (LGPD) ════════ */
+  .cookie-bar{
+    position:fixed;left:0;right:0;bottom:0;z-index:90;
+    padding:16px 18px calc(16px + env(safe-area-inset-bottom));
+    background:var(--navy-2);border-top:1px solid rgba(201,136,42,.32);
+    box-shadow:0 -14px 34px rgba(10,33,56,.28);
+    transform:translateY(115%);transition:transform .4s cubic-bezier(.22,1,.36,1);
+  }
+  .cookie-bar.on{transform:none}
+  .cookie-in{max-width:var(--maxw);margin:0 auto;display:flex;align-items:center;gap:22px;flex-wrap:wrap}
+  .cookie-txt{flex:1;min-width:240px;font-size:13.5px;line-height:1.55;color:var(--t2);margin:0}
+  .cookie-txt b{color:var(--t)}
+  .cookie-txt a{color:var(--amber);font-weight:600;text-decoration:underline}
+  .cookie-acts{display:flex;gap:10px;flex-shrink:0}
+  .cookie-btn{
+    font-family:var(--font-h);font-size:14px;font-weight:700;cursor:pointer;
+    border-radius:10px;padding:11px 22px;border:1.5px solid transparent;
+    transition:background .16s ease,border-color .16s ease,color .16s ease,transform .16s ease;
+  }
+  .cookie-accept{background:var(--amber);color:#1A1205}
+  .cookie-accept:hover{background:var(--amber-h);transform:translateY(-1px)}
+  .cookie-ghost{background:transparent;color:var(--t2);border-color:var(--line-2)}
+  .cookie-ghost:hover{color:var(--white);border-color:var(--t2)}
+  @media(max-width:560px){.cookie-acts{width:100%}.cookie-btn{flex:1}}
 </style>
 </head>
 <body>
 
-<!-- Meta Pixel Code -->
+<!-- Meta Pixel — carregado SOMENTE após consentimento de cookies (LGPD) -->
 <script>
-!function(f,b,e,v,n,t,s)
-{if(f.fbq)return;n=f.fbq=function(){n.callMethod?
-n.callMethod.apply(n,arguments):n.queue.push(arguments)};
-if(!f._fbq)f._fbq=n;n.push=n;n.loaded=!0;n.version='2.0';
-n.queue=[];t=b.createElement(e);t.async=!0;
-t.src=v;s=b.getElementsByTagName(e)[0];
-s.parentNode.insertBefore(t,s)}(window, document,'script',
-'https://connect.facebook.net/en_US/fbevents.js');
-fbq('init', '2015826029060952');
-fbq('track', 'PageView');
+window.loadMetaPixel = function(){
+  if (window._pixelLoaded) return; window._pixelLoaded = true;
+  !function(f,b,e,v,n,t,s)
+  {if(f.fbq)return;n=f.fbq=function(){n.callMethod?
+  n.callMethod.apply(n,arguments):n.queue.push(arguments)};
+  if(!f._fbq)f._fbq=n;n.push=n;n.loaded=!0;n.version='2.0';
+  n.queue=[];t=b.createElement(e);t.async=!0;
+  t.src=v;s=b.getElementsByTagName(e)[0];
+  s.parentNode.insertBefore(t,s)}(window, document,'script',
+  'https://connect.facebook.net/en_US/fbevents.js');
+  fbq('init', '2015826029060952');
+  fbq('track', 'PageView');
+};
+/* Se o visitante já autorizou numa visita anterior, carrega na hora. */
+try { if (localStorage.getItem('selo_cookie_consent') === 'accepted') window.loadMetaPixel(); } catch(e){}
 </script>
-<noscript><img height="1" width="1" style="display:none"
-src="https://www.facebook.com/tr?id=2015826029060952&ev=PageView&noscript=1"/></noscript>
-<!-- End Meta Pixel Code -->
+<!-- End Meta Pixel -->
 
 <!-- ===================== HEADER ===================== -->
 <header>
@@ -1421,6 +1449,40 @@ src="https://www.facebook.com/tr?id=2015826029060952&ev=PageView&noscript=1"/></
   <a class="cta" href="#planos">Testar grátis</a>
 </div>
 
+<!-- Banner de consentimento de cookies (LGPD) — controla o Meta Pixel -->
+<div class="cookie-bar" id="cookie-bar" role="dialog" aria-label="Aviso de cookies">
+  <div class="cookie-in">
+    <p class="cookie-txt">Usamos cookies essenciais para o site funcionar e, <b>com a sua autorização</b>, o Meta Pixel para medir nossas campanhas. Você pode recusar os cookies de medição sem prejuízo ao uso do site. <a href="/privacidade.html">Saiba mais</a>.</p>
+    <div class="cookie-acts">
+      <button class="cookie-btn cookie-ghost" id="cookie-reject" type="button">Recusar</button>
+      <button class="cookie-btn cookie-accept" id="cookie-accept" type="button">Aceitar</button>
+    </div>
+  </div>
+</div>
+<script>
+(function(){
+  var bar = document.getElementById('cookie-bar');
+  var KEY = 'selo_cookie_consent';
+  var stored = null;
+  try { stored = localStorage.getItem(KEY); } catch(e){}
+  /* só libera a barra fixa de CTA depois que o cookie for decidido (evita sobreposição) */
+  window._cookieResolved = !!stored;
+  function close(choice){
+    try { localStorage.setItem(KEY, choice); } catch(e){}
+    window._cookieResolved = true;
+    bar.classList.remove('on');
+  }
+  document.getElementById('cookie-accept').addEventListener('click', function(){
+    if (window.loadMetaPixel) window.loadMetaPixel();
+    close('accepted');
+  });
+  document.getElementById('cookie-reject').addEventListener('click', function(){
+    close('rejected');
+  });
+  if (!stored) { setTimeout(function(){ bar.classList.add('on'); }, 700); }
+})();
+</script>
+
 <!-- Dispara InitiateCheckout no Pixel ao clicar para o checkout da Hotmart -->
 <script>
 (function(){
@@ -1579,6 +1641,8 @@ src="https://www.facebook.com/tr?id=2015826029060952&ev=PageView&noscript=1"/></
   var bar = document.getElementById('stickbar');
   var shown = false;
   window.addEventListener('scroll', function(){
+    /* não exibe a barra de CTA enquanto o banner de cookies estiver pendente */
+    if (window._cookieResolved === false) { if (shown) { shown = false; bar.classList.remove('on'); } return; }
     var past = window.scrollY > 560;
     var nearPlans = false;
     var planos = document.getElementById('planos');
