@@ -2421,6 +2421,7 @@ let leads = JSON.parse(localStorage.getItem('cpr_leads') || '[]')
 let imoveis = JSON.parse(localStorage.getItem('cpr_imoveis') || '[]')
 let vendas = JSON.parse(localStorage.getItem('cpr_vendas') || '[]')
 let snapProposta = null
+let _propostaJaSalva = false   // trava anti-duplicação: impede salvar a mesma proposta 2x (duplo-clique)
 let fotoAtual = null
 let _toastT = null
 let _crmFiltro = null  // filtro ativo por status no histórico
@@ -2787,6 +2788,7 @@ function gerarProposta(ev) {
     foto:       fotoAtual,
   }
   snapProposta = d
+  _propostaJaSalva = false   // nova geração libera o salvar de novo
 
   const btn = document.getElementById('gen-btn')
   btn.disabled = true
@@ -3106,6 +3108,8 @@ function compartilharWA() {
 async function salvarProposta() {
   if (window._DEMO) return demoBloqueio()
   if (!snapProposta) return
+  if (_propostaJaSalva) { toast('Esta proposta já está salva em Minhas Propostas'); return }
+  _propostaJaSalva = true   // marca ANTES de qualquer await — duplo-clique não duplica
   const item = {
     id: Date.now(),
     data: new Date().toLocaleDateString('pt-BR'),
@@ -3131,6 +3135,7 @@ function novaProposta() {
   document.getElementById('form').reset()
   atualizarTipoNeg()
   snapProposta = null
+  _propostaJaSalva = false
   removerFotoImovel()
   window.scrollTo({ top:0, behavior:'smooth' })
   setTimeout(() => document.getElementById('f-cliente').focus(), 350)
@@ -3385,6 +3390,7 @@ function definirStatus(idx, statusKey) {
 }
 
 function excluirProposta(i) {
+  if (i < 0 || i >= historico.length) return   // guard: índice inválido/duplo-clique/multi-aba
   historico.splice(i, 1)
   localStorage.setItem('cpr_hist', JSON.stringify(historico))
   salvarRemoto()

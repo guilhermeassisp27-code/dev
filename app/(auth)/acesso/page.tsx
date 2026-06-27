@@ -15,6 +15,22 @@ const TOOL_URL =
   process.env.NEXT_PUBLIC_TOOL_URL ||
   'https://guilhermeassisp27-code.github.io/dev/tool.html'
 
+// Valida o destino de redirecionamento contra uma whitelist de origens.
+// Sem isso, ?redirect_to=https://site-malicioso.com receberia os tokens de
+// sessão no hash (open redirect → sequestro de sessão). Só permitimos a
+// própria origem do app e a origem da ferramenta (GitHub Pages).
+function destinoSeguro(raw: string | null): string {
+  if (!raw) return TOOL_URL
+  try {
+    const url = new URL(raw, window.location.origin)
+    const permitidos = new Set([window.location.origin, new URL(TOOL_URL).origin])
+    if (permitidos.has(url.origin)) return url.toString()
+  } catch {
+    /* URL inválida cai no fallback */
+  }
+  return TOOL_URL
+}
+
 // Repassa a sessão para a ferramenta (GitHub Pages) via hash fragment
 function irParaFerramenta(session: {
   access_token: string
@@ -22,7 +38,7 @@ function irParaFerramenta(session: {
   expires_in: number
 }) {
   const params = new URLSearchParams(window.location.search)
-  const base = params.get('redirect_to') || TOOL_URL
+  const base = destinoSeguro(params.get('redirect_to'))
   const hash = new URLSearchParams({
     access_token: session.access_token,
     refresh_token: session.refresh_token,
