@@ -15,6 +15,11 @@ Formato de cada entrada:
 
 ---
 
+## [2026-06-27] Primeiros passos guiados — checklist de ativação no Dashboard
+**Para o corretor:** quem entra pela primeira vez agora encontra um guia "Comece por aqui" no topo do Dashboard, com 4 passos rápidos (completar perfil, gerar a 1ª proposta, adicionar o 1º lead, cadastrar o 1º imóvel). Cada passo tem um botão que leva direto à tela certa, e vai sendo marcado sozinho conforme você usa a ferramenta. Quando termina, o guia some; dá pra dispensar a qualquer momento.
+**O que mudou:** novo card de onboarding em `tool.html` cujo progresso é **derivado do estado real** (perfil/proposta/lead/imóvel — sem tracking novo). Substitui o banner de "configure seu perfil" enquanto ativo (sem mensagem duplicada). A dispensa persiste no perfil (`onboardingDispensado`), local e na nuvem. Achado da auditoria de produto: não existia onboarding para o assinante real — só o tour do modo demo —, e "não saber por onde começar" era um motivo direto de cancelamento.
+**Status:** publicado
+
 ## [2026-06-27] Mensagens de WhatsApp por etapa do funil — o lead certo, na hora certa
 **Para o corretor:** cada lead tem um botão verde de WhatsApp que já manda a mensagem certa pra etapa em que ele está — boas-vindas quando é novo contato, "o que achou?" depois da visita, cobrança da proposta na negociação, parabéns quando fecha. Arrastou o card pra outra coluna, a mensagem muda junto. Na Agenda de Visitas tem um botão pra confirmar a visita. Você responde rápido, com o tom certo, sem digitar do zero — e parece uma imobiliária inteira.
 **O que mudou:** uma mensagem editável para cada etapa do Funil (Novo contato, Visita agendada, Visita realizada, Proposta enviada, Negociação, Venda fechada) + uma para a Agenda, todas nas Configurações, com variáveis automáticas `{cliente}`, `{corretor}`, `{imovel}`, `{creci}`. O botão de cada lead (Funil e Dashboard) resolve a etapa atual e dispara a mensagem daquela etapa; ao criar um lead, o modal "Enviar boas-vindas?" usa a mensagem de novo contato. Tudo via `wa.me` (click-to-send), sem API paga, sem IA e sem custo por mensagem — você confirma cada envio. Persiste no perfil já existente; quem tinha mensagens antigas não perde nada.
