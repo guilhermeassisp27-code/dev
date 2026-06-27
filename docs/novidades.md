@@ -15,6 +15,11 @@ Formato de cada entrada:
 
 ---
 
+## [2026-06-27] Mensagens de WhatsApp em 1 toque (boas-vindas e follow-up automáticos)
+**Para o corretor:** assim que você cadastra um lead, o Selo já te oferece mandar uma mensagem de boas-vindas no WhatsApp em 1 toque — e nos follow-ups/lembretes também aparece um botão verde pra disparar a mensagem certa, com o nome do cliente e do imóvel já preenchidos. Você responde rápido e parece uma imobiliária inteira, sem digitar do zero toda vez.
+**O que mudou:** 3 modelos de mensagem editáveis nas Configurações (boas-vindas, follow-up, agendamento) com variáveis automáticas `{cliente}`, `{corretor}`, `{imovel}`, `{creci}`; modal "Enviar boas-vindas?" ao criar lead; botão de WhatsApp no card do Funil e nas listas do Dashboard; o follow-up passou a usar o seu modelo. Tudo via `wa.me` (click-to-send), sem API paga, sem IA e sem custo por mensagem — você confirma cada envio. Persiste no perfil já existente, sem nova configuração.
+**Status:** em PR
+
 ## [2026-06-26] Funil de Vendas — arrastar entre etapas, notas e lembretes por lead (CRM profissional) + Dashboard com mais indicadores
 **Para o corretor:** agora você arrasta o card do lead direto entre as colunas do Funil (igual Trello/Kommo, sem precisar abrir o seletor toda vez), anota qualquer informação relevante sobre a negociação direto no card, e cria lembretes com data ("ligar dia 10", "enviar contrato") que aparecem destacados quando vencem — e o Dashboard ganhou taxa de conversão, tempo médio até fechar, ranking dos leads mais valiosos e a lista de lembretes do dia, em vez de só 1 gráfico fixo de 6 meses.
 **O que mudou:**

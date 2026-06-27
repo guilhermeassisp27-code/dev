@@ -209,9 +209,9 @@ input[type=color]{opacity:0;width:0;height:0;position:absolute}
 .btn{display:inline-flex;align-items:center;gap:7px;padding:10px 18px;border-radius:980px;font-size:13px;font-weight:600;font-family:var(--font);border:none;cursor:pointer;text-decoration:none;transition:background-color .18s ease,color .18s ease,box-shadow .18s ease,transform .15s ease;white-space:nowrap}
 .btn:active{transform:scale(.97)}
 .btn-primary{background:var(--p);color:#fff}
-.btn-primary:hover{background:var(--ph);box-shadow:0 6px 18px rgba(15,45,74,.35)}
+.btn-primary:hover{background:var(--ph)}
 .btn-green{background:var(--g);color:#fff}
-.btn-green:hover{background:#16a34a;box-shadow:0 6px 18px rgba(34,197,94,.32)}
+.btn-green:hover{background:#16a34a}
 .btn-ghost{background:var(--s2);color:var(--t2);border:1px solid var(--b)}
 .btn-ghost:hover{background:var(--s3);color:var(--t)}
 .btn-danger{background:rgba(239,68,68,.12);color:var(--r);border:1px solid rgba(239,68,68,.2)}
@@ -219,15 +219,15 @@ input[type=color]{opacity:0;width:0;height:0;position:absolute}
 .btn-sm{padding:7px 14px;font-size:12px}
 .btn-full{width:100%;justify-content:center}
 .btn:disabled{opacity:.4;cursor:not-allowed;pointer-events:none}
-.btn-ai{background:linear-gradient(135deg,var(--p2) 0%,#A855F7 100%);color:#fff;padding:6px 13px;font-size:11.5px;border-radius:100px;gap:5px}
-.btn-ai:hover{box-shadow:0 4px 14px rgba(168,85,247,.35)}
+.btn-ai{background:var(--p2);color:#1A1205;padding:6px 13px;font-size:11.5px;border-radius:100px;gap:5px}
+.btn-ai:hover{background:#D6A24A}
 .btn-ai:disabled{opacity:.55}
 
 /* label + IA action on the same row (used by the description AI helper) */
 .lbl-row{display:flex;align-items:center;justify-content:space-between;gap:8px;flex-wrap:wrap}
 
-.gen-btn{width:100%;padding:16px;background:linear-gradient(135deg,var(--p) 0%,var(--p2) 100%);color:#fff;border:none;border-radius:980px;font-size:15px;font-weight:700;font-family:var(--font);cursor:pointer;display:flex;align-items:center;justify-content:center;gap:10px;transition:opacity .2s ease,transform .15s ease,box-shadow .2s ease;margin-top:6px;box-shadow:0 8px 24px rgba(15,45,74,.25)}
-.gen-btn:hover{opacity:.92;transform:translateY(-1px);box-shadow:0 10px 28px rgba(15,45,74,.35)}
+.gen-btn{width:100%;padding:15px;background:var(--p2);color:#1A1205;border:none;border-radius:980px;font-size:15px;font-weight:700;font-family:var(--font);cursor:pointer;display:flex;align-items:center;justify-content:center;gap:10px;transition:background-color .18s ease,transform .15s ease;margin-top:6px;box-shadow:0 1px 2px rgba(15,45,74,.14)}
+.gen-btn:hover{background:#D6A24A;transform:translateY(-1px)}
 .gen-btn:active{transform:translateY(0) scale(.99)}
 .gen-btn:disabled{opacity:.45;cursor:not-allowed;transform:none}
 
@@ -1967,6 +1967,25 @@ input[type=color]{opacity:0;width:0;height:0;position:absolute}
           </div>
         </div>
 
+        <div class="card">
+          <div class="card-t">Mensagens de WhatsApp</div>
+          <p style="font-size:12px;color:var(--t2);margin-bottom:14px">Modelos prontos usados nos botões de WhatsApp do Funil, Agenda e Dashboard. Use <code>{cliente}</code>, <code>{corretor}</code>, <code>{imovel}</code> e <code>{creci}</code> — serão substituídos automaticamente. Se deixar em branco, usamos o texto padrão.</p>
+          <div class="fg">
+            <div class="field f2">
+              <label class="lbl" for="c-msg-boasvindas">Boas-vindas (novo lead)</label>
+              <textarea id="c-msg-boasvindas" class="txa inp" placeholder="Olá {cliente}! Aqui é {corretor}, corretor(a) de imóveis (CRECI {creci}). Recebi seu contato sobre o imóvel {imovel} e vou te ajudar a encontrar a melhor opção. Podemos conversar?"></textarea>
+            </div>
+            <div class="field f2">
+              <label class="lbl" for="c-msg-followup">Follow-up (lead sem contato)</label>
+              <textarea id="c-msg-followup" class="txa inp" placeholder="Oi {cliente}, tudo bem? Passando pra saber se você ainda tem interesse no {imovel}. Posso te mostrar novas opções também. Fico à disposição! — {corretor}"></textarea>
+            </div>
+            <div class="field f2">
+              <label class="lbl" for="c-msg-agendamento">Agendamento de visita</label>
+              <textarea id="c-msg-agendamento" class="txa inp" placeholder="Olá {cliente}! Consegui agendar a visita ao {imovel}. Qual o melhor dia e horário pra você? — {corretor}"></textarea>
+            </div>
+          </div>
+        </div>
+
         <div style="display:flex;gap:10px;align-items:center">
           <button type="submit" class="btn btn-primary">
             <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 21H5a2 2 0 01-2-2V5a2 2 0 012-2h11l5 5v11a2 2 0 01-2 2z"/><polyline points="17 21 17 13 7 13 7 21"/><polyline points="7 3 7 8 15 8"/></svg>
@@ -2379,7 +2398,7 @@ function toggleAjuda(id) {
 const escH = s => String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;')
 
 /* ── STATE ── */
-let perfil = JSON.parse(localStorage.getItem('cpr_perfil') || 'null') || { nome:'',creci:'',tel:'',email:'',cor:'#4D7EFF',logo:null,modelo:'classico',slug:'' }
+let perfil = JSON.parse(localStorage.getItem('cpr_perfil') || 'null') || { nome:'',creci:'',tel:'',email:'',cor:'#4D7EFF',logo:null,modelo:'classico',slug:'',msgBoasVindas:'',msgFollowUp:'',msgAgendamento:'' }
 let historico = JSON.parse(localStorage.getItem('cpr_hist') || '[]')
 let leads = JSON.parse(localStorage.getItem('cpr_leads') || '[]')
 let imoveis = JSON.parse(localStorage.getItem('cpr_imoveis') || '[]')
@@ -2466,7 +2485,7 @@ async function carregarRemoto() {
     if (error) return
     if (data) {
       if (data.perfil && typeof data.perfil === 'object') {
-        perfil = Object.assign({ nome:'',creci:'',tel:'',email:'',cor:'#4D7EFF',logo:null,modelo:'classico',slug:'' }, data.perfil)
+        perfil = Object.assign({ nome:'',creci:'',tel:'',email:'',cor:'#4D7EFF',logo:null,modelo:'classico',slug:'',msgBoasVindas:'',msgFollowUp:'',msgAgendamento:'' }, data.perfil)
         localStorage.setItem('cpr_perfil', JSON.stringify(perfil))
       }
       if (Array.isArray(data.historico)) {
@@ -4093,6 +4112,7 @@ async function salvarLead(ev) {
     toast('Salvo localmente — verifique sua conexão', true)
   }
   document.getElementById('agenda-content').scrollIntoView({ behavior:'smooth', block:'start' })
+  ofereceBoasVindasWhatsapp(item.id)
 }
 
 // Status calculado a partir da data: agendada (futura) / hoje / atrasada (passou e não foi marcada) / realizada
@@ -4184,6 +4204,82 @@ function telefoneParaWhatsapp(tel) {
   return digits ? '55' + digits : null
 }
 
+/* ── MENSAGENS DE WHATSAPP (templates + envio em 1 toque, sem API/IA) ──
+   Caminho A: 3 templates editáveis (guardados dentro do `perfil`, sem
+   coluna/chave nova) + abertura do wa.me já preenchido. O corretor sempre
+   revisa/confirma dentro do próprio WhatsApp — nada é enviado automaticamente. */
+const WHATS_TEMPLATES_DEFAULT = {
+  msgBoasVindas: 'Olá {cliente}! Aqui é {corretor}, corretor(a) de imóveis (CRECI {creci}). Recebi seu contato sobre o imóvel {imovel} e vou te ajudar a encontrar a melhor opção. Podemos conversar?',
+  msgFollowUp: 'Oi {cliente}, tudo bem? Passando pra saber se você ainda tem interesse no {imovel}. Posso te mostrar novas opções também. Fico à disposição! — {corretor}',
+  msgAgendamento: 'Olá {cliente}! Consegui agendar a visita ao {imovel}. Qual o melhor dia e horário pra você? — {corretor}',
+}
+
+// Substitui os placeholders {cliente}/{corretor}/{imovel}/{creci} pelos dados
+// reais do lead e do perfil do corretor. Sem perfil/lead, cai num fallback
+// neutro em vez de deixar a chave literal no texto.
+function preencherTemplate(tpl, lead) {
+  const l = lead || {}
+  const nomeCliente = (l.cliente || '').trim().split(' ')[0] || 'tudo bem'
+  const corretor = (perfil.nome || '').trim() || 'a equipe'
+  const creci = (perfil.creci || '').trim() || '—'
+  const imovel = (l.imovel || '').trim() || 'o imóvel'
+  return String(tpl || '')
+    .replace(/\{cliente\}/g, nomeCliente)
+    .replace(/\{corretor\}/g, corretor)
+    .replace(/\{creci\}/g, creci)
+    .replace(/\{imovel\}/g, imovel)
+}
+
+// Abre o wa.me com um template já preenchido para o lead. Se não houver
+// telefone, abre o wa.me sem número (o corretor escolhe o contato no próprio
+// WhatsApp) e avisa via toast — não bloqueia o fluxo.
+function enviarTemplateWhatsapp(leadId, tplKey) {
+  const l = leads.find(x => x.id === leadId)
+  const tpl = (perfil[tplKey]) || WHATS_TEMPLATES_DEFAULT[tplKey] || ''
+  const texto = preencherTemplate(tpl, l)
+  const waNumero = l ? telefoneParaWhatsapp(l.tel) : null
+  if (l && !waNumero) toast('Lead sem telefone cadastrado — escolha o contato no WhatsApp', true)
+  const url = waNumero
+    ? `https://wa.me/${waNumero}?text=${encodeURIComponent(texto)}`
+    : `https://wa.me/?text=${encodeURIComponent(texto)}`
+  window.open(url, '_blank')
+  if (l) {
+    l.ultimaInteracao = new Date().toISOString()
+    localStorage.setItem('cpr_leads', JSON.stringify(leads))
+    salvarRemoto().catch(() => {})
+  }
+}
+
+// Modal leve "Lead adicionado — Enviar boas-vindas?" — disparado depois de
+// cadastrar um lead (Agenda ou Funil). Não abre o wa.me automaticamente
+// (evita bloqueio de popup); o corretor confirma com 1 clique.
+function ofereceBoasVindasWhatsapp(leadId) {
+  if (window._DEMO) return
+  const l = leads.find(x => x.id === leadId)
+  if (!l) return
+  const antigo = document.getElementById('boasvindas-modal-back')
+  if (antigo) antigo.remove()
+
+  const waNumero = telefoneParaWhatsapp(l.tel)
+  const back = document.createElement('div')
+  back.id = 'boasvindas-modal-back'
+  back.className = 'followup-modal-back'
+  back.onclick = (e) => { if (e.target === back) back.remove() }
+  back.innerHTML = `
+    <div class="followup-modal">
+      <h3>Lead adicionado!</h3>
+      <p class="fu-sub">Quer enviar uma mensagem de boas-vindas para ${escH(l.cliente || 'o cliente')} agora pelo WhatsApp?</p>
+      <div class="fu-actions">
+        <button class="btn btn-ghost btn-sm" onclick="document.getElementById('boasvindas-modal-back').remove()">Agora não</button>
+        <button class="btn btn-green btn-sm" onclick="enviarTemplateWhatsapp(${l.id},'msgBoasVindas');document.getElementById('boasvindas-modal-back').remove()" ${waNumero ? '' : 'title="Lead sem telefone — você escolhe o contato no WhatsApp"'}>
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 11.5a8.38 8.38 0 01-.9 3.8 8.5 8.5 0 01-7.6 4.7 8.38 8.38 0 01-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 01-.9-3.8 8.5 8.5 0 014.7-7.6 8.38 8.38 0 013.8-.9h.5a8.48 8.48 0 018 8v.5z"/></svg>
+          Enviar boas-vindas
+        </button>
+      </div>
+    </div>`
+  document.body.appendChild(back)
+}
+
 // Abre o modal com a mensagem sugerida — corretor revisa e decide enviar.
 function abrirFollowUpLead(id) {
   const l = leads.find(x => x.id === id)
@@ -4192,7 +4288,8 @@ function abrirFollowUpLead(id) {
   if (antigo) antigo.remove()
 
   const dias = diasSemContatoLead(l)
-  const mensagem = gerarMensagemFollowUp(l)
+  const tplFollowUp = perfil.msgFollowUp || WHATS_TEMPLATES_DEFAULT.msgFollowUp
+  const mensagem = preencherTemplate(tplFollowUp, l)
   const waNumero = telefoneParaWhatsapp(l.tel)
 
   const back = document.createElement('div')
@@ -4458,6 +4555,7 @@ async function salvarLeadFunil(ev) {
   } catch(_) {
     toast('Salvo localmente — verifique sua conexão', true)
   }
+  ofereceBoasVindasWhatsapp(item.id)
 }
 
 function atualizarBadgeFunil() {
@@ -4531,6 +4629,9 @@ function renderFunil() {
               ${chipsNL.trim()}
             </button>
             <div class="funil-card-actions">
+              <button class="btn btn-green btn-sm" onclick="enviarTemplateWhatsapp(${l.id},'msgBoasVindas')" title="Enviar mensagem de boas-vindas no WhatsApp">
+                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 11.5a8.38 8.38 0 01-.9 3.8 8.5 8.5 0 01-7.6 4.7 8.38 8.38 0 01-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 01-.9-3.8 8.5 8.5 0 014.7-7.6 8.38 8.38 0 013.8-.9h.5a8.48 8.48 0 018 8v.5z"/></svg>
+              </button>
               <select class="sel funil-card-select" onchange="moverEstagioLead(${l.id}, this.value)" title="Mover para outro estágio">
                 ${FUNIL_ESTAGIOS.map(e => `<option value="${e.key}" ${e.key === estagio.key ? 'selected' : ''}>${escH(e.label)}</option>`).join('')}
               </select>
@@ -5274,6 +5375,9 @@ function renderDashboardLembretes() {
         <div class="dash-atencao-cliente">${escH(l.cliente || '—')}</div>
         <div class="dash-atencao-meta">${escH(r.texto)}</div>
       </div>
+      <button class="btn btn-green btn-sm" onclick="enviarTemplateWhatsapp(${l.id},'msgFollowUp')" title="Enviar follow-up no WhatsApp">
+        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 11.5a8.38 8.38 0 01-.9 3.8 8.5 8.5 0 01-7.6 4.7 8.38 8.38 0 01-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 01-.9-3.8 8.5 8.5 0 014.7-7.6 8.38 8.38 0 013.8-.9h.5a8.48 8.48 0 018 8v.5z"/></svg>
+      </button>
       <button class="btn btn-ghost btn-sm" onclick="abrirLeadModal(${l.id});showView('funil')" title="Ver lead no Funil">
         <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
       </button>
@@ -5329,6 +5433,9 @@ function renderDashboardAtencao() {
         <div class="dash-atencao-cliente">${escH(l.cliente || '—')}</div>
         <div class="dash-atencao-meta">${escH(l.imovel || 'Sem imóvel vinculado')}</div>
       </div>
+      <button class="btn btn-green btn-sm" onclick="enviarTemplateWhatsapp(${l.id},'msgFollowUp')" title="Enviar follow-up no WhatsApp">
+        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 11.5a8.38 8.38 0 01-.9 3.8 8.5 8.5 0 01-7.6 4.7 8.38 8.38 0 01-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 01-.9-3.8 8.5 8.5 0 014.7-7.6 8.38 8.38 0 013.8-.9h.5a8.48 8.48 0 018 8v.5z"/></svg>
+      </button>
       <button class="btn btn-ghost btn-sm" onclick="showView('funil')" title="Ver no Funil">
         <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
       </button>
@@ -5660,6 +5767,9 @@ function carregarFormConfig() {
   document.getElementById('c-tel').value   = perfil.tel   || ''
   document.getElementById('c-email').value = perfil.email || ''
   document.getElementById('c-cor').value   = perfil.cor   || '#4D7EFF'
+  document.getElementById('c-msg-boasvindas').value  = perfil.msgBoasVindas  || ''
+  document.getElementById('c-msg-followup').value    = perfil.msgFollowUp    || ''
+  document.getElementById('c-msg-agendamento').value = perfil.msgAgendamento || ''
   atualizarCor(perfil.cor || '#4D7EFF')
   if (perfil.logo) {
     const prev = document.getElementById('logo-prev')
@@ -5697,6 +5807,9 @@ async function salvarConfig(ev) {
   perfil.tel   = document.getElementById('c-tel').value.trim()
   perfil.email = document.getElementById('c-email').value.trim()
   perfil.cor   = document.getElementById('c-cor').value
+  perfil.msgBoasVindas  = document.getElementById('c-msg-boasvindas').value.trim()
+  perfil.msgFollowUp    = document.getElementById('c-msg-followup').value.trim()
+  perfil.msgAgendamento = document.getElementById('c-msg-agendamento').value.trim()
   localStorage.setItem('cpr_perfil', JSON.stringify(perfil))
   aplicarPerfil()
   renderSidebarUser()
