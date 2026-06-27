@@ -1969,19 +1969,35 @@ input[type=color]{opacity:0;width:0;height:0;position:absolute}
 
         <div class="card">
           <div class="card-t">Mensagens de WhatsApp</div>
-          <p style="font-size:12px;color:var(--t2);margin-bottom:14px">Modelos prontos usados nos botões de WhatsApp do Funil, Agenda e Dashboard. Use <code>{cliente}</code>, <code>{corretor}</code>, <code>{imovel}</code> e <code>{creci}</code> — serão substituídos automaticamente. Se deixar em branco, usamos o texto padrão.</p>
+          <p style="font-size:12px;color:var(--t2);margin-bottom:14px">Uma mensagem pronta pra cada etapa do Funil, mais uma pra Agenda de Visitas. O botão de WhatsApp de cada lead manda automaticamente a mensagem da etapa em que ele está. Use <code>{cliente}</code>, <code>{corretor}</code>, <code>{imovel}</code> e <code>{creci}</code> — serão substituídos automaticamente. Se deixar em branco, usamos o texto padrão.</p>
           <div class="fg">
             <div class="field f2">
-              <label class="lbl" for="c-msg-boasvindas">Boas-vindas (novo lead)</label>
-              <textarea id="c-msg-boasvindas" class="txa inp" placeholder="Olá {cliente}! Aqui é {corretor}, corretor(a) de imóveis (CRECI {creci}). Recebi seu contato sobre o imóvel {imovel} e vou te ajudar a encontrar a melhor opção. Podemos conversar?"></textarea>
+              <label class="lbl" for="c-wpp-novocontato">Novo contato</label>
+              <textarea id="c-wpp-novocontato" data-tpl="wppNovoContato" class="txa inp" placeholder="Olá {cliente}! Aqui é {corretor} (CRECI {creci}). Recebi seu interesse no {imovel} e já vou separar as melhores opções pra você. Quando fica bom pra conversarmos?"></textarea>
             </div>
             <div class="field f2">
-              <label class="lbl" for="c-msg-followup">Follow-up (lead sem contato)</label>
-              <textarea id="c-msg-followup" class="txa inp" placeholder="Oi {cliente}, tudo bem? Passando pra saber se você ainda tem interesse no {imovel}. Posso te mostrar novas opções também. Fico à disposição! — {corretor}"></textarea>
+              <label class="lbl" for="c-wpp-visitaagendada">Visita agendada</label>
+              <textarea id="c-wpp-visitaagendada" data-tpl="wppVisitaAgendada" class="txa inp" placeholder="Oi {cliente}! Passando pra confirmar nossa visita ao {imovel}. Posso te enviar o endereço e combinar o melhor horário? — {corretor}"></textarea>
             </div>
             <div class="field f2">
-              <label class="lbl" for="c-msg-agendamento">Agendamento de visita</label>
-              <textarea id="c-msg-agendamento" class="txa inp" placeholder="Olá {cliente}! Consegui agendar a visita ao {imovel}. Qual o melhor dia e horário pra você? — {corretor}"></textarea>
+              <label class="lbl" for="c-wpp-visitarealizada">Visita realizada</label>
+              <textarea id="c-wpp-visitarealizada" data-tpl="wppVisitaRealizada" class="txa inp" placeholder="{cliente}, foi ótimo te apresentar o {imovel}! O que você achou? Fico à disposição pra esclarecer valores, condições ou documentação. — {corretor}"></textarea>
+            </div>
+            <div class="field f2">
+              <label class="lbl" for="c-wpp-propostaenviada">Proposta enviada</label>
+              <textarea id="c-wpp-propostaenviada" data-tpl="wppPropostaEnviada" class="txa inp" placeholder="Oi {cliente}! Te enviei a proposta do {imovel}. Conseguiu analisar? Posso ajustar condições e tirar qualquer dúvida pra avançarmos. — {corretor}"></textarea>
+            </div>
+            <div class="field f2">
+              <label class="lbl" for="c-wpp-negociacao">Negociação</label>
+              <textarea id="c-wpp-negociacao" data-tpl="wppNegociacao" class="txa inp" placeholder="{cliente}, estamos quase lá no {imovel}! Me diz o que falta pra fechar que eu corro atrás — consigo negociar prazos e condições. — {corretor}"></textarea>
+            </div>
+            <div class="field f2">
+              <label class="lbl" for="c-wpp-vendafechada">Venda fechada</label>
+              <textarea id="c-wpp-vendafechada" data-tpl="wppVendaFechada" class="txa inp" placeholder="Parabéns pela conquista, {cliente}! Foi um prazer te ajudar no {imovel}. Já te explico os próximos passos da documentação. Conte comigo! — {corretor}"></textarea>
+            </div>
+            <div class="field f2">
+              <label class="lbl" for="c-wpp-agenda">Agenda de visitas</label>
+              <textarea id="c-wpp-agenda" data-tpl="wppAgenda" class="txa inp" placeholder="Olá {cliente}! Confirmando sua visita ao {imovel}. Te espero no horário combinado — qualquer imprevisto, é só me avisar por aqui. — {corretor}"></textarea>
             </div>
           </div>
         </div>
@@ -2398,7 +2414,8 @@ function toggleAjuda(id) {
 const escH = s => String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;')
 
 /* ── STATE ── */
-let perfil = JSON.parse(localStorage.getItem('cpr_perfil') || 'null') || { nome:'',creci:'',tel:'',email:'',cor:'#4D7EFF',logo:null,modelo:'classico',slug:'',msgBoasVindas:'',msgFollowUp:'',msgAgendamento:'' }
+const PERFIL_DEFAULT = { nome:'',creci:'',tel:'',email:'',cor:'#4D7EFF',logo:null,modelo:'classico',slug:'',msgBoasVindas:'',msgFollowUp:'',msgAgendamento:'',wppNovoContato:'',wppVisitaAgendada:'',wppVisitaRealizada:'',wppPropostaEnviada:'',wppNegociacao:'',wppVendaFechada:'',wppAgenda:'' }
+let perfil = JSON.parse(localStorage.getItem('cpr_perfil') || 'null') || { ...PERFIL_DEFAULT }
 let historico = JSON.parse(localStorage.getItem('cpr_hist') || '[]')
 let leads = JSON.parse(localStorage.getItem('cpr_leads') || '[]')
 let imoveis = JSON.parse(localStorage.getItem('cpr_imoveis') || '[]')
@@ -2485,7 +2502,7 @@ async function carregarRemoto() {
     if (error) return
     if (data) {
       if (data.perfil && typeof data.perfil === 'object') {
-        perfil = Object.assign({ nome:'',creci:'',tel:'',email:'',cor:'#4D7EFF',logo:null,modelo:'classico',slug:'',msgBoasVindas:'',msgFollowUp:'',msgAgendamento:'' }, data.perfil)
+        perfil = Object.assign({ ...PERFIL_DEFAULT }, data.perfil)
         localStorage.setItem('cpr_perfil', JSON.stringify(perfil))
       }
       if (Array.isArray(data.historico)) {
@@ -4204,14 +4221,55 @@ function telefoneParaWhatsapp(tel) {
   return digits ? '55' + digits : null
 }
 
-/* ── MENSAGENS DE WHATSAPP (templates + envio em 1 toque, sem API/IA) ──
-   Caminho A: 3 templates editáveis (guardados dentro do `perfil`, sem
-   coluna/chave nova) + abertura do wa.me já preenchido. O corretor sempre
-   revisa/confirma dentro do próprio WhatsApp — nada é enviado automaticamente. */
+/* ── MENSAGENS DE WHATSAPP (templates contextuais por etapa, sem API/IA) ──
+   Evolução do Caminho A: em vez de 3 templates genéricos, cada etapa do
+   Funil (FUNIL_KEYS) tem sua própria mensagem, mais uma específica pra
+   Agenda de Visitas. Tudo guardado dentro do `perfil` já existente (sem
+   coluna/chave nova) + abertura do wa.me já preenchido — o corretor sempre
+   revisa/confirma dentro do próprio WhatsApp, nada é enviado automaticamente. */
+const WHATS_ETAPA_TPL_KEY = {
+  novo_contato:     'wppNovoContato',
+  visita_agendada:  'wppVisitaAgendada',
+  visita_realizada: 'wppVisitaRealizada',
+  proposta_enviada: 'wppPropostaEnviada',
+  negociacao:       'wppNegociacao',
+  venda_fechada:    'wppVendaFechada',
+}
+// Rótulos amigáveis pra Configurações (na mesma ordem do Funil + Agenda no fim).
+const WHATS_ETAPA_LABELS = [
+  { key: 'wppNovoContato',     label: 'Novo contato' },
+  { key: 'wppVisitaAgendada',  label: 'Visita agendada' },
+  { key: 'wppVisitaRealizada', label: 'Visita realizada' },
+  { key: 'wppPropostaEnviada', label: 'Proposta enviada' },
+  { key: 'wppNegociacao',      label: 'Negociação' },
+  { key: 'wppVendaFechada',    label: 'Venda fechada' },
+  { key: 'wppAgenda',          label: 'Agenda de visitas' },
+]
 const WHATS_TEMPLATES_DEFAULT = {
-  msgBoasVindas: 'Olá {cliente}! Aqui é {corretor}, corretor(a) de imóveis (CRECI {creci}). Recebi seu contato sobre o imóvel {imovel} e vou te ajudar a encontrar a melhor opção. Podemos conversar?',
-  msgFollowUp: 'Oi {cliente}, tudo bem? Passando pra saber se você ainda tem interesse no {imovel}. Posso te mostrar novas opções também. Fico à disposição! — {corretor}',
-  msgAgendamento: 'Olá {cliente}! Consegui agendar a visita ao {imovel}. Qual o melhor dia e horário pra você? — {corretor}',
+  wppNovoContato:     'Olá {cliente}! Aqui é {corretor} (CRECI {creci}). Recebi seu interesse no {imovel} e já vou separar as melhores opções pra você. Quando fica bom pra conversarmos?',
+  wppVisitaAgendada:  'Oi {cliente}! Passando pra confirmar nossa visita ao {imovel}. Posso te enviar o endereço e combinar o melhor horário? — {corretor}',
+  wppVisitaRealizada: '{cliente}, foi ótimo te apresentar o {imovel}! O que você achou? Fico à disposição pra esclarecer valores, condições ou documentação. — {corretor}',
+  wppPropostaEnviada: 'Oi {cliente}! Te enviei a proposta do {imovel}. Conseguiu analisar? Posso ajustar condições e tirar qualquer dúvida pra avançarmos. — {corretor}',
+  wppNegociacao:      '{cliente}, estamos quase lá no {imovel}! Me diz o que falta pra fechar que eu corro atrás — consigo negociar prazos e condições. — {corretor}',
+  wppVendaFechada:    'Parabéns pela conquista, {cliente}! Foi um prazer te ajudar no {imovel}. Já te explico os próximos passos da documentação. Conte comigo! — {corretor}',
+  wppAgenda:          'Olá {cliente}! Confirmando sua visita ao {imovel}. Te espero no horário combinado — qualquer imprevisto, é só me avisar por aqui. — {corretor}',
+}
+// Fallback de compatibilidade: contas que já tinham os 3 templates antigos
+// (msgBoasVindas/msgFollowUp/msgAgendamento) continuam usando esse texto
+// onde fizer sentido, até o corretor migrar pros templates por etapa —
+// nenhum dado existente é perdido ou sobrescrito.
+const WHATS_LEGADO_FALLBACK = {
+  wppNovoContato: 'msgBoasVindas',
+  wppAgenda: 'msgAgendamento',
+}
+
+// Resolve o texto efetivo de um template de etapa: perfil novo > perfil
+// legado (3 campos antigos) > default contextual da etapa.
+function templateWhatsappEtapa(tplKey) {
+  if (perfil[tplKey]) return perfil[tplKey]
+  const legadoKey = WHATS_LEGADO_FALLBACK[tplKey]
+  if (legadoKey && perfil[legadoKey]) return perfil[legadoKey]
+  return WHATS_TEMPLATES_DEFAULT[tplKey] || ''
 }
 
 // Substitui os placeholders {cliente}/{corretor}/{imovel}/{creci} pelos dados
@@ -4235,7 +4293,7 @@ function preencherTemplate(tpl, lead) {
 // WhatsApp) e avisa via toast — não bloqueia o fluxo.
 function enviarTemplateWhatsapp(leadId, tplKey) {
   const l = leads.find(x => x.id === leadId)
-  const tpl = (perfil[tplKey]) || WHATS_TEMPLATES_DEFAULT[tplKey] || ''
+  const tpl = templateWhatsappEtapa(tplKey)
   const texto = preencherTemplate(tpl, l)
   const waNumero = l ? telefoneParaWhatsapp(l.tel) : null
   if (l && !waNumero) toast('Lead sem telefone cadastrado — escolha o contato no WhatsApp', true)
@@ -4250,9 +4308,22 @@ function enviarTemplateWhatsapp(leadId, tplKey) {
   }
 }
 
+// Resolve a etapa atual do lead no Funil (ou "novo_contato" como
+// fallback) e envia a mensagem contextual daquela etapa — é o que os
+// botões verdes de card/lista chamam, sem o corretor escolher o template
+// manualmente: a etapa do funil já decide qual mensagem cabe.
+function enviarWhatsappEtapa(leadId) {
+  const l = leads.find(x => x.id === leadId)
+  if (!l) return
+  const etapa = estagioFunilLead(l)
+  const tplKey = WHATS_ETAPA_TPL_KEY[etapa] || 'wppNovoContato'
+  enviarTemplateWhatsapp(leadId, tplKey)
+}
+
 // Modal leve "Lead adicionado — Enviar boas-vindas?" — disparado depois de
 // cadastrar um lead (Agenda ou Funil). Não abre o wa.me automaticamente
-// (evita bloqueio de popup); o corretor confirma com 1 clique.
+// (evita bloqueio de popup); o corretor confirma com 1 clique. Sempre usa o
+// template de "novo_contato" — é a etapa de todo lead recém-criado.
 function ofereceBoasVindasWhatsapp(leadId) {
   if (window._DEMO) return
   const l = leads.find(x => x.id === leadId)
@@ -4271,7 +4342,7 @@ function ofereceBoasVindasWhatsapp(leadId) {
       <p class="fu-sub">Quer enviar uma mensagem de boas-vindas para ${escH(l.cliente || 'o cliente')} agora pelo WhatsApp?</p>
       <div class="fu-actions">
         <button class="btn btn-ghost btn-sm" onclick="document.getElementById('boasvindas-modal-back').remove()">Agora não</button>
-        <button class="btn btn-green btn-sm" onclick="enviarTemplateWhatsapp(${l.id},'msgBoasVindas');document.getElementById('boasvindas-modal-back').remove()" ${waNumero ? '' : 'title="Lead sem telefone — você escolhe o contato no WhatsApp"'}>
+        <button class="btn btn-green btn-sm" onclick="enviarTemplateWhatsapp(${l.id},'wppNovoContato');document.getElementById('boasvindas-modal-back').remove()" ${waNumero ? '' : 'title="Lead sem telefone — você escolhe o contato no WhatsApp"'}>
           <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 11.5a8.38 8.38 0 01-.9 3.8 8.5 8.5 0 01-7.6 4.7 8.38 8.38 0 01-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 01-.9-3.8 8.5 8.5 0 014.7-7.6 8.38 8.38 0 013.8-.9h.5a8.48 8.48 0 018 8v.5z"/></svg>
           Enviar boas-vindas
         </button>
@@ -4288,8 +4359,9 @@ function abrirFollowUpLead(id) {
   if (antigo) antigo.remove()
 
   const dias = diasSemContatoLead(l)
-  const tplFollowUp = perfil.msgFollowUp || WHATS_TEMPLATES_DEFAULT.msgFollowUp
-  const mensagem = preencherTemplate(tplFollowUp, l)
+  const etapa = estagioFunilLead(l)
+  const tplKey = WHATS_ETAPA_TPL_KEY[etapa] || 'wppNovoContato'
+  const mensagem = preencherTemplate(templateWhatsappEtapa(tplKey), l)
   const waNumero = telefoneParaWhatsapp(l.tel)
 
   const back = document.createElement('div')
@@ -4393,6 +4465,9 @@ function renderAgenda() {
         </div>
         <div class="hist-valor">${escH(dataFmt)}</div>
         <div class="hist-actions">
+          <button class="btn btn-green btn-sm" onclick="enviarTemplateWhatsapp(${l.id},'wppAgenda')" title="Confirmar visita no WhatsApp">
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 11.5a8.38 8.38 0 01-.9 3.8 8.5 8.5 0 01-7.6 4.7 8.38 8.38 0 01-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 01-.9-3.8 8.5 8.5 0 014.7-7.6 8.38 8.38 0 013.8-.9h.5a8.48 8.48 0 018 8v.5z"/></svg>
+          </button>
           ${acoes}
           <button class="btn btn-ghost btn-sm" onclick="excluirLead(${l.id})" aria-label="Excluir">
             <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 01-2 2H8a2 2 0 01-2-2L5 6"/><path d="M10 11v6M14 11v6"/><path d="M9 6V4h6v2"/></svg>
@@ -4629,7 +4704,7 @@ function renderFunil() {
               ${chipsNL.trim()}
             </button>
             <div class="funil-card-actions">
-              <button class="btn btn-green btn-sm" onclick="enviarTemplateWhatsapp(${l.id},'msgBoasVindas')" title="Enviar mensagem de boas-vindas no WhatsApp">
+              <button class="btn btn-green btn-sm" onclick="enviarWhatsappEtapa(${l.id})" title="Enviar mensagem da etapa atual (${escH(estagio.label)}) no WhatsApp">
                 <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 11.5a8.38 8.38 0 01-.9 3.8 8.5 8.5 0 01-7.6 4.7 8.38 8.38 0 01-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 01-.9-3.8 8.5 8.5 0 014.7-7.6 8.38 8.38 0 013.8-.9h.5a8.48 8.48 0 018 8v.5z"/></svg>
               </button>
               <select class="sel funil-card-select" onchange="moverEstagioLead(${l.id}, this.value)" title="Mover para outro estágio">
@@ -5375,7 +5450,7 @@ function renderDashboardLembretes() {
         <div class="dash-atencao-cliente">${escH(l.cliente || '—')}</div>
         <div class="dash-atencao-meta">${escH(r.texto)}</div>
       </div>
-      <button class="btn btn-green btn-sm" onclick="enviarTemplateWhatsapp(${l.id},'msgFollowUp')" title="Enviar follow-up no WhatsApp">
+      <button class="btn btn-green btn-sm" onclick="enviarWhatsappEtapa(${l.id})" title="Enviar mensagem da etapa atual no WhatsApp">
         <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 11.5a8.38 8.38 0 01-.9 3.8 8.5 8.5 0 01-7.6 4.7 8.38 8.38 0 01-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 01-.9-3.8 8.5 8.5 0 014.7-7.6 8.38 8.38 0 013.8-.9h.5a8.48 8.48 0 018 8v.5z"/></svg>
       </button>
       <button class="btn btn-ghost btn-sm" onclick="abrirLeadModal(${l.id});showView('funil')" title="Ver lead no Funil">
@@ -5433,7 +5508,7 @@ function renderDashboardAtencao() {
         <div class="dash-atencao-cliente">${escH(l.cliente || '—')}</div>
         <div class="dash-atencao-meta">${escH(l.imovel || 'Sem imóvel vinculado')}</div>
       </div>
-      <button class="btn btn-green btn-sm" onclick="enviarTemplateWhatsapp(${l.id},'msgFollowUp')" title="Enviar follow-up no WhatsApp">
+      <button class="btn btn-green btn-sm" onclick="enviarWhatsappEtapa(${l.id})" title="Enviar mensagem da etapa atual no WhatsApp">
         <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 11.5a8.38 8.38 0 01-.9 3.8 8.5 8.5 0 01-7.6 4.7 8.38 8.38 0 01-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 01-.9-3.8 8.5 8.5 0 014.7-7.6 8.38 8.38 0 013.8-.9h.5a8.48 8.48 0 018 8v.5z"/></svg>
       </button>
       <button class="btn btn-ghost btn-sm" onclick="showView('funil')" title="Ver no Funil">
@@ -5767,9 +5842,9 @@ function carregarFormConfig() {
   document.getElementById('c-tel').value   = perfil.tel   || ''
   document.getElementById('c-email').value = perfil.email || ''
   document.getElementById('c-cor').value   = perfil.cor   || '#4D7EFF'
-  document.getElementById('c-msg-boasvindas').value  = perfil.msgBoasVindas  || ''
-  document.getElementById('c-msg-followup').value    = perfil.msgFollowUp    || ''
-  document.getElementById('c-msg-agendamento').value = perfil.msgAgendamento || ''
+  document.querySelectorAll('#form-config textarea[data-tpl]').forEach(ta => {
+    ta.value = perfil[ta.dataset.tpl] || ''
+  })
   atualizarCor(perfil.cor || '#4D7EFF')
   if (perfil.logo) {
     const prev = document.getElementById('logo-prev')
@@ -5807,9 +5882,9 @@ async function salvarConfig(ev) {
   perfil.tel   = document.getElementById('c-tel').value.trim()
   perfil.email = document.getElementById('c-email').value.trim()
   perfil.cor   = document.getElementById('c-cor').value
-  perfil.msgBoasVindas  = document.getElementById('c-msg-boasvindas').value.trim()
-  perfil.msgFollowUp    = document.getElementById('c-msg-followup').value.trim()
-  perfil.msgAgendamento = document.getElementById('c-msg-agendamento').value.trim()
+  document.querySelectorAll('#form-config textarea[data-tpl]').forEach(ta => {
+    perfil[ta.dataset.tpl] = ta.value.trim()
+  })
   localStorage.setItem('cpr_perfil', JSON.stringify(perfil))
   aplicarPerfil()
   renderSidebarUser()
