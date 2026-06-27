@@ -434,6 +434,9 @@ input[type=color]{opacity:0;width:0;height:0;position:absolute}
 /* Hist-card: ajuste para acomodar status */
 .hist-card{position:relative}
 .hist-main-row{display:flex;align-items:center;gap:14px;width:100%}
+/* No mobile, cards com muitas ações (Agenda: status + alerta + info + data + 3 botões)
+   não cabem numa linha — deixa quebrar em vez de estourar a tela. */
+@media(max-width:560px){.hist-main-row{flex-wrap:wrap}.hist-main-row .hist-info{flex:1 1 100%;order:-1}}
 .hist-bottom-row{display:flex;align-items:center;gap:8px;margin-top:8px;padding-top:8px;border-top:1px solid var(--b)}
 .hist-bottom-row .hist-meta{margin-top:0;flex:1}
 
@@ -551,6 +554,7 @@ input[type=color]{opacity:0;width:0;height:0;position:absolute}
 .dash-kpi.alerta .dash-kpi-v{color:#F97316}
 .dash-grid{display:grid;grid-template-columns:1.3fr 1fr;gap:16px;margin-top:20px}
 @media(max-width:900px){.dash-grid{grid-template-columns:1fr}}
+.dash-grid>*{min-width:0}  /* deixa os cards encolherem no mobile (sem isso o gráfico/listas forçam overflow) */
 .dash-chart-wrap{width:100%;overflow-x:auto}
 .dash-chart-bar-label{font-size:10.5px;fill:var(--t3);text-anchor:middle}
 .dash-chart-val-label{font-size:10.5px;fill:var(--t2);text-anchor:middle;font-weight:700}
@@ -5493,7 +5497,7 @@ function renderDashboardChart() {
       <text class="dash-chart-bar-label" x="${(x+barW/2).toFixed(1)}" y="${H-8}">${escH(m.label)}</text>`
   }).join('')
 
-  el.innerHTML = `<svg viewBox="0 0 ${W} ${H}" width="100%" height="${H}" style="display:block;min-width:320px">${barras}</svg>`
+  el.innerHTML = `<svg viewBox="0 0 ${W} ${H}" width="100%" height="${H}" style="display:block;min-width:240px">${barras}</svg>`
 }
 
 // Top 5 leads ativos (fora vendidos) por valor estimado — ajuda o corretor
