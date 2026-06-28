@@ -444,7 +444,9 @@ input[type=color]{opacity:0;width:0;height:0;position:absolute}
 .hist-status[data-s="perdida"]   {background:rgba(239,68,68,.1);color:#EF4444}
 
 /* Dropdown de status */
-.status-menu{position:absolute;background:var(--s2);border:1px solid var(--bm);border-radius:var(--rad);padding:4px;z-index:50;min-width:160px;box-shadow:0 8px 24px rgba(0,0,0,.4)}
+.status-menu{position:absolute;top:calc(100% + 6px);right:0;background:var(--s2);border:1px solid var(--bm);border-radius:var(--rad);padding:4px;z-index:50;min-width:160px;box-shadow:0 8px 24px rgba(0,0,0,.4)}
+/* Quando não há espaço abaixo (último card), abre para cima */
+.status-menu.acima{top:auto;bottom:calc(100% + 6px)}
 .status-opt{display:flex;align-items:center;gap:8px;padding:7px 10px;border-radius:5px;font-size:12px;font-weight:600;cursor:pointer;color:var(--t2);border:none;background:none;width:100%;text-align:left;font-family:var(--font);transition:background .1s}
 .status-opt:hover{background:var(--s3);color:var(--t)}
 .status-opt-dot{width:7px;height:7px;border-radius:50%;flex-shrink:0}
@@ -3464,10 +3466,14 @@ function abrirMenuStatus(ev, idx) {
     </button>
   `).join('')
 
-  // Posiciona abaixo do botão
+  // Posiciona abaixo do botão (alinhado à direita, via CSS .status-menu)
   const wrap = btn.closest('[style*="position:relative"]') || btn.parentElement
   wrap.appendChild(menu)
   _menuAberto = menu
+
+  // Se não couber abaixo (card no fim da lista), abre para cima
+  const r = menu.getBoundingClientRect()
+  if (r.bottom > window.innerHeight - 8) menu.classList.add('acima')
 
   // Fecha ao clicar fora
   setTimeout(() => document.addEventListener('click', fecharMenuStatus, { once: true }), 0)
