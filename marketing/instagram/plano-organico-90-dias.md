@@ -84,73 +84,122 @@ Sempre no **1º comentário** (deixa a legenda limpa). Misture 3 níveis (15-20 
 
 ---
 
+## 📲 Stories — Playbook de Interação (todo dia)
+
+Os Stories são o canal de **intimidade e interação** — é onde a audiência te conhece, responde e clica no link. Cada interação (resposta, voto, toque) o algoritmo lê como sinal forte e **entrega seus próximos Stories e posts pra mais gente**. Meta diária: **fazer a pessoa TOCAR em algo.**
+
+### As ferramentas de interação (use 1-2 por dia)
+| Figurinha | Pra quê | Exemplo pro corretor |
+|---|---|---|
+| **Enquete (2 opções)** | voto rápido, fácil | "Você ainda faz proposta no Word? Sim 😅 / Não 🙌" |
+| **Quiz (múltipla escolha)** | educar + testar | "Qual rende parcela MENOR no total? SAC / Price" |
+| **Caixinha de perguntas** | gerar dúvidas = conteúdo | "Manda sua maior dificuldade pra vender essa semana" |
+| **Controle de emoji (slider)** | medir desejo | "O quanto sua operação tá organizada? 👇 (arrasta)" |
+| **"Isso ou aquilo"** | enquete divertida | "Cliente: WhatsApp ou ligação?" |
+| **Contagem regressiva** | criar expectativa | conta pra um post/novidade/oferta |
+| **Figurinha de link** | levar pro teste grátis | "Testar o Selo 👆" (toda semana pelo menos 2x) |
+| **Responda com vídeo/foto** | UGC e prova social | "Mostra sua tela do Selo / sua última proposta" |
+
+### Ritmo diário de Stories (modelo repetível)
+1. **Manhã — Bom dia + enquete leve** ("bora vender hoje? começou organizado?"). Quebra o gelo, gera 1º toque.
+2. **Meio do dia — Valor rápido** (1 dica em texto/print) + **caixinha de perguntas**.
+3. **Tarde/Noite — Bastidor + repost do post do feed** (se teve post) com "viu isso? 👇".
+4. **Fecho — CTA com figurinha de link** OU "responde aqui que eu te mando" (gera DM).
+
+> Regra: **toda sequência de Stories deve pedir 1 ação** (votar, responder, arrastar, tocar no link). Story sem interação é story desperdiçado.
+
+### 15 ideias de Stories de interação (rodízio)
+1. Enquete: "Quantos clientes você tem em aberto AGORA? <5 / +5" 
+2. Quiz: "O que é um funil de vendas?" (3 opções) — educa e linka pro carrossel.
+3. Caixinha: "Qual objeção mais te trava? Eu respondo a mais votada amanhã."
+4. Slider: "O quanto você confia na sua organização hoje? 😬→😎"
+5. "Isso ou aquilo": "Comissão: 6% ou volume?" (gera debate nos replies)
+6. Bastidor: "Tô melhorando ISSO no Selo essa semana 👀" (mostra o produto sem vender).
+7. Antes/depois: print "proposta no Word" vs "proposta no Selo" + enquete "qual fecha mais?".
+8. Prova social: repost de um elogio/feedback + "obrigado 🙏" (mesmo de teste/beta).
+9. "Responde com um 🔥 se você já perdeu venda por demora."
+10. Tutorial relâmpago: 3 stories mostrando como gerar uma proposta (com link no fim).
+11. Caixinha: "Pergunta o que quiser sobre financiamento" → vira Reel depois.
+12. Enquete de pauta: "Próximo conteúdo: A) fechamento B) captação de leads?"
+13. "Arrasta pra cima/toca no link e testa o Selo grátis 7 dias" (1-2x por semana).
+14. Conta uma mini-história sua de venda (3 stories) + caixinha "já passou por isso?".
+15. Countdown pra uma novidade/oferta (cria expectativa antes de um post forte).
+
+### Como os Stories CONVERTEM
+- Quem responde/vota vira conversa no **direct** → ali você manda o link e tira dúvida (venda 1:1).
+- A **figurinha de link** pro teste grátis precisa aparecer **2x/semana** no mínimo — sem pedir, ninguém clica.
+- As **respostas da caixinha** são seu banco de pautas — nunca falta o que postar.
+- **Destaques fixos** (Highlights) na bio: crie "Selo por dentro", "Depoimentos", "Dúvidas", "Comece aqui" — viram vitrine permanente pra quem chega novo.
+
+---
+
 # 📅 CALENDÁRIO — 90 dias
 
-> Dias contados a partir do seu Dia 1. Cada semana = Ter/Qua/Qui/Sáb. Ajuste as datas ao seu calendário.
+> Cada semana = **4 posts no feed (Terça, Quarta, Quinta, Sábado)**. Os outros dias têm **só Stories** (não é furo — é o ritmo). Ajuste ao seu calendário.
 
 ---
 
 ## 🔵 FASE 1 — AUTORIDADE & ATRAÇÃO (Dias 1–30)
 **Objetivo:** virar útil e confiável. Valor puro, produto bem leve. Meta: seguidor qualificado + salvamento.
 
-### Semana 1 (Dias 1–6) — "Chegando com valor"
+### Semana 1 — "Chegando com valor"
 **Meta da semana:** apresentar o tom, entregar 3 dicas fortes, zero venda dura.
 
-- **Dia 1 · 🎬 Reel — Vendas**
+- **Terça · 🎬 Reel — Vendas**
   - **FALA:** "Cliente falou 'tá caro' e você já correu pro desconto? Erro. Quando ele diz que tá caro, ele tá dizendo que ainda não viu o valor. Sua resposta não é baixar o preço — é mostrar por que vale. 'Entendo, e deixa eu te mostrar o que esse imóvel te entrega que os outros não entregam.' Preço se discute depois do valor."
   - **TELA:** "'Tá caro' NÃO é objeção de preço 👀"
   - **CTA:** "Salva e usa na próxima visita. Me segue pra mais."
 
-- **Dia 2 · 🎠 Carrossel — Mercado** — "FGTS na compra do imóvel: o guia que seu cliente precisa" (7 slides: o que é, quem pode usar, quanto, passo a passo, erros comuns). *Salva pra não esquecer.*
+- **Quarta · 🎠 Carrossel — Mercado** — "FGTS na compra do imóvel: o guia que seu cliente precisa" (7 slides: o que é, quem pode usar, quanto, passo a passo, erros comuns). *Salva pra não esquecer.*
 
-- **Dia 4 · 🎬 Reel — Rotina**
+- **Quinta · 🎬 Reel — Rotina**
   - **FALA:** "Quer saber por que você perde venda? Não é falta de cliente. É falta de memória. O lead te chama, você responde, e depois… some no meio de 200 conversas no WhatsApp. O corretor que vende não é o que tem mais lead — é o que não esquece nenhum. Anota isso: lead organizado é lead que fecha."
   - **TELA:** "Você não perde venda por falta de lead."
   - **CTA:** "Comenta 'ORGANIZA' que eu te mostro como."
 
-- **Dia 6 · 🖼️ Post leve — Posicionamento** — Frase/card: *"Corretor autônomo não é 'só um corretor'. É uma empresa de uma pessoa só. Aja como dono."* + legenda curta.
+- **Sábado · 🖼️ Post leve — Posicionamento** — Frase/card: *"Corretor autônomo não é 'só um corretor'. É uma empresa de uma pessoa só. Aja como dono."* + legenda curta.
 
 **Stories da semana:** apresente-se ("quem tá por trás daqui"), enquete "você ainda usa caderno?", bastidor do dia.
 
-### Semana 2 (Dias 7–13) — "Ensina que eles seguem"
-- **Dia 7 · 🎬 Reel — Mercado**
+### Semana 2 — "Ensina que eles seguem"
+- **Terça · 🎬 Reel — Mercado**
   - **FALA:** "Seu cliente pergunta 'quanto fica a parcela?' e você trava? Bora descomplicar. Tem duas tabelas: SAC e Price. Na Price a parcela é FIXA do começo ao fim — boa pra quem quer previsibilidade. Na SAC ela começa MAIOR e vai caindo — você paga menos juros no total. Mesma dívida, caminhos diferentes. Quem explica isso, vende com autoridade."
   - **TELA:** "SAC x Price em 30 segundos"
   - **CTA:** "Salva — você vai precisar disso essa semana."
 
-- **Dia 8 · 🎠 Carrossel — Vendas** — "5 mensagens de WhatsApp que fazem o lead RESPONDER" (6 slides com exemplos prontos pra copiar).
-- **Dia 10 · 🎬 Reel — Posicionamento**
+- **Quarta · 🎠 Carrossel — Vendas** — "5 mensagens de WhatsApp que fazem o lead RESPONDER" (6 slides com exemplos prontos pra copiar).
+- **Quinta · 🎬 Reel — Posicionamento**
   - **FALA:** "Olha sua última proposta. Tem a marca de quem? Se tem o logo de um portal ou de um app genérico, você tá fazendo propaganda DE GRAÇA pros outros. Cada documento que sai da sua mão tem que ter a SUA cara: seu nome, seu CRECI, sua cor. É assim que cliente lembra de você — e não da plataforma."
   - **TELA:** "Sua proposta tá vendendo… pra quem?"
   - **CTA:** "Me segue. Semana que vem te mostro como resolver isso."
-- **Dia 13 · 🖼️ Post leve — Enquete/carrossel curto** — "O que mais te trava hoje? 1) Achar cliente 2) Organizar 3) Fechar" (peça resposta nos comentários — pesquisa de dor).
+- **Sábado · 🖼️ Post leve — Enquete/carrossel curto** — "O que mais te trava hoje? 1) Achar cliente 2) Organizar 3) Fechar" (peça resposta nos comentários — pesquisa de dor).
 
-**Stories:** responda as dores que vierem do post do Dia 13 (conteúdo sob medida).
+**Stories:** responda as dores que vierem do post-enquete de sábado (conteúdo sob medida).
 
-### Semana 3 (Dias 14–20) — "Prova de competência"
-- **Dia 14 · 🎬 Reel — Vendas**
+### Semana 3 — "Prova de competência"
+- **Terça · 🎬 Reel — Vendas**
   - **FALA:** "'Vou pensar.' A frase que mais mata venda. Mas ó: 'vou pensar' quase nunca é sobre o imóvel — é uma dúvida não resolvida. Em vez de aceitar e sumir, pergunta: 'Claro! Só pra eu te ajudar melhor: o que ainda tá pesando na sua decisão?' Aí o cliente fala o real, e você resolve. Não deixe o 'vou pensar' virar 'sumiu'."
   - **TELA:** "Como destravar o 'vou pensar' 🧠"
   - **CTA:** "Salva. Funciona."
-- **Dia 15 · 🎠 Carrossel — Mercado** — "Documentos pra vender um imóvel sem dor de cabeça" (checklist em 7 slides).
-- **Dia 17 · 🎬 Reel — Rotina**
+- **Quarta · 🎠 Carrossel — Mercado** — "Documentos pra vender um imóvel sem dor de cabeça" (checklist em 7 slides).
+- **Quinta · 🎬 Reel — Rotina**
   - **FALA:** "Imagina ter, numa tela só, todos os seus clientes: quem tá na visita, quem recebeu proposta, quem tá quase fechando. Sem caderno, sem planilha, sem post-it. Isso é funil de vendas. Não é coisa de imobiliária grande — é o básico de quem leva a profissão a sério. Cliente organizado em coluna é dinheiro que não escapa."
   - **TELA:** "Seu funil de vendas (mesmo solo)"
   - **CTA:** "Comenta 'FUNIL' que eu te explico como montar o seu."
-- **Dia 20 · 🖼️ Post leve — Bastidor** — foto/print dos bastidores + "por que eu construí isso" (teaser da história do Selo, sem vender).
+- **Sábado · 🖼️ Post leve — Bastidor** — foto/print dos bastidores + "por que eu construí isso" (teaser da história do Selo, sem vender).
 
-### Semana 4 (Dias 21–30) — "Primeiro aceno do produto"
-- **Dia 21 · 🎬 Reel — Vendas**
+### Semana 4 — "Primeiro aceno do produto"
+- **Terça · 🎬 Reel — Vendas**
   - **FALA:** "Velocidade fecha venda. O cliente pediu a proposta e quem responde primeiro larga na frente — sempre. Enquanto o concorrente vai 'montar no Word', você manda uma proposta profissional, com a sua marca, em minutos. Não é sobre ser o melhor. É sobre ser o mais rápido com qualidade. O cliente fecha com quem resolve a vida dele primeiro."
   - **TELA:** "Quem responde rápido, fecha primeiro ⏱️"
   - **CTA:** "É isso que o Selo faz. Link na bio pra testar grátis."
-- **Dia 22 · 🎠 Carrossel — Produto (leve)** — "Conheça o Selo por dentro" (REUSAR o carrossel do Dia 2 de funcionalidades já pronto).
-- **Dia 24 · 🎬 Reel — Posicionamento**
+- **Quarta · 🎠 Carrossel — Produto (leve)** — "Conheça o Selo por dentro" (REUSAR o carrossel do Dia 2 de funcionalidades já pronto).
+- **Quinta · 🎬 Reel — Posicionamento**
   - **FALA:** "Você não precisa de uma imobiliária atrás de você pra parecer profissional. Precisa de proposta com a sua marca, um lugar pra organizar seus clientes e um jeito de divulgar seus imóveis. O corretor solo de hoje tem mais ferramenta na mão do que imobiliária inteira tinha há 10 anos. Use isso. Pareça grande sendo um."
   - **TELA:** "Solo. Mas com cara de imobiliária."
   - **CTA:** "Me segue — eu mostro como todo dia."
-- **Dia 27 · 🖼️ Post leve — História/marca** — card: "Por que 'Selo'? Porque sua comissão merece ser garantida do primeiro contato até a assinatura." + mini-história.
-- **Dia 30 · 🎬 Reel BÔNUS — Recap/Conexão**
+- **Sábado · 🖼️ Post leve — História/marca** — card: "Por que 'Selo'? Porque sua comissão merece ser garantida do primeiro contato até a assinatura." + mini-história.
+- **Domingo (bônus) · 🎬 Reel BÔNUS — Recap/Conexão**
   - **FALA:** "30 dias aqui com você. Se você chegou agora: aqui é sobre vender mais sem se perder, parecer profissional mesmo solo, e proteger a sua comissão. Sem enrolação. Salva esse perfil, porque o que vem é ainda melhor. E me conta nos comentários: qual foi a dica que mais te ajudou esse mês?"
   - **TELA:** "30 dias. Bora pros próximos?"
   - **CTA:** "Comenta a dica que mais curtiu 👇"
@@ -160,63 +209,63 @@ Sempre no **1º comentário** (deixa a legenda limpa). Misture 3 níveis (15-20 
 ## 🟠 FASE 2 — DESEJO & CONEXÃO (Dias 31–60)
 **Objetivo:** mostrar o Selo resolvendo dores reais (tecido no conteúdo), trazer prova social, começar a converter. CTAs mais presentes (~30% produto).
 
-### Semana 5 (Dias 31–37)
-- **Dia 31 · 🎬 Reel — Mercado:** "Como avaliar o preço CERTO de um imóvel (e não perder o cliente nem o vendedor)." **FALA:** explique os 3 fatores (localização, estado, comparáveis da região) em linguagem simples; feche com "preço errado trava venda — saber precificar é autoridade." **CTA:** "Salva."
-- **Dia 32 · 🎠 Carrossel — Rotina:** "O caderno tá te custando vendas: 5 sinais de que você precisa de um CRM" (6 slides; Selo aparece no último).
-- **Dia 34 · 🎬 Reel — Produto (demo):** "Proposta em 60 segundos." **FALA:** narração estilo cronômetro mostrando a ideia de gerar a proposta com marca + simulação. **CTA:** "Teste grátis no link da bio."
-- **Dia 37 · 🖼️ Post leve — Prova social:** print de um feedback/elogio (mesmo que de teste/beta) ou enquete "quem aqui já perdeu venda por demora?".
+### Semana 5
+- **Terça · 🎬 Reel — Mercado:** "Como avaliar o preço CERTO de um imóvel (e não perder o cliente nem o vendedor)." **FALA:** explique os 3 fatores (localização, estado, comparáveis da região) em linguagem simples; feche com "preço errado trava venda — saber precificar é autoridade." **CTA:** "Salva."
+- **Quarta · 🎠 Carrossel — Rotina:** "O caderno tá te custando vendas: 5 sinais de que você precisa de um CRM" (6 slides; Selo aparece no último).
+- **Quinta · 🎬 Reel — Produto (demo):** "Proposta em 60 segundos." **FALA:** narração estilo cronômetro mostrando a ideia de gerar a proposta com marca + simulação. **CTA:** "Teste grátis no link da bio."
+- **Sábado · 🖼️ Post leve — Prova social:** print de um feedback/elogio (mesmo que de teste/beta) ou enquete "quem aqui já perdeu venda por demora?".
 
-### Semana 6 (Dias 38–44)
-- **Dia 38 · 🎬 Reel — Vendas:** "A arte do follow-up: 80% das vendas estão depois do 5º contato, e o corretor médio desiste no 2º." **FALA:** ensine uma cadência simples de follow-up (D+1, D+3, D+7). **CTA:** "Comenta 'FOLLOW' que eu te mando a sequência."
-- **Dia 39 · 🎠 Carrossel — Mercado:** "Vale a pena comprar ou alugar? (mande esse pro seu cliente indeciso)" — conteúdo que o corretor REPOSTA pro cliente = alcance.
-- **Dia 41 · 🎬 Reel — Posicionamento/Produto:** "Seu link na bio tá trabalhando por você?" **FALA:** fale do link de captação + site público do corretor (imóveis num link só). **CTA:** "É o site público do Selo. Link na bio."
-- **Dia 44 · 🖼️ Post leve — Bastidor:** novidade do produto / "o que tô construindo essa semana".
+### Semana 6
+- **Terça · 🎬 Reel — Vendas:** "A arte do follow-up: 80% das vendas estão depois do 5º contato, e o corretor médio desiste no 2º." **FALA:** ensine uma cadência simples de follow-up (D+1, D+3, D+7). **CTA:** "Comenta 'FOLLOW' que eu te mando a sequência."
+- **Quarta · 🎠 Carrossel — Mercado:** "Vale a pena comprar ou alugar? (mande esse pro seu cliente indeciso)" — conteúdo que o corretor REPOSTA pro cliente = alcance.
+- **Quinta · 🎬 Reel — Posicionamento/Produto:** "Seu link na bio tá trabalhando por você?" **FALA:** fale do link de captação + site público do corretor (imóveis num link só). **CTA:** "É o site público do Selo. Link na bio."
+- **Sábado · 🖼️ Post leve — Bastidor:** novidade do produto / "o que tô construindo essa semana".
 
-### Semana 7 (Dias 45–51)
-- **Dia 45 · 🎬 Reel — Mercado:** "Financiamento aprovado: o passo a passo que tranquiliza o cliente." **FALA:** etapas (análise, documentação, avaliação, contrato). **CTA:** "Salva e manda pro cliente."
-- **Dia 46 · 🎠 Carrossel — Vendas:** "Como apresentar o imóvel pra ele se IMAGINAR morando" (storytelling na visita; 7 slides).
-- **Dia 48 · 🎬 Reel — Produto (demo):** "Onde tão seus imóveis? No print do celular?" — demonstra o catálogo + site público. **CTA:** "Organize tudo no Selo. Teste grátis."
-- **Dia 51 · 🖼️ Post leve — Enquete/UGC:** peça "me mostra sua maior dificuldade essa semana" (caixinha) → vira conteúdo.
+### Semana 7
+- **Terça · 🎬 Reel — Mercado:** "Financiamento aprovado: o passo a passo que tranquiliza o cliente." **FALA:** etapas (análise, documentação, avaliação, contrato). **CTA:** "Salva e manda pro cliente."
+- **Quarta · 🎠 Carrossel — Vendas:** "Como apresentar o imóvel pra ele se IMAGINAR morando" (storytelling na visita; 7 slides).
+- **Quinta · 🎬 Reel — Produto (demo):** "Onde tão seus imóveis? No print do celular?" — demonstra o catálogo + site público. **CTA:** "Organize tudo no Selo. Teste grátis."
+- **Sábado · 🖼️ Post leve — Enquete/UGC:** peça "me mostra sua maior dificuldade essa semana" (caixinha) → vira conteúdo.
 
-### Semana 8 (Dias 52–60)
-- **Dia 52 · 🎬 Reel — Posicionamento:** "Pare de competir por preço. Compita por experiência." **FALA:** o corretor que atende melhor, responde rápido e parece profissional cobra mais e fecha mais. **CTA:** "Me segue."
-- **Dia 53 · 🎠 Carrossel — Rotina:** "Um dia na rotina do corretor que bate meta" (manhã/tarde/noite organizadas).
-- **Dia 55 · 🎬 Reel — Produto:** "Quanto você ganhou esse mês? Se você não sabe na hora, tá perdendo dinheiro." — demonstra o dashboard de comissão. **CTA:** "Veja sua comissão em tempo real. Link na bio."
-- **Dia 58 · 🖼️ Post leve — Prova social/oferta suave:** "Quem testou, não voltou pro caderno." + lembrete dos 7 dias grátis.
-- **Dia 60 · 🎬 Reel BÔNUS — Conexão:** recap da Fase 2 + convite ("se você ainda não testou, esse é o sinal").
+### Semana 8
+- **Terça · 🎬 Reel — Posicionamento:** "Pare de competir por preço. Compita por experiência." **FALA:** o corretor que atende melhor, responde rápido e parece profissional cobra mais e fecha mais. **CTA:** "Me segue."
+- **Quarta · 🎠 Carrossel — Rotina:** "Um dia na rotina do corretor que bate meta" (manhã/tarde/noite organizadas).
+- **Quinta · 🎬 Reel — Produto:** "Quanto você ganhou esse mês? Se você não sabe na hora, tá perdendo dinheiro." — demonstra o dashboard de comissão. **CTA:** "Veja sua comissão em tempo real. Link na bio."
+- **Sábado · 🖼️ Post leve — Prova social/oferta suave:** "Quem testou, não voltou pro caderno." + lembrete dos 7 dias grátis.
+- **Domingo (bônus) · 🎬 Reel BÔNUS — Conexão:** recap da Fase 2 + convite ("se você ainda não testou, esse é o sinal").
 
 ---
 
 ## 🟢 FASE 3 — CONVERSÃO & ESCALA (Dias 61–90)
 **Objetivo:** transformar audiência em assinante. Depoimentos, ofertas claras, urgência saudável, dobrar no que funcionou. Produto ~40%, mas sempre embrulhado em valor.
 
-### Semana 9 (Dias 61–67)
-- **Dia 61 · 🎬 Reel — Vendas:** "3 perguntas que revelam se o cliente VAI comprar (pare de perder tempo com curioso)." **CTA:** "Salva."
-- **Dia 62 · 🎠 Carrossel — Produto:** "Antes x Depois: a proposta no Word vs no Selo" (comparação visual, 6 slides).
-- **Dia 64 · 🎬 Reel — Depoimento/História:** roteiro contando um caso real de corretor (ou seu) que organizou a operação e fechou mais. **CTA:** "Comenta 'EU QUERO ISSO'."
-- **Dia 67 · 🖼️ Post leve — Oferta:** card "7 dias grátis. Sem cartão pra testar. Cancela quando quiser." + link.
+### Semana 9
+- **Terça · 🎬 Reel — Vendas:** "3 perguntas que revelam se o cliente VAI comprar (pare de perder tempo com curioso)." **CTA:** "Salva."
+- **Quarta · 🎠 Carrossel — Produto:** "Antes x Depois: a proposta no Word vs no Selo" (comparação visual, 6 slides).
+- **Quinta · 🎬 Reel — Depoimento/História:** roteiro contando um caso real de corretor (ou seu) que organizou a operação e fechou mais. **CTA:** "Comenta 'EU QUERO ISSO'."
+- **Sábado · 🖼️ Post leve — Oferta:** card "7 dias grátis. Sem cartão pra testar. Cancela quando quiser." + link.
 
-### Semana 10 (Dias 68–74)
-- **Dia 68 · 🎬 Reel — Mercado:** "Os 4 erros de documentação que travam uma venda na reta final." **CTA:** "Salva."
-- **Dia 69 · 🎠 Carrossel — Vendas:** "Como pedir indicação sem ser chato (e dobrar sua carteira)."
-- **Dia 71 · 🎬 Reel — Produto (demo forte):** tour rápido pelas 6 telas (reusar a jornada do carrossel/hero). **CTA:** "É tudo isso por R$ 67/mês. Testa grátis."
-- **Dia 74 · 🖼️ Post leve — Prova social:** depoimento/print + número ("X corretores já usam").
+### Semana 10
+- **Terça · 🎬 Reel — Mercado:** "Os 4 erros de documentação que travam uma venda na reta final." **CTA:** "Salva."
+- **Quarta · 🎠 Carrossel — Vendas:** "Como pedir indicação sem ser chato (e dobrar sua carteira)."
+- **Quinta · 🎬 Reel — Produto (demo forte):** tour rápido pelas 6 telas (reusar a jornada do carrossel/hero). **CTA:** "É tudo isso por R$ 67/mês. Testa grátis."
+- **Sábado · 🖼️ Post leve — Prova social:** depoimento/print + número ("X corretores já usam").
 
-### Semana 11 (Dias 75–81)
-- **Dia 75 · 🎬 Reel — Posicionamento:** "O que separa o corretor amador do profissional? Não é talento. É processo." **CTA:** "Me segue."
-- **Dia 76 · 🎠 Carrossel — Rotina:** "Como acompanhar 30 clientes ao mesmo tempo sem se perder."
-- **Dia 78 · 🎬 Reel — Produto:** "Visita marcada e você esqueceu? Nunca mais." — demonstra agenda/registro de visita. **CTA:** "Link na bio."
-- **Dia 81 · 🖼️ Post leve — Enquete/urgência suave:** "Quem vai começar o próximo mês organizado? 🙋" + link.
+### Semana 11
+- **Terça · 🎬 Reel — Posicionamento:** "O que separa o corretor amador do profissional? Não é talento. É processo." **CTA:** "Me segue."
+- **Quarta · 🎠 Carrossel — Rotina:** "Como acompanhar 30 clientes ao mesmo tempo sem se perder."
+- **Quinta · 🎬 Reel — Produto:** "Visita marcada e você esqueceu? Nunca mais." — demonstra agenda/registro de visita. **CTA:** "Link na bio."
+- **Sábado · 🖼️ Post leve — Enquete/urgência suave:** "Quem vai começar o próximo mês organizado? 🙋" + link.
 
-### Semana 12 (Dias 82–88)
-- **Dia 82 · 🎬 Reel — Vendas:** "A frase de fechamento que faz o cliente decidir AGORA (sem pressão)." **CTA:** "Salva."
-- **Dia 83 · 🎠 Carrossel — Mercado/Produto:** "Tudo que o corretor solo precisa pra parecer uma imobiliária" (resumo de autoridade + Selo no fim).
-- **Dia 85 · 🎬 Reel — Depoimento:** segundo caso real / transformação. **CTA:** "Comenta 'QUERO'."
-- **Dia 88 · 🖼️ Post leve — Oferta final do ciclo:** recap dos benefícios + CTA forte pro teste grátis.
+### Semana 12
+- **Terça · 🎬 Reel — Vendas:** "A frase de fechamento que faz o cliente decidir AGORA (sem pressão)." **CTA:** "Salva."
+- **Quarta · 🎠 Carrossel — Mercado/Produto:** "Tudo que o corretor solo precisa pra parecer uma imobiliária" (resumo de autoridade + Selo no fim).
+- **Quinta · 🎬 Reel — Depoimento:** segundo caso real / transformação. **CTA:** "Comenta 'QUERO'."
+- **Sábado · 🖼️ Post leve — Oferta final do ciclo:** recap dos benefícios + CTA forte pro teste grátis.
 
-### Semana 13 (Dias 89–90+) — "Fechamento do ciclo / recomeço"
-- **Dia 89 · 🎬 Reel — Conexão/Recap dos 90 dias:** **FALA:** "90 dias atrás, esse perfil era novo. Hoje é o lugar do corretor que quer vender mais sem se perder. Se você acompanhou até aqui, você já é diferente da maioria — que só reclama. Bora pro próximo nível: organiza sua operação, blinda sua comissão. O jogo é de quem se profissionaliza." **CTA:** "Teste o Selo grátis. Link na bio. Sua comissão, garantida."
-- **Dia 90 · 🖼️ Post leve — Convite/comunidade:** "O que você quer ver nos próximos 90 dias? Me conta." (pesquisa pro próximo ciclo) + agradecimento.
+### Semana 13 — "Fechamento do ciclo / recomeço"
+- **Terça · 🎬 Reel — Conexão/Recap dos 90 dias:** **FALA:** "90 dias atrás, esse perfil era novo. Hoje é o lugar do corretor que quer vender mais sem se perder. Se você acompanhou até aqui, você já é diferente da maioria — que só reclama. Bora pro próximo nível: organiza sua operação, blinda sua comissão. O jogo é de quem se profissionaliza." **CTA:** "Teste o Selo grátis. Link na bio. Sua comissão, garantida."
+- **Quarta · 🖼️ Post leve — Convite/comunidade:** "O que você quer ver nos próximos 90 dias? Me conta." (pesquisa pro próximo ciclo) + agradecimento.
 
 ---
 
