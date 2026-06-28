@@ -796,25 +796,21 @@
   .cookie-ghost{background:transparent;color:var(--t2);border-color:var(--line-2)}
   .cookie-ghost:hover{color:var(--white);border-color:var(--t2)}
   @media(max-width:560px){.cookie-acts{width:100%}.cookie-btn{flex:1}}
-  /* ===== Showcase: prints reais da ferramenta ===== */
-  .showcase{background:var(--navy);color:#fff}
-  .showcase h2{color:#fff}
-  .showcase .feat-intro{color:#C5D0DB}
-  .sc-kicker{text-align:center;color:var(--amber);font-size:13px;font-weight:800;letter-spacing:.14em;text-transform:uppercase;margin-bottom:14px}
-  .shots{display:flex;gap:22px;overflow-x:auto;scroll-snap-type:x mandatory;padding:38px 22px 16px;margin:0 -22px;-webkit-overflow-scrolling:touch}
-  .shots::-webkit-scrollbar{height:8px}
-  .shots::-webkit-scrollbar-thumb{background:rgba(255,255,255,.2);border-radius:10px}
-  .shot-card{flex:0 0 auto;width:min(620px,84vw);scroll-snap-align:center}
-  .shot-win{border-radius:16px;overflow:hidden;background:#fff;box-shadow:0 30px 70px -24px rgba(0,0,0,.6);border:1px solid rgba(255,255,255,.12)}
-  .shot-bar{height:34px;background:#ECE4D6;display:flex;align-items:center;gap:7px;padding:0 14px}
-  .shot-bar i{width:11px;height:11px;border-radius:50%}
-  .shot-frame{aspect-ratio:16/10;overflow:hidden;background:#fff}
-  .shot-frame img{width:100%;height:100%;object-fit:cover;object-position:top;display:block}
-  .shot-cap{margin-top:16px;padding:0 4px}
-  .shot-cap b{display:block;color:#fff;font-size:17px;font-weight:700;margin-bottom:3px}
-  .shot-cap span{color:#9FB0C0;font-size:14px;line-height:1.45}
-  .sc-hint{text-align:center;color:#7E8FA0;font-size:13px;margin-top:10px;font-weight:600}
-  @media(min-width:760px){.shot-card{width:560px}}
+  /* ===== Hero: carrossel automático de prints reais (jornada por dentro) ===== */
+  .hcar{background:#0F2D4A;border-radius:16px;overflow:hidden;box-shadow:0 40px 90px -28px rgba(10,33,56,.55);border:1px solid rgba(255,255,255,.06);max-width:560px;margin:0 auto}
+  .hcar-bar{height:40px;background:#0A2138;display:flex;align-items:center;gap:7px;padding:0 15px}
+  .hcar-bar i{width:11px;height:11px;border-radius:50%}
+  .hcar-bar i:nth-child(1){background:#E2675F}.hcar-bar i:nth-child(2){background:#E6B95C}.hcar-bar i:nth-child(3){background:#7FC081}
+  .hcar-url{margin-left:12px;color:#8193A4;font-size:12px;font-weight:600;letter-spacing:.02em}
+  .hcar-stage{position:relative;aspect-ratio:16/10;background:#fff;overflow:hidden}
+  .hcar-img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;object-position:top;opacity:0;transform:scale(1.02);transition:opacity .7s ease,transform 4s ease;display:block}
+  .hcar-img.is-on{opacity:1;transform:scale(1)}
+  .hcar-cap{background:#0A2138;padding:15px 18px 5px}
+  .hcar-title{display:block;color:#fff;font-size:16px;font-weight:700;margin-bottom:2px}
+  .hcar-sub{color:#9FB0C0;font-size:13.5px;line-height:1.4}
+  .hcar-dots{display:flex;gap:7px;justify-content:center;padding:14px 0;background:#0A2138}
+  .hcar-dot{width:7px;height:7px;border-radius:50%;background:rgba(255,255,255,.22);transition:all .3s ease;cursor:pointer;border:none;padding:0}
+  .hcar-dot.on{background:var(--amber);width:22px;border-radius:4px}
 </style>
 </head>
 <body>
@@ -886,14 +882,39 @@ try { if (localStorage.getItem('selo_cookie_consent') === 'accepted') window.loa
   </div>
 
   <div class="hero-visual">
-    <!-- print real da ferramenta (gerado pelo workflow); se ainda não existir, cai no mockup CSS abaixo -->
-    <div class="shot-frame" id="shot-frame">
-      <div class="shot-frame-bar"><i></i><i></i><i></i><span class="shot-frame-url">selo · sua proposta em 60s</span></div>
-    <picture class="hero-pic">
-      <source media="(min-width:760px)" srcset="/print-ferramenta-desktop.png">
-      <img class="hero-shot" src="/print-ferramenta-mobile.png" alt="Exemplo de proposta gerada no Selo — com a marca do corretor e simulação de financiamento SAC e Price" onerror="var f=document.getElementById('shot-frame');if(f)f.remove();var m=document.getElementById('hero-mock');if(m)m.style.display=''">
-    </picture>
+    <!-- carrossel automático: prints reais da ferramenta (jornada por dentro) -->
+    <div class="hcar" id="hcar">
+      <div class="hcar-bar"><i></i><i></i><i></i><span class="hcar-url">app.selosales.com.br</span></div>
+      <div class="hcar-stage">
+        <img class="hcar-img is-on" src="/screens/dashboard.webp" alt="Dashboard do Selo">
+        <img class="hcar-img" src="/screens/proposta.webp" alt="Proposta com a marca do corretor">
+        <img class="hcar-img" src="/screens/funil.webp" alt="Funil de vendas">
+        <img class="hcar-img" src="/screens/imoveis.webp" alt="Imóveis e site público">
+        <img class="hcar-img" src="/screens/vendas.webp" alt="Vendas e comissão">
+        <img class="hcar-img" src="/screens/agenda.webp" alt="Agenda de visitas">
+      </div>
+      <div class="hcar-cap">
+        <b class="hcar-title">Dashboard</b>
+        <span class="hcar-sub">Leads, imóveis, vendas e comissão em tempo real</span>
+      </div>
+      <div class="hcar-dots" id="hcar-dots"></div>
     </div>
+    <script>
+    (function(){
+      var box=document.getElementById('hcar'); if(!box) return;
+      var imgs=box.querySelectorAll('.hcar-img');
+      var caps=[['Dashboard','Leads, imóveis, vendas e comissão em tempo real'],['Proposta com a sua marca','Pronta em segundos, com simulação de financiamento SAC × Price'],['Funil de Vendas','Arraste cada lead de etapa em etapa até o sim'],['Imóveis + site próprio','Sua carteira vira um site pra divulgar com 1 link'],['Vendas e comissão','Cada venda fechada somada automaticamente'],['Agenda de visitas','Toda visita agendada e lembrada no lugar certo']];
+      var tEl=box.querySelector('.hcar-title'), sEl=box.querySelector('.hcar-sub');
+      var dotsBox=document.getElementById('hcar-dots'), dots=[];
+      for(var i=0;i<imgs.length;i++){ var d=document.createElement('button'); d.className='hcar-dot'+(i===0?' on':''); d.setAttribute('aria-label','Tela '+(i+1)); (function(idx){d.onclick=function(){go(idx);reset();};})(i); dotsBox.appendChild(d); dots.push(d); }
+      var cur=0, timer;
+      function go(n){ imgs[cur].classList.remove('is-on'); dots[cur].classList.remove('on'); cur=(n+imgs.length)%imgs.length; imgs[cur].classList.add('is-on'); dots[cur].classList.add('on'); tEl.textContent=caps[cur][0]; sEl.textContent=caps[cur][1]; }
+      function reset(){ clearInterval(timer); timer=setInterval(function(){go(cur+1);},3200); }
+      reset();
+      box.addEventListener('mouseenter',function(){clearInterval(timer);});
+      box.addEventListener('mouseleave',reset);
+    })();
+    </script>
     <!-- tool UI mockup (pure CSS) — fallback enquanto o print real não é gerado -->
     <div class="mock" id="hero-mock" style="display:none">
       <div class="mock-glow"></div>
@@ -1168,26 +1189,6 @@ try { if (localStorage.getItem('selo_cookie_consent') === 'accepted') window.loa
         <p>Propostas, leads, imóveis e vendas sempre à mão — troque de celular sem perder nada.</p>
       </div>
     </div>
-  </div>
-</section>
-
-<!-- ===================== 5.4 VEJA POR DENTRO (prints reais) ===================== -->
-<section class="section showcase">
-  <div class="wrap feat-wrap">
-    <div class="sc-kicker">Veja por dentro</div>
-    <h2>É assim por dentro — prints reais, sem maquete</h2>
-    <p class="feat-intro">Tudo isso já está pronto e funcionando. Arraste para o lado e veja as telas de verdade da ferramenta.</p>
-  </div>
-  <div class="wrap" style="max-width:1180px">
-    <div class="shots">
-      <div class="shot-card"><div class="shot-win"><div class="shot-bar"><i style="background:#E2675F"></i><i style="background:#E6B95C"></i><i style="background:#7FC081"></i></div><div class="shot-frame"><img src="/screens/dashboard.webp" alt="Dashboard do Selo com leads, vendas e comissão" loading="lazy"></div></div><div class="shot-cap"><b>Dashboard</b><span>Leads, imóveis, vendas e comissão em tempo real.</span></div></div>
-      <div class="shot-card"><div class="shot-win"><div class="shot-bar"><i style="background:#E2675F"></i><i style="background:#E6B95C"></i><i style="background:#7FC081"></i></div><div class="shot-frame"><img src="/screens/proposta.webp" alt="Proposta comercial profissional gerada no Selo" loading="lazy"></div></div><div class="shot-cap"><b>Proposta com a sua marca</b><span>Pronta em segundos, com simulação de financiamento SAC × Price.</span></div></div>
-      <div class="shot-card"><div class="shot-win"><div class="shot-bar"><i style="background:#E2675F"></i><i style="background:#E6B95C"></i><i style="background:#7FC081"></i></div><div class="shot-frame"><img src="/screens/funil.webp" alt="Funil de vendas Kanban do Selo" loading="lazy"></div></div><div class="shot-cap"><b>Funil de Vendas</b><span>Arraste cada lead de etapa em etapa até fechar.</span></div></div>
-      <div class="shot-card"><div class="shot-win"><div class="shot-bar"><i style="background:#E2675F"></i><i style="background:#E6B95C"></i><i style="background:#7FC081"></i></div><div class="shot-frame"><img src="/screens/imoveis.webp" alt="Catálogo de imóveis e site público do corretor" loading="lazy"></div></div><div class="shot-cap"><b>Imóveis + site próprio</b><span>Sua carteira vira um site pra divulgar com um link só.</span></div></div>
-      <div class="shot-card"><div class="shot-win"><div class="shot-bar"><i style="background:#E2675F"></i><i style="background:#E6B95C"></i><i style="background:#7FC081"></i></div><div class="shot-frame"><img src="/screens/vendas.webp" alt="Controle de vendas e comissão no Selo" loading="lazy"></div></div><div class="shot-cap"><b>Vendas e comissão</b><span>Cada venda fechada e quanto você ganhou, somados sozinho.</span></div></div>
-      <div class="shot-card"><div class="shot-win"><div class="shot-bar"><i style="background:#E2675F"></i><i style="background:#E6B95C"></i><i style="background:#7FC081"></i></div><div class="shot-frame"><img src="/screens/agenda.webp" alt="Agenda de visitas do corretor no Selo" loading="lazy"></div></div><div class="shot-cap"><b>Agenda de visitas</b><span>Toda visita agendada e lembrada no lugar certo.</span></div></div>
-    </div>
-    <div class="sc-hint">← arraste para ver mais →</div>
   </div>
 </section>
 
