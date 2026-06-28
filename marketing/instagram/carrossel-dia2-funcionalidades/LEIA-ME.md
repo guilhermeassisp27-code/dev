@@ -36,3 +36,30 @@ mesma posição no calendário de lançamento, formato em imagem.
 ## Dica de publicação
 Suba na ordem 01→09. O slide 1 (capa) e o 9 (CTA) são os que mais seguram e convertem —
 capriche no primeiro comentário repetindo o "link na bio".
+
+---
+
+## ⭐ Legenda final (otimizada pra viralizar — salvar/comentar)
+
+> **Quantos apps você abre pra fechar UMA venda?** 📱😵‍💫
+> Caderninho, WhatsApp, Word, planilha, bloco de notas… e no fim sempre escapa alguma coisa.
+>
+> O Selo junta tudo num lugar só — e cabe no seu bolso:
+>
+> 📊 Painel com leads, imóveis, vendas e comissão em tempo real
+> 📄 Proposta profissional em segundos, com a SUA marca (e simulação de financiamento pronta)
+> 🎯 Funil que puxa cada cliente até o "sim"
+> 🏠 Seus imóveis viram um site próprio pra divulgar com 1 link
+> 💰 Sua comissão somada automaticamente
+> 📅 Agenda de visitas pra nunca mais esquecer um compromisso
+>
+> Do primeiro "oi" no WhatsApp até a assinatura. **Sua comissão, garantida.** 🛡️
+>
+> ⚠️ Salva esse post pra não perder e manda pro parceiro que ainda trabalha no caderno. 😏
+>
+> 💬 Comenta "QUERO" que eu te mando o link pra testar 7 dias grátis (também tá na bio 👆).
+
+**Hashtags (1º comentário):**
+`#corretordeimoveis #corretordeimóveis #corretorautonomo #mercadoimobiliario #imoveis #imóveis #corretordesucesso #vendasimobiliarias #crmimobiliario #imobiliaria #corretorpremium #dicasparacorretores #consultorimobiliario #vendadeimoveis #marketingimobiliario #corretoriniciante #rotinadocorretor #propostacomercial #imoveisavenda #seloapp`
+
+> Nota: os mesmos prints reais também entraram na landing (selosales.com.br), na seção "Veja por dentro".

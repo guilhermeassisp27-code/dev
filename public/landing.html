@@ -796,6 +796,25 @@
   .cookie-ghost{background:transparent;color:var(--t2);border-color:var(--line-2)}
   .cookie-ghost:hover{color:var(--white);border-color:var(--t2)}
   @media(max-width:560px){.cookie-acts{width:100%}.cookie-btn{flex:1}}
+  /* ===== Showcase: prints reais da ferramenta ===== */
+  .showcase{background:var(--navy);color:#fff}
+  .showcase h2{color:#fff}
+  .showcase .feat-intro{color:#C5D0DB}
+  .sc-kicker{text-align:center;color:var(--amber);font-size:13px;font-weight:800;letter-spacing:.14em;text-transform:uppercase;margin-bottom:14px}
+  .shots{display:flex;gap:22px;overflow-x:auto;scroll-snap-type:x mandatory;padding:38px 22px 16px;margin:0 -22px;-webkit-overflow-scrolling:touch}
+  .shots::-webkit-scrollbar{height:8px}
+  .shots::-webkit-scrollbar-thumb{background:rgba(255,255,255,.2);border-radius:10px}
+  .shot-card{flex:0 0 auto;width:min(620px,84vw);scroll-snap-align:center}
+  .shot-win{border-radius:16px;overflow:hidden;background:#fff;box-shadow:0 30px 70px -24px rgba(0,0,0,.6);border:1px solid rgba(255,255,255,.12)}
+  .shot-bar{height:34px;background:#ECE4D6;display:flex;align-items:center;gap:7px;padding:0 14px}
+  .shot-bar i{width:11px;height:11px;border-radius:50%}
+  .shot-frame{aspect-ratio:16/10;overflow:hidden;background:#fff}
+  .shot-frame img{width:100%;height:100%;object-fit:cover;object-position:top;display:block}
+  .shot-cap{margin-top:16px;padding:0 4px}
+  .shot-cap b{display:block;color:#fff;font-size:17px;font-weight:700;margin-bottom:3px}
+  .shot-cap span{color:#9FB0C0;font-size:14px;line-height:1.45}
+  .sc-hint{text-align:center;color:#7E8FA0;font-size:13px;margin-top:10px;font-weight:600}
+  @media(min-width:760px){.shot-card{width:560px}}
 </style>
 </head>
 <body>
@@ -1149,6 +1168,26 @@ try { if (localStorage.getItem('selo_cookie_consent') === 'accepted') window.loa
         <p>Propostas, leads, imóveis e vendas sempre à mão — troque de celular sem perder nada.</p>
       </div>
     </div>
+  </div>
+</section>
+
+<!-- ===================== 5.4 VEJA POR DENTRO (prints reais) ===================== -->
+<section class="section showcase">
+  <div class="wrap feat-wrap">
+    <div class="sc-kicker">Veja por dentro</div>
+    <h2>É assim por dentro — prints reais, sem maquete</h2>
+    <p class="feat-intro">Tudo isso já está pronto e funcionando. Arraste para o lado e veja as telas de verdade da ferramenta.</p>
+  </div>
+  <div class="wrap" style="max-width:1180px">
+    <div class="shots">
+      <div class="shot-card"><div class="shot-win"><div class="shot-bar"><i style="background:#E2675F"></i><i style="background:#E6B95C"></i><i style="background:#7FC081"></i></div><div class="shot-frame"><img src="/screens/dashboard.webp" alt="Dashboard do Selo com leads, vendas e comissão" loading="lazy"></div></div><div class="shot-cap"><b>Dashboard</b><span>Leads, imóveis, vendas e comissão em tempo real.</span></div></div>
+      <div class="shot-card"><div class="shot-win"><div class="shot-bar"><i style="background:#E2675F"></i><i style="background:#E6B95C"></i><i style="background:#7FC081"></i></div><div class="shot-frame"><img src="/screens/proposta.webp" alt="Proposta comercial profissional gerada no Selo" loading="lazy"></div></div><div class="shot-cap"><b>Proposta com a sua marca</b><span>Pronta em segundos, com simulação de financiamento SAC × Price.</span></div></div>
+      <div class="shot-card"><div class="shot-win"><div class="shot-bar"><i style="background:#E2675F"></i><i style="background:#E6B95C"></i><i style="background:#7FC081"></i></div><div class="shot-frame"><img src="/screens/funil.webp" alt="Funil de vendas Kanban do Selo" loading="lazy"></div></div><div class="shot-cap"><b>Funil de Vendas</b><span>Arraste cada lead de etapa em etapa até fechar.</span></div></div>
+      <div class="shot-card"><div class="shot-win"><div class="shot-bar"><i style="background:#E2675F"></i><i style="background:#E6B95C"></i><i style="background:#7FC081"></i></div><div class="shot-frame"><img src="/screens/imoveis.webp" alt="Catálogo de imóveis e site público do corretor" loading="lazy"></div></div><div class="shot-cap"><b>Imóveis + site próprio</b><span>Sua carteira vira um site pra divulgar com um link só.</span></div></div>
+      <div class="shot-card"><div class="shot-win"><div class="shot-bar"><i style="background:#E2675F"></i><i style="background:#E6B95C"></i><i style="background:#7FC081"></i></div><div class="shot-frame"><img src="/screens/vendas.webp" alt="Controle de vendas e comissão no Selo" loading="lazy"></div></div><div class="shot-cap"><b>Vendas e comissão</b><span>Cada venda fechada e quanto você ganhou, somados sozinho.</span></div></div>
+      <div class="shot-card"><div class="shot-win"><div class="shot-bar"><i style="background:#E2675F"></i><i style="background:#E6B95C"></i><i style="background:#7FC081"></i></div><div class="shot-frame"><img src="/screens/agenda.webp" alt="Agenda de visitas do corretor no Selo" loading="lazy"></div></div><div class="shot-cap"><b>Agenda de visitas</b><span>Toda visita agendada e lembrada no lugar certo.</span></div></div>
+    </div>
+    <div class="sc-hint">← arraste para ver mais →</div>
   </div>
 </section>
 
