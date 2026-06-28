@@ -26,6 +26,13 @@ export default function CapturaPage({ params }: { params: { slug: string } }) {
       .finally(() => setCarregando(false))
   }, [slug])
 
+  // Pré-preenche o imóvel quando o cliente chega pela vitrine pública
+  // (botão "Tenho interesse" em /{slug} manda ?imovel=...).
+  useEffect(() => {
+    const q = new URLSearchParams(window.location.search).get('imovel')
+    if (q) setImovel(q.slice(0, 120))
+  }, [])
+
   const cor = branding?.cor || '#0F2D4A'
 
   async function handleSubmit(e: React.FormEvent) {

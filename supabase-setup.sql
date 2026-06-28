@@ -51,6 +51,19 @@ alter table public.cpr_user_data
 -- grant select/insert/update on public.cpr_user_data feito acima.
 
 -- ============================================================
+-- Migração: Catálogo de Imóveis + Vendas (2026-06) e Site público (2026-06-28)
+-- Mesmas colunas jsonb por domínio. Idempotente.
+--   imoveis: catálogo do corretor. Cada item pode ter `publicado: true`,
+--            que o expõe na vitrine pública SSR (selosales.com.br/{slug}).
+--            O resolveSlug (service role) lê só campos seguros — endereço
+--            completo e dados de cliente NUNCA saem para o público.
+--   vendas:  histórico de vendas/comissões (privado, nunca exposto).
+-- ============================================================
+alter table public.cpr_user_data
+  add column if not exists imoveis jsonb not null default '[]'::jsonb,
+  add column if not exists vendas  jsonb not null default '[]'::jsonb;
+
+-- ============================================================
 -- Migração: Carrinho abandonado Hotmart (2026-06-20)
 -- Leads que iniciaram o checkout e não compraram (evento
 -- PURCHASE_OUT_OF_SHOPPING_CART). Só o webhook (service role) grava;
