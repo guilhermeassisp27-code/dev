@@ -9,6 +9,12 @@ pesquisadas na internet, e implementa um por vez.
 
 ## Próximas (prioridade)
 
+0. **🌟 Site público do corretor (vitrine de imóveis com link compartilhável) — PRÓXIMA FEATURE GRANDE (pós-lançamento)**
+   _Dor:_ o corretor autônomo quer "parecer uma imobiliária": ter um site próprio pra divulgar a carteira (bio do Instagram, status do WhatsApp, anúncios). Hoje improvisa em Wix/linktree solto, desconectado do CRM. Concorrentes (Tecimob, Kenlo) vendem "site do corretor" como diferencial premium.
+   _Valor:_ "Meus Imóveis" ganha um modo público — uma vitrine branded (nome, CRECI, cor e logo do corretor) com os imóveis marcados como publicados, em **`selosales.com.br/{slug}`** (slug do perfil, mesmo já usado na captação). Cada imóvel tem página de detalhe + botão "Tenho interesse" que **cai direto no Funil** do corretor (reusa `cpr_public_leads` + `/api/captura`). Rodapé discreto "feito com Selo" → aquisição orgânica.
+   _Encaixe técnico:_ reaproveita slug + branding + catálogo de imóveis + fluxo de captação **já existentes**. Roda como **rota pública SSR no Next.js (Vercel)** — aparece no Google e gera preview com foto ao compartilhar. (A ferramenta fica em `app.selosales.com.br`; o site público do corretor no domínio principal.)
+   _Escopo v1:_ toggle "publicar no meu site" por imóvel; 1 foto por imóvel (galeria fica pra v2); só dados da vitrine + contato (nada de cliente/sensível). Depende do **domínio próprio já no ar** e do **pós-lançamento** (não atrasar o launch). _Ideia validada com o fundador em 2026-06-28._
+
 1. **Exportar proposta em PDF**
    _Dor:_ o corretor precisa mandar a proposta por email/WhatsApp num formato que o cliente abra em qualquer lugar e que pareça profissional. Hoje depende de print.
    _Valor:_ baixar a proposta pronta como PDF com a marca (logo/CRECI/cor).
