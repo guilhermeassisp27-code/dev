@@ -35,6 +35,7 @@ export default function DefinirSenhaPage() {
   const [loading, setLoading] = useState(false)
   const [verificando, setVerificando] = useState(true)
   const [temSessao, setTemSessao] = useState(false)
+  const [modoSenha, setModoSenha] = useState(false) // false = entrar direto (magic link); true = definir senha
   const [erro, setErro] = useState('')
 
   // O link do email (convite/recuperação) traz os tokens no hash → estabelece sessão
@@ -51,6 +52,23 @@ export default function DefinirSenhaPage() {
       setVerificando(false)
     })
   }, [])
+
+  // Magic link: o próprio link do email já estabelece a sessão. Aqui só a
+  // reusamos para entrar direto na ferramenta, sem obrigar a definir senha
+  // antes (remove um passo do funil de ativação). Quem nunca define senha
+  // continua entrando pelo "esqueci minha senha", que cai aqui de novo.
+  async function entrarAgora() {
+    setErro('')
+    setLoading(true)
+    const supabase = createImplicitClient()
+    const { data: { session } } = await supabase.auth.getSession()
+    if (session) {
+      irParaFerramenta(session)
+    } else {
+      setErro('Sua sessão expirou. Solicite um novo link na tela de login.')
+      setLoading(false)
+    }
+  }
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault()
@@ -98,7 +116,9 @@ export default function DefinirSenhaPage() {
               <text x="86" y="53" textAnchor="start" fontFamily="Geist, ui-sans-serif, system-ui, -apple-system, 'Segoe UI', sans-serif" fontWeight="600" fontSize="40" letterSpacing="6" fill="currentColor">SELO</text>
             </svg>
           </div>
-          <p className="auth-subtitle">Defina sua senha</p>
+          <p className="auth-subtitle">
+            {verificando ? 'Verificando seu acesso' : !temSessao ? 'Acesso' : modoSenha ? 'Defina sua senha' : 'Sua conta está pronta'}
+          </p>
         </div>
 
         <div className="auth-card">
@@ -113,6 +133,25 @@ export default function DefinirSenhaPage() {
               <a href="/acesso" className="auth-link-btn auth-link-inline">
                 Ir para o login
               </a>
+            </div>
+          ) : !modoSenha ? (
+            <div className="auth-success">
+              <h2 className="auth-success-title">Tudo pronto, sua conta foi ativada!</h2>
+              <p className="auth-success-text" style={{ marginBottom: '20px' }}>
+                Entre agora e comece a usar. Você pode criar uma senha quando quiser, para os próximos acessos.
+              </p>
+
+              {erro && <p className="auth-error">{erro}</p>}
+
+              <button onClick={entrarAgora} disabled={loading} className="auth-submit">
+                {loading ? 'Entrando...' : 'Entrar na ferramenta →'}
+              </button>
+
+              <div className="auth-switch">
+                <button type="button" onClick={() => { setErro(''); setModoSenha(true) }} className="auth-link-btn">
+                  Prefiro criar uma senha agora
+                </button>
+              </div>
             </div>
           ) : (
             <form onSubmit={handleSubmit}>
@@ -141,6 +180,12 @@ export default function DefinirSenhaPage() {
               <button type="submit" disabled={loading} className="auth-submit">
                 {loading ? 'Salvando...' : 'Salvar e entrar'}
               </button>
+
+              <div className="auth-switch">
+                <button type="button" onClick={() => { setErro(''); setModoSenha(false) }} className="auth-link-btn">
+                  Voltar e entrar sem senha
+                </button>
+              </div>
             </form>
           )}
         </div>
@@ -148,14 +193,14 @@ export default function DefinirSenhaPage() {
 
       <style jsx>{`
         .auth-page {
-          --bg: #000000;
-          --bg-2: #0a0a0c;
-          --surface: #1c1c1e;
-          --text: #f5f5f7;
-          --text-2: #86868b;
-          --border: rgba(255, 255, 255, 0.08);
-          --brand: #4d7eff;
-          --brand-2: #7c5cfc;
+          --bg: #0a2138;
+          --bg-2: #0f2d4a;
+          --surface: #152538;
+          --text: #e8edf2;
+          --text-2: #8fa0b2;
+          --border: rgba(232, 237, 242, 0.08);
+          --brand: #c9882a;
+          --brand-2: #d6a24a;
 
           min-height: 100vh;
           display: flex;
@@ -163,18 +208,17 @@ export default function DefinirSenhaPage() {
           justify-content: center;
           padding: 24px;
           background: radial-gradient(120% 120% at 50% -10%, var(--bg-2), var(--bg));
-          font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Display', 'SF Pro Text',
-            'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+          font-family: Geist, ui-sans-serif, system-ui, -apple-system, 'Segoe UI', sans-serif;
         }
 
         @media (prefers-color-scheme: light) {
           .auth-page {
-            --bg: #ffffff;
-            --bg-2: #f5f5f7;
+            --bg: #f5f0e8;
+            --bg-2: #f5f0e8;
             --surface: #ffffff;
-            --text: #1d1d1f;
-            --text-2: #6e6e73;
-            --border: rgba(0, 0, 0, 0.08);
+            --text: #15202b;
+            --text-2: #5b6b7a;
+            --border: rgba(15, 45, 74, 0.1);
           }
         }
 
@@ -257,7 +301,7 @@ export default function DefinirSenhaPage() {
 
         .auth-input:focus {
           border-color: var(--brand);
-          box-shadow: 0 0 0 4px rgba(77, 126, 255, 0.16);
+          box-shadow: 0 0 0 4px rgba(201, 136, 42, 0.16);
         }
 
         .auth-error {
@@ -279,7 +323,7 @@ export default function DefinirSenhaPage() {
           font-family: inherit;
           letter-spacing: -0.01em;
           transition: transform 0.18s ease, box-shadow 0.18s ease, opacity 0.18s ease;
-          box-shadow: 0 12px 28px rgba(77, 126, 255, 0.3);
+          box-shadow: 0 12px 28px rgba(201, 136, 42, 0.3);
         }
 
         .auth-submit:disabled {
@@ -289,7 +333,7 @@ export default function DefinirSenhaPage() {
 
         .auth-submit:not(:disabled):hover {
           transform: translateY(-1px);
-          box-shadow: 0 16px 34px rgba(77, 126, 255, 0.4);
+          box-shadow: 0 16px 34px rgba(201, 136, 42, 0.4);
         }
 
         .auth-link-btn {
