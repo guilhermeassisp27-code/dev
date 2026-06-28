@@ -42,6 +42,19 @@ export async function middleware(req: NextRequest) {
     return NextResponse.next()
   }
 
+  // Site público do corretor: /<slug> (vitrine de imóveis, SSR) é PÚBLICO —
+  // abre sem login para qualquer visitante (e também para o corretor logado,
+  // que quer ver o próprio site). Qualquer caminho de segmento único que não
+  // seja rota de auth é tratado como slug; a própria página [slug] resolve 404
+  // para slugs inexistentes/reservados.
+  const segmentoUnico = /^\/[^/]+$/.test(pathname)
+  const ehRotaAuth = CPR_AUTH_ROUTES.some(
+    (r) => pathname === r || pathname.startsWith(r + '/')
+  )
+  if (segmentoUnico && !ehRotaAuth) {
+    return NextResponse.next()
+  }
+
   const res = NextResponse.next()
   const supabase = createMiddlewareClient({ req, res })
   const { data: { session } } = await supabase.auth.getSession()
