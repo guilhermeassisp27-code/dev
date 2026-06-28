@@ -65,7 +65,7 @@ html,body{transition:background-color .25s ease,color .25s ease}
 body{font-family:var(--font);background:var(--bg);color:var(--t);-webkit-font-smoothing:antialiased;min-height:100vh}
 
 /* ── SIDEBAR ── */
-.sidebar{position:fixed;left:0;top:0;width:var(--sw);height:100vh;background:var(--sb);border-right:1px solid var(--b);display:flex;flex-direction:column;z-index:100;transition:transform .25s ease,background-color .25s ease}
+.sidebar{position:fixed;left:0;top:0;width:var(--sw);height:100vh;background:var(--sb);border-right:1px solid var(--b);display:flex;flex-direction:column;z-index:100;transition:transform .25s ease,background-color .25s ease,width .22s ease}
 .sb-head{height:var(--th);padding:0 20px;display:flex;align-items:center;gap:8px;border-bottom:1px solid var(--b);flex-shrink:0}
 .sb-logo{font-size:17px;font-weight:700;letter-spacing:-.5px;color:var(--t);text-decoration:none}
 .sb-logo em{color:var(--p2);font-style:normal}
@@ -78,6 +78,24 @@ body{font-family:var(--font);background:var(--bg);color:var(--t);-webkit-font-sm
 .sb-item:hover{background:var(--s2);color:var(--t)}
 .sb-item.active{background:rgba(201,136,42,.13);color:var(--p2);font-weight:600;box-shadow:inset 3px 0 0 var(--p2)}
 .sb-item.active svg{color:var(--p2)}
+/* ── SIDEBAR RECOLHÍVEL (rail só-ícone) ── */
+.sb-collapse{width:30px;height:30px;border-radius:50%;border:1px solid var(--b);background:var(--s2);color:var(--t2);display:flex;align-items:center;justify-content:center;cursor:pointer;flex-shrink:0;transition:background-color .2s ease,color .2s ease,transform .15s ease}
+.sb-collapse:hover{color:var(--t);transform:scale(1.06)}
+@media(min-width:761px){
+  html.sb-collapsed{--sw:74px}
+  html.sb-collapsed .sb-sec{height:0;padding:0;margin:0;overflow:hidden;opacity:0}
+  html.sb-collapsed .sb-item{font-size:0;justify-content:center;gap:0;padding:11px 0}
+  html.sb-collapsed .sb-item.active{box-shadow:none}
+  html.sb-collapsed .sb-badge{display:none!important}
+  html.sb-collapsed .sb-logo{display:none!important}
+  html.sb-collapsed .theme-toggle{display:none}
+  html.sb-collapsed .sb-head{padding:0;justify-content:center}
+  html.sb-collapsed .sb-collapse svg{transform:rotate(180deg)}
+  html.sb-collapsed .sb-user{justify-content:center;padding:8px 0}
+  html.sb-collapsed .sb-user>div{display:none}
+  html.sb-collapsed .sb-foot{padding:10px 8px}
+}
+@media(max-width:760px){.sb-collapse{display:none}}
 .sb-item svg{flex-shrink:0;color:var(--t3)}
 .sb-foot{padding:10px;border-top:1px solid var(--b);flex-shrink:0}
 .sb-user{display:flex;align-items:center;gap:10px;padding:8px 10px;border-radius:10px;cursor:pointer;transition:background-color .15s ease;background:none;border:none;width:100%;text-align:left}
@@ -88,7 +106,7 @@ body{font-family:var(--font);background:var(--bg);color:var(--t);-webkit-font-sm
 .u-plan{font-size:11px;color:var(--t3)}
 
 /* ── MAIN ── */
-.main{margin-left:var(--sw);min-height:100vh;display:flex;flex-direction:column}
+.main{margin-left:var(--sw);min-height:100vh;display:flex;flex-direction:column;transition:margin-left .22s ease}
 .topbar{position:sticky;top:0;z-index:50;background:var(--bg-blur);backdrop-filter:blur(20px) saturate(1.6);-webkit-backdrop-filter:blur(20px) saturate(1.6);border-bottom:1px solid var(--b);height:var(--th);display:flex;align-items:center;padding:0 32px;gap:12px;flex-shrink:0}
 .crumb{display:flex;align-items:center;gap:6px;font-size:13px;color:var(--t3)}
 .crumb b{color:var(--t2);font-weight:500}
@@ -751,6 +769,9 @@ input[type=color]{opacity:0;width:0;height:0;position:absolute}
     <button type="button" class="theme-toggle" id="theme-toggle" onclick="alternarTema()" title="Alternar tema claro/escuro" aria-label="Alternar tema claro/escuro">
       <svg id="theme-icon-sun" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M6.34 17.66l-1.41 1.41M19.07 4.93l-1.41 1.41"/></svg>
       <svg id="theme-icon-moon" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="display:none;position:absolute"><path d="M21 12.79A9 9 0 1111.21 3 7 7 0 0021 12.79z"/></svg>
+    </button>
+    <button type="button" class="sb-collapse" id="sb-collapse" onclick="alternarSidebar()" title="Recolher menu" aria-label="Recolher menu">
+      <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"/></svg>
     </button>
   </div>
   <nav class="sb-nav" aria-label="Navegação">
@@ -2519,6 +2540,27 @@ function alternarTema() {
   aplicarTemaIcone()
 }
 
+/* ── SIDEBAR RECOLHÍVEL ── */
+function alternarSidebar() {
+  const recolhido = document.documentElement.classList.toggle('sb-collapsed')
+  try { localStorage.setItem('cpr_sidebar', recolhido ? 'recolhido' : 'expandido') } catch(_) {}
+  const btn = document.getElementById('sb-collapse')
+  if (btn) { btn.title = recolhido ? 'Expandir menu' : 'Recolher menu'; btn.setAttribute('aria-label', btn.title) }
+}
+// Tooltip em cada item (útil no modo recolhido) + restaura o estado salvo.
+function aplicarSidebar() {
+  document.querySelectorAll('.sidebar .sb-item').forEach(b => {
+    if (b.title) return
+    const txt = [...b.childNodes].filter(n => n.nodeType === 3).map(n => n.textContent.trim()).filter(Boolean)[0]
+    if (txt) b.title = txt
+  })
+  if (localStorage.getItem('cpr_sidebar') === 'recolhido') {
+    document.documentElement.classList.add('sb-collapsed')
+    const btn = document.getElementById('sb-collapse')
+    if (btn) { btn.title = 'Expandir menu'; btn.setAttribute('aria-label', 'Expandir menu') }
+  }
+}
+
 /* ── INIT ── */
 function initApp() {
   aplicarPerfil()
@@ -2536,6 +2578,7 @@ function initApp() {
   if (!perfil.nome && perfil.onboardingDispensado) {
     document.getElementById('banner-profile').classList.add('show')
   }
+  aplicarSidebar()
   carregarFormConfig()
   atualizarPreview()
   atualizarCor(perfil.cor || '#C9882A')
