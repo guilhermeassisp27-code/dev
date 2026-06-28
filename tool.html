@@ -544,8 +544,7 @@ input[type=color]{opacity:0;width:0;height:0;position:absolute}
    Tela de visão agregada: cruza leads/imoveis/vendas já existentes, sem
    array novo no jsonb. Gráfico de barras é SVG puro gerado por JS — zero
    dependência nova, mesmo princípio dos módulos anteriores do pivô. */
-.dash-kpis{display:grid;grid-template-columns:repeat(6,1fr);gap:12px}
-@media(max-width:1100px){.dash-kpis{grid-template-columns:repeat(3,1fr)}}
+.dash-kpis{display:grid;grid-template-columns:repeat(3,1fr);gap:12px}
 @media(max-width:620px){.dash-kpis{grid-template-columns:repeat(2,1fr)}}
 .dash-kpi{background:var(--s1);border:1px solid var(--b);border-radius:var(--radl);padding:18px 18px;display:flex;flex-direction:column;gap:7px;min-width:0;box-shadow:var(--shadow-sm);transition:transform .2s ease,box-shadow .2s ease}
 .dash-kpi:hover{transform:translateY(-2px);box-shadow:var(--shadow-lg)}
@@ -584,6 +583,23 @@ input[type=color]{opacity:0;width:0;height:0;position:absolute}
 .dash-extra-kpis{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-top:20px}
 @media(max-width:900px){.dash-extra-kpis{grid-template-columns:1fr 1fr}}
 @media(max-width:560px){.dash-extra-kpis{grid-template-columns:1fr}}
+
+/* ── DASHBOARD PREMIUM: delta vs mês anterior + donut do funil ── */
+.dash-kpi-delta{display:inline-flex;align-items:center;gap:5px;font-size:11px;font-weight:700;margin-top:1px;line-height:1}
+.dash-kpi-delta.up{color:#22C55E}
+.dash-kpi-delta.down{color:#EF4444}
+.dash-kpi-delta-cap{color:var(--t3);font-weight:500;margin-left:2px}
+.dash-donut-wrap{display:flex;align-items:center;gap:20px;flex-wrap:wrap}
+.dash-donut{position:relative;width:140px;height:140px;flex-shrink:0}
+.dash-donut svg{display:block;filter:drop-shadow(0 4px 10px rgba(0,0,0,.18))}
+.dash-donut-center{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;pointer-events:none}
+.dash-donut-total{font-size:30px;font-weight:800;color:var(--t);line-height:1;letter-spacing:-.5px}
+.dash-donut-cap{font-size:10.5px;color:var(--t3);text-transform:uppercase;letter-spacing:.08em;margin-top:3px}
+.dash-donut-legenda{flex:1;min-width:160px;display:flex;flex-direction:column;gap:8px}
+.dash-donut-leg{display:flex;align-items:center;gap:9px;font-size:12.5px}
+.dash-donut-dot{width:10px;height:10px;border-radius:3px;flex-shrink:0}
+.dash-donut-leg-l{flex:1;color:var(--t2);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.dash-donut-leg-n{font-weight:800;color:var(--t)}
 
 /* ── VENDAS ── */
 .vendas-kpis{display:grid;grid-template-columns:repeat(3,1fr);gap:14px}
@@ -5356,18 +5372,32 @@ function renderDashboard() {
   const comissaoMes = vendasDoMes.reduce((s, v) => s + (v.comissaoValor || 0), 0)
   const comissaoAno = vendasDoAno.reduce((s, v) => s + (v.comissaoValor || 0), 0)
 
+  // Mês anterior (para os deltas "vs mês anterior", estilo dashboard premium)
+  const mesAnt = new Date(hoje.getFullYear(), hoje.getMonth() - 1, 1)
+  const vendasMesAnt = vendas.filter(v => {
+    const d = parseDataLocal(v.dataFechamento)
+    return !isNaN(d) && d.getFullYear() === mesAnt.getFullYear() && d.getMonth() === mesAnt.getMonth()
+  })
+  const comissaoMesAnt = vendasMesAnt.reduce((s, v) => s + (v.comissaoValor || 0), 0)
+  const deltaPct = (atual, ant) => {
+    if (ant <= 0) return atual > 0 ? { txt: 'novo', dir: 'up' } : null
+    const p = Math.round(((atual - ant) / ant) * 100)
+    return { txt: (p >= 0 ? '+' : '') + p + '%', dir: p >= 0 ? 'up' : 'down' }
+  }
+
   const kpis = [
     { l: 'Leads ativos',            v: String(leadsAtivos),                 alerta:false },
     { l: 'Leads em alerta',         v: String(leadsAlerta),                 alerta:leadsAlerta>0 },
     { l: 'Imóveis disponíveis',     v: String(imoveisDisponiveis),          alerta:false },
-    { l: 'Vendas fechadas no mês',  v: String(vendasDoMes.length),          alerta:false },
-    { l: 'Comissão no mês',         v: formatarMoedaBR(comissaoMes),        alerta:false },
+    { l: 'Vendas fechadas no mês',  v: String(vendasDoMes.length),          alerta:false, delta:deltaPct(vendasDoMes.length, vendasMesAnt.length) },
+    { l: 'Comissão no mês',         v: formatarMoedaBR(comissaoMes),        alerta:false, delta:deltaPct(comissaoMes, comissaoMesAnt) },
     { l: 'Comissão no ano',         v: formatarMoedaBR(comissaoAno),        alerta:false },
   ]
   elKpis.innerHTML = kpis.map(k => `
     <div class="dash-kpi${k.alerta ? ' alerta' : ''}">
       <span class="dash-kpi-l">${escH(k.l)}</span>
       <span class="dash-kpi-v">${escH(k.v)}</span>
+      ${k.delta ? `<span class="dash-kpi-delta ${k.delta.dir}">${k.delta.dir === 'up' ? '▲' : '▼'} ${escH(k.delta.txt)}<span class="dash-kpi-delta-cap">vs mês anterior</span></span>` : ''}
     </div>`).join('')
 
   renderDashboardExtraKpis()
@@ -5476,28 +5506,49 @@ function renderDashboardChart() {
     return doMes.reduce((s, v) => s + valorParaNumero(v.valor), 0)
   })
 
+  // Gráfico de ÁREA com gradiente âmbar (estilo dashboard premium) — linha
+  // suave, preenchimento degradê e ponto mais recente em destaque com o valor.
   const max = Math.max(...valores, 1)
-  const W = Math.max(480, meses.length * 56), H = 200, padTop = 24, padBottom = 28, padSide = 16
-  const larguraUtil = W - padSide * 2
   const n = meses.length
-  const gap = 14
-  const barW = (larguraUtil - gap * (n - 1)) / n
-  const alturaUtil = H - padTop - padBottom
+  const W = Math.max(440, n * 46), H = 190, padTop = 30, padBottom = 26, padL = 10, padR = 10
+  const baseY = H - padBottom, topY = padTop, alturaUtil = baseY - topY
+  const px = i => padL + (n > 1 ? i * ((W - padL - padR) / (n - 1)) : (W - padL - padR) / 2)
+  const py = v => baseY - (max > 0 ? (v / max) * alturaUtil : 0)
+  const pts = meses.map((m, i) => ({ x: px(i), y: py(valores[i]), v: valores[i] }))
 
-  const barras = meses.map((m, i) => {
-    const valor = valores[i]
-    const h = max > 0 ? (valor / max) * alturaUtil : 0
-    const x = padSide + i * (barW + gap)
-    const y = padTop + (alturaUtil - h)
-    const cor = valor > 0 ? 'var(--p, #0F2D4A)' : 'var(--b)'
-    const valorLabel = valor > 0 ? formatarMoedaBR(valor).replace('R$', '').trim() : ''
-    return `
-      <rect x="${x.toFixed(1)}" y="${y.toFixed(1)}" width="${barW.toFixed(1)}" height="${Math.max(h,2).toFixed(1)}" rx="4" fill="${cor}"></rect>
-      ${valorLabel ? `<text class="dash-chart-val-label" x="${(x+barW/2).toFixed(1)}" y="${(y-7).toFixed(1)}">${escH(valorLabel)}</text>` : ''}
-      <text class="dash-chart-bar-label" x="${(x+barW/2).toFixed(1)}" y="${H-8}">${escH(m.label)}</text>`
+  const linePath = pts.map((p, i) => `${i === 0 ? 'M' : 'L'} ${p.x.toFixed(1)} ${p.y.toFixed(1)}`).join(' ')
+  const areaPath = n > 1
+    ? `M ${pts[0].x.toFixed(1)} ${baseY} ` + pts.map(p => `L ${p.x.toFixed(1)} ${p.y.toFixed(1)}`).join(' ') + ` L ${pts[n-1].x.toFixed(1)} ${baseY} Z`
+    : ''
+
+  let destaque = -1
+  for (let i = n - 1; i >= 0; i--) { if (valores[i] > 0) { destaque = i; break } }
+
+  const dots = pts.map((p, i) => {
+    const big = i === destaque
+    return `<circle cx="${p.x.toFixed(1)}" cy="${p.y.toFixed(1)}" r="${big ? 4.5 : 2.6}" fill="${big ? 'var(--p2,#C9882A)' : 'var(--s1,#152538)'}" stroke="var(--p2,#C9882A)" stroke-width="2"></circle>`
   }).join('')
 
-  el.innerHTML = `<svg viewBox="0 0 ${W} ${H}" width="100%" height="${H}" style="display:block;min-width:240px">${barras}</svg>`
+  const labels = meses.map((m, i) => `<text class="dash-chart-bar-label" x="${px(i).toFixed(1)}" y="${H-8}" text-anchor="middle">${escH(m.label)}</text>`).join('')
+
+  let destaqueLabel = ''
+  if (destaque >= 0) {
+    const p = pts[destaque]
+    const anchor = destaque >= n - 2 ? 'end' : (destaque === 0 ? 'start' : 'middle')
+    // inline style vence o text-anchor:middle do CSS da classe (senão o label
+    // do último ponto centraliza e vaza pela direita)
+    destaqueLabel = `<text class="dash-chart-val-label" x="${p.x.toFixed(1)}" y="${Math.max(p.y - 12, 12).toFixed(1)}" style="text-anchor:${anchor}">R$ ${escH(formatarMoedaBR(p.v).replace('R$','').trim())}</text>`
+  }
+
+  el.innerHTML = `<svg viewBox="0 0 ${W} ${H}" style="display:block;width:100%;height:auto;min-width:240px">
+    <defs><linearGradient id="dashArea" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="var(--p2,#C9882A)" stop-opacity="0.30"></stop>
+      <stop offset="100%" stop-color="var(--p2,#C9882A)" stop-opacity="0"></stop>
+    </linearGradient></defs>
+    ${areaPath ? `<path d="${areaPath}" fill="url(#dashArea)"></path>` : ''}
+    <path d="${linePath}" fill="none" stroke="var(--p2,#C9882A)" stroke-width="2.4" stroke-linejoin="round" stroke-linecap="round"></path>
+    ${dots}${destaqueLabel}${labels}
+  </svg>`
 }
 
 // Top 5 leads ativos (fora vendidos) por valor estimado — ajuda o corretor
@@ -5583,16 +5634,34 @@ function renderDashboardFunilResumo() {
   }
 
   const total = leads.length
-  el.innerHTML = FUNIL_ESTAGIOS.map(estagio => {
-    const n = leads.filter(l => estagioFunilLead(l) === estagio.key).length
-    const pct = total > 0 ? Math.round((n / total) * 100) : 0
-    return `
-    <div class="dash-funil-row">
-      <span class="dash-funil-label">${escH(estagio.label)}</span>
-      <div class="dash-funil-bar-track"><div class="dash-funil-bar-fill" style="width:${pct}%;background:${estagio.cor}"></div></div>
-      <span class="dash-funil-count">${n}</span>
+  const R = 54, C = 2 * Math.PI * R
+  let acc = 0
+  const segs = FUNIL_ESTAGIOS.map(e => {
+    const n = leads.filter(l => estagioFunilLead(l) === e.key).length
+    if (n === 0) return ''
+    const len = (n / total) * C
+    const seg = `<circle cx="70" cy="70" r="${R}" fill="none" stroke="${e.cor}" stroke-width="16" stroke-linecap="butt" stroke-dasharray="${len.toFixed(2)} ${(C - len).toFixed(2)}" stroke-dashoffset="${(-acc).toFixed(2)}" transform="rotate(-90 70 70)"></circle>`
+    acc += len
+    return seg
+  }).join('')
+  const legenda = FUNIL_ESTAGIOS.map(e => {
+    const n = leads.filter(l => estagioFunilLead(l) === e.key).length
+    return `<div class="dash-donut-leg">
+      <span class="dash-donut-dot" style="background:${e.cor}"></span>
+      <span class="dash-donut-leg-l">${escH(e.label)}</span>
+      <span class="dash-donut-leg-n">${n}</span>
     </div>`
   }).join('')
+  el.innerHTML = `<div class="dash-donut-wrap">
+    <div class="dash-donut">
+      <svg viewBox="0 0 140 140" width="140" height="140">
+        <circle cx="70" cy="70" r="${R}" fill="none" stroke="var(--s2)" stroke-width="16"></circle>
+        ${segs}
+      </svg>
+      <div class="dash-donut-center"><span class="dash-donut-total">${total}</span><span class="dash-donut-cap">leads</span></div>
+    </div>
+    <div class="dash-donut-legenda">${legenda}</div>
+  </div>`
 }
 
 // Top 5 leads com alerta (crítico primeiro), com atalho direto pro follow-up.
