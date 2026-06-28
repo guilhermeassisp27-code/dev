@@ -136,7 +136,7 @@ export async function POST(req: NextRequest) {
 
   const appUrl =
     (process.env.NEXT_PUBLIC_APP_URL ?? '').replace(/\/$/, '') ||
-    'https://selosales.vercel.app'
+    'https://selosales.com.br'
   // Novo comprador define a senha antes de acessar a ferramenta
   const setPasswordUrl = `${appUrl}/definir-senha`
 

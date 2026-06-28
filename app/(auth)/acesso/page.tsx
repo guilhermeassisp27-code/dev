@@ -13,7 +13,7 @@ function createImplicitClient() {
 
 const TOOL_URL =
   process.env.NEXT_PUBLIC_TOOL_URL ||
-  'https://guilhermeassisp27-code.github.io/dev/tool.html'
+  'https://app.selosales.com.br'
 
 // Valida o destino de redirecionamento contra uma whitelist de origens.
 // Sem isso, ?redirect_to=https://site-malicioso.com receberia os tokens de

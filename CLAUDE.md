@@ -26,12 +26,12 @@ Hotmart (pagamento)
 Usuário define senha em /definir-senha
   └─ redireciona para tool.html com tokens no hash
 
-tool.html (GitHub Pages: https://guilhermeassisp27-code.github.io/dev/tool.html)
+tool.html (GitHub Pages: https://app.selosales.com.br — domínio próprio via CNAME)
   ├─ consome Supabase diretamente (anon key, RLS)
   ├─ salva propostas em cpr_user_data (tabela Supabase)
   └─ verifica app_metadata.subscription_status === 'active' para liberar uso
 
-Next.js app (Vercel: https://selosales.vercel.app)
+Next.js app (Vercel: https://selosales.com.br — domínio próprio)
   ├─ /acesso       — login (email + senha)
   ├─ /definir-senha — define senha via link do email
   └─ /api/hotmart-webhook — webhook Hotmart
@@ -66,8 +66,8 @@ Next.js app (Vercel: https://selosales.vercel.app)
 NEXT_PUBLIC_SUPABASE_URL=https://kdudodqmijlzqwnkxpjo.supabase.co
 NEXT_PUBLIC_SUPABASE_ANON_KEY=sb_publishable_...
 SUPABASE_SERVICE_ROLE_KEY=sb_secret_...       # NUNCA committar
-NEXT_PUBLIC_APP_URL=https://selosales.vercel.app
-NEXT_PUBLIC_TOOL_URL=https://guilhermeassisp27-code.github.io/dev/tool.html
+NEXT_PUBLIC_APP_URL=https://selosales.com.br
+NEXT_PUBLIC_TOOL_URL=https://app.selosales.com.br
 HOTMART_WEBHOOK_TOKEN=...                      # NUNCA committar
 ```
 

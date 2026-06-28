@@ -5,7 +5,7 @@ import type { NextRequest } from 'next/server'
 // Destino do usuário autenticado: a ferramenta CorretorPRO (GitHub Pages)
 const TOOL_URL =
   process.env.NEXT_PUBLIC_TOOL_URL ||
-  'https://guilhermeassisp27-code.github.io/dev/tool.html'
+  'https://app.selosales.com.br'
 
 // Rotas do app que pertencem ao CorretorPRO (auth). Tudo fora disso é legado.
 const CPR_AUTH_ROUTES = ['/acesso', '/definir-senha', '/callback', '/login']

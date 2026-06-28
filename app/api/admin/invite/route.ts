@@ -22,7 +22,7 @@ function checkAuth(req: NextRequest) {
 function getAppUrl() {
   return (
     (process.env.NEXT_PUBLIC_APP_URL ?? '').replace(/\/$/, '') ||
-    'https://selosales.vercel.app'
+    'https://selosales.com.br'
   )
 }
 
