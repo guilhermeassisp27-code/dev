@@ -501,6 +501,24 @@ input[type=color]{opacity:0;width:0;height:0;position:absolute}
 .im-card-meta{font-size:11px;color:var(--t3);margin-top:2px}
 .im-card-valor{font-size:15px;font-weight:800;color:var(--t);margin-top:4px}
 .im-card-actions{display:flex;gap:6px;margin-top:auto;padding-top:10px}
+/* Toggle "publicar no meu site" por imóvel */
+.im-pub{display:flex;align-items:center;gap:7px;width:100%;margin-top:10px;padding:8px 10px;border-radius:8px;border:1px dashed var(--bm);background:transparent;color:var(--t2);font-size:12px;font-weight:600;font-family:var(--font);cursor:pointer;transition:all .15s}
+.im-pub:hover{border-color:var(--p2);color:var(--p2)}
+.im-pub-dot{width:8px;height:8px;border-radius:50%;background:var(--bm);flex-shrink:0;transition:background .15s}
+.im-pub.on{border-style:solid;border-color:var(--p2);background:rgba(201,136,42,.1);color:var(--p2)}
+.im-pub.on .im-pub-dot{background:var(--p2);box-shadow:0 0 0 3px rgba(201,136,42,.18)}
+/* Banner do site público */
+.meusite{display:flex;align-items:center;gap:16px;flex-wrap:wrap;background:linear-gradient(135deg,var(--p) 0%,#143a5e 100%);color:#fff;border-radius:var(--radl);padding:18px 20px;margin-bottom:16px}
+.meusite-info{flex:1;min-width:200px}
+.meusite-title{font-size:14px;font-weight:700;margin-bottom:4px}
+.meusite-link{display:inline-block;color:var(--p2);font-weight:700;font-size:13px;text-decoration:none;word-break:break-all}
+.meusite-link:hover{text-decoration:underline}
+.meusite-sub{font-size:12px;color:#C5D0DB;margin-top:3px;line-height:1.5}
+.meusite-actions{display:flex;gap:8px;flex-shrink:0}
+.meusite .btn-ghost{background:rgba(255,255,255,.12);border-color:rgba(255,255,255,.2);color:#fff}
+.meusite .btn-ghost:hover{background:rgba(255,255,255,.2)}
+.meusite-cta{display:inline-flex;align-items:center;justify-content:center;background:var(--p2);color:#0A2138;border:none;border-radius:8px;padding:8px 14px;font-size:12px;font-weight:700;font-family:var(--font);text-decoration:none;cursor:pointer;transition:filter .15s}
+.meusite-cta:hover{filter:brightness(1.07)}
 
 /* ── FUNIL DE VENDAS (KANBAN) ── */
 .funil-board{display:flex;gap:14px;overflow-x:auto;padding-bottom:8px;align-items:flex-start}
@@ -4103,6 +4121,43 @@ function linkCaptacao() {
   return _APP_BASE + '/captura/' + (perfil.slug || '')
 }
 
+/* ── SITE PÚBLICO DO CORRETOR (vitrine de imóveis) ── */
+function linkSitePublico() {
+  return _APP_BASE + '/' + (perfil.slug || '')
+}
+
+// Liga/desliga a publicação de um imóvel na vitrine pública.
+async function togglePublicarImovel(id) {
+  if (window._DEMO) return demoBloqueio()
+  const im = imoveis.find(x => String(x.id) === String(id))
+  if (!im) return
+  im.publicado = !im.publicado
+  // Primeira publicação precisa de um slug (link do site).
+  if (im.publicado && !perfil.slug) { try { await garantirSlug() } catch(_) {} }
+  localStorage.setItem('cpr_imoveis', JSON.stringify(imoveis))
+  renderImoveis()
+  try { await salvarRemoto() } catch(_) {}
+  toast(im.publicado ? 'Imóvel publicado no seu site ✓' : 'Imóvel removido do site')
+}
+
+// Gera o slug/link na primeira ativação do site.
+async function ativarMeuSite() {
+  if (window._DEMO) return demoBloqueio()
+  await garantirSlug()
+  renderImoveis()
+  try { await salvarRemoto() } catch(_) {}
+  toast('Seu site público foi ativado!')
+}
+
+function copiarMeuSite() {
+  const url = linkSitePublico()
+  if (navigator.clipboard) {
+    navigator.clipboard.writeText(url).then(() => toast('Link copiado!'), () => toast('Copie o link manualmente', true))
+  } else {
+    toast('Copie o link manualmente', true)
+  }
+}
+
 async function renderCaptacao() {
   const inp = document.getElementById('cap-link')
   await garantirSlug()
@@ -5924,7 +5979,26 @@ function renderImoveis() {
     return
   }
 
-  el.innerHTML = `<div class="im-grid">${imoveis.map(im => {
+  const _slug = perfil.slug || ''
+  const _pub = imoveis.filter(im => im.publicado).length
+  const _url = linkSitePublico()
+  const _banner = `<div class="meusite">
+    <div class="meusite-info">
+      <div class="meusite-title">🌐 Seu site público de imóveis</div>
+      ${_slug
+        ? `<a class="meusite-link" href="${_url}" target="_blank" rel="noopener">${escH(_url.replace(/^https?:\/\//,''))}</a>
+           <div class="meusite-sub">${_pub} ${_pub === 1 ? 'imóvel publicado' : 'imóveis publicados'} · compartilhe no Instagram e no WhatsApp</div>`
+        : `<div class="meusite-sub">Ative seu site e publique imóveis para divulgar tudo com um link só — no Instagram, no status do WhatsApp, onde quiser.</div>`}
+    </div>
+    <div class="meusite-actions">
+      ${_slug
+        ? `<button type="button" class="btn btn-ghost btn-sm" onclick="copiarMeuSite()">Copiar link</button>
+           <a class="meusite-cta" href="${_url}" target="_blank" rel="noopener">Ver site →</a>`
+        : `<button type="button" class="meusite-cta" onclick="ativarMeuSite()">Ativar meu site</button>`}
+    </div>
+  </div>`
+
+  el.innerHTML = _banner + `<div class="im-grid">${imoveis.map(im => {
     const valorFmt = im.valor ? 'R$ ' + im.valor : '—'
     const metaParts = []
     if (im.area) metaParts.push(im.area + ' m²')
@@ -5945,6 +6019,10 @@ function renderImoveis() {
         ${im.bairro ? `<div class="im-card-bairro">${escH(im.bairro)}</div>` : ''}
         ${metaParts.length ? `<div class="im-card-meta">${escH(metaParts.join(' · '))}</div>` : ''}
         <div class="im-card-valor">${escH(valorFmt)}</div>
+        <button type="button" class="im-pub${im.publicado ? ' on' : ''}" onclick="togglePublicarImovel(${im.id})">
+          <span class="im-pub-dot"></span>
+          ${im.publicado ? 'Publicado no site' : 'Publicar no meu site'}
+        </button>
         <div class="im-card-actions">
           <button type="button" class="btn btn-ghost btn-sm" style="flex:1" onclick="editarImovel(${im.id})">
             <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 4H4a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2v-7"/><path d="M18.5 2.5a2.12 2.12 0 013 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
