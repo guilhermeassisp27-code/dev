@@ -12,7 +12,7 @@ function createImplicitClient() {
 
 const TOOL_URL =
   process.env.NEXT_PUBLIC_TOOL_URL ||
-  'https://guilhermeassisp27-code.github.io/dev/tool.html'
+  'https://app.selosales.com.br'
 
 function irParaFerramenta(session: {
   access_token: string

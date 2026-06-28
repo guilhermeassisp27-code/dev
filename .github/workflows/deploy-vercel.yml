@@ -29,10 +29,14 @@ jobs:
       - name: Prepare site
         run: |
           mkdir -p _site
+          # Domínio custom da ferramenta (GitHub Pages serve em app.selosales.com.br)
+          echo "app.selosales.com.br" > _site/CNAME
           # Legal pages (required for Hotmart)
           cp termos.html _site/termos.html
           cp privacidade.html _site/privacidade.html
-          # The authenticated tool
+          # The authenticated tool — servido na raiz (app.selosales.com.br) e
+          # também em /tool.html (compatibilidade com links antigos)
+          cp tool.html _site/index.html
           cp tool.html _site/tool.html
           # Social share image (PNG exported from og-image.svg, if present)
           cp og-image.png _site/og-image.png 2>/dev/null || true
