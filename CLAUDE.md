@@ -114,6 +114,13 @@ Sem esse grant, todas as escritas retornam 403/42501.
 
 6. **Middleware**: só redireciona, não tem lógica de negócio. Cuidado para não quebrar `/api/*` (já excluído no matcher).
 
+7. **Conteúdo e criativos (marketing e textos do produto)**: sem emoji e sem "cara de IA".
+   - Nada de emoji em criativos, legendas, copy de marketing nem na UI do produto (decisão do fundador, 2026-06-29).
+   - Evitar a estética genérica de IA: frases de entusiasmo artificial, listas óbvias, jargão de "solução inovadora", excesso de adjetivos. Escrever como um corretor/profissional escreveria — direto, específico, com voz.
+   - Vale para Reels, carrosséis, stories, e-mails e textos da ferramenta.
+
+8. **Redesign da ferramenta (pendente)**: o fundador acha o visual atual "com cara de IA / feio". Não tentar "deixar mais bonito" no genérico — isso recai no mesmo resultado. O caminho acordado: (a) partir de 1–3 referências visuais reais que o fundador escolher; (b) definir um design system enxuto (tipografia, escala de espaçamento, 1 cor de acento, menos caixas/bordas, mais respiro); (c) redesenhar UMA tela até ficar certa como referência; (d) propagar. Sem referência concreta, não começar.
+
 ## Comandos úteis
 
 ```bash
