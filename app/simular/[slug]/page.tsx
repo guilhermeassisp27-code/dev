@@ -89,7 +89,7 @@ export default function SimularPage({ params }: { params: { slug: string } }) {
           slug,
           nome,
           telefone,
-          imovel: '💰 Simulação de financiamento',
+          imovel: 'Simulação de financiamento',
           mensagem: resumo,
           origem: 'simulacao',
           website,
@@ -133,7 +133,7 @@ export default function SimularPage({ params }: { params: { slug: string } }) {
           <p style={{ color: '#0F172A', fontSize: 17, fontWeight: 700 }}>Simulação enviada!</p>
           <p style={{ color: '#64748B', fontSize: 14, marginTop: 8, lineHeight: 1.6 }}>
             {branding?.nome ? `${branding.nome.split(' ')[0]} vai` : 'O corretor vai'} te chamar no
-            WhatsApp pra te ajudar a conseguir a melhor taxa. 🏠
+            WhatsApp pra te ajudar a conseguir a melhor taxa.
           </p>
         </div>
       </Shell>

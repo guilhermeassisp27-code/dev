@@ -992,7 +992,7 @@ input[type=color]{opacity:0;width:0;height:0;position:absolute}
           </div>
         </div>
         <div class="field f2" style="margin-top:14px;padding-top:14px;border-top:1px solid var(--b)">
-          <label class="lbl" for="sim-link">💰 Seu link de simulação de financiamento <span class="feat-new" style="background:var(--p2);color:#0A2138;font-size:9px;font-weight:800;padding:2px 6px;border-radius:5px;margin-left:4px">NOVO</span></label>
+          <label class="lbl" for="sim-link">Seu link de simulação de financiamento <span class="feat-new" style="background:var(--p2);color:#0A2138;font-size:9px;font-weight:800;padding:2px 6px;border-radius:5px;margin-left:4px">NOVO</span></label>
           <p style="color:var(--t2);font-size:12px;margin:4px 0 8px;line-height:1.55">O cliente simula sozinho a parcela nos principais bancos (taxas do Banco Central) e o lead cai aqui — você só acompanha.</p>
           <div style="display:flex;gap:8px;flex-wrap:wrap">
             <input id="sim-link" type="text" class="inp" readonly style="flex:1;min-width:200px" value="">
@@ -1536,9 +1536,6 @@ input[type=color]{opacity:0;width:0;height:0;position:absolute}
         <h1>Minhas Propostas</h1>
         <p>Acompanhe o andamento de cada negociação — do primeiro contato ao fechamento.</p>
       </div>
-
-      <!-- Propostas enviadas por link (status: enviada / visualizada / assinada) -->
-      <div id="links-enviados" style="margin-bottom:18px"></div>
 
       <!-- CRM: painel de status (só aparece quando há propostas) -->
       <div id="crm-painel" style="display:none">
@@ -2541,6 +2538,7 @@ let imoveis = lsParse('cpr_imoveis', [])
 let vendas = lsParse('cpr_vendas', [])
 let snapProposta = null
 let _propostaJaSalva = false   // trava anti-duplicação: impede salvar a mesma proposta 2x (duplo-clique)
+let _ultimoItemSalvo = null    // referência ao item de histórico salvo (p/ vincular o link da proposta)
 let fotoAtual = null
 let _toastT = null
 let _crmFiltro = null  // filtro ativo por status no histórico
@@ -2708,7 +2706,7 @@ function showView(name) {
     if (srch) srch.value = ''
     _crmFiltro = null
     renderHistory()
-    carregarLinksEnviados()
+    carregarStatusLinks()
   }
   if (name === 'visita') {
     const dt = document.getElementById('v-data')
@@ -2936,6 +2934,19 @@ async function gerarLinkProposta() {
       .insert({ owner_id: window._uid, titulo, cliente, cor, html })
       .select('id').single()
     if (error) throw error
+
+    // Integra na lista de propostas: vincula o link à proposta em Minhas Propostas
+    // (gera/atualiza o item de histórico) para o status aparecer no card.
+    if (snapProposta) snapProposta.linkId = data.id
+    if (_propostaJaSalva && _ultimoItemSalvo) {
+      _ultimoItemSalvo.linkId = data.id
+      localStorage.setItem('cpr_hist', JSON.stringify(historico))
+      salvarRemoto().catch(() => {})
+    } else if (snapProposta) {
+      await salvarProposta() // salva já com o linkId (via ...snapProposta)
+    }
+    _linkStatus[data.id] = { id: data.id, views: 0, signed_at: null }
+
     abrirModalLinkProposta(_APP_BASE + '/p/' + data.id, data.id, cliente)
   } catch(e) {
     console.error('gerarLink:', e)
@@ -2950,14 +2961,14 @@ function abrirModalLinkProposta(url, id, cliente) {
   back.id = 'modal-link-proposta'
   back.style.cssText = 'position:fixed;inset:0;z-index:10000;background:rgba(8,18,28,.6);display:flex;align-items:center;justify-content:center;padding:20px'
   back.innerHTML = `<div style="background:var(--s1);border:1px solid var(--bm);border-radius:18px;max-width:440px;width:100%;padding:24px;font-family:var(--font)">
-    <div style="font-size:17px;font-weight:800;color:var(--t);margin-bottom:6px">🔗 Link da proposta</div>
+    <div style="font-size:17px;font-weight:800;color:var(--t);margin-bottom:6px">Link da proposta</div>
     <p style="font-size:13px;color:var(--t2);line-height:1.6;margin:0 0 14px">Envie para o cliente. Você vai saber na hora em que ele abrir.</p>
     <input readonly id="mlp-url" value="${escH(url)}" style="width:100%;background:var(--s2);border:1px solid var(--b);border-radius:10px;padding:11px;color:var(--t);font-size:13px;margin-bottom:10px;box-sizing:border-box">
     <div style="display:flex;gap:8px;margin-bottom:14px">
       <button class="btn btn-ghost btn-sm" style="flex:1;justify-content:center" onclick="copiarUrlProposta()">Copiar</button>
       <a class="btn btn-green btn-sm" style="flex:1;justify-content:center" href="https://wa.me/?text=${encodeURIComponent(wa)}" target="_blank" rel="noopener">Enviar no WhatsApp</a>
     </div>
-    <div id="mlp-status" style="font-size:13px;font-weight:600;color:var(--t2);background:var(--s2);border-radius:10px;padding:12px;text-align:center">⏳ Aguardando o cliente abrir…</div>
+    <div id="mlp-status" style="font-size:13px;font-weight:600;color:var(--t2);background:var(--s2);border-radius:10px;padding:12px;text-align:center">Aguardando o cliente abrir…</div>
     <button class="btn btn-ghost btn-sm" style="width:100%;margin-top:14px;justify-content:center" onclick="fecharModalLinkProposta()">Fechar</button>
   </div>`
   document.body.appendChild(back)
@@ -2980,10 +2991,10 @@ async function checarViewProposta(id) {
     if (!data) return
     const el = document.getElementById('mlp-status')
     if (data.signer_name) {
-      if (el) el.innerHTML = '✍️ <b style="color:var(--g)">Assinada</b> por ' + escH(data.signer_name) + '!'
+      if (el) el.innerHTML = '<b style="color:var(--g)">Assinada</b> por ' + escH(data.signer_name) + '!'
       if (_mlpTimer) { clearInterval(_mlpTimer); _mlpTimer = null }
     } else if (data.views > 0) {
-      if (el) el.innerHTML = '👁 <b style="color:var(--g)">Visualizada!</b> O cliente abriu a sua proposta.'
+      if (el) el.innerHTML = '<b style="color:var(--g)">Visualizada!</b> O cliente abriu a sua proposta.'
     }
   } catch(_) {}
 }
@@ -3000,39 +3011,29 @@ function _tempoAtras(iso) {
 function copiarLinkEnviado(url) {
   if (navigator.clipboard) navigator.clipboard.writeText(url).then(() => toast('Link copiado!')).catch(() => {})
 }
-// Painel persistente: propostas enviadas por link + status (enviada/visualizada/assinada).
-async function carregarLinksEnviados() {
-  const box = document.getElementById('links-enviados')
-  if (!box) return
-  if (window._DEMO || !window._sb || !window._uid) { box.innerHTML = ''; return }
+// Carrega o status dos links (visualizada/assinada) e integra no card da
+// proposta em Minhas Propostas. Popula o cache _linkStatus[id] e re-renderiza.
+let _linkStatus = {}
+async function carregarStatusLinks() {
+  if (window._DEMO || !window._sb || !window._uid) return
   try {
     const { data, error } = await window._sb.from('cpr_public_proposals')
-      .select('id,titulo,cliente,views,last_view_at,signed_at,signer_name,created_at')
+      .select('id,views,last_view_at,signed_at,signer_name')
       .eq('owner_id', window._uid)
-      .order('created_at', { ascending: false })
-      .limit(30)
-    if (error || !data || !data.length) { box.innerHTML = ''; return }
-    box.innerHTML = `<div class="card-t" style="margin-bottom:10px">🔗 Propostas enviadas por link
-      <span class="sb-badge" style="background:var(--ps);color:var(--p);font-size:10px;font-weight:700;padding:2px 7px;border-radius:100px;margin-left:6px">${data.length}</span></div>
-      <div class="hist-list">${data.map(p => {
-        let badge, cor2
-        if (p.signed_at) { badge = '✍️ Assinada por ' + escH(p.signer_name || 'cliente'); cor2 = 'var(--g)' }
-        else if (p.views > 0) { badge = '👁 Visualizada ' + _tempoAtras(p.last_view_at); cor2 = 'var(--p2)' }
-        else { badge = '📤 Enviada — aguardando o cliente abrir'; cor2 = 'var(--t3)' }
-        const url = _APP_BASE + '/p/' + p.id
-        return `<div class="hist-card"><div class="hist-main-row">
-          <span class="lead-status" data-s="hoje" style="background:var(--ps)">🔗</span>
-          <div class="hist-info">
-            <div class="hist-cliente">${escH(p.cliente || p.titulo || 'Proposta')}</div>
-            <div class="hist-imovel" style="color:${cor2};font-weight:600">${badge}</div>
-          </div>
-          <div class="hist-actions">
-            <button class="btn btn-ghost btn-sm" onclick="copiarLinkEnviado('${escH(url)}')">Copiar</button>
-            <a class="btn btn-ghost btn-sm" href="${escH(url)}" target="_blank" rel="noopener">Abrir</a>
-          </div>
-        </div></div>`
-      }).join('')}</div>`
-  } catch(_) { box.innerHTML = '' }
+    if (error || !data) return
+    _linkStatus = {}
+    data.forEach(p => { _linkStatus[p.id] = p })
+    renderHistory()
+  } catch(_) {}
+}
+// Devolve {texto, cor} do status do link de uma proposta (ou null se sem link).
+function statusLinkProposta(h) {
+  if (!h || !h.linkId) return null
+  const p = _linkStatus[h.linkId]
+  if (!p) return { texto: 'Link enviado', cor: 'var(--t3)' }
+  if (p.signed_at) return { texto: 'Assinada por ' + (p.signer_name || 'cliente'), cor: 'var(--g)' }
+  if (p.views > 0) return { texto: 'Visualizada ' + _tempoAtras(p.last_view_at), cor: 'var(--p2)' }
+  return { texto: 'Enviada — aguardando abrir', cor: 'var(--t3)' }
 }
 
 /* ── CALCULAR PARCELA (Tabela Price) ── */
@@ -3404,6 +3405,7 @@ async function salvarProposta() {
     tituloGerado: document.getElementById('p-titulo').textContent,
   }
   historico.unshift(item)
+  _ultimoItemSalvo = item
   capHistorico()
   localStorage.setItem('cpr_hist', JSON.stringify(historico))
   atualizarBadgeHist()
@@ -3423,6 +3425,7 @@ function novaProposta() {
   atualizarTipoNeg()
   snapProposta = null
   _propostaJaSalva = false
+  _ultimoItemSalvo = null
   removerFotoImovel()
   window.scrollTo({ top:0, behavior:'smooth' })
   setTimeout(() => document.getElementById('f-cliente').focus(), 350)
@@ -3617,6 +3620,7 @@ function renderHistory(filtrados) {
       </div>
       <div class="hist-bottom-row">
         <div class="hist-meta">${escH(h.data||'')}</div>
+        ${(() => { const ls = statusLinkProposta(h); return ls ? `<span onclick="copiarLinkEnviado('${_APP_BASE}/p/${h.linkId}')" title="Copiar link da proposta" style="cursor:pointer;font-size:11px;font-weight:700;color:${ls.cor};display:inline-flex;align-items:center;gap:5px;margin-right:8px"><svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M10 13a5 5 0 007.54.54l3-3a5 5 0 00-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 00-7.54-.54l-3 3a5 5 0 007.07 7.07l1.71-1.71"/></svg>${escH(ls.texto)}</span>` : '' })()}
         <div style="position:relative;display:inline-block">
           <button class="hist-status" data-s="${escH(h.status||'nova')}"
             onclick="abrirMenuStatus(event,${realIdx})"
@@ -4404,10 +4408,10 @@ function renderCapturasInbox() {
     <div class="hist-list">${capturasPend.map(c => `
       <div class="hist-card">
         <div class="hist-main-row">
-          <span class="lead-status" data-s="hoje">${c.origem === 'simulacao' ? '💰 Simulou' : 'Novo'}</span>
+          <span class="lead-status" data-s="hoje">${c.origem === "simulacao" ? "Simulou" : "Novo"}</span>
           <div class="hist-info">
             <div class="hist-cliente">${escH(c.nome||'—')}</div>
-            <div class="hist-imovel">${c.origem === 'simulacao' ? '💰 Simulou financiamento pelo seu link' : escH(c.imovel||'')}</div>
+            <div class="hist-imovel">${c.origem === 'simulacao' ? 'Simulou financiamento pelo seu link' : escH(c.imovel||'')}</div>
           </div>
           <div class="hist-actions">
             <button class="btn btn-primary btn-sm" onclick="aceitarCaptura('${c.id}')" title="Aceitar e agendar">Aceitar</button>
@@ -6176,7 +6180,7 @@ function renderImoveis() {
   const _url = linkSitePublico()
   const _banner = `<div class="meusite">
     <div class="meusite-info">
-      <div class="meusite-title">🌐 Seu site público de imóveis</div>
+      <div class="meusite-title">Seu site público de imóveis</div>
       ${_slug
         ? `<a class="meusite-link" href="${_url}" target="_blank" rel="noopener">${escH(_url.replace(/^https?:\/\//,''))}</a>
            <div class="meusite-sub">${_pub} ${_pub === 1 ? 'imóvel publicado' : 'imóveis publicados'} · compartilhe no Instagram e no WhatsApp</div>`
