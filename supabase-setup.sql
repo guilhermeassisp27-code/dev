@@ -233,3 +233,13 @@ create policy "cpp_owner_all"
 
 create index if not exists cpr_public_proposals_owner_idx
   on public.cpr_public_proposals (owner_id, created_at desc);
+
+-- Assinatura eletrônica simples (aceite do cliente no link). Válida como
+-- manifestação de vontade (Lei 14.063/2020 + MP 2.200-2), com trilha de
+-- evidências: nome, CPF, rabisco (dataURL), data/hora e IP. Idempotente.
+alter table public.cpr_public_proposals
+  add column if not exists signed_at        timestamptz,
+  add column if not exists signer_name      text,
+  add column if not exists signer_cpf       text,
+  add column if not exists signer_signature text,
+  add column if not exists signer_ip        text;

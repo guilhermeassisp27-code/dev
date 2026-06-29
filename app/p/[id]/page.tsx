@@ -2,6 +2,7 @@ import type { Metadata } from 'next'
 import { notFound } from 'next/navigation'
 import { getProposta } from '@/lib/proposta'
 import TrackView from './track'
+import Sign from './sign'
 
 // Proposta muda de status (visualizada) — sempre fresca; e nunca indexar
 // (é um link privado entre corretor e cliente).
@@ -38,6 +39,15 @@ export default async function PropostaPage({ params }: { params: { id: string } 
       <div style={{ maxWidth: 760, margin: '0 auto' }}>
         {/* HTML autossuficiente da proposta (CSS inline gerado no momento) */}
         <div dangerouslySetInnerHTML={{ __html: p.html }} />
+
+        {/* Aceite / assinatura eletrônica do cliente */}
+        <Sign
+          id={p.id}
+          cor={p.cor}
+          cliente={p.cliente}
+          signedAt={p.signedAt}
+          signerName={p.signerName}
+        />
 
         <p style={{ textAlign: 'center', color: '#94A3B8', fontSize: 12, marginTop: 22 }}>
           <a

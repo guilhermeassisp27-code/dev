@@ -1537,6 +1537,9 @@ input[type=color]{opacity:0;width:0;height:0;position:absolute}
         <p>Acompanhe o andamento de cada negociação — do primeiro contato ao fechamento.</p>
       </div>
 
+      <!-- Propostas enviadas por link (status: enviada / visualizada / assinada) -->
+      <div id="links-enviados" style="margin-bottom:18px"></div>
+
       <!-- CRM: painel de status (só aparece quando há propostas) -->
       <div id="crm-painel" style="display:none">
         <div class="crm-painel" id="crm-cards"></div>
@@ -2704,6 +2707,7 @@ function showView(name) {
     if (srch) srch.value = ''
     _crmFiltro = null
     renderHistory()
+    carregarLinksEnviados()
   }
   if (name === 'visita') {
     const dt = document.getElementById('v-data')
@@ -2971,13 +2975,63 @@ function fecharModalLinkProposta() {
 }
 async function checarViewProposta(id) {
   try {
-    const { data } = await window._sb.from('cpr_public_proposals').select('views').eq('id', id).maybeSingle()
-    if (data && data.views > 0) {
-      const el = document.getElementById('mlp-status')
-      if (el) el.innerHTML = '👁 <b style="color:var(--g)">Visualizada!</b> O cliente abriu a sua proposta.'
+    const { data } = await window._sb.from('cpr_public_proposals').select('views,signer_name').eq('id', id).maybeSingle()
+    if (!data) return
+    const el = document.getElementById('mlp-status')
+    if (data.signer_name) {
+      if (el) el.innerHTML = '✍️ <b style="color:var(--g)">Assinada</b> por ' + escH(data.signer_name) + '!'
       if (_mlpTimer) { clearInterval(_mlpTimer); _mlpTimer = null }
+    } else if (data.views > 0) {
+      if (el) el.innerHTML = '👁 <b style="color:var(--g)">Visualizada!</b> O cliente abriu a sua proposta.'
     }
   } catch(_) {}
+}
+
+function _tempoAtras(iso) {
+  if (!iso) return ''
+  const min = Math.floor((Date.now() - new Date(iso).getTime()) / 60000)
+  if (min < 1) return 'agora'
+  if (min < 60) return 'há ' + min + ' min'
+  const h = Math.floor(min / 60)
+  if (h < 24) return 'há ' + h + 'h'
+  return 'há ' + Math.floor(h / 24) + 'd'
+}
+function copiarLinkEnviado(url) {
+  if (navigator.clipboard) navigator.clipboard.writeText(url).then(() => toast('Link copiado!')).catch(() => {})
+}
+// Painel persistente: propostas enviadas por link + status (enviada/visualizada/assinada).
+async function carregarLinksEnviados() {
+  const box = document.getElementById('links-enviados')
+  if (!box) return
+  if (window._DEMO || !window._sb || !window._uid) { box.innerHTML = ''; return }
+  try {
+    const { data, error } = await window._sb.from('cpr_public_proposals')
+      .select('id,titulo,cliente,views,last_view_at,signed_at,signer_name,created_at')
+      .eq('owner_id', window._uid)
+      .order('created_at', { ascending: false })
+      .limit(30)
+    if (error || !data || !data.length) { box.innerHTML = ''; return }
+    box.innerHTML = `<div class="card-t" style="margin-bottom:10px">🔗 Propostas enviadas por link
+      <span class="sb-badge" style="background:var(--ps);color:var(--p);font-size:10px;font-weight:700;padding:2px 7px;border-radius:100px;margin-left:6px">${data.length}</span></div>
+      <div class="hist-list">${data.map(p => {
+        let badge, cor2
+        if (p.signed_at) { badge = '✍️ Assinada por ' + escH(p.signer_name || 'cliente'); cor2 = 'var(--g)' }
+        else if (p.views > 0) { badge = '👁 Visualizada ' + _tempoAtras(p.last_view_at); cor2 = 'var(--p2)' }
+        else { badge = '📤 Enviada — aguardando o cliente abrir'; cor2 = 'var(--t3)' }
+        const url = _APP_BASE + '/p/' + p.id
+        return `<div class="hist-card"><div class="hist-main-row">
+          <span class="lead-status" data-s="hoje" style="background:var(--ps)">🔗</span>
+          <div class="hist-info">
+            <div class="hist-cliente">${escH(p.cliente || p.titulo || 'Proposta')}</div>
+            <div class="hist-imovel" style="color:${cor2};font-weight:600">${badge}</div>
+          </div>
+          <div class="hist-actions">
+            <button class="btn btn-ghost btn-sm" onclick="copiarLinkEnviado('${escH(url)}')">Copiar</button>
+            <a class="btn btn-ghost btn-sm" href="${escH(url)}" target="_blank" rel="noopener">Abrir</a>
+          </div>
+        </div></div>`
+      }).join('')}</div>`
+  } catch(_) { box.innerHTML = '' }
 }
 
 /* ── CALCULAR PARCELA (Tabela Price) ── */
