@@ -280,6 +280,52 @@ Os Stories são o canal de **intimidade e interação** — é onde a audiência
 
 ---
 
+## 🆕 REFORÇO: funcionalidades novas (conteúdo pronto pra destacar)
+
+> Lançamos 4 recursos que são **"matadores de demonstração"** — gente que vê, quer testar.
+> Eles entram no **pilar 5 (Produto)**, mas sempre embrulhados em DOR (não em "olha que legal").
+> Encaixe um por semana nas Fases 2 e 3, no lugar dos slots de produto. Cada um já vem com
+> Reel (FALA/TELA/CTA pro avatar), carrossel e story.
+
+### 1) 🏦 Simulador de financiamento (o cliente simula sozinho pelo seu link)
+**Dor:** o cliente pergunta "quanto fica a parcela?" e o corretor vira calculadora/intermediário o dia todo.
+- **🎬 Reel — FALA:** "Seu cliente te manda mensagem 21h de domingo: 'quanto fica a parcela?'. E você lá, abrindo planilha. Para com isso. Manda o SEU link de simulação: ele coloca o valor, a entrada, e vê a parcela nos principais bancos — com taxa do Banco Central, sem achismo. Ele simula sozinho, e o lead cai direto no seu funil. Você só acompanha quem tá quente."
+  - **TELA:** "Seu cliente simula sozinho. Você só fecha."
+  - **CTA:** "É o simulador do Selo. Testa grátis, link na bio."
+- **🎠 Carrossel:** "Pare de ser a calculadora do seu cliente: 5 perguntas que seu link já responde" (parcela, entrada, SAC×Price, bancos, FGTS).
+- **📲 Story:** print do simulador + enquete "Você ainda calcula parcela na mão? Sim 😅 / Não 🙌".
+
+### 2) 👁 Proposta por link + "visualizada" (saiba quando o cliente abriu)
+**Dor:** mandou a proposta e ficou no escuro — sem saber se viu, perdendo o timing do follow-up.
+- **🎬 Reel — FALA:** "Você manda a proposta e fica olhando pro WhatsApp: 'será que ele viu?'. Chega disso. Com o Selo, sua proposta vira um link bonito, com a sua marca — e na hora EXATA que o cliente abre, você é avisado: visualizada. Aí você não liga no escuro: liga quando ele tá com a proposta na tela. Quem sabe a hora certa, fecha mais."
+  - **TELA:** "Ele abriu sua proposta agora. Liga AGORA."
+  - **CTA:** "Saiba quando o cliente vê. Link na bio."
+- **🎠 Carrossel:** "O follow-up perfeito: por que ligar na hora que o cliente ABRE muda tudo".
+- **📲 Story:** bastidor mostrando o status mudar de 'Enviada' pra 'Visualizada' + caixinha "já perdeu venda por ligar na hora errada?".
+
+### 3) ✍️ Assinatura eletrônica (cliente assina o documento pelo link)
+**Dor:** imprimir, assinar, escanear, mandar de volta — fricção que esfria a venda.
+- **🎬 Reel — FALA:** "Cliente decidiu fechar e aí vem a burocracia: imprime, assina, tira foto, manda de volta… e no meio disso ele esfria. No Selo, ele abre o link, lê e ASSINA ali mesmo — nome, CPF e a assinatura, com data e hora registradas. Proposta, autorização de venda, contrato: tudo assinável pelo link. Menos atrito, mais venda fechada."
+  - **TELA:** "Do 'quero' à assinatura, sem imprimir nada."
+  - **CTA:** "Assinatura no link. Testa grátis na bio."
+- **🎠 Carrossel:** "Quantas vendas você perdeu na hora de assinar? O fim da burocracia do papel".
+- **📲 Story:** enquete "Você ainda manda contrato pra imprimir? 🖨️ / Assina digital ✅".
+
+### 4) 🌐 Site público do corretor (sua vitrine de imóveis num link)
+**Dor:** o corretor solo improvisa em Wix/linktree e não parece profissional.
+- **🎬 Reel — FALA:** "Você divulga imóvel mandando print no Zap? Seus imóveis merecem um site. No Selo, sua carteira vira uma vitrine com a sua marca, num link só — você bota na bio do Instagram, no status do Whats. O cliente vê tudo e clica em 'tenho interesse', que cai direto no seu funil. Corretor solo com cara de imobiliária."
+  - **TELA:** "Seus imóveis num link. Cara de imobiliária."
+  - **CTA:** "Crie seu site grátis no Selo. Link na bio."
+- **🎠 Carrossel:** REUSAR os prints da vitrine + "Como ter um site de imóveis sem pagar Wix".
+- **📲 Story:** mostra a vitrine + "Quer um site assim? Comenta SITE."
+
+### Onde encaixar (sem inflar o produto)
+- **Fase 2:** Semana 5 → Simulador (dia de produto). Semana 6 → Proposta visualizada. Semana 7 → Site público. Semana 8 → Assinatura.
+- **Fase 3:** repita o que teve mais salvamento/clique como Reel de prova ("antes x depois") e depoimento.
+- **Regra:** continua 1 produto a cada 4-5 posts. Esses 4 substituem os slots de produto que já existiam — não adicione produto a mais.
+
+---
+
 ## ♻️ Como reaproveitar (1 ideia = 4 conteúdos)
 - O **carrossel** da semana → vira **Reel** (avatar narrando os pontos) → vira **3-5 stories** → vira **post estático** com a melhor frase.
 - Todo Reel que performar bem → **republique** em 3-4 semanas com gancho novo.
