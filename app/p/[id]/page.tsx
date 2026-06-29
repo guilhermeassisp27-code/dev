@@ -56,7 +56,7 @@ export default async function PropostaPage({ params }: { params: { id: string } 
             rel="noopener noreferrer"
             style={{ color: '#94A3B8', textDecoration: 'none' }}
           >
-            Proposta gerada com <span style={{ fontWeight: 800, color: '#C9882A' }}>Selo</span>
+            Documento gerado com <span style={{ fontWeight: 800, color: '#C9882A' }}>Selo</span>
           </a>
         </p>
       </div>
