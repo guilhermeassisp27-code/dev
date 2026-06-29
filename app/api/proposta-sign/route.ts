@@ -14,7 +14,11 @@ export async function POST(req: NextRequest) {
   const cpf = String(body.cpf ?? '').trim()
   const assinatura = String(body.assinatura ?? '')
   if (!nome) return NextResponse.json({ error: 'nome obrigatório' }, { status: 400 })
-  if (!cpf) return NextResponse.json({ error: 'cpf obrigatório' }, { status: 400 })
+  if (cpf.replace(/\D/g, '').length < 11)
+    return NextResponse.json({ error: 'cpf inválido' }, { status: 400 })
+  // exige uma assinatura de imagem real (bloqueia POST direto sem rabisco)
+  if (!assinatura.startsWith('data:image/') || assinatura.length < 200)
+    return NextResponse.json({ error: 'assinatura obrigatória' }, { status: 400 })
 
   const ip =
     req.headers.get('x-forwarded-for')?.split(',')[0].trim() ||

@@ -2954,6 +2954,7 @@ async function gerarLinkProposta() {
       await salvarProposta() // salva já com o linkId (via ...snapProposta)
     }
     _linkStatus[data.id] = { id: data.id, views: 0, signed_at: null }
+    try { renderHistory() } catch(_) {}   // atualiza o pill de status no card
 
     abrirModalLinkProposta(_APP_BASE + '/p/' + data.id, data.id, cliente)
   } catch(e) {
@@ -4408,10 +4409,11 @@ function linkSimulacao() {
 function copiarLinkSimulacao() {
   if (window._DEMO) return demoBloqueio()
   const url = linkSimulacao()
+  const fallback = () => { const inp = document.getElementById('sim-link'); if (inp) { inp.focus(); inp.select(); try { document.execCommand('copy'); toast('Link copiado!') } catch(_) { toast('Copie o link manualmente', true) } } }
   if (navigator.clipboard) {
-    navigator.clipboard.writeText(url).then(() => toast('Link copiado!')).catch(() => {
-      const inp = document.getElementById('sim-link'); if (inp) { inp.focus(); inp.select(); try { document.execCommand('copy'); toast('Link copiado!') } catch(_) {} }
-    })
+    navigator.clipboard.writeText(url).then(() => toast('Link copiado!')).catch(fallback)
+  } else {
+    fallback()
   }
 }
 function compartilharLinkSimulacao() {

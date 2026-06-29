@@ -54,7 +54,9 @@ const RESERVADOS = new Set([
 // contornado e respeita imóveis sem divulgação exata).
 function cidadeDe(end: string): string {
   if (!end) return ''
-  const partes = end.split(/[—–-]/)
+  // separa só por travessão (—/–), o separador usado no app ("Rua X, 123 —
+  // Cidade, UF"); hífen comum NÃO conta (ruas/bairros como "Pau-Brasil").
+  const partes = end.split(/[—–]/)
   if (partes.length < 2) return ''
   return partes[partes.length - 1].trim()
 }

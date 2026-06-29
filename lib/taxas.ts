@@ -57,9 +57,12 @@ export async function getTaxas(): Promise<TaxasResult> {
     if (!rows.length) return FALLBACK
 
     const ref = String(rows[0]?.InicioPeriodo ?? '').slice(0, 10)
+    const semAcento = (s: string) =>
+      s.toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g, '')
     const escolhido = new Map<string, number>()
     for (const row of rows) {
-      const nome = String(row.InstituicaoFinanceira ?? '').toLowerCase()
+      // normaliza acentos: "ITAÚ UNIBANCO" precisa casar com a chave "itau"
+      const nome = semAcento(String(row.InstituicaoFinanceira ?? ''))
       const taxa = Number(row.TaxaJurosAoAno)
       if (!isFinite(taxa) || taxa <= 0) continue
       for (const chave of Object.keys(ALVO)) {
@@ -83,7 +86,7 @@ export async function getTaxas(): Promise<TaxasResult> {
 // ── Matemática idêntica à da ferramenta (tool.html: calcParcela/calcSAC) ──
 export function parcelaPrice(pv: number, taxaAnual: number, meses: number): number {
   const i = Math.pow(1 + taxaAnual / 100, 1 / 12) - 1
-  if (i === 0) return pv / meses
+  if (i <= 0) return pv / meses
   return (pv * (i * Math.pow(1 + i, meses))) / (Math.pow(1 + i, meses) - 1)
 }
 

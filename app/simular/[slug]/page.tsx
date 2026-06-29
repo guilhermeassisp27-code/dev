@@ -150,7 +150,7 @@ export default function SimularPage({ params }: { params: { slug: string } }) {
 
       <Campo label="Valor do imóvel" value={valor} onChange={(v) => setValor(v.replace(/\D/g, ''))} prefix="R$" cor={cor} mostrar={valorNum ? valorNum.toLocaleString('pt-BR') : ''} />
       <div style={{ display: 'flex', gap: 12 }}>
-        <Campo label="Entrada (%)" value={entrada} onChange={setEntrada} cor={cor} type="number" />
+        <Campo label="Entrada (%)" value={entrada} onChange={(v) => setEntrada(String(Math.min(90, Math.max(0, Number(v.replace(/\D/g, '')) || 0))))} cor={cor} type="number" />
         <Campo label="Prazo (anos)" value={anos} onChange={setAnos} cor={cor} type="number" />
       </div>
 
