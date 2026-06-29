@@ -2545,6 +2545,7 @@ let fotoAtual = null
 let _toastT = null
 let _crmFiltro = null  // filtro ativo por status no histórico
 let _menuAberto = null // referência ao dropdown de status aberto
+let _cardMenuAberto = null // card cujo z-index foi elevado p/ o dropdown não ser coberto
 let snapVisita = null  // termo de visita gerado, ainda não salvo
 
 // Propostas e registros de visita compartilham o mesmo array `historico`
@@ -3653,6 +3654,11 @@ function abrirMenuStatus(ev, idx) {
   wrap.appendChild(menu)
   _menuAberto = menu
 
+  // Eleva o card que tem o menu aberto acima dos cards seguintes (senão o
+  // card de baixo, sendo position:relative, pinta por cima do dropdown).
+  _cardMenuAberto = btn.closest('.hist-card')
+  if (_cardMenuAberto) { _cardMenuAberto.style.position = 'relative'; _cardMenuAberto.style.zIndex = '100' }
+
   // Se não couber abaixo (card no fim da lista), abre para cima
   const r = menu.getBoundingClientRect()
   if (r.bottom > window.innerHeight - 8) menu.classList.add('acima')
@@ -3663,6 +3669,7 @@ function abrirMenuStatus(ev, idx) {
 
 function fecharMenuStatus() {
   if (_menuAberto) { _menuAberto.remove(); _menuAberto = null }
+  if (_cardMenuAberto) { _cardMenuAberto.style.zIndex = ''; _cardMenuAberto = null }
 }
 
 function definirStatus(idx, statusKey) {
