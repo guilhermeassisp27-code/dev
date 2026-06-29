@@ -57,9 +57,20 @@ O avatar é **um corretor de sucesso, gente boa e direto** — já passou perren
 | **Quinta** | 🎬 Reel (avatar) | Rotina ou Posicionamento |
 | **Sábado** | 🖼️ Post leve | Enquete, bastidor, dica rápida ou produto |
 
-**Horário:** 18h–21h (corretor mexe no celular pós-expediente). Sábado, fim de manhã (10h-12h).
-
 **Stories (todo dia, 2-4 por dia):** bastidores, enquetes, "caixinha de perguntas", repost dos posts do feed, antes/depois, prova social. Story converte na intimidade — é onde o link da bio é repetido.
+
+### ⏰ Melhores horários pra postar (público corretor, Brasil)
+
+| Conteúdo | Dia | Horário ideal | Alternativa |
+|---|---|---|---|
+| 🎬 Reel | Terça e Quinta | **19h–21h** (pico pós-expediente) | 12h–13h (almoço) |
+| 🎠 Carrossel | Quarta | **19h–20h** (salva pra ver depois) | 12h30 |
+| 🖼️ Post leve | Sábado | **10h–12h** (manhã de fim de semana) | 19h |
+| 📲 Stories | Todo dia | **3 janelas: 8h–9h · 12h–13h · 19h–21h** | — |
+
+**Por que esses horários:** o corretor trabalha durante o dia (visitas, atendimento) e pega o celular no **almoço** e à **noite**. Noite (19h–21h) é o pico de consumo. Sábado de manhã ele respira e rola o feed.
+
+> ⚠️ **Isso é o ponto de partida.** Depois de 2-3 semanas, abra **Instagram → Insights → Total de seguidores → Horários mais ativos** e ajuste pros SEUS seguidores. O melhor horário não é o do "manual" — é quando **a sua audiência** está online.
 
 ---
 
