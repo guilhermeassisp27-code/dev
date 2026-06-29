@@ -121,7 +121,7 @@ export default function Sign({
             <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#fff" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"><path d="M20 6 9 17l-5-5" /></svg>
           </div>
           <div>
-            <div style={{ fontSize: 15, fontWeight: 800, color: '#0F172A' }}>Proposta aceita e assinada</div>
+            <div style={{ fontSize: 15, fontWeight: 800, color: '#0F172A' }}>Documento aceito e assinado</div>
             <div style={{ fontSize: 13, color: '#475569', marginTop: 2 }}>
               Por <b>{feitoPor}</b> · {fmtData(feitoEm)}
             </div>
@@ -135,7 +135,7 @@ export default function Sign({
     <div style={card(cor)}>
       <div style={{ fontSize: 16, fontWeight: 800, color: '#0F172A', marginBottom: 4 }}>Aceite e assinatura</div>
       <p style={{ fontSize: 13, color: '#64748B', lineHeight: 1.6, margin: '0 0 16px' }}>
-        Concordou com a proposta? Assine abaixo. Sua assinatura é registrada com data e hora.
+        Concordou com o documento? Assine abaixo. Sua assinatura é registrada com data e hora.
       </p>
 
       <Campo label="Nome completo *" value={nome} onChange={setNome} cor={cor} placeholder="Seu nome" />
@@ -168,7 +168,7 @@ export default function Sign({
 
       <label style={{ display: 'flex', alignItems: 'flex-start', gap: 9, fontSize: 13, color: '#475569', lineHeight: 1.5, margin: '12px 0', cursor: 'pointer' }}>
         <input type="checkbox" checked={aceite} onChange={(e) => setAceite(e.target.checked)} style={{ marginTop: 2, width: 17, height: 17, accentColor: cor }} />
-        <span>Li e estou de acordo com os termos desta proposta.</span>
+        <span>Li e estou de acordo com os termos deste documento.</span>
       </label>
 
       {erro && <p style={{ color: '#DC2626', fontSize: 12, marginBottom: 10 }}>{erro}</p>}

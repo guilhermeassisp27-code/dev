@@ -1721,6 +1721,10 @@ input[type=color]{opacity:0;width:0;height:0;position:absolute}
             <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 11.5a8.38 8.38 0 01-.9 3.8 8.5 8.5 0 01-7.6 4.7 8.38 8.38 0 01-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 01-.9-3.8 8.5 8.5 0 014.7-7.6 8.38 8.38 0 013.8-.9h.5a8.48 8.48 0 018 8v.5z"/></svg>
             WhatsApp
           </button>
+          <button class="btn btn-ghost" onclick="gerarLinkTermo()" style="border-color:var(--p2);color:var(--p2)" title="Gerar link com assinatura">
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M10 13a5 5 0 007.54.54l3-3a5 5 0 00-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 00-7.54-.54l-3 3a5 5 0 007.07 7.07l1.71-1.71"/></svg>
+            Gerar link
+          </button>
           <button class="btn btn-green" onclick="salvarVisita()">
             <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 21H5a2 2 0 01-2-2V5a2 2 0 012-2h11l5 5v11a2 2 0 01-2 2z"/><polyline points="17 21 17 13 7 13 7 21"/><polyline points="7 3 7 8 15 8"/></svg>
             Salvar registro
@@ -1955,6 +1959,10 @@ input[type=color]{opacity:0;width:0;height:0;position:absolute}
           <button type="button" class="btn btn-primary" onclick="compartilharContratoWA()">
             <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 11.5a8.38 8.38 0 01-.9 3.8 8.5 8.5 0 01-7.6 4.7 8.38 8.38 0 01-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 01-.9-3.8 8.5 8.5 0 014.7-7.6 8.38 8.38 0 013.8-.9h.5a8.48 8.48 0 018 8v.5z"/></svg>
             WhatsApp
+          </button>
+          <button type="button" class="btn btn-ghost" onclick="gerarLinkContrato()" style="border-color:var(--p2);color:var(--p2)" title="Gerar link com assinatura">
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M10 13a5 5 0 007.54.54l3-3a5 5 0 00-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 00-7.54-.54l-3 3a5 5 0 007.07 7.07l1.71-1.71"/></svg>
+            Gerar link
           </button>
         </div>
       </div>
@@ -2952,6 +2960,66 @@ async function gerarLinkProposta() {
     console.error('gerarLink:', e)
     toast('Não foi possível gerar o link agora', true)
   }
+}
+
+// Extrai do CSS vivo só as regras que casam com o regex (qualquer documento).
+function _cssDoc(re) {
+  let out = ''
+  for (const sheet of document.styleSheets) {
+    let rules
+    try { rules = sheet.cssRules } catch(_) { continue }
+    if (!rules) continue
+    for (const r of rules) {
+      if (r.type === 1) { if (re.test(r.selectorText || '')) out += r.cssText + '\n' }
+      else if (r.type === 4) { if (re.test(r.cssText)) out += r.cssText + '\n' }
+    }
+  }
+  return out
+}
+
+// Generaliza "gerar link + visualizada + assinatura" para QUALQUER documento
+// (proposta, contrato, termo de visita, etc.) — mesma tabela, página /p/<id>,
+// rastreio e assinatura. `re` seleciona o CSS do documento.
+async function gerarLinkDoc(el, titulo, cliente, re) {
+  if (window._DEMO) return demoBloqueio()
+  if (!window._sb || !window._uid) { toast('Entre na sua conta para gerar o link', true); return }
+  if (!el) { toast('Gere o documento primeiro', true); return }
+  const cor = perfil.cor || '#C9882A'
+  const vars = `:root{--bg:#fff;--s1:#fff;--s2:#f5f5f7;--s3:#ececef;--b:rgba(0,0,0,.08);--bm:rgba(0,0,0,.16);--t:#1d1d1f;--t2:#6e6e73;--t3:#86868b;--p:#0F2D4A;--ph:#0A2138;--ps:rgba(15,45,74,.12);--p2:#C9882A;--bp:${cor};--bph:${cor};--bps:${cor}22;--rad:10px;--radl:18px;--font:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Helvetica,Arial,sans-serif}body{margin:0;background:#EEF1F4}.proposta{margin-top:0!important;display:block!important}.no-print{display:none!important}
+/* estilos de tela do contrato (no app só existem em @media print) */
+.contrato-print{display:block!important;background:#fff;border:1px solid #E7E0D4;border-radius:14px;padding:32px;max-width:760px;margin:0 auto}
+.contrato-print-aviso{display:block;border:1px solid #E2D9C9;background:#FBF7EF;color:#6e6e73;font-size:11px;line-height:1.5;padding:12px 14px;margin-bottom:18px;border-radius:8px}
+.contrato-print-texto{white-space:pre-wrap;font-size:13px;line-height:1.8;color:#1d1d1f}`
+  const clone = el.cloneNode(true)
+  clone.querySelectorAll('.prop-foot,.no-print').forEach(n => n.remove())
+  const html = `<style>${vars}\n${_cssDoc(re)}</style>` + clone.outerHTML
+  toast('Gerando link…')
+  try {
+    const { data, error } = await window._sb.from('cpr_public_proposals')
+      .insert({ owner_id: window._uid, titulo, cliente, cor, html })
+      .select('id').single()
+    if (error) throw error
+    abrirModalLinkProposta(_APP_BASE + '/p/' + data.id, data.id, cliente)
+  } catch(e) {
+    console.error('gerarLinkDoc:', e)
+    toast('Não foi possível gerar o link agora', true)
+  }
+}
+
+function gerarLinkContrato() {
+  if (window._DEMO) return demoBloqueio()
+  const txt = document.getElementById('contrato-texto')
+  if (!txt || !txt.value.trim()) { toast('Gere o documento primeiro', true); return }
+  document.getElementById('contrato-print-texto').textContent = txt.value
+  const titulos = { autorizacao: 'Autorização de Venda/Locação', proposta_compra: 'Proposta de Compra' }
+  gerarLinkDoc(document.getElementById('contrato-print'), titulos[contratoModeloAtual] || 'Documento', '', /contrato/)
+}
+
+function gerarLinkTermo() {
+  if (window._DEMO) return demoBloqueio()
+  const el = document.getElementById('termo')
+  if (!el || !el.classList.contains('show')) { toast('Gere o termo primeiro', true); return }
+  gerarLinkDoc(el, 'Registro de Visita', '', /\.(proposta|prop-|mod\b|mod-|pii-|sim\b|sim-)/)
 }
 
 function abrirModalLinkProposta(url, id, cliente) {
