@@ -38,7 +38,8 @@ export async function middleware(req: NextRequest) {
 
   // Captação pública de leads: /captura/<slug> é uma página de contato que o
   // corretor compartilha com clientes — precisa abrir sem login.
-  if (pathname.startsWith('/captura/')) {
+  // /simular/<slug> é a simulação de financiamento self-service (mesma ideia).
+  if (pathname.startsWith('/captura/') || pathname.startsWith('/simular/')) {
     return NextResponse.next()
   }
 

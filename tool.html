@@ -991,6 +991,21 @@ input[type=color]{opacity:0;width:0;height:0;position:absolute}
             </button>
           </div>
         </div>
+        <div class="field f2" style="margin-top:14px;padding-top:14px;border-top:1px solid var(--b)">
+          <label class="lbl" for="sim-link">💰 Seu link de simulação de financiamento <span class="feat-new" style="background:var(--p2);color:#0A2138;font-size:9px;font-weight:800;padding:2px 6px;border-radius:5px;margin-left:4px">NOVO</span></label>
+          <p style="color:var(--t2);font-size:12px;margin:4px 0 8px;line-height:1.55">O cliente simula sozinho a parcela nos principais bancos (taxas do Banco Central) e o lead cai aqui — você só acompanha.</p>
+          <div style="display:flex;gap:8px;flex-wrap:wrap">
+            <input id="sim-link" type="text" class="inp" readonly style="flex:1;min-width:200px" value="">
+            <button type="button" class="btn btn-ghost btn-sm" onclick="copiarLinkSimulacao()">
+              <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1"/></svg>
+              Copiar
+            </button>
+            <button type="button" class="btn btn-ghost btn-sm" onclick="compartilharLinkSimulacao()">
+              <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 11.5a8.38 8.38 0 01-.9 3.8 8.5 8.5 0 01-7.6 4.7 8.38 8.38 0 01-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 01-.9-3.8 8.5 8.5 0 014.7-7.6 8.38 8.38 0 013.8-.9h.5a8.48 8.48 0 018 8v.5z"/></svg>
+              WhatsApp
+            </button>
+          </div>
+        </div>
         <div id="captacao-inbox" style="margin-top:16px"></div>
       </div>
 
@@ -4158,10 +4173,31 @@ function copiarMeuSite() {
   }
 }
 
+// Link da simulação self-service de financiamento.
+function linkSimulacao() {
+  return _APP_BASE + '/simular/' + (perfil.slug || '')
+}
+function copiarLinkSimulacao() {
+  if (window._DEMO) return demoBloqueio()
+  const url = linkSimulacao()
+  if (navigator.clipboard) {
+    navigator.clipboard.writeText(url).then(() => toast('Link copiado!')).catch(() => {
+      const inp = document.getElementById('sim-link'); if (inp) { inp.focus(); inp.select(); try { document.execCommand('copy'); toast('Link copiado!') } catch(_) {} }
+    })
+  }
+}
+function compartilharLinkSimulacao() {
+  if (window._DEMO) return demoBloqueio()
+  const msg = 'Simule a parcela do seu financiamento em segundos, nos principais bancos: ' + linkSimulacao()
+  window.open('https://wa.me/?text=' + encodeURIComponent(msg), '_blank')
+}
+
 async function renderCaptacao() {
   const inp = document.getElementById('cap-link')
   await garantirSlug()
   if (inp) inp.value = linkCaptacao()
+  const sim = document.getElementById('sim-link')
+  if (sim) sim.value = linkSimulacao()
   await carregarCapturas()
 }
 
@@ -4191,7 +4227,7 @@ async function carregarCapturas() {
   try {
     const { data, error } = await window._sb
       .from('cpr_public_leads')
-      .select('id,nome,telefone,imovel,mensagem,created_at')
+      .select('id,nome,telefone,imovel,mensagem,created_at,origem')
       .eq('owner_id', window._uid)
       .eq('status', 'pendente')
       .order('created_at', { ascending: false })
@@ -4212,10 +4248,10 @@ function renderCapturasInbox() {
     <div class="hist-list">${capturasPend.map(c => `
       <div class="hist-card">
         <div class="hist-main-row">
-          <span class="lead-status" data-s="hoje">Novo</span>
+          <span class="lead-status" data-s="hoje">${c.origem === 'simulacao' ? '💰 Simulou' : 'Novo'}</span>
           <div class="hist-info">
             <div class="hist-cliente">${escH(c.nome||'—')}</div>
-            <div class="hist-imovel">${escH(c.imovel||'')}</div>
+            <div class="hist-imovel">${c.origem === 'simulacao' ? '💰 Simulou financiamento pelo seu link' : escH(c.imovel||'')}</div>
           </div>
           <div class="hist-actions">
             <button class="btn btn-primary btn-sm" onclick="aceitarCaptura('${c.id}')" title="Aceitar e agendar">Aceitar</button>
