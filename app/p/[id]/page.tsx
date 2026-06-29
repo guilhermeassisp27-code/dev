@@ -3,6 +3,7 @@ import { notFound } from 'next/navigation'
 import { getProposta } from '@/lib/proposta'
 import TrackView from './track'
 import Sign from './sign'
+import DocFrame from './docframe'
 
 // Proposta muda de status (visualizada) — sempre fresca; e nunca indexar
 // (é um link privado entre corretor e cliente).
@@ -37,8 +38,9 @@ export default async function PropostaPage({ params }: { params: { id: string } 
       }}
     >
       <div style={{ maxWidth: 760, margin: '0 auto' }}>
-        {/* HTML autossuficiente da proposta (CSS inline gerado no momento) */}
-        <div dangerouslySetInnerHTML={{ __html: p.html }} />
+        {/* HTML autossuficiente do documento, isolado em iframe sandbox (sem
+            scripts) — neutraliza qualquer XSS embutido. */}
+        <DocFrame html={p.html} />
 
         {/* Aceite / assinatura eletrônica do cliente */}
         <Sign
