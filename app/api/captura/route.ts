@@ -102,6 +102,8 @@ export async function POST(req: NextRequest) {
   const telefone = String(body.telefone ?? '').trim().slice(0, 30)
   const imovel = String(body.imovel ?? '').trim().slice(0, 120)
   const mensagem = String(body.mensagem ?? '').trim().slice(0, 500)
+  // origem: 'captura' (formulário de contato) ou 'simulacao' (simulador self-service)
+  const origem = body.origem === 'simulacao' ? 'simulacao' : 'captura'
 
   if (!slug) return NextResponse.json({ error: 'missing slug' }, { status: 400 })
   if (!nome) return NextResponse.json({ error: 'nome obrigatório' }, { status: 400 })
@@ -143,7 +145,7 @@ export async function POST(req: NextRequest) {
     telefone,
     imovel,
     mensagem,
-    origem: 'captura',
+    origem,
     status: 'pendente',
   })
 

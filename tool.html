@@ -991,6 +991,21 @@ input[type=color]{opacity:0;width:0;height:0;position:absolute}
             </button>
           </div>
         </div>
+        <div class="field f2" style="margin-top:14px;padding-top:14px;border-top:1px solid var(--b)">
+          <label class="lbl" for="sim-link">💰 Seu link de simulação de financiamento <span class="feat-new" style="background:var(--p2);color:#0A2138;font-size:9px;font-weight:800;padding:2px 6px;border-radius:5px;margin-left:4px">NOVO</span></label>
+          <p style="color:var(--t2);font-size:12px;margin:4px 0 8px;line-height:1.55">O cliente simula sozinho a parcela nos principais bancos (taxas do Banco Central) e o lead cai aqui — você só acompanha.</p>
+          <div style="display:flex;gap:8px;flex-wrap:wrap">
+            <input id="sim-link" type="text" class="inp" readonly style="flex:1;min-width:200px" value="">
+            <button type="button" class="btn btn-ghost btn-sm" onclick="copiarLinkSimulacao()">
+              <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1"/></svg>
+              Copiar
+            </button>
+            <button type="button" class="btn btn-ghost btn-sm" onclick="compartilharLinkSimulacao()">
+              <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 11.5a8.38 8.38 0 01-.9 3.8 8.5 8.5 0 01-7.6 4.7 8.38 8.38 0 01-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 01-.9-3.8 8.5 8.5 0 014.7-7.6 8.38 8.38 0 013.8-.9h.5a8.48 8.48 0 018 8v.5z"/></svg>
+              WhatsApp
+            </button>
+          </div>
+        </div>
         <div id="captacao-inbox" style="margin-top:16px"></div>
       </div>
 
@@ -1499,6 +1514,10 @@ input[type=color]{opacity:0;width:0;height:0;position:absolute}
             <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 11.5a8.38 8.38 0 01-.9 3.8 8.5 8.5 0 01-7.6 4.7 8.38 8.38 0 01-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 01-.9-3.8 8.5 8.5 0 014.7-7.6 8.38 8.38 0 013.8-.9h.5a8.48 8.48 0 018 8v.5z"/></svg>
             WhatsApp
           </button>
+          <button class="btn btn-ghost" onclick="gerarLinkProposta()" style="border-color:var(--p2);color:var(--p2)" title="Gerar link e saber quando o cliente abrir">
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M10 13a5 5 0 007.54.54l3-3a5 5 0 00-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 00-7.54-.54l-3 3a5 5 0 007.07 7.07l1.71-1.71"/></svg>
+            Gerar link
+          </button>
           <button class="btn btn-green" onclick="salvarProposta()">
             <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 21H5a2 2 0 01-2-2V5a2 2 0 012-2h11l5 5v11a2 2 0 01-2 2z"/><polyline points="17 21 17 13 7 13 7 21"/><polyline points="7 3 7 8 15 8"/></svg>
             Salvar
@@ -1517,6 +1536,9 @@ input[type=color]{opacity:0;width:0;height:0;position:absolute}
         <h1>Minhas Propostas</h1>
         <p>Acompanhe o andamento de cada negociação — do primeiro contato ao fechamento.</p>
       </div>
+
+      <!-- Propostas enviadas por link (status: enviada / visualizada / assinada) -->
+      <div id="links-enviados" style="margin-bottom:18px"></div>
 
       <!-- CRM: painel de status (só aparece quando há propostas) -->
       <div id="crm-painel" style="display:none">
@@ -2685,6 +2707,7 @@ function showView(name) {
     if (srch) srch.value = ''
     _crmFiltro = null
     renderHistory()
+    carregarLinksEnviados()
   }
   if (name === 'visita') {
     const dt = document.getElementById('v-data')
@@ -2868,6 +2891,147 @@ function gerarDescricaoIA() {
   condEl.value = descricao
   document.getElementById('ia-desc-hint').style.display = ''
   toast('Descrição gerada — revise antes de continuar')
+}
+
+/* ── PROPOSTA POR LINK + "VISUALIZADA" ──
+   Gera um link público da proposta (selosales.com.br/p/<id>) com o HTML
+   renderizado guardado autossuficiente (CSS extraído da folha viva + cor da
+   marca). Quando o cliente abre, a contagem sobe e o corretor vê "visualizada". */
+let _mlpTimer = null
+
+function extrairCssProposta() {
+  const re = /\.(proposta|prop-|mod\b|mod-|pii-|sim\b|sim-)/
+  let out = ''
+  for (const sheet of document.styleSheets) {
+    let rules
+    try { rules = sheet.cssRules } catch(_) { continue }
+    if (!rules) continue
+    for (const r of rules) {
+      if (r.type === 1) { if (re.test(r.selectorText || '')) out += r.cssText + '\n' }
+      else if (r.type === 4) { if (re.test(r.cssText)) out += r.cssText + '\n' } // @media
+    }
+  }
+  return out
+}
+
+async function gerarLinkProposta() {
+  if (window._DEMO) return demoBloqueio()
+  if (!window._sb || !window._uid) { toast('Entre na sua conta para gerar o link', true); return }
+  const prop = document.getElementById('proposta')
+  if (!prop || !prop.classList.contains('show')) { toast('Gere a proposta primeiro', true); return }
+
+  const cor = perfil.cor || '#C9882A'
+  const vars = `:root{--bg:#fff;--s1:#fff;--s2:#f5f5f7;--s3:#ececef;--b:rgba(0,0,0,.08);--bm:rgba(0,0,0,.16);--t:#1d1d1f;--t2:#6e6e73;--t3:#86868b;--p:#0F2D4A;--ph:#0A2138;--ps:rgba(15,45,74,.12);--p2:#C9882A;--bp:${cor};--bph:${cor};--bps:${cor}22;--rad:10px;--radl:18px;--font:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Helvetica,Arial,sans-serif}body{margin:0;background:#EEF1F4}.proposta{margin-top:0!important}`
+  // Clona e remove a barra de ações (Salvar/Gerar link/...) — o cliente não vê isso.
+  const clone = prop.cloneNode(true)
+  const foot = clone.querySelector('.prop-foot'); if (foot) foot.remove()
+  const html = `<style>${vars}\n${extrairCssProposta()}</style>` + clone.outerHTML
+  const titulo = snapProposta ? `${snapProposta.tipoNeg} — ${snapProposta.tipoImovel} · ${String(snapProposta.end||'').split(',')[0].trim()}` : 'Proposta comercial'
+  const cliente = snapProposta ? (snapProposta.cliente || '') : ''
+
+  toast('Gerando link…')
+  try {
+    const { data, error } = await window._sb.from('cpr_public_proposals')
+      .insert({ owner_id: window._uid, titulo, cliente, cor, html })
+      .select('id').single()
+    if (error) throw error
+    abrirModalLinkProposta(_APP_BASE + '/p/' + data.id, data.id, cliente)
+  } catch(e) {
+    console.error('gerarLink:', e)
+    toast('Não foi possível gerar o link agora', true)
+  }
+}
+
+function abrirModalLinkProposta(url, id, cliente) {
+  fecharModalLinkProposta()
+  const wa = `Olá${cliente ? ' ' + cliente : ''}! Segue a proposta que preparei para você: ${url}`
+  const back = document.createElement('div')
+  back.id = 'modal-link-proposta'
+  back.style.cssText = 'position:fixed;inset:0;z-index:10000;background:rgba(8,18,28,.6);display:flex;align-items:center;justify-content:center;padding:20px'
+  back.innerHTML = `<div style="background:var(--s1);border:1px solid var(--bm);border-radius:18px;max-width:440px;width:100%;padding:24px;font-family:var(--font)">
+    <div style="font-size:17px;font-weight:800;color:var(--t);margin-bottom:6px">🔗 Link da proposta</div>
+    <p style="font-size:13px;color:var(--t2);line-height:1.6;margin:0 0 14px">Envie para o cliente. Você vai saber na hora em que ele abrir.</p>
+    <input readonly id="mlp-url" value="${escH(url)}" style="width:100%;background:var(--s2);border:1px solid var(--b);border-radius:10px;padding:11px;color:var(--t);font-size:13px;margin-bottom:10px;box-sizing:border-box">
+    <div style="display:flex;gap:8px;margin-bottom:14px">
+      <button class="btn btn-ghost btn-sm" style="flex:1;justify-content:center" onclick="copiarUrlProposta()">Copiar</button>
+      <a class="btn btn-green btn-sm" style="flex:1;justify-content:center" href="https://wa.me/?text=${encodeURIComponent(wa)}" target="_blank" rel="noopener">Enviar no WhatsApp</a>
+    </div>
+    <div id="mlp-status" style="font-size:13px;font-weight:600;color:var(--t2);background:var(--s2);border-radius:10px;padding:12px;text-align:center">⏳ Aguardando o cliente abrir…</div>
+    <button class="btn btn-ghost btn-sm" style="width:100%;margin-top:14px;justify-content:center" onclick="fecharModalLinkProposta()">Fechar</button>
+  </div>`
+  document.body.appendChild(back)
+  _mlpTimer = setInterval(() => checarViewProposta(id), 4000)
+}
+function copiarUrlProposta() {
+  const i = document.getElementById('mlp-url')
+  if (!i) return
+  i.select()
+  if (navigator.clipboard) navigator.clipboard.writeText(i.value).then(() => toast('Link copiado!')).catch(()=>{})
+  else { try { document.execCommand('copy'); toast('Link copiado!') } catch(_) {} }
+}
+function fecharModalLinkProposta() {
+  if (_mlpTimer) { clearInterval(_mlpTimer); _mlpTimer = null }
+  const m = document.getElementById('modal-link-proposta'); if (m) m.remove()
+}
+async function checarViewProposta(id) {
+  try {
+    const { data } = await window._sb.from('cpr_public_proposals').select('views,signer_name').eq('id', id).maybeSingle()
+    if (!data) return
+    const el = document.getElementById('mlp-status')
+    if (data.signer_name) {
+      if (el) el.innerHTML = '✍️ <b style="color:var(--g)">Assinada</b> por ' + escH(data.signer_name) + '!'
+      if (_mlpTimer) { clearInterval(_mlpTimer); _mlpTimer = null }
+    } else if (data.views > 0) {
+      if (el) el.innerHTML = '👁 <b style="color:var(--g)">Visualizada!</b> O cliente abriu a sua proposta.'
+    }
+  } catch(_) {}
+}
+
+function _tempoAtras(iso) {
+  if (!iso) return ''
+  const min = Math.floor((Date.now() - new Date(iso).getTime()) / 60000)
+  if (min < 1) return 'agora'
+  if (min < 60) return 'há ' + min + ' min'
+  const h = Math.floor(min / 60)
+  if (h < 24) return 'há ' + h + 'h'
+  return 'há ' + Math.floor(h / 24) + 'd'
+}
+function copiarLinkEnviado(url) {
+  if (navigator.clipboard) navigator.clipboard.writeText(url).then(() => toast('Link copiado!')).catch(() => {})
+}
+// Painel persistente: propostas enviadas por link + status (enviada/visualizada/assinada).
+async function carregarLinksEnviados() {
+  const box = document.getElementById('links-enviados')
+  if (!box) return
+  if (window._DEMO || !window._sb || !window._uid) { box.innerHTML = ''; return }
+  try {
+    const { data, error } = await window._sb.from('cpr_public_proposals')
+      .select('id,titulo,cliente,views,last_view_at,signed_at,signer_name,created_at')
+      .eq('owner_id', window._uid)
+      .order('created_at', { ascending: false })
+      .limit(30)
+    if (error || !data || !data.length) { box.innerHTML = ''; return }
+    box.innerHTML = `<div class="card-t" style="margin-bottom:10px">🔗 Propostas enviadas por link
+      <span class="sb-badge" style="background:var(--ps);color:var(--p);font-size:10px;font-weight:700;padding:2px 7px;border-radius:100px;margin-left:6px">${data.length}</span></div>
+      <div class="hist-list">${data.map(p => {
+        let badge, cor2
+        if (p.signed_at) { badge = '✍️ Assinada por ' + escH(p.signer_name || 'cliente'); cor2 = 'var(--g)' }
+        else if (p.views > 0) { badge = '👁 Visualizada ' + _tempoAtras(p.last_view_at); cor2 = 'var(--p2)' }
+        else { badge = '📤 Enviada — aguardando o cliente abrir'; cor2 = 'var(--t3)' }
+        const url = _APP_BASE + '/p/' + p.id
+        return `<div class="hist-card"><div class="hist-main-row">
+          <span class="lead-status" data-s="hoje" style="background:var(--ps)">🔗</span>
+          <div class="hist-info">
+            <div class="hist-cliente">${escH(p.cliente || p.titulo || 'Proposta')}</div>
+            <div class="hist-imovel" style="color:${cor2};font-weight:600">${badge}</div>
+          </div>
+          <div class="hist-actions">
+            <button class="btn btn-ghost btn-sm" onclick="copiarLinkEnviado('${escH(url)}')">Copiar</button>
+            <a class="btn btn-ghost btn-sm" href="${escH(url)}" target="_blank" rel="noopener">Abrir</a>
+          </div>
+        </div></div>`
+      }).join('')}</div>`
+  } catch(_) { box.innerHTML = '' }
 }
 
 /* ── CALCULAR PARCELA (Tabela Price) ── */
@@ -4158,10 +4322,31 @@ function copiarMeuSite() {
   }
 }
 
+// Link da simulação self-service de financiamento.
+function linkSimulacao() {
+  return _APP_BASE + '/simular/' + (perfil.slug || '')
+}
+function copiarLinkSimulacao() {
+  if (window._DEMO) return demoBloqueio()
+  const url = linkSimulacao()
+  if (navigator.clipboard) {
+    navigator.clipboard.writeText(url).then(() => toast('Link copiado!')).catch(() => {
+      const inp = document.getElementById('sim-link'); if (inp) { inp.focus(); inp.select(); try { document.execCommand('copy'); toast('Link copiado!') } catch(_) {} }
+    })
+  }
+}
+function compartilharLinkSimulacao() {
+  if (window._DEMO) return demoBloqueio()
+  const msg = 'Simule a parcela do seu financiamento em segundos, nos principais bancos: ' + linkSimulacao()
+  window.open('https://wa.me/?text=' + encodeURIComponent(msg), '_blank')
+}
+
 async function renderCaptacao() {
   const inp = document.getElementById('cap-link')
   await garantirSlug()
   if (inp) inp.value = linkCaptacao()
+  const sim = document.getElementById('sim-link')
+  if (sim) sim.value = linkSimulacao()
   await carregarCapturas()
 }
 
@@ -4191,7 +4376,7 @@ async function carregarCapturas() {
   try {
     const { data, error } = await window._sb
       .from('cpr_public_leads')
-      .select('id,nome,telefone,imovel,mensagem,created_at')
+      .select('id,nome,telefone,imovel,mensagem,created_at,origem')
       .eq('owner_id', window._uid)
       .eq('status', 'pendente')
       .order('created_at', { ascending: false })
@@ -4212,10 +4397,10 @@ function renderCapturasInbox() {
     <div class="hist-list">${capturasPend.map(c => `
       <div class="hist-card">
         <div class="hist-main-row">
-          <span class="lead-status" data-s="hoje">Novo</span>
+          <span class="lead-status" data-s="hoje">${c.origem === 'simulacao' ? '💰 Simulou' : 'Novo'}</span>
           <div class="hist-info">
             <div class="hist-cliente">${escH(c.nome||'—')}</div>
-            <div class="hist-imovel">${escH(c.imovel||'')}</div>
+            <div class="hist-imovel">${c.origem === 'simulacao' ? '💰 Simulou financiamento pelo seu link' : escH(c.imovel||'')}</div>
           </div>
           <div class="hist-actions">
             <button class="btn btn-primary btn-sm" onclick="aceitarCaptura('${c.id}')" title="Aceitar e agendar">Aceitar</button>

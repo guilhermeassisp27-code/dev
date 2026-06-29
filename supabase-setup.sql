@@ -196,3 +196,50 @@ alter table public.cpr_user_data
 
 -- Sem GRANT adicional necessário: a coluna nova já está coberta pelo
 -- grant select/insert/update on public.cpr_user_data feito acima.
+
+-- ============================================================
+-- Migração: Proposta por link + "visualizada" (2026-06-29)
+-- O corretor gera um link público da proposta (selosales.com.br/p/<id>),
+-- envia ao cliente e sabe QUANDO ele abriu (sinal de lead quente).
+-- O HTML renderizado da proposta é guardado autossuficiente (CSS inline).
+-- O corretor lê/gera as próprias (RLS por owner); a página pública lê por
+-- id via service role; a contagem de abertura é incrementada via service
+-- role (rota /api/proposta-view), só por navegadores reais (filtra o bot
+-- de preview do WhatsApp, que não roda JS).
+-- ============================================================
+create table if not exists public.cpr_public_proposals (
+  id            uuid primary key default gen_random_uuid(),
+  owner_id      uuid not null references auth.users(id) on delete cascade,
+  titulo        text,
+  cliente       text,
+  cor           text,
+  html          text not null,
+  views         int not null default 0,
+  first_view_at timestamptz,
+  last_view_at  timestamptz,
+  created_at    timestamptz not null default now()
+);
+alter table public.cpr_public_proposals enable row level security;
+
+grant select, insert, update, delete on public.cpr_public_proposals to authenticated;
+grant select, insert, update on public.cpr_public_proposals to service_role;
+
+drop policy if exists "cpp_owner_all" on public.cpr_public_proposals;
+create policy "cpp_owner_all"
+  on public.cpr_public_proposals for all
+  to authenticated
+  using (owner_id = auth.uid())
+  with check (owner_id = auth.uid());
+
+create index if not exists cpr_public_proposals_owner_idx
+  on public.cpr_public_proposals (owner_id, created_at desc);
+
+-- Assinatura eletrônica simples (aceite do cliente no link). Válida como
+-- manifestação de vontade (Lei 14.063/2020 + MP 2.200-2), com trilha de
+-- evidências: nome, CPF, rabisco (dataURL), data/hora e IP. Idempotente.
+alter table public.cpr_public_proposals
+  add column if not exists signed_at        timestamptz,
+  add column if not exists signer_name      text,
+  add column if not exists signer_cpf       text,
+  add column if not exists signer_signature text,
+  add column if not exists signer_ip        text;

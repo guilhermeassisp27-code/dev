@@ -19,9 +19,11 @@ pesquisadas na internet, e implementa um por vez.
    _Dor:_ o corretor precisa mandar a proposta por email/WhatsApp num formato que o cliente abra em qualquer lugar e que pareça profissional. Hoje depende de print.
    _Valor:_ baixar a proposta pronta como PDF com a marca (logo/CRECI/cor).
 
-2. **Compartilhar por link / WhatsApp**
-   _Dor:_ o corretor quer enviar a proposta na hora, direto no WhatsApp, sem anexar arquivo pesado.
-   _Valor:_ gerar um link público da proposta + botão "Enviar no WhatsApp" com mensagem pronta.
+2. **Compartilhar por link / WhatsApp + sinalizador de "proposta visualizada"** ⭐
+   _Dor:_ o corretor quer enviar a proposta na hora, direto no WhatsApp, sem anexar arquivo pesado — e fica no escuro sem saber se o cliente abriu, perdendo o timing do follow-up.
+   _Valor:_ gerar um link público da proposta (`selosales.com.br/p/{id}`, SSR, branded) + botão "Enviar no WhatsApp" com mensagem pronta. E o diferencial: quando o cliente **abre o link**, o card mostra **"👁 Visualizada · há X"** — o corretor sabe a hora exata de ligar (lead quente). Recurso premium que vende (DocSend/Proposify vivem disso).
+   _Escopo v1:_ link público da proposta → registra 1ª e última abertura → badge "Visualizada" no card (substitui "Enviada"); opcional: mover o lead no funil ao visualizar.
+   _Cuidados técnicos:_ (a) filtrar o bot de preview do WhatsApp (user-agent) pra não contar abertura falsa; (b) ignorar a abertura do próprio corretor; (c) a proposta-por-link é o alicerce — o sinalizador é a evolução dela. _Ideia validada com o fundador em 2026-06-28._
 
 3. **Cálculo de financiamento aprimorado (SAC + Price)**
    _Dor:_ cliente sempre pergunta "quanto fica a parcela?"; o corretor perde tempo simulando à parte.
