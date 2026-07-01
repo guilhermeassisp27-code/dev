@@ -15,6 +15,13 @@ Formato de cada entrada:
 
 ---
 
+## [2026-07-01] Calculadora de Comissão Líquida — saiba quanto você vai receber de verdade
+**Para o corretor:** antes de assinar qualquer negócio, você digita o valor da venda e o % de comissão e a ferramenta mostra na hora quanto vai cair na sua conta — já descontado o INSS de autônomo e o Imposto de Renda, sem surpresa no final do mês.
+**O que mudou:** nova seção "Calculadora de Comissão Líquida" dentro da aba Vendas, com cálculo em tempo real baseado na tabela do IR 2025 e no INSS de autônomo (20% s/ bruto, teto R$ 7.786,02). O corretor informa valor da venda, % de comissão, número de dependentes e outras deduções opcionais; a calculadora exibe comissão bruta, INSS deduzido, IR da faixa progressiva correspondente e o líquido final, com nota sobre o que não está incluído (rendimentos de outros meses, livro-caixa). Tudo local — zero chamada de API, zero persistência de dados.
+**Dor resolvida:** o corretor autônomo muitas vezes negocia a comissão sem saber o quanto vai sobrar depois dos tributos obrigatórios. Planilhas de "comissão líquida para corretor" são amplamente buscadas e vendidas no mercado brasileiro (modelos no Tecimob, Conecta Imobi, ProCorretor), o que evidencia que o cálculo manual é feito fora do CRM — e frequentemente de forma errada. Nenhum CRM imobiliário concorrente embute essa calculadora na própria tela de Vendas.
+**Fontes:** Roadmap do produto (docs/roadmap.md, item "Calculadora de comissão"); experiência documentada de corretores autônomos com controle financeiro em planilhas separadas (refs. Tecimob, Conecta Imobi).
+**Status:** em PR
+
 ## [2026-06-27] Primeiros passos guiados — checklist de ativação no Dashboard
 **Para o corretor:** quem entra pela primeira vez agora encontra um guia "Comece por aqui" no topo do Dashboard, com 4 passos rápidos (completar perfil, gerar a 1ª proposta, adicionar o 1º lead, cadastrar o 1º imóvel). Cada passo tem um botão que leva direto à tela certa, e vai sendo marcado sozinho conforme você usa a ferramenta. Quando termina, o guia some; dá pra dispensar a qualquer momento.
 **O que mudou:** novo card de onboarding em `tool.html` cujo progresso é **derivado do estado real** (perfil/proposta/lead/imóvel — sem tracking novo). Substitui o banner de "configure seu perfil" enquanto ativo (sem mensagem duplicada). A dispensa persiste no perfil (`onboardingDispensado`), local e na nuvem. Achado da auditoria de produto: não existia onboarding para o assinante real — só o tour do modo demo —, e "não saber por onde começar" era um motivo direto de cancelamento.
