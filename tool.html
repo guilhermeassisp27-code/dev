@@ -663,6 +663,23 @@ input[type=color]{opacity:0;width:0;height:0;position:absolute}
 @keyframes modalFade{from{opacity:0}to{opacity:1}}
 @keyframes modalScale{from{opacity:0;transform:scale(.96) translateY(4px)}to{opacity:1;transform:scale(1) translateY(0)}}
 
+/* ── CALCULADORA DE COMISSÃO LÍQUIDA ── */
+.calc-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+@media(max-width:600px){.calc-grid{grid-template-columns:1fr}}
+.calc-result{background:linear-gradient(135deg,rgba(15,45,74,.09),rgba(201,136,42,.05));border:1px solid rgba(15,45,74,.22);border-radius:var(--radl);padding:18px 20px;margin-top:14px}
+.calc-result-title{font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.09em;color:var(--t3);margin-bottom:14px;display:flex;align-items:center;gap:8px}
+.calc-result-title::after{content:'';flex:1;height:1px;background:var(--b)}
+.calc-row{display:flex;justify-content:space-between;align-items:center;gap:12px;padding:8px 0;border-bottom:1px solid var(--b);font-size:13px}
+.calc-row:last-child{border-bottom:none}
+.calc-row-label{color:var(--t2);flex:1}
+.calc-row-val{font-weight:700;color:var(--t);text-align:right;white-space:nowrap}
+.calc-row.deducao .calc-row-val{color:#EF4444}
+.calc-row.liquido{padding-top:12px;margin-top:4px;border-top:2px solid var(--b)}
+.calc-row.liquido .calc-row-label{font-size:14px;font-weight:700;color:var(--t)}
+.calc-row.liquido .calc-row-val{font-size:20px;font-weight:800;color:var(--g,#22C55E);letter-spacing:-.4px}
+.calc-aliquota{display:inline-flex;align-items:center;gap:4px;font-size:10.5px;color:var(--t3);background:var(--s2);border:1px solid var(--b);border-radius:6px;padding:2px 7px;margin-left:6px;font-weight:700}
+.calc-nota{font-size:11px;color:var(--t3);line-height:1.55;margin-top:10px;padding-top:10px;border-top:1px solid var(--b)}
+
 /* ── REGISTRO DE VISITA ── */
 .termo-decl{font-size:14px;line-height:1.85;color:var(--t2);text-align:justify}
 .termo-decl b{color:var(--t)}
@@ -1238,6 +1255,44 @@ input[type=color]{opacity:0;width:0;height:0;position:absolute}
         <div class="vendas-kpi">
           <span class="vendas-kpi-l">Vendas no ano</span>
           <span class="vendas-kpi-v" id="kpi-vendas-ano">0</span>
+        </div>
+      </div>
+
+      <div style="margin-top:28px">
+        <div class="card">
+          <div class="card-t">Calculadora de Comissão Líquida</div>
+          <p style="color:var(--t2);font-size:13px;margin:-6px 0 16px;line-height:1.6">Veja quanto você vai receber de verdade — já descontando INSS de autônomo e IR estimado, antes de assinar qualquer negócio.</p>
+          <div class="calc-grid">
+            <div class="field">
+              <label class="lbl" for="calc-venda">Valor da venda</label>
+              <div class="pfx">
+                <span class="pfx-l">R$</span>
+                <input id="calc-venda" type="text" class="inp" placeholder="450.000" inputmode="numeric" oninput="calcFormatarValor(this);calcAtualizar()">
+              </div>
+            </div>
+            <div class="field">
+              <label class="lbl" for="calc-perc">Sua comissão (%)</label>
+              <input id="calc-perc" type="number" class="inp" placeholder="6" min="0.1" max="20" step="0.1" value="6" oninput="calcAtualizar()">
+            </div>
+            <div class="field">
+              <label class="lbl" for="calc-dependentes">Dependentes para IR</label>
+              <select id="calc-dependentes" class="sel" onchange="calcAtualizar()">
+                <option value="0">0 dependentes</option>
+                <option value="1">1 dependente</option>
+                <option value="2">2 dependentes</option>
+                <option value="3">3 dependentes</option>
+                <option value="4">4 ou mais</option>
+              </select>
+            </div>
+            <div class="field">
+              <label class="lbl" for="calc-outras-deducoes">Outras deduções (opcional)</label>
+              <div class="pfx">
+                <span class="pfx-l">R$</span>
+                <input id="calc-outras-deducoes" type="text" class="inp" placeholder="0" inputmode="numeric" oninput="calcFormatarValor(this);calcAtualizar()" title="Previdência privada, pensão alimentícia, etc.">
+              </div>
+            </div>
+          </div>
+          <div id="calc-resultado"></div>
         </div>
       </div>
 
@@ -2739,6 +2794,7 @@ function showView(name) {
   }
   if (name === 'vendas') {
     renderVendas()
+    calcAtualizar()
   }
   if (name === 'dashboard') {
     renderDashboard()
@@ -6067,6 +6123,108 @@ function renderDashboardAtencao() {
         <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
       </button>
     </div>`).join('')
+}
+
+/* ── CALCULADORA DE COMISSÃO LÍQUIDA ──
+   Calcula o que o corretor autônomo vai receber de fato:
+   comissão bruta → desconta INSS autônomo (20% sobre bruto, limitado ao
+   teto) → base de cálculo do IR (bruto − INSS − R$189,59/dependente) →
+   aplica tabela progressiva do IR 2025/2026 → retorna líquido.
+   Tabelas: IN RFB 2055/2020 (INSS 2024–2026) e tabela IR 2024–2026.
+   Tudo local, sem nenhuma chamada de API. */
+
+// Teto do INSS: salário-de-contribuição máximo 2025 = R$7.786,02
+// Alíquota do autônomo: 20% sobre o rendimento bruto (RPS), limitado ao teto
+const INSS_TETO_2025 = 7786.02
+const INSS_ALIQ = 0.20
+
+// Deduções por dependente para base do IR (R$189,59/mês = R$2.275,08/ano)
+// Como a comissão é um pagamento único (não mensal), usamos os valores anuais
+// divididos por 12 para representar o "mês" desta operação — simplificação
+// intencional e informada (ver nota no rodapé).
+const IR_DED_DEP_MES = 189.59
+
+// Tabela progressiva IR 2025 (mensal, pessoa física)
+// Fonte: Instrução Normativa RFB / Tabela IR 2024-2026
+const IR_TABELA = [
+  { ate: 2259.20, aliq: 0,     ded: 0        },
+  { ate: 2826.65, aliq: 0.075, ded: 169.44   },
+  { ate: 3751.05, aliq: 0.15,  ded: 381.44   },
+  { ate: 4664.68, aliq: 0.225, ded: 662.77   },
+  { ate: Infinity, aliq: 0.275, ded: 896.00  },
+]
+
+function calcFormatarValor(inp) {
+  const raw = inp.value.replace(/\D/g, '')
+  inp.value = raw ? parseInt(raw, 10).toLocaleString('pt-BR') : ''
+}
+
+function calcAtualizar() {
+  const elRes = document.getElementById('calc-resultado')
+  if (!elRes) return
+
+  const vendaRaw  = document.getElementById('calc-venda')?.value.replace(/\D/g,'')
+  const percRaw   = parseFloat(document.getElementById('calc-perc')?.value || '6')
+  const nDep      = parseInt(document.getElementById('calc-dependentes')?.value || '0', 10)
+  const outrasRaw = document.getElementById('calc-outras-deducoes')?.value.replace(/\D/g,'')
+
+  const valorVenda    = vendaRaw ? parseFloat(vendaRaw) : 0
+  const percComissao  = isNaN(percRaw) || percRaw <= 0 ? 6 : Math.min(percRaw, 20)
+  const outrasDeducoes = outrasRaw ? parseFloat(outrasRaw) : 0
+
+  if (!valorVenda || valorVenda <= 0) {
+    elRes.innerHTML = ''
+    return
+  }
+
+  // 1. Comissão bruta
+  const bruto = valorVenda * percComissao / 100
+
+  // 2. INSS do autônomo: 20% sobre o bruto, limitado ao teto
+  const baseInss  = Math.min(bruto, INSS_TETO_2025)
+  const inss      = baseInss * INSS_ALIQ
+  const inssAliqEf = bruto > 0 ? (inss / bruto * 100) : 0
+
+  // 3. Base de cálculo do IR = bruto - INSS - R$189,59 por dependente - outras deduções
+  const dedDep  = nDep * IR_DED_DEP_MES
+  const baseIR  = Math.max(0, bruto - inss - dedDep - outrasDeducoes)
+
+  // 4. IR tabela progressiva (valor mensal — usamos o rendimento como "competência do mês")
+  let irBruto = 0
+  for (const f of IR_TABELA) {
+    if (baseIR <= f.ate) { irBruto = baseIR * f.aliq - f.ded; break }
+  }
+  const ir = Math.max(0, irBruto)
+  const faixaIR = IR_TABELA.find(f => baseIR <= f.ate)
+  const aliqIR  = faixaIR ? faixaIR.aliq * 100 : 27.5
+
+  // 5. Líquido
+  const liquido = bruto - inss - ir
+
+  const fmtBRL = v => v.toLocaleString('pt-BR', { style:'currency', currency:'BRL', maximumFractionDigits:2 })
+  const fmtPct = v => v.toLocaleString('pt-BR', { minimumFractionDigits:1, maximumFractionDigits:1 }) + '%'
+
+  const linhaDeducao = (label, val, aliqTxt) => `
+    <div class="calc-row deducao">
+      <span class="calc-row-label">${label}${aliqTxt ? `<span class="calc-aliquota">${aliqTxt}</span>` : ''}</span>
+      <span class="calc-row-val">− ${fmtBRL(val)}</span>
+    </div>`
+
+  elRes.innerHTML = `
+    <div class="calc-result">
+      <div class="calc-result-title">Resultado estimado</div>
+      <div class="calc-row">
+        <span class="calc-row-label">Comissão bruta (${escH(String(percComissao))}% de ${fmtBRL(valorVenda)})</span>
+        <span class="calc-row-val">${fmtBRL(bruto)}</span>
+      </div>
+      ${linhaDeducao('INSS do autônomo', inss, fmtPct(inssAliqEf) + ' s/ bruto')}
+      ${ir > 0 ? linhaDeducao('IR Retido (Carnê-Leão)', ir, aliqIR + '% na faixa') : ''}
+      <div class="calc-row liquido">
+        <span class="calc-row-label">Você recebe líquido</span>
+        <span class="calc-row-val">${fmtBRL(liquido)}</span>
+      </div>
+      <p class="calc-nota">Estimativa com base na tabela vigente de IR 2025 e INSS de autônomo (20% s/ bruto, teto R$ 7.786,02). Não considera deduções médicas, livro-caixa nem outros rendimentos do mês. Consulte seu contador para o cálculo definitivo.</p>
+    </div>`
 }
 
 function renderVendas() {
