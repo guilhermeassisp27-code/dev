@@ -26,11 +26,15 @@ function resolvePlan(data: Record<string, unknown>): string {
   return OFFER_PLANS[offerCode] ?? 'corretorpro'
 }
 
-// Planos de CONTA multiusuário por oferta (Prioridade 4). As ofertas atuais
-// são todas de corretor individual (1 assento). Quando os pacotes Imobiliária/
-// Loteadora existirem na Hotmart, basta mapear o código da oferta aqui.
-//   exemplo: 'codigoimob': { plano: 'imobiliaria', maxUsers: 10 },
-const OFFER_ACCOUNTS: Record<string, { plano: string; maxUsers: number }> = {}
+// Planos de CONTA multiusuário por oferta (Prioridade 4).
+// Mapeamento de ofertas Hotmart → plano + limite de assentos.
+// ATENÇÃO: só ofertas de conta multiusuário entram aqui. As ofertas de
+// corretor individual (35qlpvdb mensal, xs8grn1m anual) NÃO entram — elas
+// resolvem para { plano: 'corretor', maxUsers: 1 } via o fallback abaixo.
+const OFFER_ACCOUNTS: Record<string, { plano: string; maxUsers: number }> = {
+  'c9r311s7': { plano: 'imobiliaria', maxUsers: 5 }, // Imobiliária mensal
+  '226wqzhj': { plano: 'loteadora', maxUsers: 15 }, // Loteadora mensal
+}
 
 function resolveAccountPlan(data: Record<string, unknown>): { plano: string; maxUsers: number } {
   const purchase = data?.purchase as Record<string, unknown> | undefined
