@@ -9,7 +9,7 @@
 
 import { chromium } from 'playwright'
 
-const APP = process.env.APP_URL || 'https://usecorretorpro.vercel.app'
+const APP = process.env.APP_URL || 'https://selosales.vercel.app'
 const EMAIL = process.env.DEMO_EMAIL
 const PASS = process.env.DEMO_PASSWORD
 
@@ -27,7 +27,10 @@ async function login(context) {
   await page.fill('input[type="email"]', EMAIL)
   await page.fill('input[type="password"]', PASS)
   await page.click('button[type="submit"]')
-  await page.waitForURL(/tool\.html/, { timeout: 40000 })
+  // Após o login o app redireciona para a ferramenta. Com o domínio próprio
+  // (app.selosales.com.br via CNAME) ela é servida na RAIZ, não em /tool.html —
+  // então esperamos apenas sair da tela de acesso, sem depender do path antigo.
+  await page.waitForURL((url) => !url.pathname.startsWith('/acesso'), { timeout: 40000 })
   await page.waitForLoadState('networkidle')
   await page.waitForSelector('#f-cliente', { state: 'visible', timeout: 30000 })
   await beat(1500)
