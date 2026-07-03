@@ -32,19 +32,33 @@ async function login(context) {
   // então esperamos apenas sair da tela de acesso, sem depender do path antigo.
   await page.waitForURL((url) => !url.pathname.startsWith('/acesso'), { timeout: 40000 })
   await page.waitForLoadState('networkidle')
-  await page.waitForSelector('#f-cliente', { state: 'visible', timeout: 30000 })
+  // A ferramenta virou um CRM e abre no Dashboard — o formulário de proposta
+  // fica numa view inativa. Esperamos a shell autenticada carregar (o menu),
+  // não o #f-cliente, que só aparece ao abrir a aba Nova Proposta.
+  await page.waitForSelector('[onclick="showView(\'form\')"]', { state: 'attached', timeout: 30000 })
   await beat(1500)
   return page
 }
 
-async function abrirHistorico(page) {
+// Abre uma aba do menu lateral (lidando com o menu recolhido no mobile).
+async function irParaView(page, view) {
   const hamburger = page.locator('[onclick="openSidebar()"]')
   if (await hamburger.isVisible().catch(() => false)) {
     await hamburger.click()
     await beat(600)
   }
-  await page.click('[onclick="showView(\'history\')"]')
-  await beat(1500)
+  await page.click(`[onclick="showView('${view}')"]`)
+  await beat(1200)
+}
+
+async function abrirProposta(page) {
+  await irParaView(page, 'form')
+  await page.waitForSelector('#f-cliente', { state: 'visible', timeout: 15000 })
+}
+
+async function abrirHistorico(page) {
+  await irParaView(page, 'history')
+  await beat(300)
 }
 
 const browser = await chromium.launch()
@@ -55,6 +69,7 @@ try {
   console.log(`[QA] Sessão 1 — salvando proposta "${MARCADOR}"...`)
   const ctx1 = await browser.newContext({ viewport: { width: 1024, height: 800 } })
   const page1 = await login(ctx1)
+  await abrirProposta(page1)
 
   await page1.fill('#f-cliente', MARCADOR)
   await page1.selectOption('#f-tipo-imovel', { label: 'Apartamento' })
