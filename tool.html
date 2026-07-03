@@ -501,9 +501,10 @@ input[type=color]{opacity:0;width:0;height:0;position:absolute}
 .im-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:14px}
 .im-card{background:var(--s1);border:1px solid var(--b);border-radius:var(--radl);overflow:hidden;transition:border-color .2s ease,transform .2s ease,box-shadow .2s ease;display:flex;flex-direction:column;box-shadow:var(--shadow-sm)}
 .im-card:hover{border-color:var(--bm);transform:translateY(-3px);box-shadow:var(--shadow-lg)}
-.im-card-foto{width:100%;height:140px;background:var(--s2);display:flex;align-items:center;justify-content:center;overflow:hidden;flex-shrink:0}
+.im-card-foto{position:relative;width:100%;height:140px;background:var(--s2);display:flex;align-items:center;justify-content:center;overflow:hidden;flex-shrink:0}
 .im-card-foto img{width:100%;height:100%;object-fit:cover}
 .im-card-foto svg{color:var(--t3)}
+.im-foto-count{position:absolute;right:8px;bottom:8px;background:rgba(0,0,0,.6);color:#fff;font-size:11px;font-weight:700;padding:3px 8px;border-radius:100px;display:flex;align-items:center;gap:4px}
 .im-card-body{padding:14px 16px;display:flex;flex-direction:column;gap:6px;flex:1}
 .im-card-top{display:flex;align-items:center;gap:8px}
 .im-card-tipo{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.06em;color:var(--p);background:var(--ps);padding:3px 8px;border-radius:5px}
@@ -1209,21 +1210,17 @@ input[type=color]{opacity:0;width:0;height:0;position:absolute}
               <input id="im-autorizacao" type="text" class="inp" placeholder="Ex: autorização de intermediação assinada em 20/06">
             </div>
             <div class="field f2">
-              <label class="lbl">Foto de capa (opcional)</label>
-              <div class="foto-upload">
-                <div class="foto-preview" id="im-foto-prev">
-                  <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>
-                </div>
-                <div class="foto-actions">
-                  <label class="btn btn-ghost btn-sm" style="cursor:pointer">
-                    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
-                    Enviar foto
-                    <input type="file" id="im-foto" accept="image/*" style="display:none" onchange="carregarFotoCapaImovel(event)">
-                  </label>
-                  <button type="button" class="btn btn-ghost btn-sm" onclick="removerFotoCapaImovel()">Remover</button>
-                </div>
+              <label class="lbl">Fotos do imóvel (opcional — 1 capa + até 9 fotos)</label>
+              <div class="fotos-grid" id="im-fotos-thumbs"></div>
+              <div class="foto-actions" style="margin-top:8px;display:flex;gap:8px">
+                <label class="btn btn-ghost btn-sm" style="cursor:pointer">
+                  <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
+                  Adicionar fotos
+                  <input type="file" id="im-foto" accept="image/*" multiple style="display:none" onchange="carregarFotosImovel(event)">
+                </label>
+                <button type="button" class="btn btn-ghost btn-sm" onclick="removerFotosImovel()">Remover todas</button>
               </div>
-              <span class="hint">Aparece no card da listagem. Máx 4MB.</span>
+              <span class="hint">A primeira é a capa — clique em outra foto para torná-la capa. Aparece no card e no seu site público. Máx 4MB por foto.</span>
             </div>
           </div>
         </div>
@@ -6582,15 +6579,16 @@ function renderVendas() {
    da proposta), mesmo padrão visual de card/badge da Agenda/Histórico. */
 const IMOVEL_STATUS_LABEL = { disponivel:'Disponível', reservado:'Reservado', vendido:'Vendido', locado:'Locado' }
 const IMOVEL_ORIGEM_LABEL = { proprio:'Produto próprio', negociacao:'Em negociação', terceiro:'Captação de terceiro' }
-let fotoCapaAtual = null   // foto em edição no formulário, ainda não salva no array
+let fotosImovelAtuais = []   // fotos do imóvel em edição — [0] é a capa, máx 10
 
 function limparFormImovel() {
   const form = document.getElementById('form-imovel')
   if (form) form.reset()
   document.getElementById('im-id').value = ''
-  fotoCapaAtual = null
-  document.getElementById('im-foto').value = ''
-  document.getElementById('im-foto-prev').innerHTML = `<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>`
+  fotosImovelAtuais = []
+  const inpFoto = document.getElementById('im-foto')
+  if (inpFoto) inpFoto.value = ''
+  renderFotosImovelForm()
   document.getElementById('imovel-form-titulo').textContent = 'Novo imóvel'
   document.getElementById('btn-imovel-txt').textContent = 'Cadastrar imóvel'
   document.getElementById('btn-imovel-cancelar').style.display = 'none'
@@ -6615,7 +6613,8 @@ async function salvarImovel(ev) {
     status:      document.getElementById('im-status').value || 'disponivel',
     origem:      document.getElementById('im-origem').value || 'proprio',
     autorizacao: document.getElementById('im-autorizacao').value.trim(),
-    foto:        fotoCapaAtual,
+    fotos:       fotosImovelAtuais.slice(),
+    foto:        fotosImovelAtuais[0] || null,   // capa = 1ª foto (card + site público)
   }
 
   if (idEdicao) {
@@ -6655,10 +6654,11 @@ function editarImovel(id) {
   document.getElementById('im-status').value = im.status || 'disponivel'
   document.getElementById('im-origem').value = im.origem || 'proprio'
   document.getElementById('im-autorizacao').value = im.autorizacao || ''
-  fotoCapaAtual = im.foto || null
-  document.getElementById('im-foto-prev').innerHTML = fotoCapaAtual
-    ? `<img src="${fotoCapaAtual}" alt="Foto do imóvel">`
-    : `<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>`
+  // Imóveis antigos têm só `foto` (capa única) — migra para a galeria.
+  fotosImovelAtuais = (Array.isArray(im.fotos) && im.fotos.length)
+    ? im.fotos.slice(0, MAX_FOTOS)
+    : (im.foto ? [im.foto] : [])
+  renderFotosImovelForm()
   document.getElementById('imovel-form-titulo').textContent = 'Editar imóvel'
   document.getElementById('btn-imovel-txt').textContent = 'Salvar alterações'
   document.getElementById('btn-imovel-cancelar').style.display = ''
@@ -6723,9 +6723,13 @@ function renderImoveis() {
     const fotoHtml = im.foto
       ? `<img src="${im.foto}" alt="Foto do imóvel">`
       : `<svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>`
+    const nFotos = Array.isArray(im.fotos) ? im.fotos.length : (im.foto ? 1 : 0)
+    const contadorHtml = nFotos > 1
+      ? `<span class="im-foto-count"><svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>${nFotos}</span>`
+      : ''
     return `
     <div class="im-card">
-      <div class="im-card-foto">${fotoHtml}</div>
+      <div class="im-card-foto">${fotoHtml}${contadorHtml}</div>
       <div class="im-card-body">
         <div class="im-card-top">
           <span class="im-card-tipo">${escH(im.tipo || '—')}</span>
@@ -6754,41 +6758,74 @@ function renderImoveis() {
   }).join('')}</div>`
 }
 
-// Mesmo padrão da foto da proposta: redimensiona em canvas antes de
-// guardar em base64 (JPEG, sem necessidade de transparência) para manter
-// o jsonb leve.
-function carregarFotoCapaImovel(ev) {
-  const file = ev.target.files[0]
-  if (!file) return
-  if (file.size > 4 * 1024 * 1024) { toast('Foto muito grande — máx 4MB', true); return }
-  const reader = new FileReader()
-  reader.onload = e => {
-    const img = new Image()
-    img.onload = () => {
-      const MAX = 800
-      let { width, height } = img
-      if (width > MAX || height > MAX) {
-        const escala = Math.min(MAX / width, MAX / height)
-        width = Math.round(width * escala)
-        height = Math.round(height * escala)
+// Galeria de fotos do imóvel — mesma mecânica da galeria da proposta
+// (carregarFotoImovel/renderFotosForm): comprime em canvas para 800px e
+// guarda base64 JPEG, mantendo o jsonb leve. [0] é sempre a capa.
+function carregarFotosImovel(ev) {
+  const files = Array.from(ev.target.files || [])
+  ev.target.value = ''
+  if (!files.length) return
+  const vagas = MAX_FOTOS - fotosImovelAtuais.length
+  if (vagas <= 0) { toast(`Limite de ${MAX_FOTOS} fotos por imóvel`, true); return }
+  if (files.length > vagas) toast(`Limite de ${MAX_FOTOS} fotos — adicionando só as ${vagas} primeiras`, true)
+  files.slice(0, vagas).forEach(file => {
+    if (file.size > 4 * 1024 * 1024) { toast(`Foto muito grande — máx 4MB (${file.name})`, true); return }
+    const reader = new FileReader()
+    reader.onload = e => {
+      const img = new Image()
+      img.onload = () => {
+        const MAX = 800
+        let { width, height } = img
+        if (width > MAX || height > MAX) {
+          const escala = Math.min(MAX / width, MAX / height)
+          width = Math.round(width * escala)
+          height = Math.round(height * escala)
+        }
+        const canvas = document.createElement('canvas')
+        canvas.width = width; canvas.height = height
+        canvas.getContext('2d').drawImage(img, 0, 0, width, height)
+        if (fotosImovelAtuais.length < MAX_FOTOS) {
+          fotosImovelAtuais.push(canvas.toDataURL('image/jpeg', 0.72))
+          renderFotosImovelForm()
+        }
       }
-      const canvas = document.createElement('canvas')
-      canvas.width = width; canvas.height = height
-      canvas.getContext('2d').drawImage(img, 0, 0, width, height)
-      fotoCapaAtual = canvas.toDataURL('image/jpeg', 0.72)
-      document.getElementById('im-foto-prev').innerHTML = `<img src="${fotoCapaAtual}" alt="Foto do imóvel">`
-      toast('Foto carregada')
+      img.onerror = () => toast('Arquivo de imagem inválido', true)
+      img.src = e.target.result
     }
-    img.onerror = () => toast('Arquivo de imagem inválido', true)
-    img.src = e.target.result
-  }
-  reader.readAsDataURL(file)
+    reader.readAsDataURL(file)
+  })
 }
 
-function removerFotoCapaImovel() {
-  fotoCapaAtual = null
-  document.getElementById('im-foto').value = ''
-  document.getElementById('im-foto-prev').innerHTML = `<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>`
+function renderFotosImovelForm() {
+  const box = document.getElementById('im-fotos-thumbs')
+  if (!box) return
+  box.innerHTML = ''
+  fotosImovelAtuais.forEach((src, i) => {
+    const t = document.createElement('div')
+    t.className = 'foto-thumb'
+    t.title = i === 0 ? 'Capa do imóvel' : 'Clique para tornar capa'
+    t.innerHTML = `<img src="${src}" alt="Foto ${i + 1}">` +
+      (i === 0 ? '<span class="capa-tag">Capa</span>' : '') +
+      `<button type="button" class="x" aria-label="Remover foto">×</button>`
+    t.onclick = () => {
+      if (i === 0) return
+      fotosImovelAtuais.unshift(fotosImovelAtuais.splice(i, 1)[0])
+      renderFotosImovelForm()
+    }
+    t.querySelector('.x').onclick = ev => {
+      ev.stopPropagation()
+      fotosImovelAtuais.splice(i, 1)
+      renderFotosImovelForm()
+    }
+    box.appendChild(t)
+  })
+}
+
+function removerFotosImovel() {
+  fotosImovelAtuais = []
+  const inp = document.getElementById('im-foto')
+  if (inp) inp.value = ''
+  renderFotosImovelForm()
 }
 
 // Jornada: a partir de um lead com visita realizada, preenche E gera o
