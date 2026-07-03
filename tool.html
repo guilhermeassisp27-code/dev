@@ -1848,7 +1848,12 @@ input[type=color]{opacity:0;width:0;height:0;position:absolute}
           <button type="button" class="modelo-card" data-modelo="autorizacao" onclick="escolherModeloContrato('autorizacao')">
             <div class="modelo-card-ico"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 01-2 2H5a2 2 0 01-2-2V5a2 2 0 012-2h11"/></svg></div>
             <div class="modelo-card-t">Autorização de Venda/Locação</div>
-            <div class="modelo-card-x">O proprietário autoriza você a intermediar a venda ou locação do imóvel — protege a sua comissão.</div>
+            <div class="modelo-card-x">O proprietário autoriza você a intermediar a venda ou locação. Sem ela assinada, o corretor fica sem respaldo para cobrar a corretagem — é quesito de ética do CRECI.</div>
+          </button>
+          <button type="button" class="modelo-card" data-modelo="exclusividade" onclick="escolherModeloContrato('exclusividade')">
+            <div class="modelo-card-ico"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg></div>
+            <div class="modelo-card-t">Contrato de Exclusividade</div>
+            <div class="modelo-card-x">Estrutura de contrato: o proprietário concede exclusividade em troca de equipe dedicada e marketing, com comissão protegida na vigência. Requer revisão de advogado.</div>
           </button>
           <button type="button" class="modelo-card" data-modelo="proposta_compra" onclick="escolherModeloContrato('proposta_compra')">
             <div class="modelo-card-ico"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 000 7h5a3.5 3.5 0 010 7H6"/></svg></div>
@@ -1933,7 +1938,7 @@ input[type=color]{opacity:0;width:0;height:0;position:absolute}
         </div>
 
         <div class="card" id="ctt-bloco-autorizacao">
-          <div class="card-t">Condições da autorização</div>
+          <div class="card-t" id="ctt-bloco-autorizacao-t">Condições da autorização</div>
           <div class="fg">
             <div class="field">
               <label class="lbl" for="ct-finalidade">Finalidade</label>
@@ -1954,12 +1959,17 @@ input[type=color]{opacity:0;width:0;height:0;position:absolute}
               <label class="lbl" for="ct-prazo-aut">Prazo de vigência (dias)</label>
               <input id="ct-prazo-aut" type="number" class="inp" placeholder="90" value="90" min="1">
             </div>
-            <div class="field">
+            <div class="field" id="fld-ct-exclusividade">
               <label class="lbl" for="ct-exclusividade">Exclusividade</label>
               <select id="ct-exclusividade" class="sel">
                 <option value="nao">Não exclusiva</option>
                 <option value="sim">Com exclusividade</option>
               </select>
+            </div>
+            <div class="field f2" id="fld-ct-servicos" style="display:none">
+              <label class="lbl" for="ct-servicos">Contrapartidas oferecidas ao proprietário (opcional)</label>
+              <input id="ct-servicos" type="text" class="inp" placeholder="Ex: equipe dedicada, anúncios nos portais, tráfego pago, site exclusivo do imóvel, placa">
+              <span class="hint">É o que justifica a exclusividade — entra como cláusula de obrigações do corretor.</span>
             </div>
           </div>
         </div>
@@ -4441,11 +4451,18 @@ function escolherModeloContrato(modelo) {
 
   const titulos = {
     autorizacao: { form:'Dados da Autorização de Venda/Locação', parte:'Proprietário(a) do imóvel' },
+    exclusividade: { form:'Dados do Contrato de Exclusividade', parte:'Proprietário(a) do imóvel' },
     proposta_compra: { form:'Dados da Proposta de Compra', parte:'Vendedor(a) do imóvel' },
   }
   document.getElementById('ctt-form-titulo').textContent = titulos[modelo].form
   document.getElementById('ctt-parte-titulo').textContent = titulos[modelo].parte
-  document.getElementById('ctt-bloco-autorizacao').style.display = modelo === 'autorizacao' ? '' : 'none'
+  // Exclusividade reaproveita o bloco de condições da autorização (finalidade,
+  // valor, comissão, prazo), trocando o seletor de exclusividade (redundante)
+  // pelo campo de contrapartidas.
+  document.getElementById('ctt-bloco-autorizacao').style.display = modelo === 'autorizacao' || modelo === 'exclusividade' ? '' : 'none'
+  document.getElementById('ctt-bloco-autorizacao-t').textContent = modelo === 'exclusividade' ? 'Condições da exclusividade' : 'Condições da autorização'
+  document.getElementById('fld-ct-exclusividade').style.display = modelo === 'exclusividade' ? 'none' : ''
+  document.getElementById('fld-ct-servicos').style.display = modelo === 'exclusividade' ? '' : 'none'
   document.getElementById('ctt-bloco-proposta').style.display = modelo === 'proposta_compra' ? '' : 'none'
   document.getElementById('ct-valor-prop').required = modelo === 'proposta_compra'
 
@@ -4513,6 +4530,59 @@ function montarTextoAutorizacao(d) {
   ].filter(s => s !== '').join('\n')
 }
 
+/* Estrutura do contrato de exclusividade — cláusulas-esqueleto com
+   placeholders. Por decisão de produto, NÃO redigimos texto jurídico
+   definitivo: as cláusulas sensíveis saem marcadas para revisão de
+   advogado antes de qualquer uso com terceiros. */
+function montarTextoExclusividade(d) {
+  const hoje = new Date().toLocaleDateString('pt-BR', { day:'numeric', month:'long', year:'numeric' })
+  const nomeCorretor = perfil.nome || 'Corretor(a)'
+  const creci = perfil.creci ? `, inscrito(a) no CRECI sob o nº ${perfil.creci}` : ''
+  const docsProp = [d.partCpf ? `CPF/CNPJ nº ${d.partCpf}` : null, d.partRg ? `RG nº ${d.partRg}` : null].filter(Boolean).join(', ')
+  const idProp = d.partNome + (docsProp ? `, portador(a) do ${docsProp}` : '') + (d.partEnd ? `, residente/sediado(a) em ${d.partEnd}` : '')
+  const idImovel = (d.imTipo ? d.imTipo.toLowerCase() + ' ' : 'imóvel ') + `situado em ${d.imEnd}` + (d.imMatricula ? `, matrícula nº ${d.imMatricula}` : '')
+  const finalidadeTxt = d.finalidade === 'locacao' ? 'LOCAÇÃO' : 'VENDA'
+
+  return [
+    `CONTRATO DE INTERMEDIAÇÃO IMOBILIÁRIA COM EXCLUSIVIDADE — ${finalidadeTxt}`,
+    '',
+    '[ESTRUTURA DE MODELO: as cláusulas abaixo são um ponto de partida e DEVEM ser revisadas e completadas por advogado antes do uso, especialmente as cláusulas 5 e 7.]',
+    '',
+    `Pelo presente instrumento, ${idProp}, doravante denominado(a) CONTRATANTE, e ${nomeCorretor}${creci}, doravante denominado(a) CORRETOR(A), celebram este contrato de intermediação imobiliária com exclusividade para a ${finalidadeTxt.toLowerCase()} do(a) ${idImovel}.`,
+    '',
+    `1. OBJETO — Intermediação, pelo(a) CORRETOR(A), da ${finalidadeTxt.toLowerCase()} do imóvel acima identificado, em caráter de EXCLUSIVIDADE: durante a vigência, o(a) CONTRATANTE não contratará outros corretores ou imobiliárias nem negociará o imóvel diretamente sem a participação do(a) CORRETOR(A).`,
+    '',
+    `2. CONTRAPARTIDAS DO(A) CORRETOR(A) — Em razão da exclusividade, o(a) CORRETOR(A) se obriga a: ${d.servicos || '[DESCREVER as contrapartidas: equipe dedicada, anúncios nos portais, tráfego pago, site do imóvel, placa, relatórios periódicos...]'}.`,
+    '',
+    `3. VALOR PRETENDIDO — O valor pretendido pelo(a) CONTRATANTE para o negócio é de ${fmtMoedaSimples(d.valor)}, ajustável de comum acordo durante a vigência.`,
+    '',
+    `4. COMISSÃO — Em caso de concretização do negócio, será devida ao(à) CORRETOR(A) a comissão de corretagem de ${d.comissao ? d.comissao + '% sobre o valor da operação' : '[DEFINIR percentual]'}.`,
+    '',
+    `5. COMISSÃO NA VIGÊNCIA DA EXCLUSIVIDADE — Se, durante a vigência deste contrato, o negócio for concretizado por intermédio de terceiros ou diretamente pelo(a) CONTRATANTE, a comissão da cláusula 4 permanece integralmente devida ao(à) CORRETOR(A), na forma do art. 726 do Código Civil. [CLÁUSULA SENSÍVEL — revisão jurídica obrigatória antes do uso.]`,
+    '',
+    `6. VIGÊNCIA — Este contrato vigora por ${d.prazo || '90'} dias a contar da assinatura, prorrogável por acordo escrito entre as partes.`,
+    '',
+    `7. RESCISÃO — [DEFINIR com advogado: condições de rescisão antecipada, necessidade de comunicação por escrito, eventual multa e tratamento de negociações iniciadas antes da rescisão.]`,
+    '',
+    `8. DISPOSIÇÕES GERAIS — As partes elegem o foro da comarca de localização do imóvel para dirimir eventuais controvérsias, ressalvada disposição legal em contrário.`,
+    d.obs ? `\n9. OBSERVAÇÕES — ${d.obs}` : '',
+    '',
+    (d.cidade ? d.cidade + ', ' : '') + hoje + '.',
+    '',
+    '_______________________________',
+    d.partNome + ' (CONTRATANTE' + (d.partCpf ? ' · CPF/CNPJ ' + d.partCpf : '') + ')',
+    '',
+    '_______________________________',
+    nomeCorretor + (perfil.creci ? ' — CRECI ' + perfil.creci : '') + ' (CORRETOR(A))',
+    '',
+    'TESTEMUNHAS (recomendadas para força executiva do contrato):',
+    '',
+    '1. _______________________________  Nome: [NOME]  CPF: [CPF]',
+    '',
+    '2. _______________________________  Nome: [NOME]  CPF: [CPF]',
+  ].filter(s => s !== '').join('\n')
+}
+
 function montarTextoPropostaCompra(d) {
   const hoje = new Date().toLocaleDateString('pt-BR', { day:'numeric', month:'long', year:'numeric' })
   const nomeCorretor = perfil.nome || 'Corretor(a)'
@@ -4567,6 +4637,7 @@ function gerarTextoContrato(ev) {
     comissao:    document.getElementById('ct-comissao').value.trim(),
     prazo:       document.getElementById('ct-prazo-aut').value.trim(),
     exclusividade: document.getElementById('ct-exclusividade').value,
+    servicos:    document.getElementById('ct-servicos').value.trim(),
     valorProp:   document.getElementById('ct-valor-prop').value.trim(),
     formaPagto:  document.getElementById('ct-forma-pagto').value,
     sinal:       document.getElementById('ct-sinal').value.trim(),
@@ -4577,9 +4648,11 @@ function gerarTextoContrato(ev) {
 
   const texto = contratoModeloAtual === 'proposta_compra'
     ? montarTextoPropostaCompra(d)
+    : contratoModeloAtual === 'exclusividade'
+    ? montarTextoExclusividade(d)
     : montarTextoAutorizacao(d)
 
-  const titulos = { autorizacao:'Autorização de Venda/Locação', proposta_compra:'Proposta de Compra' }
+  const titulos = { autorizacao:'Autorização de Venda/Locação', exclusividade:'Contrato de Exclusividade (estrutura)', proposta_compra:'Proposta de Compra' }
   document.getElementById('ctt-edit-titulo').textContent = 'Revise e edite — ' + titulos[contratoModeloAtual]
   document.getElementById('contrato-texto').value = texto
 
