@@ -1353,8 +1353,31 @@ input[type=color]{opacity:0;width:0;height:0;position:absolute}
           <div class="type-block" id="blk-compra">
             <div class="fg">
               <div class="field">
+                <label class="lbl" for="f-fin-tipo">Tipo de financiamento</label>
+                <select id="f-fin-tipo" class="sel" onchange="atualizarFinanciamento()">
+                  <option value="banco" selected>Instituição financeira</option>
+                  <option value="proprio">Financiamento próprio (direto com o vendedor)</option>
+                </select>
+                <span class="hint" id="fin-hint">O banco financia o saldo após a entrada</span>
+              </div>
+              <div class="field" id="fld-banco">
+                <label class="lbl" for="f-banco">Instituição financeira</label>
+                <select id="f-banco" class="sel" onchange="atualizarBanco()">
+                  <option value="Caixa Econômica" selected>Caixa Econômica</option>
+                  <option value="Banco do Brasil">Banco do Brasil</option>
+                  <option value="Itaú">Itaú</option>
+                  <option value="Bradesco">Bradesco</option>
+                  <option value="Santander">Santander</option>
+                  <option value="outro">Outra (digitar)</option>
+                </select>
+                <input id="f-banco-outro" type="text" class="inp" placeholder="Nome da instituição" style="display:none;margin-top:6px">
+              </div>
+            </div>
+            <div class="fg">
+              <div class="field">
                 <label class="lbl" for="f-prazo">Prazo financiamento</label>
                 <select id="f-prazo" class="sel">
+                  <option value="60">5 anos (60 meses)</option>
                   <option value="120">10 anos (120 meses)</option>
                   <option value="180">15 anos (180 meses)</option>
                   <option value="240">20 anos (240 meses)</option>
@@ -1364,8 +1387,36 @@ input[type=color]{opacity:0;width:0;height:0;position:absolute}
               </div>
               <div class="field">
                 <label class="lbl" for="f-taxa">Taxa de juros (% a.a.)</label>
-                <input id="f-taxa" type="number" class="inp" placeholder="10.5" value="10.5" min="1" max="30" step="0.1">
-                <span class="hint">Ref: Caixa ~10,5% a.a. (SBPE/2025)</span>
+                <input id="f-taxa" type="number" class="inp" placeholder="10.5" value="10.5" min="0" max="40" step="0.1">
+                <span class="hint" id="taxa-hint">Ref: Caixa ~10,5% a.a. (SBPE/2025)</span>
+              </div>
+            </div>
+            <div class="fg">
+              <div class="field">
+                <label class="lbl" for="f-entrada">Entrada (%)</label>
+                <input id="f-entrada" type="number" class="inp" value="20" min="0" max="90" step="1">
+                <span class="hint">Percentual do valor pago como entrada</span>
+              </div>
+              <div class="field">
+                <label class="lbl" for="f-amort">Sistema de amortização</label>
+                <select id="f-amort" class="sel">
+                  <option value="ambas" selected>Comparativo SAC × Price</option>
+                  <option value="price">Tabela Price (parcela fixa)</option>
+                  <option value="sac">Tabela SAC (parcela decrescente)</option>
+                </select>
+              </div>
+            </div>
+            <div class="fg">
+              <div class="field">
+                <label class="lbl" for="f-tem-desc">Possui desconto à vista?</label>
+                <select id="f-tem-desc" class="sel" onchange="atualizarDesconto()">
+                  <option value="nao" selected>Não</option>
+                  <option value="sim">Sim</option>
+                </select>
+              </div>
+              <div class="field" id="fld-desconto" style="display:none">
+                <label class="lbl" for="f-desconto">Desconto (%)</label>
+                <input id="f-desconto" type="number" class="inp" placeholder="5" min="0.1" max="90" step="0.1">
               </div>
             </div>
           </div>
@@ -1486,7 +1537,7 @@ input[type=color]{opacity:0;width:0;height:0;position:absolute}
             <div class="mods" id="p-mods"></div>
           </div>
           <div id="p-sim-sec">
-            <div class="prop-sec-title">Simulação de Financiamento · SAC × Price</div>
+            <div class="prop-sec-title" id="p-sim-title">Simulação de Financiamento · SAC × Price</div>
             <div class="sim" id="p-simulacao"></div>
             <p class="sim-note" id="p-sim-note"></p>
           </div>
@@ -2779,6 +2830,37 @@ function atualizarTipoNeg() {
   document.getElementById('blk-permuta').classList.toggle('show', tipo === 'Permuta')
 }
 
+/* ── FINANCIAMENTO: instituição × próprio, banco livre e desconto ── */
+function atualizarFinanciamento() {
+  const tipo = document.getElementById('f-fin-tipo').value
+  document.getElementById('fld-banco').style.display = tipo === 'banco' ? '' : 'none'
+  document.getElementById('taxa-hint').textContent = tipo === 'banco'
+    ? 'Ref: Caixa ~10,5% a.a. (SBPE/2025)'
+    : 'Taxa negociada diretamente entre as partes'
+  document.getElementById('fin-hint').textContent = tipo === 'banco'
+    ? 'O banco financia o saldo após a entrada'
+    : 'O vendedor (loteadora/construtora) parcela o saldo, sem banco'
+}
+function atualizarBanco() {
+  const outro = document.getElementById('f-banco').value === 'outro'
+  document.getElementById('f-banco-outro').style.display = outro ? '' : 'none'
+  if (outro) document.getElementById('f-banco-outro').focus()
+}
+function atualizarDesconto() {
+  const tem = document.getElementById('f-tem-desc').value === 'sim'
+  document.getElementById('fld-desconto').style.display = tem ? '' : 'none'
+  if (tem) document.getElementById('f-desconto').focus()
+}
+function bancoEscolhido() {
+  const sel = document.getElementById('f-banco')
+  if (!sel) return ''
+  return sel.value === 'outro'
+    ? document.getElementById('f-banco-outro').value.trim()
+    : sel.value
+}
+/* parseFloat sem engolir zero: '' → default, '0' → 0 */
+function numOr(v, dflt) { const n = parseFloat(v); return isFinite(n) ? n : dflt }
+
 /* ── EXEMPLO ── */
 function carregarExemplo() {
   document.getElementById('f-cliente').value   = 'João Silva'
@@ -2791,8 +2873,14 @@ function carregarExemplo() {
   document.getElementById('f-valor').value     = '450.000'
   document.getElementById('f-prazo').value     = '300'
   document.getElementById('f-taxa').value      = '10.5'
+  document.getElementById('f-fin-tipo').value  = 'banco'
+  document.getElementById('f-banco').value     = 'Caixa Econômica'
+  document.getElementById('f-entrada').value   = '20'
+  document.getElementById('f-amort').value     = 'ambas'
+  document.getElementById('f-tem-desc').value  = 'sim'
+  document.getElementById('f-desconto').value  = '3'
   document.getElementById('f-cond').value      = 'Cliente tem FGTS disponível e busca financiamento de longo prazo'
-  atualizarTipoNeg()
+  atualizarTipoNeg(); atualizarFinanciamento(); atualizarBanco(); atualizarDesconto()
   showView('form')
   toast('Exemplo carregado — clique em Gerar Proposta')
 }
@@ -3138,7 +3226,13 @@ function gerarProposta(ev) {
     vagas:      document.getElementById('f-vagas').value,
     valor:      document.getElementById('f-valor').value.trim(),
     prazo:      parseInt(document.getElementById('f-prazo')?.value || '300'),
-    taxa:       parseFloat(document.getElementById('f-taxa')?.value || '10.5'),
+    taxa:       numOr(document.getElementById('f-taxa')?.value, 10.5),
+    finTipo:    document.getElementById('f-fin-tipo')?.value || 'banco',
+    banco:      bancoEscolhido(),
+    entrada:    Math.min(90, Math.max(0, numOr(document.getElementById('f-entrada')?.value, 20))),
+    amort:      document.getElementById('f-amort')?.value || 'ambas',
+    descontoOn: document.getElementById('f-tem-desc')?.value === 'sim',
+    desconto:   Math.min(90, Math.max(0, numOr(document.getElementById('f-desconto')?.value, 0))),
     garantia:   document.getElementById('f-garantia')?.value || 'Fiador',
     complem:    document.getElementById('f-complem')?.value.trim() || '',
     cond:       document.getElementById('f-cond').value.trim(),
@@ -3253,20 +3347,36 @@ function construirProposta(d) {
 
   if (d.tipoNeg === 'Compra') {
     document.getElementById('p-mods-title').textContent = 'Condições de Pagamento'
-    const vAvista = valNum ? Math.round(valNum * 0.97) : 0
-    const vFgts20 = valNum ? Math.round(valNum * 0.20) : 0
-    const vFinanc = valNum ? Math.round(valNum * 0.80) : 0
+    // Condições configuráveis por proposta — propostas antigas (sem os campos
+    // novos) mantêm o comportamento com que foram geradas: 3% à vista e 20%
+    // de entrada via banco.
+    const entradaPct = (typeof d.entrada === 'number' && isFinite(d.entrada)) ? Math.min(90, Math.max(0, d.entrada)) : 20
+    const temDesc    = d.descontoOn === undefined ? true : (d.descontoOn && d.desconto > 0)
+    const descPct    = d.descontoOn === undefined ? 3 : (d.desconto || 0)
+    const finProprio = d.finTipo === 'proprio'
+    const bancoTxt   = finProprio ? '' : (d.banco || '')
+    const amort      = ['price','sac'].includes(d.amort) ? d.amort : 'ambas'
+
+    const vAvista  = valNum && temDesc ? Math.round(valNum * (1 - descPct/100)) : valNum
+    const vEntrada = valNum ? Math.round(valNum * entradaPct/100) : 0
+    const vFinanc  = valNum ? valNum - vEntrada : 0
     let parcela = ''
-    if (valNum && d.prazo && d.taxa) {
-      const p = calcParcela(vFinanc, d.taxa, d.prazo)
-      parcela = 'R$ ' + Math.round(p).toLocaleString('pt-BR') + '/mês'
+    if (valNum && d.prazo && d.taxa >= 0) {
+      parcela = amort === 'sac'
+        ? '1ª parcela: R$ ' + Math.round(calcSAC(vFinanc, d.taxa, d.prazo).primeira).toLocaleString('pt-BR') + '/mês (decrescente)'
+        : 'Parcela estimada: R$ ' + Math.round(calcParcela(vFinanc, d.taxa, d.prazo)).toLocaleString('pt-BR') + '/mês'
     }
     const prazoAnos = Math.round(d.prazo / 12)
+    const finLabel = finProprio ? 'Financiamento próprio' : 'Financiamento'
+    const finNote = `Entrada de ${entradaPct}% + saldo em ${prazoAnos} anos · taxa ${d.taxa}% a.a.` +
+      (bancoTxt ? ` · ${bancoTxt}` : finProprio ? ' · direto com o vendedor, sem banco' : '')
 
     const mods = [
-      { label:'À Vista', val: vAvista ? 'R$ ' + vAvista.toLocaleString('pt-BR') : valorFmt, note:`Desconto de 3% no valor anunciado`, parcela:'', hl:false },
-      { label:'Financiamento', val: valorFmt, note:`Entrada de 20% + saldo em ${prazoAnos} anos · taxa ${d.taxa}% a.a.`, parcela: parcela ? `Parcela estimada: ${parcela}` : '', hl:true },
-      { label:'FGTS', val: vFgts20 ? 'R$ ' + vFgts20.toLocaleString('pt-BR') : 'Consultar', note:'Entrada mínima de 20% via FGTS + financiamento do saldo', parcela: vFinanc ? `Saldo financiado: R$ ${vFinanc.toLocaleString('pt-BR')}` : '', hl:false },
+      { label:'À Vista', val: vAvista ? 'R$ ' + vAvista.toLocaleString('pt-BR') : valorFmt, note: temDesc ? `Desconto de ${descPct}% no valor anunciado` : 'Pagamento integral na assinatura', parcela:'', hl:false },
+      { label: finLabel, val: valorFmt, note: finNote, parcela, hl:true },
+      ...(finProprio ? [] : [
+        { label:'FGTS', val: vEntrada ? 'R$ ' + vEntrada.toLocaleString('pt-BR') : 'Consultar', note:`Entrada de ${entradaPct}% via FGTS + financiamento do saldo`, parcela: vFinanc ? `Saldo financiado: R$ ${vFinanc.toLocaleString('pt-BR')}` : '', hl:false },
+      ]),
     ]
     mods.forEach(m => {
       const d2 = document.createElement('div')
@@ -3307,32 +3417,51 @@ function construirProposta(d) {
     })
   }
 
-  /* ── Simulação de financiamento (SAC × Price) — só Compra ── */
+  /* ── Simulação de financiamento — só Compra, conforme amortização escolhida ── */
   const simSec = document.getElementById('p-sim-sec')
-  if (d.tipoNeg === 'Compra' && valNum && d.prazo && d.taxa) {
-    const vFin = Math.round(valNum * 0.80)
+  if (d.tipoNeg === 'Compra' && valNum && d.prazo && d.taxa >= 0) {
+    const entradaPct = (typeof d.entrada === 'number' && isFinite(d.entrada)) ? Math.min(90, Math.max(0, d.entrada)) : 20
+    const amort = ['price','sac'].includes(d.amort) ? d.amort : 'ambas'
+    const finProprio = d.finTipo === 'proprio'
+    const vFin = Math.round(valNum * (100 - entradaPct) / 100)
     const sac = calcSAC(vFin, d.taxa, d.prazo)
     const priceParc = calcParcela(vFin, d.taxa, d.prazo)
     const priceTotal = priceParc * d.prazo
     const fmt = n => 'R$ ' + Math.round(n).toLocaleString('pt-BR')
     const anos = Math.round(d.prazo / 12)
-    document.getElementById('p-simulacao').innerHTML =
+
+    const colSAC =
       `<div class="sim-col">` +
         `<div class="sim-col-head">Tabela SAC <span>parcela decrescente</span></div>` +
         `<div class="sim-row"><span>1ª parcela</span><b>${fmt(sac.primeira)}</b></div>` +
         `<div class="sim-row"><span>Última parcela</span><b>${fmt(sac.ultima)}</b></div>` +
         `<div class="sim-row tot"><span>Total pago</span><b>${fmt(sac.total)}</b></div>` +
-      `</div>` +
+      `</div>`
+    const colPrice =
       `<div class="sim-col">` +
         `<div class="sim-col-head">Tabela Price <span>parcela fixa</span></div>` +
         `<div class="sim-row"><span>Parcela fixa</span><b>${fmt(priceParc)}</b></div>` +
         `<div class="sim-row"><span>Parcelas</span><b>${d.prazo}x</b></div>` +
         `<div class="sim-row tot"><span>Total pago</span><b>${fmt(priceTotal)}</b></div>` +
       `</div>`
+
+    document.getElementById('p-sim-title').textContent =
+      amort === 'price' ? 'Simulação de Financiamento · Tabela Price'
+      : amort === 'sac' ? 'Simulação de Financiamento · Tabela SAC'
+      : 'Simulação de Financiamento · SAC × Price'
+    document.getElementById('p-simulacao').innerHTML =
+      amort === 'price' ? colPrice : amort === 'sac' ? colSAC : colSAC + colPrice
+
+    const explicacao =
+      amort === 'price' ? 'Na tabela Price a parcela é fixa do início ao fim. '
+      : amort === 'sac' ? 'No SAC a parcela começa maior e diminui mês a mês. '
+      : 'No SAC a parcela começa maior e diminui mês a mês; na Price ela é fixa do início ao fim. '
     document.getElementById('p-sim-note').textContent =
-      `Simulação sobre ${fmt(vFin)} (financiamento de 80% do valor) em ${anos} anos à taxa de ${d.taxa}% a.a. ` +
-      `No SAC a parcela começa maior e diminui mês a mês; na Price ela é fixa do início ao fim. ` +
-      `Valores estimados — sujeitos à análise e às condições do banco.`
+      `Simulação sobre ${fmt(vFin)} (entrada de ${entradaPct}% + financiamento de ${100 - entradaPct}% do valor) em ${anos} anos à taxa de ${d.taxa}% a.a. ` +
+      explicacao +
+      (finProprio
+        ? 'Valores estimados — condições definidas diretamente com o vendedor.'
+        : 'Valores estimados — sujeitos à análise e às condições do banco.')
     simSec.style.display = ''
   } else {
     simSec.style.display = 'none'
@@ -3403,7 +3532,7 @@ function copiar() {
     '',
     '── Condições ──',
     modsTexto,
-    ...(simTexto ? ['', '── Simulação de financiamento (SAC × Price) ──', simTexto] : []),
+    ...(simTexto ? ['', '── ' + (document.getElementById('p-sim-title')?.textContent || 'Simulação de financiamento') + ' ──', simTexto] : []),
     '',
     sobre,
     '',
@@ -3433,19 +3562,26 @@ function compartilharWA() {
   let cond = ''
   if (d.tipoNeg === 'Compra') {
     const valNum = parseFloat(d.valor.replace(/\./g,'').replace(',','.')) || 0
-    const vAvista = valNum ? Math.round(valNum * 0.97).toLocaleString('pt-BR') : '—'
-    let simLine = '• Financiamento: entrada de 20% + saldo financiado'
-    if (valNum && d.prazo && d.taxa) {
-      const vFin = Math.round(valNum * 0.80)
-      const sac = calcSAC(vFin, d.taxa, d.prazo)
-      const price = calcParcela(vFin, d.taxa, d.prazo)
+    const entradaPct = (typeof d.entrada === 'number' && isFinite(d.entrada)) ? Math.min(90, Math.max(0, d.entrada)) : 20
+    const temDesc = d.descontoOn === undefined ? true : (d.descontoOn && d.desconto > 0)
+    const descPct = d.descontoOn === undefined ? 3 : (d.desconto || 0)
+    const finProprio = d.finTipo === 'proprio'
+    const amort = ['price','sac'].includes(d.amort) ? d.amort : 'ambas'
+    const vAvista = valNum ? Math.round(valNum * (1 - (temDesc ? descPct : 0)/100)).toLocaleString('pt-BR') : '—'
+    const finNome = finProprio
+      ? 'Financiamento direto com o vendedor'
+      : 'Financiamento' + (d.banco ? ' ' + d.banco : '')
+    let simLine = `• ${finNome}: entrada de ${entradaPct}% + saldo financiado`
+    if (valNum && d.prazo && d.taxa >= 0) {
+      const vFin = Math.round(valNum * (100 - entradaPct) / 100)
       const anos = Math.round(d.prazo / 12)
-      simLine =
-        `• Financiamento (${anos} anos, ${d.taxa}% a.a.):\n` +
-        `   SAC: 1ª parcela R$ ${Math.round(sac.primeira).toLocaleString('pt-BR')} (vai diminuindo)\n` +
-        `   Price: R$ ${Math.round(price).toLocaleString('pt-BR')}/mês fixo`
+      const linhas = []
+      if (amort !== 'price') linhas.push(`   SAC: 1ª parcela R$ ${Math.round(calcSAC(vFin, d.taxa, d.prazo).primeira).toLocaleString('pt-BR')} (vai diminuindo)`)
+      if (amort !== 'sac')   linhas.push(`   Price: R$ ${Math.round(calcParcela(vFin, d.taxa, d.prazo)).toLocaleString('pt-BR')}/mês fixo`)
+      simLine = `• ${finNome} (${anos} anos, ${d.taxa}% a.a., entrada de ${entradaPct}%):\n` + linhas.join('\n')
     }
-    cond = `• À Vista: R$ ${vAvista} (desc. 3%)\n${simLine}\n• FGTS: entrada de 20% + financiamento`
+    cond = `• À Vista: R$ ${vAvista}${temDesc ? ` (desc. ${descPct}%)` : ''}\n${simLine}` +
+      (finProprio ? '' : `\n• FGTS: entrada de ${entradaPct}% + financiamento`)
   } else if (d.tipoNeg === 'Locação') {
     cond = `• Aluguel: ${valFmt}/mês\n• Garantia: ${d.garantia}`
   } else {
@@ -3491,7 +3627,7 @@ function novaProposta() {
   document.getElementById('proposta').classList.remove('show')
   document.getElementById('skel').classList.remove('show')
   document.getElementById('form').reset()
-  atualizarTipoNeg()
+  atualizarTipoNeg(); atualizarFinanciamento(); atualizarBanco(); atualizarDesconto()
   snapProposta = null
   _propostaJaSalva = false
   _ultimoItemSalvo = null
@@ -3822,7 +3958,25 @@ function duplicarProposta(i) {
 
     // Campos condicionais de compra
     if (h.prazo)  set('f-prazo', String(h.prazo))
-    if (h.taxa)   set('f-taxa',  String(h.taxa))
+    if (h.taxa !== undefined) set('f-taxa', String(h.taxa))
+    set('f-fin-tipo', h.finTipo || 'banco')
+    const bancoSel = document.getElementById('f-banco')
+    if (bancoSel) {
+      const b = h.banco || 'Caixa Econômica'
+      const naLista = Array.from(bancoSel.options).some(o => o.value === b)
+      bancoSel.value = naLista ? b : 'outro'
+      document.getElementById('f-banco-outro').value = naLista ? '' : b
+    }
+    set('f-entrada', String(h.entrada ?? 20))
+    set('f-amort', h.amort || 'ambas')
+    // propostas antigas (sem o campo) foram geradas com 3% à vista — preserva
+    if (h.descontoOn === undefined) {
+      set('f-tem-desc', 'sim'); set('f-desconto', '3')
+    } else {
+      set('f-tem-desc', h.descontoOn ? 'sim' : 'nao')
+      set('f-desconto', h.descontoOn ? String(h.desconto || '') : '')
+    }
+    atualizarFinanciamento(); atualizarBanco(); atualizarDesconto()
 
     // Campos condicionais de locação
     if (h.garantia) set('f-garantia', h.garantia)
