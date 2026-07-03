@@ -428,6 +428,15 @@ input[type=color]{opacity:0;width:0;height:0;position:absolute}
   font-size:12.5px;line-height:1.75}
 .prop-timbrado-foot .ptf-nome{font-family:Georgia,'Times New Roman',serif;font-size:15px;font-weight:700;margin-bottom:4px;letter-spacing:.3px}
 .prop-timbrado-foot .ptf-linha{color:rgba(255,255,255,.85)}
+/* Marca d'água do logo no fundo — só no Timbrado. O conteúdo (filhos diretos)
+   sobe para z-index:1 e a marca d'água fica no z-index:0, atrás de tudo. */
+.prop-marca-dagua{display:none}
+.proposta.tema-timbrado{position:relative}
+.proposta.tema-timbrado > *{position:relative;z-index:1}
+.proposta.tema-timbrado > .prop-marca-dagua{
+  display:block;position:absolute;z-index:0;top:50%;left:50%;
+  transform:translate(-50%,-50%);width:66%;max-width:380px;opacity:.07;pointer-events:none}
+.prop-marca-dagua img{width:100%;height:auto;display:block}
 .modelo-preview-timbrado{background:linear-gradient(180deg,var(--bp) 0 22%,var(--s1) 22% 78%,var(--bp) 78% 100%)}
 .modelo-preview-timbrado .modelo-preview-bar{background:var(--t3)}
 
@@ -1554,6 +1563,9 @@ input[type=color]{opacity:0;width:0;height:0;position:absolute}
 
       <!-- PROPOSTA GERADA -->
       <div class="proposta" id="proposta">
+
+        <!-- Marca d'água do logo (só no modelo Timbrado, quando há logo) -->
+        <div class="prop-marca-dagua" id="p-marca-dagua" aria-hidden="true"></div>
 
         <!-- Cabeçalho do corretor -->
         <div class="prop-corretor" id="pc-corretor">
@@ -3531,6 +3543,10 @@ function construirProposta(d) {
     letra.textContent = ((emp ? emp.nome : perfil.nome) || 'C')[0].toUpperCase()
     logoEl.appendChild(letra)
   }
+
+  // Marca d'água do logo no fundo (aparece só no modelo Timbrado, via CSS).
+  const marcaEl = document.getElementById('p-marca-dagua')
+  if (marcaEl) marcaEl.innerHTML = logoSrc ? `<img src="${logoSrc}" alt="">` : ''
 
   /* ── Header ── */
   document.getElementById('p-titulo').textContent = `${d.tipoNeg} — ${d.tipoImovel} · ${d.end.split(',')[0].trim()}`
