@@ -299,8 +299,10 @@ input[type=color]{opacity:0;width:0;height:0;position:absolute}
 .skel-group{display:flex;flex-direction:column;gap:8px;margin-bottom:14px}
 
 /* ── PROPOSTA OUTPUT ── */
-.proposta{background:var(--s1);border:1px solid var(--b);border-radius:var(--radl);overflow:hidden;margin-top:20px;display:none}
+.proposta{background:var(--s1);border:1px solid var(--b);border-radius:var(--radl);overflow:hidden;margin-top:20px;display:none;font-family:var(--font-prop,var(--font))}
 .proposta.show{display:block}
+/* A fonte escolhida vale para o corpo; títulos serif do Timbrado continuam serif */
+.proposta.tema-timbrado .prop-corretor-nome,.proposta.tema-timbrado .prop-h2,.proposta.tema-timbrado .prop-sec-title,.proposta.tema-timbrado .ptf-nome{font-family:var(--font-prop-titulo,Georgia,'Times New Roman',serif)}
 
 .prop-corretor{
   display:flex;align-items:center;gap:16px;
@@ -446,6 +448,8 @@ input[type=color]{opacity:0;width:0;height:0;position:absolute}
 .modelo-card{background:var(--s2);border:2px solid var(--b);border-radius:var(--rad);padding:14px;cursor:pointer;transition:border-color .15s;text-align:left;font-family:var(--font)}
 .modelo-card:hover{border-color:var(--bm)}
 .modelo-card.sel-m{border-color:var(--p);background:var(--ps)}
+.sec-toggle{display:flex;align-items:center;gap:10px;font-size:13.5px;color:var(--t);cursor:pointer}
+.sec-toggle input{width:17px;height:17px;accent-color:var(--p);cursor:pointer;flex-shrink:0}
 .modelo-preview{height:46px;border-radius:6px;margin-bottom:10px;display:flex;flex-direction:column;gap:4px;padding:6px 8px;justify-content:center}
 .modelo-preview-classico{background:linear-gradient(135deg,rgba(15,45,74,.18),rgba(201,136,42,.08));border:1px solid var(--b)}
 .modelo-preview-moderno{background:linear-gradient(120deg,var(--bp),var(--bph))}
@@ -1616,13 +1620,17 @@ input[type=color]{opacity:0;width:0;height:0;position:absolute}
             <div class="sim" id="p-simulacao"></div>
             <p class="sim-note" id="p-sim-note"></p>
           </div>
-          <div>
+          <div id="p-sec-sobre">
             <div class="prop-sec-title">Sobre o Imóvel</div>
             <p class="prop-text" id="p-sobre"></p>
           </div>
-          <div>
+          <div id="p-sec-proximos">
             <div class="prop-sec-title">Próximos Passos</div>
             <p class="prop-text" id="p-proximos"></p>
+          </div>
+          <div id="p-sec-obs" style="display:none">
+            <div class="prop-sec-title">Observações</div>
+            <p class="prop-text" id="p-obs"></p>
           </div>
           <p class="prop-resp" id="p-resp" style="display:none"></p>
         </div>
@@ -2305,6 +2313,46 @@ input[type=color]{opacity:0;width:0;height:0;position:absolute}
               <div class="modelo-desc">Papel timbrado — cabeçalho e rodapé na sua cor, logo em destaque e tipografia serif elegante.</div>
             </button>
           </div>
+          <div style="margin-top:18px;padding-top:16px;border-top:1px solid var(--b)">
+            <label class="lbl" for="c-fonte" style="margin-bottom:6px;display:block">Fonte da proposta</label>
+            <p style="font-size:12px;color:var(--t2);margin-bottom:10px">A tipografia usada no texto das suas propostas.</p>
+            <select id="c-fonte" class="sel" onchange="selecionarFonte(this.value)" style="max-width:340px">
+              <option value="moderna">Moderna — sem serifa, atual (padrão)</option>
+              <option value="classica">Clássica — serifada, sóbria</option>
+              <option value="elegante">Elegante — serifada refinada</option>
+              <option value="neutra">Neutra — Helvetica, bem limpa</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="card">
+          <div class="card-t">Seções da proposta</div>
+          <p style="font-size:12px;color:var(--t2);margin-bottom:14px">Escolha o que aparece nas suas propostas. Apresentação e condições de pagamento são essenciais e sempre aparecem.</p>
+          <div style="display:flex;flex-direction:column;gap:12px">
+            <label class="sec-toggle"><input type="checkbox" id="sec-fotos" checked> <span>Fotos do imóvel</span></label>
+            <label class="sec-toggle"><input type="checkbox" id="sec-simulacao" checked> <span>Simulação de financiamento (SAC × Price)</span></label>
+            <label class="sec-toggle"><input type="checkbox" id="sec-sobre" checked> <span>Sobre o imóvel</span></label>
+            <label class="sec-toggle"><input type="checkbox" id="sec-proximos" checked> <span>Próximos passos</span></label>
+          </div>
+        </div>
+
+        <div class="card">
+          <div class="card-t">Textos da proposta</div>
+          <p style="font-size:12px;color:var(--t2);margin-bottom:14px">Personalize os textos que saem nas suas propostas. Use <code>{cliente}</code>, <code>{imovel}</code>, <code>{endereco}</code>, <code>{valor}</code>, <code>{corretor}</code> e <code>{creci}</code> — trocados automaticamente. Deixe em branco para usar o texto padrão.</p>
+          <div class="fg">
+            <div class="field f2">
+              <label class="lbl" for="c-prop-apres">Apresentação (abertura da proposta)</label>
+              <textarea id="c-prop-apres" data-tpl="propApresentacao" class="txa inp" placeholder="Prezado(a) {cliente}, é com prazer que apresento esta proposta para o {imovel} localizado em {endereco}. Elaborei as melhores condições para você decidir com segurança."></textarea>
+            </div>
+            <div class="field f2">
+              <label class="lbl" for="c-prop-prox">Próximos passos (fechamento)</label>
+              <textarea id="c-prop-prox" data-tpl="propProximos" class="txa inp" placeholder="1. Confirme seu interesse em até 48h. 2. Agende uma visita presencial. 3. Faço uma simulação personalizada. Estou à disposição — conte comigo."></textarea>
+            </div>
+            <div class="field f2">
+              <label class="lbl" for="c-prop-obs">Observações fixas (opcional — aparece no fim de toda proposta)</label>
+              <textarea id="c-prop-obs" data-tpl="propObs" class="txa inp" placeholder="Ex: Proposta válida por 7 dias. Valores sujeitos à análise de crédito e disponibilidade do imóvel."></textarea>
+            </div>
+          </div>
         </div>
 
         <div class="card">
@@ -2757,7 +2805,7 @@ function toggleAjuda(id) {
 const escH = s => String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;')
 
 /* ── STATE ── */
-const PERFIL_DEFAULT = { nome:'',creci:'',tel:'',email:'',cor:'#C9882A',logo:null,modelo:'classico',slug:'',empreendimentos:[],msgBoasVindas:'',msgFollowUp:'',msgAgendamento:'',wppNovoContato:'',wppVisitaAgendada:'',wppVisitaRealizada:'',wppPropostaEnviada:'',wppNegociacao:'',wppVendaFechada:'',wppAgenda:'' }
+const PERFIL_DEFAULT = { nome:'',creci:'',tel:'',email:'',cor:'#C9882A',logo:null,modelo:'classico',fonte:'moderna',secoes:{},slug:'',empreendimentos:[],msgBoasVindas:'',msgFollowUp:'',msgAgendamento:'',wppNovoContato:'',wppVisitaAgendada:'',wppVisitaRealizada:'',wppPropostaEnviada:'',wppNegociacao:'',wppVendaFechada:'',wppAgenda:'',propApresentacao:'',propProximos:'',propObs:'' }
 // Parse defensivo: se o localStorage corromper (extensão de navegador, quota,
 // dado truncado), JSON.parse lançaria e a ferramenta abriria em tela branca.
 // Aqui caímos no fallback em vez de quebrar (achado de robustez da auditoria).
@@ -3493,6 +3541,7 @@ function construirProposta(d) {
   const modeloAtual = ['classico','moderno','minimalista','timbrado'].includes(perfil.modelo) ? perfil.modelo : 'classico'
   const propostaEl = document.getElementById('proposta')
   propostaEl.className = 'proposta' + (modeloAtual !== 'classico' ? ' tema-' + modeloAtual : '')
+  aplicarFonteProposta(propostaEl)
 
   /* ── Cabeçalho: corretor ou empreendimento (identidade escolhida no form) ── */
   const emp = d.identTipo === 'emp'
@@ -3603,8 +3652,11 @@ function construirProposta(d) {
     d.vagas && d.vagas !== '—' ? `${escH(d.vagas)} vaga${d.vagas === '1' ? '' : 's'}` : null,
   ].filter(Boolean).join(', ')
 
+  // Apresentação: texto personalizado do corretor (se houver) ou o padrão.
   document.getElementById('p-intro').innerHTML =
-    `Prezado(a) <strong>${escH(d.cliente)}</strong>, é com prazer que apresento esta proposta para o <strong>${escH(d.tipoImovel)}</strong> localizado em <strong>${escH(d.end)}</strong>${detalhes ? ` (${detalhes})` : ''}. Elaborei as melhores condições disponíveis para que você tome uma decisão com segurança e clareza.`
+    (perfil.propApresentacao && perfil.propApresentacao.trim())
+      ? preencherTemplateProposta(perfil.propApresentacao, d)
+      : `Prezado(a) <strong>${escH(d.cliente)}</strong>, é com prazer que apresento esta proposta para o <strong>${escH(d.tipoImovel)}</strong> localizado em <strong>${escH(d.end)}</strong>${detalhes ? ` (${detalhes})` : ''}. Elaborei as melhores condições disponíveis para que você tome uma decisão com segurança e clareza.`
 
   /* ── Modalidades por tipo ── */
   const modsEl = document.getElementById('p-mods')
@@ -3749,7 +3801,20 @@ function construirProposta(d) {
     : d.tipoNeg === 'Permuta'
     ? `<strong>1.</strong> Apresente documentação do seu imóvel para análise jurídica. <strong>2.</strong> Realizamos vistoria dos dois imóveis para confirmar valores. <strong>3.</strong> Fechamos o contrato de permuta. Estou à disposição para conduzir todo o processo.`
     : `<strong>1.</strong> Confirme interesse em até 48h para reservarmos o imóvel. <strong>2.</strong> Agende uma visita presencial para análise detalhada. <strong>3.</strong> Faço uma simulação de financiamento personalizada sem compromisso. Estou à disposição — entre em contato quando quiser.`
-  document.getElementById('p-proximos').innerHTML = ps
+  // Próximos passos: texto personalizado (se houver) ou o padrão por tipo.
+  document.getElementById('p-proximos').innerHTML =
+    (perfil.propProximos && perfil.propProximos.trim())
+      ? preencherTemplateProposta(perfil.propProximos, d)
+      : ps
+
+  // Observações fixas (opcional): só aparece se o corretor preencheu.
+  const obsEl = document.getElementById('p-sec-obs')
+  if (perfil.propObs && perfil.propObs.trim()) {
+    document.getElementById('p-obs').innerHTML = preencherTemplateProposta(perfil.propObs, d)
+    obsEl.style.display = ''
+  } else {
+    obsEl.style.display = 'none'
+  }
 
   /* ── Corretor responsável (só quando a proposta é do empreendimento) ── */
   const respEl = document.getElementById('p-resp')
@@ -3761,6 +3826,19 @@ function construirProposta(d) {
   } else {
     respEl.style.display = 'none'
   }
+
+  /* ── Seções opcionais (Configurações → Seções da proposta) ──
+     Aplicadas por último, por cima da lógica de cada bloco. Só DESLIGAM:
+     nunca forçam uma seção a aparecer onde ela não faria sentido. */
+  const secoes = perfil.secoes || {}
+  const secOn = (k) => secoes[k] !== false
+  if (!secOn('fotos')) {
+    document.getElementById('p-foto').classList.remove('show')
+    const g = document.getElementById('p-galeria'); g.innerHTML = ''; g.style.display = 'none'
+  }
+  if (!secOn('simulacao')) document.getElementById('p-sim-sec').style.display = 'none'
+  document.getElementById('p-sec-sobre').style.display = secOn('sobre') ? '' : 'none'
+  document.getElementById('p-sec-proximos').style.display = secOn('proximos') ? '' : 'none'
 }
 
 /* ── COPIAR TEXTO (inclui todas as seções) ── */
@@ -5231,6 +5309,21 @@ function preencherTemplate(tpl, lead) {
     .replace(/\{corretor\}/g, corretor)
     .replace(/\{creci\}/g, creci)
     .replace(/\{imovel\}/g, imovel)
+}
+
+// Placeholders dos textos personalizados da proposta (dados vêm de `d`).
+// Retorna HTML seguro (escapado) com quebras de linha preservadas.
+function preencherTemplateProposta(tpl, d) {
+  const vals = {
+    cliente:  (d.cliente || '').trim() || 'cliente',
+    corretor: (perfil.nome || '').trim() || 'a equipe',
+    creci:    (perfil.creci || '').trim() || '—',
+    imovel:   (d.tipoImovel || '').trim() || 'imóvel',
+    endereco: (d.end || '').trim() || '',
+    valor:    d.valor ? 'R$ ' + d.valor : '',
+  }
+  const texto = String(tpl || '').replace(/\{(cliente|corretor|creci|imovel|endereco|valor)\}/g, (_, k) => vals[k])
+  return escH(texto).replace(/\n/g, '<br>')
 }
 
 // Abre o wa.me com um template já preenchido para o lead. Se não houver
@@ -6982,6 +7075,11 @@ function carregarFormConfig() {
     prev.innerHTML = `<img src="${perfil.logo}" alt="Logo">`
   }
   marcarModeloSelecionado(perfil.modelo || 'classico')
+  const fonteSel = document.getElementById('c-fonte')
+  if (fonteSel) fonteSel.value = FONTES_PROPOSTA[perfil.fonte] ? perfil.fonte : 'moderna'
+  const secs = perfil.secoes || {}
+  const setChk = (id, k) => { const el = document.getElementById(id); if (el) el.checked = secs[k] !== false }
+  setChk('sec-fotos', 'fotos'); setChk('sec-simulacao', 'simulacao'); setChk('sec-sobre', 'sobre'); setChk('sec-proximos', 'proximos')
   renderEmps()
 }
 
@@ -6994,6 +7092,27 @@ function marcarModeloSelecionado(modelo) {
 function selecionarModelo(modelo) {
   perfil.modelo = modelo
   marcarModeloSelecionado(modelo)
+}
+
+/* ── FONTE DA PROPOSTA ── Fontes web-safe (não dependem de rede: funcionam
+   offline e no PDF). `titulo` vazio = usa a fonte do corpo. */
+const FONTES_PROPOSTA = {
+  moderna:  { corpo: 'var(--font)', titulo: '' },
+  classica: { corpo: "Georgia,'Times New Roman',serif", titulo: "Georgia,'Times New Roman',serif" },
+  elegante: { corpo: "'Palatino Linotype','Book Antiqua',Palatino,Georgia,serif", titulo: "'Palatino Linotype','Book Antiqua',Palatino,Georgia,serif" },
+  neutra:   { corpo: "'Helvetica Neue',Helvetica,Arial,sans-serif", titulo: '' },
+}
+function selecionarFonte(f) {
+  perfil.fonte = FONTES_PROPOSTA[f] ? f : 'moderna'
+}
+// Aplica a fonte escolhida ao elemento da proposta na geração.
+// Moderna = sem override (cai no fallback var(--font) do CSS).
+function aplicarFonteProposta(propostaEl) {
+  const f = FONTES_PROPOSTA[perfil.fonte] || FONTES_PROPOSTA.moderna
+  if (f.corpo && f.corpo !== 'var(--font)') propostaEl.style.setProperty('--font-prop', f.corpo)
+  else propostaEl.style.removeProperty('--font-prop')
+  if (f.titulo) propostaEl.style.setProperty('--font-prop-titulo', f.titulo)
+  else propostaEl.style.removeProperty('--font-prop-titulo')
 }
 
 function atualizarPreview() {
@@ -7014,6 +7133,14 @@ async function salvarConfig(ev) {
   perfil.tel   = document.getElementById('c-tel').value.trim()
   perfil.email = document.getElementById('c-email').value.trim()
   perfil.cor   = document.getElementById('c-cor').value
+  perfil.fonte = document.getElementById('c-fonte')?.value || 'moderna'
+  const chkSec = (id) => document.getElementById(id)?.checked ?? true
+  perfil.secoes = {
+    fotos:     chkSec('sec-fotos'),
+    simulacao: chkSec('sec-simulacao'),
+    sobre:     chkSec('sec-sobre'),
+    proximos:  chkSec('sec-proximos'),
+  }
   document.querySelectorAll('#form-config textarea[data-tpl]').forEach(ta => {
     perfil[ta.dataset.tpl] = ta.value.trim()
   })
