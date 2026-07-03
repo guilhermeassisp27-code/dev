@@ -398,6 +398,39 @@ input[type=color]{opacity:0;width:0;height:0;position:absolute}
 .proposta.tema-minimalista .sim-col{background:transparent;border-radius:2px}
 .proposta.tema-minimalista .prop-foot{padding:18px 4px;border-top:1px solid var(--b)}
 
+/* ── Modelo TIMBRADO: papel timbrado com cabeçalho/rodapé na cor da marca,
+      logo centralizado, tipografia serif — inspirado em papel timbrado real. ── */
+.proposta.tema-timbrado{border:none;background:var(--s1);overflow:hidden}
+.proposta.tema-timbrado .prop-corretor{
+  background:var(--bp);color:#fff;border-bottom:none;
+  flex-direction:column;align-items:center;text-align:center;gap:9px;
+  padding:36px 24px 40px;border-radius:0 0 46px 46px}
+.proposta.tema-timbrado .prop-corretor-logo{
+  width:62px;height:62px;background:rgba(255,255,255,.16);border:1px solid rgba(255,255,255,.25)}
+.proposta.tema-timbrado .prop-corretor-logo svg{color:#fff}
+.proposta.tema-timbrado .prop-corretor-info{flex:none;text-align:center}
+.proposta.tema-timbrado .prop-corretor-nome{
+  color:#fff;font-family:Georgia,'Times New Roman',serif;font-size:23px;font-weight:700;letter-spacing:.3px;margin-bottom:3px}
+.proposta.tema-timbrado .prop-corretor-creci{color:rgba(255,255,255,.9);font-size:12.5px;letter-spacing:.04em}
+.proposta.tema-timbrado .prop-corretor-contato{color:rgba(255,255,255,.78);margin-top:3px}
+.proposta.tema-timbrado .prop-head{
+  background:transparent;border-bottom:1px solid var(--b);padding:26px 24px 20px;margin-top:6px}
+.proposta.tema-timbrado .prop-h2{font-family:Georgia,'Times New Roman',serif;font-weight:700;letter-spacing:-.2px}
+.proposta.tema-timbrado .prop-badge{background:var(--bps);color:var(--bp)}
+.proposta.tema-timbrado .prop-badge-dot{background:var(--bp)}
+.proposta.tema-timbrado .prop-sec-title{font-family:Georgia,'Times New Roman',serif;font-weight:700}
+.proposta.tema-timbrado .mod.hl{background:var(--bps);border-color:var(--bp)}
+/* Rodapé do papel timbrado — só neste modelo */
+.prop-timbrado-foot{display:none}
+.proposta.tema-timbrado .prop-timbrado-foot{
+  display:block;background:var(--bp);color:#fff;text-align:center;
+  padding:22px 24px;border-radius:46px 46px 0 0;margin-top:26px;
+  font-size:12.5px;line-height:1.75}
+.prop-timbrado-foot .ptf-nome{font-family:Georgia,'Times New Roman',serif;font-size:15px;font-weight:700;margin-bottom:4px;letter-spacing:.3px}
+.prop-timbrado-foot .ptf-linha{color:rgba(255,255,255,.85)}
+.modelo-preview-timbrado{background:linear-gradient(180deg,var(--bp) 0 22%,var(--s1) 22% 78%,var(--bp) 78% 100%)}
+.modelo-preview-timbrado .modelo-preview-bar{background:var(--t3)}
+
 /* Seletor de modelo (Configurações) */
 .modelo-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}
 @media(max-width:600px){.modelo-grid{grid-template-columns:1fr}}
@@ -1582,6 +1615,9 @@ input[type=color]{opacity:0;width:0;height:0;position:absolute}
           <p class="prop-resp" id="p-resp" style="display:none"></p>
         </div>
 
+        <!-- Rodapé do papel timbrado (só no modelo Timbrado) -->
+        <div class="prop-timbrado-foot" id="p-timbrado-foot"></div>
+
         <!-- Ações -->
         <div class="prop-foot">
           <button class="btn btn-ghost" onclick="copiar()">
@@ -2250,6 +2286,11 @@ input[type=color]{opacity:0;width:0;height:0;position:absolute}
               <div class="modelo-preview modelo-preview-minimalista"><div class="modelo-preview-bar"></div><div class="modelo-preview-bar" style="width:30%"></div></div>
               <div class="modelo-nome">Minimalista</div>
               <div class="modelo-desc">Mais limpo — tipografia maior, menos cor, foco no conteúdo.</div>
+            </button>
+            <button type="button" class="modelo-card" data-modelo="timbrado" onclick="selecionarModelo('timbrado')">
+              <div class="modelo-preview modelo-preview-timbrado"><div class="modelo-preview-bar"></div><div class="modelo-preview-bar" style="width:40%"></div></div>
+              <div class="modelo-nome">Timbrado</div>
+              <div class="modelo-desc">Papel timbrado — cabeçalho e rodapé na sua cor, logo em destaque e tipografia serif elegante.</div>
             </button>
           </div>
         </div>
@@ -3437,7 +3478,7 @@ function construirProposta(d) {
   /* ── Modelo visual escolhido pelo corretor (Configurações) ──
      Só troca a classe CSS; os dados (d) e o HTML montado abaixo são os
      mesmos para os 3 modelos — sem duplicar cálculo/preenchimento. */
-  const modeloAtual = ['classico','moderno','minimalista'].includes(perfil.modelo) ? perfil.modelo : 'classico'
+  const modeloAtual = ['classico','moderno','minimalista','timbrado'].includes(perfil.modelo) ? perfil.modelo : 'classico'
   const propostaEl = document.getElementById('proposta')
   propostaEl.className = 'proposta' + (modeloAtual !== 'classico' ? ' tema-' + modeloAtual : '')
 
@@ -3462,6 +3503,17 @@ function construirProposta(d) {
   document.getElementById('pc-creci').textContent = emp ? emp.info : (perfil.creci ? 'CRECI ' + perfil.creci : '')
   const contatos = [perfil.tel, perfil.email].filter(Boolean).join(' · ')
   document.getElementById('pc-contato').textContent = emp ? '' : contatos
+
+  // Rodapé do papel timbrado (modelo Timbrado): repete a marca no pé da folha.
+  const ptf = document.getElementById('p-timbrado-foot')
+  if (ptf) {
+    const ptfNome = emp ? emp.nome : (perfil.nome || '')
+    const ptfLinhas = emp
+      ? [emp.info].filter(Boolean)
+      : [perfil.creci ? 'CRECI ' + perfil.creci : '', contatos].filter(Boolean)
+    ptf.innerHTML = (ptfNome ? `<div class="ptf-nome">${escH(ptfNome)}</div>` : '') +
+      ptfLinhas.map(l => `<div class="ptf-linha">${escH(l)}</div>`).join('')
+  }
 
   const logoEl = document.getElementById('pc-logo')
   logoEl.innerHTML = ''
