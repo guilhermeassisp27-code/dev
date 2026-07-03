@@ -38,6 +38,11 @@ jobs:
           # também em /tool.html (compatibilidade com links antigos)
           cp tool.html _site/index.html
           cp tool.html _site/tool.html
+          # PWA: instalável e offline (service worker + manifest + ícones)
+          cp sw.js _site/sw.js
+          cp manifest.webmanifest _site/manifest.webmanifest
+          cp marketing/logo/selo/app-icon-192.png _site/app-icon-192.png
+          cp marketing/logo/selo/app-icon-512.png _site/app-icon-512.png
           # Social share image (PNG exported from og-image.svg, if present)
           cp og-image.png _site/og-image.png 2>/dev/null || true
           cp og-image.svg _site/og-image.svg 2>/dev/null || true

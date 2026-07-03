@@ -243,3 +243,94 @@ alter table public.cpr_public_proposals
   add column if not exists signer_cpf       text,
   add column if not exists signer_signature text,
   add column if not exists signer_ip        text;
+
+-- ============================================================
+-- Migração: Contas multiusuário (2026-07-03) — Prioridade 4 (base técnica)
+-- Uma conta (imobiliária/loteadora/corretor) agrupa N usuários com papéis.
+-- Quem comprou na Hotmart vira dono/admin da conta; membros são convidados
+-- pela rota /api/conta-membros (service role, valida assento e papel).
+-- Os dados de trabalho de cada usuário seguem individuais em cpr_user_data.
+-- marca_forcada: identidade que o admin pode impor às propostas dos membros
+--   ({nome, info, cor, logo, obrigatoria: bool}).
+--
+-- ROLLBACK (reversível):
+--   drop policy if exists "cpa_select_member" on public.cpr_accounts;
+--   drop policy if exists "cpa_update_owner"  on public.cpr_accounts;
+--   drop policy if exists "cpm_select_member" on public.cpr_account_members;
+--   drop function if exists public.cpr_my_account_ids();
+--   drop table if exists public.cpr_account_members;
+--   drop table if exists public.cpr_accounts;
+-- ============================================================
+create table if not exists public.cpr_accounts (
+  id            uuid primary key default gen_random_uuid(),
+  owner_id      uuid not null references auth.users(id) on delete cascade,
+  nome          text not null default '',
+  plano         text not null default 'corretor',   -- corretor | imobiliaria | loteadora
+  max_users     int  not null default 1,
+  marca_forcada jsonb,
+  created_at    timestamptz not null default now()
+);
+create unique index if not exists cpr_accounts_owner_idx
+  on public.cpr_accounts (owner_id);
+
+create table if not exists public.cpr_account_members (
+  account_id uuid not null references public.cpr_accounts(id) on delete cascade,
+  user_id    uuid not null references auth.users(id) on delete cascade,
+  email      text not null default '',
+  papel      text not null default 'corretor',      -- admin | corretor | consultor
+  created_at timestamptz not null default now(),
+  primary key (account_id, user_id)
+);
+create index if not exists cpr_account_members_user_idx
+  on public.cpr_account_members (user_id);
+
+alter table public.cpr_accounts        enable row level security;
+alter table public.cpr_account_members enable row level security;
+
+-- Grants de tabela (mesmo motivo dos grants acima: SQL puro não os cria).
+-- authenticated: leitura; update SÓ nas colunas que o dono pode editar pelo
+-- client (nome e marca da equipe) — plano/max_users só mudam via service role.
+grant select on public.cpr_accounts to authenticated;
+grant update (nome, marca_forcada) on public.cpr_accounts to authenticated;
+grant select on public.cpr_account_members to authenticated;
+grant select, insert, update, delete on public.cpr_accounts        to service_role;
+grant select, insert, update, delete on public.cpr_account_members to service_role;
+
+-- Policies de cpr_account_members não podem consultar a própria tabela
+-- (recursão infinita) — função security definer resolve.
+create or replace function public.cpr_my_account_ids()
+returns setof uuid
+language sql
+stable
+security definer
+set search_path = public
+as $$
+  select account_id from public.cpr_account_members where user_id = auth.uid()
+$$;
+grant execute on function public.cpr_my_account_ids() to authenticated;
+
+-- SELECT conta: dono ou membro
+drop policy if exists "cpa_select_member" on public.cpr_accounts;
+create policy "cpa_select_member"
+  on public.cpr_accounts for select
+  to authenticated
+  using (owner_id = auth.uid() or id in (select public.cpr_my_account_ids()));
+
+-- UPDATE conta: só o dono (colunas limitadas pelo grant acima)
+drop policy if exists "cpa_update_owner" on public.cpr_accounts;
+create policy "cpa_update_owner"
+  on public.cpr_accounts for update
+  to authenticated
+  using (owner_id = auth.uid())
+  with check (owner_id = auth.uid());
+
+-- SELECT membros: qualquer membro da mesma conta vê a equipe
+drop policy if exists "cpm_select_member" on public.cpr_account_members;
+create policy "cpm_select_member"
+  on public.cpr_account_members for select
+  to authenticated
+  using (account_id in (select public.cpr_my_account_ids()));
+
+-- Sem policies de INSERT/UPDATE/DELETE para authenticated: convites e
+-- remoções passam pela rota /api/conta-membros (service role), que valida
+-- papel de admin e o limite de assentos do plano.

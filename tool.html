@@ -13,6 +13,11 @@
 <meta property="og:url" content="https://app.selosales.com.br">
 <meta name="twitter:card" content="summary_large_image">
 <meta name="twitter:image" content="https://app.selosales.com.br/og-image.png">
+<link rel="manifest" href="manifest.webmanifest">
+<meta name="theme-color" content="#0F2D4A">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="Selo">
+<link rel="apple-touch-icon" href="app-icon-192.png">
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
 <script>
 /* Define o tema (claro/escuro) o mais cedo possível, antes do CSS pintar a
@@ -243,6 +248,16 @@ input[type=color]{opacity:0;width:0;height:0;position:absolute}
 .prop-foto{width:100%;border-radius:var(--rad);overflow:hidden;margin-bottom:18px;display:none}
 .prop-foto.show{display:block}
 .prop-foto img{width:100%;max-height:320px;object-fit:cover;display:block}
+.prop-galeria{display:none;margin:-10px 0 18px;grid-template-columns:repeat(3,1fr);gap:6px}
+.prop-galeria.show{display:grid}
+.prop-galeria img{width:100%;aspect-ratio:4/3;object-fit:cover;border-radius:8px;display:block}
+.im-card-origem{display:inline-block;font-size:10px;font-weight:700;color:var(--t2);background:var(--s3);border:1px solid var(--b);padding:2px 7px;border-radius:6px;margin-top:4px;width:fit-content}
+.fotos-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(72px,1fr));gap:8px}
+.fotos-grid:empty{display:none}
+.foto-thumb{position:relative;border-radius:8px;overflow:hidden;aspect-ratio:1;cursor:pointer;border:1px solid var(--b)}
+.foto-thumb img{width:100%;height:100%;object-fit:cover;display:block}
+.foto-thumb .capa-tag{position:absolute;left:4px;bottom:4px;background:var(--bp);color:#fff;font-size:9px;font-weight:800;padding:2px 6px;border-radius:5px}
+.foto-thumb .x{position:absolute;top:4px;right:4px;width:18px;height:18px;border-radius:50%;background:rgba(0,0,0,.55);color:#fff;display:flex;align-items:center;justify-content:center;font-size:11px;line-height:1;border:none;cursor:pointer;padding:0}
 
 /* ── BUTTONS (estilo pill, Apple-like) ── */
 .btn{display:inline-flex;align-items:center;gap:7px;padding:10px 18px;border-radius:980px;font-size:13px;font-weight:600;font-family:var(--font);border:none;cursor:pointer;text-decoration:none;transition:background-color .18s ease,color .18s ease,box-shadow .18s ease,transform .15s ease;white-space:nowrap}
@@ -341,6 +356,7 @@ input[type=color]{opacity:0;width:0;height:0;position:absolute}
 .sim-note{font-size:10.5px;color:var(--t3);margin-top:8px;line-height:1.55}
 
 .prop-foot{padding:14px 24px;border-top:1px solid var(--b);display:flex;flex-wrap:wrap;gap:7px;align-items:center}
+.prop-resp{font-size:11.5px;color:var(--t3);border-top:1px dashed var(--b);padding-top:12px;margin-top:4px}
 
 /* ── MODELOS DE PROPOSTA (temas visuais) ──
    Reaproveitam os mesmos dados/IDs — só mudam classe + CSS, sem duplicar
@@ -1179,6 +1195,19 @@ input[type=color]{opacity:0;width:0;height:0;position:absolute}
                 <option value="locado">Locado</option>
               </select>
             </div>
+            <div class="field">
+              <label class="lbl" for="im-origem">Origem</label>
+              <select id="im-origem" class="sel">
+                <option value="proprio">Produto próprio / carteira</option>
+                <option value="negociacao">Em negociação</option>
+                <option value="terceiro">Captação de terceiro</option>
+              </select>
+              <span class="hint">Só organiza a carteira — nenhuma origem trava a geração de proposta.</span>
+            </div>
+            <div class="field">
+              <label class="lbl" for="im-autorizacao">Autorização / observação (opcional)</label>
+              <input id="im-autorizacao" type="text" class="inp" placeholder="Ex: autorização de intermediação assinada em 20/06">
+            </div>
             <div class="field f2">
               <label class="lbl">Foto de capa (opcional)</label>
               <div class="foto-upload">
@@ -1270,6 +1299,11 @@ input[type=color]{opacity:0;width:0;height:0;position:absolute}
               <label class="lbl" for="f-cliente">Nome do cliente <span class="req">*</span></label>
               <input id="f-cliente" type="text" class="inp" placeholder="Ex: João Silva" required autocomplete="name">
             </div>
+            <div class="field" id="fld-identidade" style="display:none">
+              <label class="lbl" for="f-identidade">Proposta em nome de</label>
+              <select id="f-identidade" class="sel"></select>
+              <span class="hint">Escolhendo um empreendimento, a proposta sai com a marca dele — seu nome e CRECI aparecem como corretor responsável no rodapé.</span>
+            </div>
           </div>
         </div>
 
@@ -1331,21 +1365,17 @@ input[type=color]{opacity:0;width:0;height:0;position:absolute}
               </div>
             </div>
             <div class="field f2">
-              <label class="lbl">Foto do imóvel (opcional)</label>
-              <div class="foto-upload">
-                <div class="foto-preview" id="foto-prev">
-                  <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>
-                </div>
-                <div class="foto-actions">
-                  <label class="btn btn-ghost btn-sm" style="cursor:pointer">
-                    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
-                    Enviar foto
-                    <input type="file" id="f-foto" accept="image/*" style="display:none" onchange="carregarFotoImovel(event)">
-                  </label>
-                  <button type="button" class="btn btn-ghost btn-sm" onclick="removerFotoImovel()">Remover</button>
-                </div>
+              <label class="lbl">Fotos do imóvel (opcional — 1 capa + até 9 fotos)</label>
+              <div class="fotos-grid" id="fotos-thumbs"></div>
+              <div class="foto-actions" style="margin-top:8px;display:flex;gap:8px">
+                <label class="btn btn-ghost btn-sm" style="cursor:pointer">
+                  <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
+                  Adicionar fotos
+                  <input type="file" id="f-foto" accept="image/*" multiple style="display:none" onchange="carregarFotoImovel(event)">
+                </label>
+                <button type="button" class="btn btn-ghost btn-sm" onclick="removerFotoImovel()">Remover todas</button>
               </div>
-              <span class="hint">Deixa a proposta mais profissional. Máx 4MB.</span>
+              <span class="hint">A primeira é a capa — clique em outra foto para torná-la capa. Máx 4MB por foto.</span>
             </div>
           </div>
 
@@ -1353,8 +1383,31 @@ input[type=color]{opacity:0;width:0;height:0;position:absolute}
           <div class="type-block" id="blk-compra">
             <div class="fg">
               <div class="field">
+                <label class="lbl" for="f-fin-tipo">Tipo de financiamento</label>
+                <select id="f-fin-tipo" class="sel" onchange="atualizarFinanciamento()">
+                  <option value="banco" selected>Instituição financeira</option>
+                  <option value="proprio">Financiamento próprio (direto com o vendedor)</option>
+                </select>
+                <span class="hint" id="fin-hint">O banco financia o saldo após a entrada</span>
+              </div>
+              <div class="field" id="fld-banco">
+                <label class="lbl" for="f-banco">Instituição financeira</label>
+                <select id="f-banco" class="sel" onchange="atualizarBanco()">
+                  <option value="Caixa Econômica" selected>Caixa Econômica</option>
+                  <option value="Banco do Brasil">Banco do Brasil</option>
+                  <option value="Itaú">Itaú</option>
+                  <option value="Bradesco">Bradesco</option>
+                  <option value="Santander">Santander</option>
+                  <option value="outro">Outra (digitar)</option>
+                </select>
+                <input id="f-banco-outro" type="text" class="inp" placeholder="Nome da instituição" style="display:none;margin-top:6px">
+              </div>
+            </div>
+            <div class="fg">
+              <div class="field">
                 <label class="lbl" for="f-prazo">Prazo financiamento</label>
                 <select id="f-prazo" class="sel">
+                  <option value="60">5 anos (60 meses)</option>
                   <option value="120">10 anos (120 meses)</option>
                   <option value="180">15 anos (180 meses)</option>
                   <option value="240">20 anos (240 meses)</option>
@@ -1364,8 +1417,36 @@ input[type=color]{opacity:0;width:0;height:0;position:absolute}
               </div>
               <div class="field">
                 <label class="lbl" for="f-taxa">Taxa de juros (% a.a.)</label>
-                <input id="f-taxa" type="number" class="inp" placeholder="10.5" value="10.5" min="1" max="30" step="0.1">
-                <span class="hint">Ref: Caixa ~10,5% a.a. (SBPE/2025)</span>
+                <input id="f-taxa" type="number" class="inp" placeholder="10.5" value="10.5" min="0" max="40" step="0.1">
+                <span class="hint" id="taxa-hint">Ref: Caixa ~10,5% a.a. (SBPE/2025)</span>
+              </div>
+            </div>
+            <div class="fg">
+              <div class="field">
+                <label class="lbl" for="f-entrada">Entrada (%)</label>
+                <input id="f-entrada" type="number" class="inp" value="20" min="0" max="90" step="1">
+                <span class="hint">Percentual do valor pago como entrada</span>
+              </div>
+              <div class="field">
+                <label class="lbl" for="f-amort">Sistema de amortização</label>
+                <select id="f-amort" class="sel">
+                  <option value="ambas" selected>Comparativo SAC × Price</option>
+                  <option value="price">Tabela Price (parcela fixa)</option>
+                  <option value="sac">Tabela SAC (parcela decrescente)</option>
+                </select>
+              </div>
+            </div>
+            <div class="fg">
+              <div class="field">
+                <label class="lbl" for="f-tem-desc">Possui desconto à vista?</label>
+                <select id="f-tem-desc" class="sel" onchange="atualizarDesconto()">
+                  <option value="nao" selected>Não</option>
+                  <option value="sim">Sim</option>
+                </select>
+              </div>
+              <div class="field" id="fld-desconto" style="display:none">
+                <label class="lbl" for="f-desconto">Desconto (%)</label>
+                <input id="f-desconto" type="number" class="inp" placeholder="5" min="0.1" max="90" step="0.1">
               </div>
             </div>
           </div>
@@ -1472,6 +1553,9 @@ input[type=color]{opacity:0;width:0;height:0;position:absolute}
         <!-- Foto do imóvel -->
         <div class="prop-foto" id="p-foto"><img id="p-foto-img" alt="Foto do imóvel"></div>
 
+        <!-- Galeria de fotos adicionais -->
+        <div class="prop-galeria" id="p-galeria"></div>
+
         <!-- Grid do imóvel -->
         <div class="prop-imovel" id="p-imovel-grid"></div>
 
@@ -1486,7 +1570,7 @@ input[type=color]{opacity:0;width:0;height:0;position:absolute}
             <div class="mods" id="p-mods"></div>
           </div>
           <div id="p-sim-sec">
-            <div class="prop-sec-title">Simulação de Financiamento · SAC × Price</div>
+            <div class="prop-sec-title" id="p-sim-title">Simulação de Financiamento · SAC × Price</div>
             <div class="sim" id="p-simulacao"></div>
             <p class="sim-note" id="p-sim-note"></p>
           </div>
@@ -1498,6 +1582,7 @@ input[type=color]{opacity:0;width:0;height:0;position:absolute}
             <div class="prop-sec-title">Próximos Passos</div>
             <p class="prop-text" id="p-proximos"></p>
           </div>
+          <p class="prop-resp" id="p-resp" style="display:none"></p>
         </div>
 
         <!-- Ações -->
@@ -1768,7 +1853,12 @@ input[type=color]{opacity:0;width:0;height:0;position:absolute}
           <button type="button" class="modelo-card" data-modelo="autorizacao" onclick="escolherModeloContrato('autorizacao')">
             <div class="modelo-card-ico"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 01-2 2H5a2 2 0 01-2-2V5a2 2 0 012-2h11"/></svg></div>
             <div class="modelo-card-t">Autorização de Venda/Locação</div>
-            <div class="modelo-card-x">O proprietário autoriza você a intermediar a venda ou locação do imóvel — protege a sua comissão.</div>
+            <div class="modelo-card-x">O proprietário autoriza você a intermediar a venda ou locação. Sem ela assinada, o corretor fica sem respaldo para cobrar a corretagem — é quesito de ética do CRECI.</div>
+          </button>
+          <button type="button" class="modelo-card" data-modelo="exclusividade" onclick="escolherModeloContrato('exclusividade')">
+            <div class="modelo-card-ico"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg></div>
+            <div class="modelo-card-t">Contrato de Exclusividade</div>
+            <div class="modelo-card-x">Estrutura de contrato: o proprietário concede exclusividade em troca de equipe dedicada e marketing, com comissão protegida na vigência. Requer revisão de advogado.</div>
           </button>
           <button type="button" class="modelo-card" data-modelo="proposta_compra" onclick="escolherModeloContrato('proposta_compra')">
             <div class="modelo-card-ico"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 000 7h5a3.5 3.5 0 010 7H6"/></svg></div>
@@ -1853,7 +1943,7 @@ input[type=color]{opacity:0;width:0;height:0;position:absolute}
         </div>
 
         <div class="card" id="ctt-bloco-autorizacao">
-          <div class="card-t">Condições da autorização</div>
+          <div class="card-t" id="ctt-bloco-autorizacao-t">Condições da autorização</div>
           <div class="fg">
             <div class="field">
               <label class="lbl" for="ct-finalidade">Finalidade</label>
@@ -1874,12 +1964,17 @@ input[type=color]{opacity:0;width:0;height:0;position:absolute}
               <label class="lbl" for="ct-prazo-aut">Prazo de vigência (dias)</label>
               <input id="ct-prazo-aut" type="number" class="inp" placeholder="90" value="90" min="1">
             </div>
-            <div class="field">
+            <div class="field" id="fld-ct-exclusividade">
               <label class="lbl" for="ct-exclusividade">Exclusividade</label>
               <select id="ct-exclusividade" class="sel">
                 <option value="nao">Não exclusiva</option>
                 <option value="sim">Com exclusividade</option>
               </select>
+            </div>
+            <div class="field f2" id="fld-ct-servicos" style="display:none">
+              <label class="lbl" for="ct-servicos">Contrapartidas oferecidas ao proprietário (opcional)</label>
+              <input id="ct-servicos" type="text" class="inp" placeholder="Ex: equipe dedicada, anúncios nos portais, tráfego pago, site exclusivo do imóvel, placa">
+              <span class="hint">É o que justifica a exclusividade — entra como cláusula de obrigações do corretor.</span>
             </div>
           </div>
         </div>
@@ -2053,6 +2148,90 @@ input[type=color]{opacity:0;width:0;height:0;position:absolute}
                 </div>
               </div>
             </div>
+          </div>
+        </div>
+
+        <div class="card">
+          <div class="card-t">Empreendimentos e Marcas</div>
+          <p style="font-size:12px;color:var(--t2);margin-bottom:14px">Cadastre loteamentos, construtoras ou empreendimentos para gerar propostas com a marca deles. Seu nome e CRECI seguem na proposta como corretor responsável, de forma discreta no rodapé.</p>
+          <div id="emp-lista" style="display:flex;flex-direction:column;gap:8px;margin-bottom:14px"></div>
+          <div class="fg">
+            <div class="field">
+              <label class="lbl" for="e-nome">Nome do empreendimento</label>
+              <input id="e-nome" type="text" class="inp" placeholder="Ex: Montana Residence">
+            </div>
+            <div class="field">
+              <label class="lbl" for="e-info">Linha de apoio (opcional)</label>
+              <input id="e-info" type="text" class="inp" placeholder="Ex: Loteamento fechado — Sorocaba, SP">
+            </div>
+            <div class="field">
+              <label class="lbl" for="e-cor">Cor da marca</label>
+              <input type="color" id="e-cor" value="#0F2D4A" style="width:100%;height:38px;border:1px solid var(--b);border-radius:8px;background:var(--s2);cursor:pointer;padding:2px">
+            </div>
+            <div class="field">
+              <label class="lbl">Logo (opcional)</label>
+              <div style="display:flex;align-items:center;gap:10px">
+                <div class="logo-preview" id="e-logo-prev" style="width:44px;height:44px">
+                  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>
+                </div>
+                <label class="btn btn-ghost btn-sm" style="cursor:pointer">Enviar logo
+                  <input type="file" id="e-logo" accept="image/*" style="display:none" onchange="carregarLogoEmp(event)">
+                </label>
+              </div>
+            </div>
+          </div>
+          <button type="button" class="btn btn-ghost" style="margin-top:12px" onclick="adicionarEmp()">
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+            Adicionar empreendimento
+          </button>
+        </div>
+
+        <div class="card" id="card-equipe" style="display:none">
+          <div class="card-t">Equipe</div>
+          <p style="font-size:12px;color:var(--t2);margin-bottom:14px" id="eq-sub"></p>
+          <div id="eq-lista" style="display:flex;flex-direction:column;gap:8px;margin-bottom:14px"></div>
+          <div class="fg fg1" id="eq-convite" style="display:none">
+            <div class="field">
+              <label class="lbl" for="eq-email">Convidar por email</label>
+              <div style="display:flex;gap:8px">
+                <input id="eq-email" type="email" class="inp" placeholder="corretor@suaequipe.com.br" style="flex:1">
+                <button type="button" class="btn btn-ghost" onclick="convidarMembro()">Convidar</button>
+              </div>
+              <span class="hint">O convidado recebe um email para definir a senha e entra com acesso ativo pela sua conta.</span>
+            </div>
+          </div>
+          <div id="eq-marca" style="display:none;border-top:1px solid var(--b);margin-top:14px;padding-top:14px">
+            <div class="card-t" style="font-size:12px">Marca da equipe nas propostas</div>
+            <p style="font-size:12px;color:var(--t2);margin-bottom:12px">Defina a marca da imobiliária/loteadora e, se quiser, obrigue as propostas da equipe a sair com ela — cada membro segue no rodapé como corretor responsável.</p>
+            <div class="fg">
+              <div class="field">
+                <label class="lbl" for="mq-nome">Nome da marca</label>
+                <input id="mq-nome" type="text" class="inp" placeholder="Ex: Imobiliária Horizonte">
+              </div>
+              <div class="field">
+                <label class="lbl" for="mq-info">Linha de apoio (opcional)</label>
+                <input id="mq-info" type="text" class="inp" placeholder="Ex: CRECI-J 12.345">
+              </div>
+              <div class="field">
+                <label class="lbl" for="mq-cor">Cor da marca</label>
+                <input type="color" id="mq-cor" value="#0F2D4A" style="width:100%;height:38px;border:1px solid var(--b);border-radius:8px;background:var(--s2);cursor:pointer;padding:2px">
+              </div>
+              <div class="field">
+                <label class="lbl">Logo (opcional)</label>
+                <div style="display:flex;align-items:center;gap:10px">
+                  <div class="logo-preview" id="mq-logo-prev" style="width:44px;height:44px">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>
+                  </div>
+                  <label class="btn btn-ghost btn-sm" style="cursor:pointer">Enviar logo
+                    <input type="file" id="mq-logo" accept="image/*" style="display:none" onchange="carregarLogoMarcaEquipe(event)">
+                  </label>
+                </div>
+              </div>
+            </div>
+            <label style="display:flex;align-items:center;gap:8px;margin-top:12px;font-size:13px;cursor:pointer">
+              <input type="checkbox" id="mq-obrigatoria"> Obrigar a equipe a usar esta marca nas propostas
+            </label>
+            <button type="button" class="btn btn-ghost" style="margin-top:12px" onclick="salvarMarcaEquipe()">Salvar marca da equipe</button>
           </div>
         </div>
 
@@ -2303,7 +2482,10 @@ function seedDemoData() {
   perfil = {
     nome:'Carlos Andrade', creci:'152.347-F',
     tel:'(11) 98765-4321', email:'carlos.andrade@imoveis.com.br',
-    cor:'#15A37A', logo:null, modelo:'moderno'
+    cor:'#15A37A', logo:null, modelo:'moderno',
+    empreendimentos: [
+      { id:'emp-demo', nome:'Montana Residence', info:'Loteamento fechado — Alphaville', cor:'#0F2D4A', logo:null },
+    ],
   }
 
   historico = [
@@ -2525,7 +2707,7 @@ function toggleAjuda(id) {
 const escH = s => String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;')
 
 /* ── STATE ── */
-const PERFIL_DEFAULT = { nome:'',creci:'',tel:'',email:'',cor:'#C9882A',logo:null,modelo:'classico',slug:'',msgBoasVindas:'',msgFollowUp:'',msgAgendamento:'',wppNovoContato:'',wppVisitaAgendada:'',wppVisitaRealizada:'',wppPropostaEnviada:'',wppNegociacao:'',wppVendaFechada:'',wppAgenda:'' }
+const PERFIL_DEFAULT = { nome:'',creci:'',tel:'',email:'',cor:'#C9882A',logo:null,modelo:'classico',slug:'',empreendimentos:[],msgBoasVindas:'',msgFollowUp:'',msgAgendamento:'',wppNovoContato:'',wppVisitaAgendada:'',wppVisitaRealizada:'',wppPropostaEnviada:'',wppNegociacao:'',wppVendaFechada:'',wppAgenda:'' }
 // Parse defensivo: se o localStorage corromper (extensão de navegador, quota,
 // dado truncado), JSON.parse lançaria e a ferramenta abriria em tela branca.
 // Aqui caímos no fallback em vez de quebrar (achado de robustez da auditoria).
@@ -2547,7 +2729,7 @@ let vendas = lsParse('cpr_vendas', [])
 let snapProposta = null
 let _propostaJaSalva = false   // trava anti-duplicação: impede salvar a mesma proposta 2x (duplo-clique)
 let _ultimoItemSalvo = null    // referência ao item de histórico salvo (p/ vincular o link da proposta)
-let fotoAtual = null
+let fotosAtuais = []   // fotos da proposta em edição — [0] é a capa, máx 10
 let _toastT = null
 let _crmFiltro = null  // filtro ativo por status no histórico
 let _menuAberto = null // referência ao dropdown de status aberto
@@ -2614,6 +2796,7 @@ function aplicarSidebar() {
 function initApp() {
   aplicarPerfil()
   aplicarTemaIcone()
+  carregarConta()   // conta multiusuário (equipe) — assíncrono, best-effort
   renderSidebarUser()
   atualizarBadgeHist()
   atualizarBadgeAgenda()
@@ -2691,9 +2874,41 @@ async function salvarRemoto() {
       { onConflict: 'user_id' }
     )
     if (error) throw error
+    _syncPendente = false
   } catch(e) {
+    // Fila offline (PWA): marca pendência — o listener de 'online' e o timer
+    // re-tentam sozinhos assim que houver sinal.
+    _syncPendente = true
     throw e  // propaga para quem chamou mostrar o erro ao usuário
   }
+}
+
+/* ── PWA: modo offline + sincronização automática ──
+   O app abre sem internet (service worker cacheia o shell) e tudo que o
+   corretor salvar fica no localStorage. Quando o sinal volta, o que ficou
+   pendente sobe sozinho para o Supabase. */
+let _syncPendente = false
+let _avisouOffline = false
+
+async function sincronizarPendentes() {
+  if (!_syncPendente || !navigator.onLine || !window._sb || !window._uid) return
+  try {
+    await salvarRemoto()
+    toast('Conexão de volta — seus dados foram sincronizados')
+  } catch(_) { /* segue pendente; próxima tentativa no timer */ }
+}
+
+window.addEventListener('online', () => { _avisouOffline = false; sincronizarPendentes() })
+window.addEventListener('offline', () => {
+  if (_avisouOffline) return
+  _avisouOffline = true
+  toast('Sem conexão — pode continuar trabalhando, tudo fica salvo no aparelho')
+})
+setInterval(sincronizarPendentes, 60000)
+
+// Registra o service worker (https e localhost apenas; file:// não suporta)
+if ('serviceWorker' in navigator && (location.protocol === 'https:' || location.hostname === 'localhost')) {
+  navigator.serviceWorker.register('sw.js').catch(e => console.error('SW:', e))
 }
 
 /* ── VIEWS ── */
@@ -2705,6 +2920,8 @@ function showView(name) {
   const roots  = { dashboard:'Visão geral', agenda:'Funil', form:'Propostas', history:'Propostas', visita:'Documentos', contratos:'Documentos', config:'Conta', imoveis:'Imóveis', funil:'Funil', vendas:'Funil', ajuda:'Conta' }
   document.getElementById('crumb-page').textContent = labels[name] || name
   document.getElementById('crumb-root').textContent = roots[name] || name
+  if (name === 'form') renderIdentidadeSelect()
+  if (name === 'config') renderEmps()
   // topbar buttons only for form
   const btnEx = document.getElementById('btn-exemplo')
   if (btnEx) btnEx.style.display = name === 'form' ? '' : 'none'
@@ -2779,6 +2996,37 @@ function atualizarTipoNeg() {
   document.getElementById('blk-permuta').classList.toggle('show', tipo === 'Permuta')
 }
 
+/* ── FINANCIAMENTO: instituição × próprio, banco livre e desconto ── */
+function atualizarFinanciamento() {
+  const tipo = document.getElementById('f-fin-tipo').value
+  document.getElementById('fld-banco').style.display = tipo === 'banco' ? '' : 'none'
+  document.getElementById('taxa-hint').textContent = tipo === 'banco'
+    ? 'Ref: Caixa ~10,5% a.a. (SBPE/2025)'
+    : 'Taxa negociada diretamente entre as partes'
+  document.getElementById('fin-hint').textContent = tipo === 'banco'
+    ? 'O banco financia o saldo após a entrada'
+    : 'O vendedor (loteadora/construtora) parcela o saldo, sem banco'
+}
+function atualizarBanco() {
+  const outro = document.getElementById('f-banco').value === 'outro'
+  document.getElementById('f-banco-outro').style.display = outro ? '' : 'none'
+  if (outro) document.getElementById('f-banco-outro').focus()
+}
+function atualizarDesconto() {
+  const tem = document.getElementById('f-tem-desc').value === 'sim'
+  document.getElementById('fld-desconto').style.display = tem ? '' : 'none'
+  if (tem) document.getElementById('f-desconto').focus()
+}
+function bancoEscolhido() {
+  const sel = document.getElementById('f-banco')
+  if (!sel) return ''
+  return sel.value === 'outro'
+    ? document.getElementById('f-banco-outro').value.trim()
+    : sel.value
+}
+/* parseFloat sem engolir zero: '' → default, '0' → 0 */
+function numOr(v, dflt) { const n = parseFloat(v); return isFinite(n) ? n : dflt }
+
 /* ── EXEMPLO ── */
 function carregarExemplo() {
   document.getElementById('f-cliente').value   = 'João Silva'
@@ -2791,8 +3039,14 @@ function carregarExemplo() {
   document.getElementById('f-valor').value     = '450.000'
   document.getElementById('f-prazo').value     = '300'
   document.getElementById('f-taxa').value      = '10.5'
+  document.getElementById('f-fin-tipo').value  = 'banco'
+  document.getElementById('f-banco').value     = 'Caixa Econômica'
+  document.getElementById('f-entrada').value   = '20'
+  document.getElementById('f-amort').value     = 'ambas'
+  document.getElementById('f-tem-desc').value  = 'sim'
+  document.getElementById('f-desconto').value  = '3'
   document.getElementById('f-cond').value      = 'Cliente tem FGTS disponível e busca financiamento de longo prazo'
-  atualizarTipoNeg()
+  atualizarTipoNeg(); atualizarFinanciamento(); atualizarBanco(); atualizarDesconto()
   showView('form')
   toast('Exemplo carregado — clique em Gerar Proposta')
 }
@@ -2927,7 +3181,8 @@ async function gerarLinkProposta() {
   const prop = document.getElementById('proposta')
   if (!prop || !prop.classList.contains('show')) { toast('Gere a proposta primeiro', true); return }
 
-  const cor = perfil.cor || '#C9882A'
+  // Proposta em nome de empreendimento usa a cor da marca dele no link público
+  const cor = (snapProposta && snapProposta.identTipo === 'emp' && snapProposta.empCor) || perfil.cor || '#C9882A'
   const vars = `:root{--bg:#fff;--s1:#fff;--s2:#f5f5f7;--s3:#ececef;--b:rgba(0,0,0,.08);--bm:rgba(0,0,0,.16);--t:#1d1d1f;--t2:#6e6e73;--t3:#86868b;--p:#0F2D4A;--ph:#0A2138;--ps:rgba(15,45,74,.12);--p2:#C9882A;--bp:${cor};--bph:${cor};--bps:${cor}22;--rad:10px;--radl:18px;--font:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Helvetica,Arial,sans-serif}body{margin:0;background:#EEF1F4}.proposta{margin-top:0!important}`
   // Clona e remove a barra de ações (Salvar/Gerar link/...) — o cliente não vê isso.
   const clone = prop.cloneNode(true)
@@ -3138,11 +3393,19 @@ function gerarProposta(ev) {
     vagas:      document.getElementById('f-vagas').value,
     valor:      document.getElementById('f-valor').value.trim(),
     prazo:      parseInt(document.getElementById('f-prazo')?.value || '300'),
-    taxa:       parseFloat(document.getElementById('f-taxa')?.value || '10.5'),
+    taxa:       numOr(document.getElementById('f-taxa')?.value, 10.5),
+    finTipo:    document.getElementById('f-fin-tipo')?.value || 'banco',
+    banco:      bancoEscolhido(),
+    entrada:    Math.min(90, Math.max(0, numOr(document.getElementById('f-entrada')?.value, 20))),
+    amort:      document.getElementById('f-amort')?.value || 'ambas',
+    descontoOn: document.getElementById('f-tem-desc')?.value === 'sim',
+    desconto:   Math.min(90, Math.max(0, numOr(document.getElementById('f-desconto')?.value, 0))),
     garantia:   document.getElementById('f-garantia')?.value || 'Fiador',
     complem:    document.getElementById('f-complem')?.value.trim() || '',
     cond:       document.getElementById('f-cond').value.trim(),
-    foto:       fotoAtual,
+    foto:       fotosAtuais[0] || null,
+    fotos:      fotosAtuais.slice(1),
+    ...identidadeSelecionada(),
   }
   snapProposta = d
   _propostaJaSalva = false   // nova geração libera o salvar de novo
@@ -3181,25 +3444,42 @@ function construirProposta(d) {
   const propostaEl = document.getElementById('proposta')
   propostaEl.className = 'proposta' + (modeloAtual !== 'classico' ? ' tema-' + modeloAtual : '')
 
-  /* ── Cabeçalho corretor ── */
-  document.getElementById('pc-nome').textContent = perfil.nome || '—'
-  document.getElementById('pc-creci').textContent = perfil.creci ? 'CRECI ' + perfil.creci : ''
+  /* ── Cabeçalho: corretor ou empreendimento (identidade escolhida no form) ── */
+  const emp = d.identTipo === 'emp'
+    ? { nome: d.empNome || 'Empreendimento', info: d.empInfo || '', cor: d.empCor || '#0F2D4A', logo: d.empLogo || null }
+    : null
+  const corMarca = emp ? emp.cor : (perfil.cor || '#C9882A')
+  // Vars de marca no elemento da proposta: com empreendimento, sobrescrevem as
+  // do :root (valem no preview, no print e viajam no HTML do link público).
+  if (emp) {
+    propostaEl.style.setProperty('--bp', corMarca)
+    propostaEl.style.setProperty('--bph', escurecer(corMarca, 0.12))
+    propostaEl.style.setProperty('--bps', corMarca + '1F')
+  } else {
+    propostaEl.style.removeProperty('--bp')
+    propostaEl.style.removeProperty('--bph')
+    propostaEl.style.removeProperty('--bps')
+  }
+
+  document.getElementById('pc-nome').textContent = emp ? emp.nome : (perfil.nome || '—')
+  document.getElementById('pc-creci').textContent = emp ? emp.info : (perfil.creci ? 'CRECI ' + perfil.creci : '')
   const contatos = [perfil.tel, perfil.email].filter(Boolean).join(' · ')
-  document.getElementById('pc-contato').textContent = contatos
+  document.getElementById('pc-contato').textContent = emp ? '' : contatos
 
   const logoEl = document.getElementById('pc-logo')
   logoEl.innerHTML = ''
-  if (perfil.logo) {
+  logoEl.style.background = ''
+  const logoSrc = emp ? emp.logo : perfil.logo
+  if (logoSrc) {
     const img = document.createElement('img')
-    img.src = perfil.logo
-    img.alt = 'Logo ' + escH(perfil.nome)
+    img.src = logoSrc
+    img.alt = 'Logo ' + escH(emp ? emp.nome : perfil.nome)
     logoEl.appendChild(img)
   } else {
-    const cor = perfil.cor || '#C9882A'
-    logoEl.style.background = cor + '22'
+    logoEl.style.background = corMarca + '22'
     const letra = document.createElement('span')
-    letra.style.cssText = `font-size:20px;font-weight:800;color:${cor}`
-    letra.textContent = (perfil.nome || 'C')[0].toUpperCase()
+    letra.style.cssText = `font-size:20px;font-weight:800;color:${corMarca}`
+    letra.textContent = ((emp ? emp.nome : perfil.nome) || 'C')[0].toUpperCase()
     logoEl.appendChild(letra)
   }
 
@@ -3209,13 +3489,27 @@ function construirProposta(d) {
   document.getElementById('p-tag-tipo').textContent = d.tipoNeg
   document.getElementById('p-tag-data').textContent = hoje
 
-  /* ── Foto do imóvel ── */
+  /* ── Foto de capa + galeria ── */
   const fotoBox = document.getElementById('p-foto')
   if (d.foto) {
     document.getElementById('p-foto-img').src = d.foto
     fotoBox.classList.add('show')
   } else {
     fotoBox.classList.remove('show')
+  }
+  const galBox = document.getElementById('p-galeria')
+  const fotosExtras = Array.isArray(d.fotos) ? d.fotos : []
+  galBox.innerHTML = ''
+  if (fotosExtras.length) {
+    fotosExtras.forEach((src, i) => {
+      const im = document.createElement('img')
+      im.src = src
+      im.alt = `Foto ${i + 2} do imóvel`
+      galBox.appendChild(im)
+    })
+    galBox.classList.add('show')
+  } else {
+    galBox.classList.remove('show')
   }
 
   /* ── Grid do imóvel ── */
@@ -3253,20 +3547,36 @@ function construirProposta(d) {
 
   if (d.tipoNeg === 'Compra') {
     document.getElementById('p-mods-title').textContent = 'Condições de Pagamento'
-    const vAvista = valNum ? Math.round(valNum * 0.97) : 0
-    const vFgts20 = valNum ? Math.round(valNum * 0.20) : 0
-    const vFinanc = valNum ? Math.round(valNum * 0.80) : 0
+    // Condições configuráveis por proposta — propostas antigas (sem os campos
+    // novos) mantêm o comportamento com que foram geradas: 3% à vista e 20%
+    // de entrada via banco.
+    const entradaPct = (typeof d.entrada === 'number' && isFinite(d.entrada)) ? Math.min(90, Math.max(0, d.entrada)) : 20
+    const temDesc    = d.descontoOn === undefined ? true : (d.descontoOn && d.desconto > 0)
+    const descPct    = d.descontoOn === undefined ? 3 : (d.desconto || 0)
+    const finProprio = d.finTipo === 'proprio'
+    const bancoTxt   = finProprio ? '' : (d.banco || '')
+    const amort      = ['price','sac'].includes(d.amort) ? d.amort : 'ambas'
+
+    const vAvista  = valNum && temDesc ? Math.round(valNum * (1 - descPct/100)) : valNum
+    const vEntrada = valNum ? Math.round(valNum * entradaPct/100) : 0
+    const vFinanc  = valNum ? valNum - vEntrada : 0
     let parcela = ''
-    if (valNum && d.prazo && d.taxa) {
-      const p = calcParcela(vFinanc, d.taxa, d.prazo)
-      parcela = 'R$ ' + Math.round(p).toLocaleString('pt-BR') + '/mês'
+    if (valNum && d.prazo && d.taxa >= 0) {
+      parcela = amort === 'sac'
+        ? '1ª parcela: R$ ' + Math.round(calcSAC(vFinanc, d.taxa, d.prazo).primeira).toLocaleString('pt-BR') + '/mês (decrescente)'
+        : 'Parcela estimada: R$ ' + Math.round(calcParcela(vFinanc, d.taxa, d.prazo)).toLocaleString('pt-BR') + '/mês'
     }
     const prazoAnos = Math.round(d.prazo / 12)
+    const finLabel = finProprio ? 'Financiamento próprio' : 'Financiamento'
+    const finNote = `Entrada de ${entradaPct}% + saldo em ${prazoAnos} anos · taxa ${d.taxa}% a.a.` +
+      (bancoTxt ? ` · ${bancoTxt}` : finProprio ? ' · direto com o vendedor, sem banco' : '')
 
     const mods = [
-      { label:'À Vista', val: vAvista ? 'R$ ' + vAvista.toLocaleString('pt-BR') : valorFmt, note:`Desconto de 3% no valor anunciado`, parcela:'', hl:false },
-      { label:'Financiamento', val: valorFmt, note:`Entrada de 20% + saldo em ${prazoAnos} anos · taxa ${d.taxa}% a.a.`, parcela: parcela ? `Parcela estimada: ${parcela}` : '', hl:true },
-      { label:'FGTS', val: vFgts20 ? 'R$ ' + vFgts20.toLocaleString('pt-BR') : 'Consultar', note:'Entrada mínima de 20% via FGTS + financiamento do saldo', parcela: vFinanc ? `Saldo financiado: R$ ${vFinanc.toLocaleString('pt-BR')}` : '', hl:false },
+      { label:'À Vista', val: vAvista ? 'R$ ' + vAvista.toLocaleString('pt-BR') : valorFmt, note: temDesc ? `Desconto de ${descPct}% no valor anunciado` : 'Pagamento integral na assinatura', parcela:'', hl:false },
+      { label: finLabel, val: valorFmt, note: finNote, parcela, hl:true },
+      ...(finProprio ? [] : [
+        { label:'FGTS', val: vEntrada ? 'R$ ' + vEntrada.toLocaleString('pt-BR') : 'Consultar', note:`Entrada de ${entradaPct}% via FGTS + financiamento do saldo`, parcela: vFinanc ? `Saldo financiado: R$ ${vFinanc.toLocaleString('pt-BR')}` : '', hl:false },
+      ]),
     ]
     mods.forEach(m => {
       const d2 = document.createElement('div')
@@ -3307,32 +3617,51 @@ function construirProposta(d) {
     })
   }
 
-  /* ── Simulação de financiamento (SAC × Price) — só Compra ── */
+  /* ── Simulação de financiamento — só Compra, conforme amortização escolhida ── */
   const simSec = document.getElementById('p-sim-sec')
-  if (d.tipoNeg === 'Compra' && valNum && d.prazo && d.taxa) {
-    const vFin = Math.round(valNum * 0.80)
+  if (d.tipoNeg === 'Compra' && valNum && d.prazo && d.taxa >= 0) {
+    const entradaPct = (typeof d.entrada === 'number' && isFinite(d.entrada)) ? Math.min(90, Math.max(0, d.entrada)) : 20
+    const amort = ['price','sac'].includes(d.amort) ? d.amort : 'ambas'
+    const finProprio = d.finTipo === 'proprio'
+    const vFin = Math.round(valNum * (100 - entradaPct) / 100)
     const sac = calcSAC(vFin, d.taxa, d.prazo)
     const priceParc = calcParcela(vFin, d.taxa, d.prazo)
     const priceTotal = priceParc * d.prazo
     const fmt = n => 'R$ ' + Math.round(n).toLocaleString('pt-BR')
     const anos = Math.round(d.prazo / 12)
-    document.getElementById('p-simulacao').innerHTML =
+
+    const colSAC =
       `<div class="sim-col">` +
         `<div class="sim-col-head">Tabela SAC <span>parcela decrescente</span></div>` +
         `<div class="sim-row"><span>1ª parcela</span><b>${fmt(sac.primeira)}</b></div>` +
         `<div class="sim-row"><span>Última parcela</span><b>${fmt(sac.ultima)}</b></div>` +
         `<div class="sim-row tot"><span>Total pago</span><b>${fmt(sac.total)}</b></div>` +
-      `</div>` +
+      `</div>`
+    const colPrice =
       `<div class="sim-col">` +
         `<div class="sim-col-head">Tabela Price <span>parcela fixa</span></div>` +
         `<div class="sim-row"><span>Parcela fixa</span><b>${fmt(priceParc)}</b></div>` +
         `<div class="sim-row"><span>Parcelas</span><b>${d.prazo}x</b></div>` +
         `<div class="sim-row tot"><span>Total pago</span><b>${fmt(priceTotal)}</b></div>` +
       `</div>`
+
+    document.getElementById('p-sim-title').textContent =
+      amort === 'price' ? 'Simulação de Financiamento · Tabela Price'
+      : amort === 'sac' ? 'Simulação de Financiamento · Tabela SAC'
+      : 'Simulação de Financiamento · SAC × Price'
+    document.getElementById('p-simulacao').innerHTML =
+      amort === 'price' ? colPrice : amort === 'sac' ? colSAC : colSAC + colPrice
+
+    const explicacao =
+      amort === 'price' ? 'Na tabela Price a parcela é fixa do início ao fim. '
+      : amort === 'sac' ? 'No SAC a parcela começa maior e diminui mês a mês. '
+      : 'No SAC a parcela começa maior e diminui mês a mês; na Price ela é fixa do início ao fim. '
     document.getElementById('p-sim-note').textContent =
-      `Simulação sobre ${fmt(vFin)} (financiamento de 80% do valor) em ${anos} anos à taxa de ${d.taxa}% a.a. ` +
-      `No SAC a parcela começa maior e diminui mês a mês; na Price ela é fixa do início ao fim. ` +
-      `Valores estimados — sujeitos à análise e às condições do banco.`
+      `Simulação sobre ${fmt(vFin)} (entrada de ${entradaPct}% + financiamento de ${100 - entradaPct}% do valor) em ${anos} anos à taxa de ${d.taxa}% a.a. ` +
+      explicacao +
+      (finProprio
+        ? 'Valores estimados — condições definidas diretamente com o vendedor.'
+        : 'Valores estimados — sujeitos à análise e às condições do banco.')
     simSec.style.display = ''
   } else {
     simSec.style.display = 'none'
@@ -3356,6 +3685,17 @@ function construirProposta(d) {
     ? `<strong>1.</strong> Apresente documentação do seu imóvel para análise jurídica. <strong>2.</strong> Realizamos vistoria dos dois imóveis para confirmar valores. <strong>3.</strong> Fechamos o contrato de permuta. Estou à disposição para conduzir todo o processo.`
     : `<strong>1.</strong> Confirme interesse em até 48h para reservarmos o imóvel. <strong>2.</strong> Agende uma visita presencial para análise detalhada. <strong>3.</strong> Faço uma simulação de financiamento personalizada sem compromisso. Estou à disposição — entre em contato quando quiser.`
   document.getElementById('p-proximos').innerHTML = ps
+
+  /* ── Corretor responsável (só quando a proposta é do empreendimento) ── */
+  const respEl = document.getElementById('p-resp')
+  if (emp) {
+    const linhas = ['Corretor(a) responsável: ' + (perfil.nome || '—') + (perfil.creci ? ' — CRECI ' + perfil.creci : '')]
+    if (contatos) linhas.push(contatos)
+    respEl.textContent = linhas.join(' · ')
+    respEl.style.display = ''
+  } else {
+    respEl.style.display = 'none'
+  }
 }
 
 /* ── COPIAR TEXTO (inclui todas as seções) ── */
@@ -3391,6 +3731,8 @@ function copiar() {
 
   const sobre   = document.getElementById('p-sobre').innerText
   const proximos= document.getElementById('p-proximos').innerText
+  const respEl  = document.getElementById('p-resp')
+  const resp    = respEl && respEl.style.display !== 'none' ? respEl.textContent : ''
 
   const linhasCabecalho = [nome, creci ? 'CRECI ' + creci : null].filter(Boolean).join(' | ')
   const txt = [
@@ -3403,11 +3745,12 @@ function copiar() {
     '',
     '── Condições ──',
     modsTexto,
-    ...(simTexto ? ['', '── Simulação de financiamento (SAC × Price) ──', simTexto] : []),
+    ...(simTexto ? ['', '── ' + (document.getElementById('p-sim-title')?.textContent || 'Simulação de financiamento') + ' ──', simTexto] : []),
     '',
     sobre,
     '',
     proximos,
+    ...(resp ? ['', resp] : []),
   ].join('\n')
 
   navigator.clipboard.writeText(txt)
@@ -3433,19 +3776,26 @@ function compartilharWA() {
   let cond = ''
   if (d.tipoNeg === 'Compra') {
     const valNum = parseFloat(d.valor.replace(/\./g,'').replace(',','.')) || 0
-    const vAvista = valNum ? Math.round(valNum * 0.97).toLocaleString('pt-BR') : '—'
-    let simLine = '• Financiamento: entrada de 20% + saldo financiado'
-    if (valNum && d.prazo && d.taxa) {
-      const vFin = Math.round(valNum * 0.80)
-      const sac = calcSAC(vFin, d.taxa, d.prazo)
-      const price = calcParcela(vFin, d.taxa, d.prazo)
+    const entradaPct = (typeof d.entrada === 'number' && isFinite(d.entrada)) ? Math.min(90, Math.max(0, d.entrada)) : 20
+    const temDesc = d.descontoOn === undefined ? true : (d.descontoOn && d.desconto > 0)
+    const descPct = d.descontoOn === undefined ? 3 : (d.desconto || 0)
+    const finProprio = d.finTipo === 'proprio'
+    const amort = ['price','sac'].includes(d.amort) ? d.amort : 'ambas'
+    const vAvista = valNum ? Math.round(valNum * (1 - (temDesc ? descPct : 0)/100)).toLocaleString('pt-BR') : '—'
+    const finNome = finProprio
+      ? 'Financiamento direto com o vendedor'
+      : 'Financiamento' + (d.banco ? ' ' + d.banco : '')
+    let simLine = `• ${finNome}: entrada de ${entradaPct}% + saldo financiado`
+    if (valNum && d.prazo && d.taxa >= 0) {
+      const vFin = Math.round(valNum * (100 - entradaPct) / 100)
       const anos = Math.round(d.prazo / 12)
-      simLine =
-        `• Financiamento (${anos} anos, ${d.taxa}% a.a.):\n` +
-        `   SAC: 1ª parcela R$ ${Math.round(sac.primeira).toLocaleString('pt-BR')} (vai diminuindo)\n` +
-        `   Price: R$ ${Math.round(price).toLocaleString('pt-BR')}/mês fixo`
+      const linhas = []
+      if (amort !== 'price') linhas.push(`   SAC: 1ª parcela R$ ${Math.round(calcSAC(vFin, d.taxa, d.prazo).primeira).toLocaleString('pt-BR')} (vai diminuindo)`)
+      if (amort !== 'sac')   linhas.push(`   Price: R$ ${Math.round(calcParcela(vFin, d.taxa, d.prazo)).toLocaleString('pt-BR')}/mês fixo`)
+      simLine = `• ${finNome} (${anos} anos, ${d.taxa}% a.a., entrada de ${entradaPct}%):\n` + linhas.join('\n')
     }
-    cond = `• À Vista: R$ ${vAvista} (desc. 3%)\n${simLine}\n• FGTS: entrada de 20% + financiamento`
+    cond = `• À Vista: R$ ${vAvista}${temDesc ? ` (desc. ${descPct}%)` : ''}\n${simLine}` +
+      (finProprio ? '' : `\n• FGTS: entrada de ${entradaPct}% + financiamento`)
   } else if (d.tipoNeg === 'Locação') {
     cond = `• Aluguel: ${valFmt}/mês\n• Garantia: ${d.garantia}`
   } else {
@@ -3491,7 +3841,7 @@ function novaProposta() {
   document.getElementById('proposta').classList.remove('show')
   document.getElementById('skel').classList.remove('show')
   document.getElementById('form').reset()
-  atualizarTipoNeg()
+  atualizarTipoNeg(); atualizarFinanciamento(); atualizarBanco(); atualizarDesconto()
   snapProposta = null
   _propostaJaSalva = false
   _ultimoItemSalvo = null
@@ -3822,13 +4172,45 @@ function duplicarProposta(i) {
 
     // Campos condicionais de compra
     if (h.prazo)  set('f-prazo', String(h.prazo))
-    if (h.taxa)   set('f-taxa',  String(h.taxa))
+    if (h.taxa !== undefined) set('f-taxa', String(h.taxa))
+    set('f-fin-tipo', h.finTipo || 'banco')
+    const bancoSel = document.getElementById('f-banco')
+    if (bancoSel) {
+      const b = h.banco || 'Caixa Econômica'
+      const naLista = Array.from(bancoSel.options).some(o => o.value === b)
+      bancoSel.value = naLista ? b : 'outro'
+      document.getElementById('f-banco-outro').value = naLista ? '' : b
+    }
+    set('f-entrada', String(h.entrada ?? 20))
+    set('f-amort', h.amort || 'ambas')
+    // propostas antigas (sem o campo) foram geradas com 3% à vista — preserva
+    if (h.descontoOn === undefined) {
+      set('f-tem-desc', 'sim'); set('f-desconto', '3')
+    } else {
+      set('f-tem-desc', h.descontoOn ? 'sim' : 'nao')
+      set('f-desconto', h.descontoOn ? String(h.desconto || '') : '')
+    }
+    atualizarFinanciamento(); atualizarBanco(); atualizarDesconto()
 
     // Campos condicionais de locação
     if (h.garantia) set('f-garantia', h.garantia)
 
+    // Fotos (capa + galeria) — propostas antigas têm só h.foto
+    fotosAtuais = [h.foto, ...(Array.isArray(h.fotos) ? h.fotos : [])].filter(Boolean).slice(0, MAX_FOTOS)
+    renderFotosForm()
+
     // Campos condicionais de permuta
     if (h.complem) set('f-complem', h.complem)
+
+    // Identidade (corretor × empreendimento) — se o empreendimento da proposta
+    // original ainda existir, mantém; senão volta para o corretor
+    renderIdentidadeSelect()
+    const identSel = document.getElementById('f-identidade')
+    if (identSel) {
+      identSel.value = h.identTipo === 'emp' &&
+        (perfil.empreendimentos || []).some(e => String(e.id) === String(h.empId))
+        ? String(h.empId) : 'corretor'
+    }
 
     atualizarTipoNeg()
 
@@ -4156,11 +4538,18 @@ function escolherModeloContrato(modelo) {
 
   const titulos = {
     autorizacao: { form:'Dados da Autorização de Venda/Locação', parte:'Proprietário(a) do imóvel' },
+    exclusividade: { form:'Dados do Contrato de Exclusividade', parte:'Proprietário(a) do imóvel' },
     proposta_compra: { form:'Dados da Proposta de Compra', parte:'Vendedor(a) do imóvel' },
   }
   document.getElementById('ctt-form-titulo').textContent = titulos[modelo].form
   document.getElementById('ctt-parte-titulo').textContent = titulos[modelo].parte
-  document.getElementById('ctt-bloco-autorizacao').style.display = modelo === 'autorizacao' ? '' : 'none'
+  // Exclusividade reaproveita o bloco de condições da autorização (finalidade,
+  // valor, comissão, prazo), trocando o seletor de exclusividade (redundante)
+  // pelo campo de contrapartidas.
+  document.getElementById('ctt-bloco-autorizacao').style.display = modelo === 'autorizacao' || modelo === 'exclusividade' ? '' : 'none'
+  document.getElementById('ctt-bloco-autorizacao-t').textContent = modelo === 'exclusividade' ? 'Condições da exclusividade' : 'Condições da autorização'
+  document.getElementById('fld-ct-exclusividade').style.display = modelo === 'exclusividade' ? 'none' : ''
+  document.getElementById('fld-ct-servicos').style.display = modelo === 'exclusividade' ? '' : 'none'
   document.getElementById('ctt-bloco-proposta').style.display = modelo === 'proposta_compra' ? '' : 'none'
   document.getElementById('ct-valor-prop').required = modelo === 'proposta_compra'
 
@@ -4228,6 +4617,59 @@ function montarTextoAutorizacao(d) {
   ].filter(s => s !== '').join('\n')
 }
 
+/* Estrutura do contrato de exclusividade — cláusulas-esqueleto com
+   placeholders. Por decisão de produto, NÃO redigimos texto jurídico
+   definitivo: as cláusulas sensíveis saem marcadas para revisão de
+   advogado antes de qualquer uso com terceiros. */
+function montarTextoExclusividade(d) {
+  const hoje = new Date().toLocaleDateString('pt-BR', { day:'numeric', month:'long', year:'numeric' })
+  const nomeCorretor = perfil.nome || 'Corretor(a)'
+  const creci = perfil.creci ? `, inscrito(a) no CRECI sob o nº ${perfil.creci}` : ''
+  const docsProp = [d.partCpf ? `CPF/CNPJ nº ${d.partCpf}` : null, d.partRg ? `RG nº ${d.partRg}` : null].filter(Boolean).join(', ')
+  const idProp = d.partNome + (docsProp ? `, portador(a) do ${docsProp}` : '') + (d.partEnd ? `, residente/sediado(a) em ${d.partEnd}` : '')
+  const idImovel = (d.imTipo ? d.imTipo.toLowerCase() + ' ' : 'imóvel ') + `situado em ${d.imEnd}` + (d.imMatricula ? `, matrícula nº ${d.imMatricula}` : '')
+  const finalidadeTxt = d.finalidade === 'locacao' ? 'LOCAÇÃO' : 'VENDA'
+
+  return [
+    `CONTRATO DE INTERMEDIAÇÃO IMOBILIÁRIA COM EXCLUSIVIDADE — ${finalidadeTxt}`,
+    '',
+    '[ESTRUTURA DE MODELO: as cláusulas abaixo são um ponto de partida e DEVEM ser revisadas e completadas por advogado antes do uso, especialmente as cláusulas 5 e 7.]',
+    '',
+    `Pelo presente instrumento, ${idProp}, doravante denominado(a) CONTRATANTE, e ${nomeCorretor}${creci}, doravante denominado(a) CORRETOR(A), celebram este contrato de intermediação imobiliária com exclusividade para a ${finalidadeTxt.toLowerCase()} do(a) ${idImovel}.`,
+    '',
+    `1. OBJETO — Intermediação, pelo(a) CORRETOR(A), da ${finalidadeTxt.toLowerCase()} do imóvel acima identificado, em caráter de EXCLUSIVIDADE: durante a vigência, o(a) CONTRATANTE não contratará outros corretores ou imobiliárias nem negociará o imóvel diretamente sem a participação do(a) CORRETOR(A).`,
+    '',
+    `2. CONTRAPARTIDAS DO(A) CORRETOR(A) — Em razão da exclusividade, o(a) CORRETOR(A) se obriga a: ${d.servicos || '[DESCREVER as contrapartidas: equipe dedicada, anúncios nos portais, tráfego pago, site do imóvel, placa, relatórios periódicos...]'}.`,
+    '',
+    `3. VALOR PRETENDIDO — O valor pretendido pelo(a) CONTRATANTE para o negócio é de ${fmtMoedaSimples(d.valor)}, ajustável de comum acordo durante a vigência.`,
+    '',
+    `4. COMISSÃO — Em caso de concretização do negócio, será devida ao(à) CORRETOR(A) a comissão de corretagem de ${d.comissao ? d.comissao + '% sobre o valor da operação' : '[DEFINIR percentual]'}.`,
+    '',
+    `5. COMISSÃO NA VIGÊNCIA DA EXCLUSIVIDADE — Se, durante a vigência deste contrato, o negócio for concretizado por intermédio de terceiros ou diretamente pelo(a) CONTRATANTE, a comissão da cláusula 4 permanece integralmente devida ao(à) CORRETOR(A), na forma do art. 726 do Código Civil. [CLÁUSULA SENSÍVEL — revisão jurídica obrigatória antes do uso.]`,
+    '',
+    `6. VIGÊNCIA — Este contrato vigora por ${d.prazo || '90'} dias a contar da assinatura, prorrogável por acordo escrito entre as partes.`,
+    '',
+    `7. RESCISÃO — [DEFINIR com advogado: condições de rescisão antecipada, necessidade de comunicação por escrito, eventual multa e tratamento de negociações iniciadas antes da rescisão.]`,
+    '',
+    `8. DISPOSIÇÕES GERAIS — As partes elegem o foro da comarca de localização do imóvel para dirimir eventuais controvérsias, ressalvada disposição legal em contrário.`,
+    d.obs ? `\n9. OBSERVAÇÕES — ${d.obs}` : '',
+    '',
+    (d.cidade ? d.cidade + ', ' : '') + hoje + '.',
+    '',
+    '_______________________________',
+    d.partNome + ' (CONTRATANTE' + (d.partCpf ? ' · CPF/CNPJ ' + d.partCpf : '') + ')',
+    '',
+    '_______________________________',
+    nomeCorretor + (perfil.creci ? ' — CRECI ' + perfil.creci : '') + ' (CORRETOR(A))',
+    '',
+    'TESTEMUNHAS (recomendadas para força executiva do contrato):',
+    '',
+    '1. _______________________________  Nome: [NOME]  CPF: [CPF]',
+    '',
+    '2. _______________________________  Nome: [NOME]  CPF: [CPF]',
+  ].filter(s => s !== '').join('\n')
+}
+
 function montarTextoPropostaCompra(d) {
   const hoje = new Date().toLocaleDateString('pt-BR', { day:'numeric', month:'long', year:'numeric' })
   const nomeCorretor = perfil.nome || 'Corretor(a)'
@@ -4282,6 +4724,7 @@ function gerarTextoContrato(ev) {
     comissao:    document.getElementById('ct-comissao').value.trim(),
     prazo:       document.getElementById('ct-prazo-aut').value.trim(),
     exclusividade: document.getElementById('ct-exclusividade').value,
+    servicos:    document.getElementById('ct-servicos').value.trim(),
     valorProp:   document.getElementById('ct-valor-prop').value.trim(),
     formaPagto:  document.getElementById('ct-forma-pagto').value,
     sinal:       document.getElementById('ct-sinal').value.trim(),
@@ -4292,9 +4735,11 @@ function gerarTextoContrato(ev) {
 
   const texto = contratoModeloAtual === 'proposta_compra'
     ? montarTextoPropostaCompra(d)
+    : contratoModeloAtual === 'exclusividade'
+    ? montarTextoExclusividade(d)
     : montarTextoAutorizacao(d)
 
-  const titulos = { autorizacao:'Autorização de Venda/Locação', proposta_compra:'Proposta de Compra' }
+  const titulos = { autorizacao:'Autorização de Venda/Locação', exclusividade:'Contrato de Exclusividade (estrutura)', proposta_compra:'Proposta de Compra' }
   document.getElementById('ctt-edit-titulo').textContent = 'Revise e edite — ' + titulos[contratoModeloAtual]
   document.getElementById('contrato-texto').value = texto
 
@@ -6136,6 +6581,7 @@ function renderVendas() {
    mesmo padrão de upload de foto (canvas redimensionado, igual a foto
    da proposta), mesmo padrão visual de card/badge da Agenda/Histórico. */
 const IMOVEL_STATUS_LABEL = { disponivel:'Disponível', reservado:'Reservado', vendido:'Vendido', locado:'Locado' }
+const IMOVEL_ORIGEM_LABEL = { proprio:'Produto próprio', negociacao:'Em negociação', terceiro:'Captação de terceiro' }
 let fotoCapaAtual = null   // foto em edição no formulário, ainda não salva no array
 
 function limparFormImovel() {
@@ -6167,6 +6613,8 @@ async function salvarImovel(ev) {
     dorms:       document.getElementById('im-dorms').value,
     vagas:       document.getElementById('im-vagas').value,
     status:      document.getElementById('im-status').value || 'disponivel',
+    origem:      document.getElementById('im-origem').value || 'proprio',
+    autorizacao: document.getElementById('im-autorizacao').value.trim(),
     foto:        fotoCapaAtual,
   }
 
@@ -6205,6 +6653,8 @@ function editarImovel(id) {
   document.getElementById('im-dorms').value = im.dorms || ''
   document.getElementById('im-vagas').value = im.vagas || ''
   document.getElementById('im-status').value = im.status || 'disponivel'
+  document.getElementById('im-origem').value = im.origem || 'proprio'
+  document.getElementById('im-autorizacao').value = im.autorizacao || ''
   fotoCapaAtual = im.foto || null
   document.getElementById('im-foto-prev').innerHTML = fotoCapaAtual
     ? `<img src="${fotoCapaAtual}" alt="Foto do imóvel">`
@@ -6282,6 +6732,7 @@ function renderImoveis() {
           <span class="im-card-status" data-s="${im.status || 'disponivel'}">${escH(IMOVEL_STATUS_LABEL[im.status] || 'Disponível')}</span>
         </div>
         <div class="im-card-end">${escH(im.end || '—')}</div>
+        ${im.origem && im.origem !== 'proprio' ? `<div class="im-card-origem"${im.autorizacao ? ` title="${escH(im.autorizacao)}"` : ''}>${escH(IMOVEL_ORIGEM_LABEL[im.origem] || '')}</div>` : ''}
         ${im.bairro ? `<div class="im-card-bairro">${escH(im.bairro)}</div>` : ''}
         ${metaParts.length ? `<div class="im-card-meta">${escH(metaParts.join(' · '))}</div>` : ''}
         <div class="im-card-valor">${escH(valorFmt)}</div>
@@ -6426,6 +6877,7 @@ function carregarFormConfig() {
     prev.innerHTML = `<img src="${perfil.logo}" alt="Logo">`
   }
   marcarModeloSelecionado(perfil.modelo || 'classico')
+  renderEmps()
 }
 
 /* ── MODELO DE PROPOSTA (tema visual) ── */
@@ -6569,18 +7021,22 @@ function removerLogo() {
   renderSidebarUser()
 }
 
-/* ── FOTO DO IMÓVEL (por proposta, não persiste no perfil) ── */
-// Mesmo padrão do logo: redimensiona antes de guardar em base64, mas em
-// JPEG (foto de imóvel não precisa de transparência) pra manter o jsonb leve.
-function carregarFotoImovel(ev) {
+/* ── EMPREENDIMENTOS: marcas que podem assinar a proposta ──
+   Guardados dentro do perfil (jsonb) — sem coluna nova no Supabase.
+   Cada um tem nome, linha de apoio, cor e logo; a proposta gerada com
+   um empreendimento assume a identidade dele e o corretor vai para o
+   rodapé como responsável. */
+const _EMP_LOGO_ICON = `<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>`
+let _empLogoTemp = null
+function carregarLogoEmp(ev) {
   const file = ev.target.files[0]
   if (!file) return
-  if (file.size > 4 * 1024 * 1024) { toast('Foto muito grande — máx 4MB', true); return }
+  if (file.size > 4 * 1024 * 1024) { toast('Logo muito grande — máx 4MB', true); return }
   const reader = new FileReader()
   reader.onload = e => {
     const img = new Image()
     img.onload = () => {
-      const MAX = 800
+      const MAX = 256
       let { width, height } = img
       if (width > MAX || height > MAX) {
         const escala = Math.min(MAX / width, MAX / height)
@@ -6590,9 +7046,257 @@ function carregarFotoImovel(ev) {
       const canvas = document.createElement('canvas')
       canvas.width = width; canvas.height = height
       canvas.getContext('2d').drawImage(img, 0, 0, width, height)
-      fotoAtual = canvas.toDataURL('image/jpeg', 0.72)
-      document.getElementById('foto-prev').innerHTML = `<img src="${fotoAtual}" alt="Foto do imóvel">`
-      toast('Foto carregada')
+      _empLogoTemp = canvas.toDataURL('image/png')
+      document.getElementById('e-logo-prev').innerHTML = `<img src="${_empLogoTemp}" alt="Logo" style="width:100%;height:100%;object-fit:contain">`
+      toast('Logo carregado')
+    }
+    img.onerror = () => toast('Arquivo de imagem inválido', true)
+    img.src = e.target.result
+  }
+  reader.readAsDataURL(file)
+}
+async function adicionarEmp() {
+  const nome = document.getElementById('e-nome').value.trim()
+  if (!nome) { toast('Informe o nome do empreendimento', true); return }
+  if (!Array.isArray(perfil.empreendimentos)) perfil.empreendimentos = []
+  perfil.empreendimentos.push({
+    id: 'emp-' + Date.now(),
+    nome,
+    info: document.getElementById('e-info').value.trim(),
+    cor: document.getElementById('e-cor').value || '#0F2D4A',
+    logo: _empLogoTemp,
+  })
+  document.getElementById('e-nome').value = ''
+  document.getElementById('e-info').value = ''
+  document.getElementById('e-logo').value = ''
+  _empLogoTemp = null
+  document.getElementById('e-logo-prev').innerHTML = _EMP_LOGO_ICON
+  renderEmps(); renderIdentidadeSelect()
+  localStorage.setItem('cpr_perfil', JSON.stringify(perfil))
+  try { await salvarRemoto(); toast('Empreendimento adicionado') }
+  catch(_) { toast('Adicionado localmente — verifique sua conexão', true) }
+}
+async function removerEmp(id) {
+  perfil.empreendimentos = (perfil.empreendimentos || []).filter(e => String(e.id) !== String(id))
+  renderEmps(); renderIdentidadeSelect()
+  localStorage.setItem('cpr_perfil', JSON.stringify(perfil))
+  try { await salvarRemoto(); toast('Empreendimento removido') }
+  catch(_) { toast('Removido localmente — verifique sua conexão', true) }
+}
+function renderEmps() {
+  const box = document.getElementById('emp-lista')
+  if (!box) return
+  const emps = perfil.empreendimentos || []
+  if (!emps.length) {
+    box.innerHTML = '<span class="hint">Nenhum empreendimento cadastrado ainda.</span>'
+    return
+  }
+  box.innerHTML = ''
+  emps.forEach(e => {
+    const cor = escH(e.cor || '#0F2D4A')
+    const row = document.createElement('div')
+    row.style.cssText = 'display:flex;align-items:center;gap:10px;padding:9px 12px;border:1px solid var(--b);border-radius:10px;background:var(--s2)'
+    const logo = e.logo
+      ? `<img src="${e.logo}" alt="" style="width:30px;height:30px;object-fit:contain;border-radius:6px;flex-shrink:0">`
+      : `<span style="width:30px;height:30px;border-radius:6px;background:${cor}22;color:${cor};display:inline-flex;align-items:center;justify-content:center;font-weight:800;flex-shrink:0">${escH((e.nome || 'E')[0].toUpperCase())}</span>`
+    row.innerHTML = logo +
+      `<div style="flex:1;min-width:0"><div style="font-size:13px;font-weight:600">${escH(e.nome)}</div>` +
+      (e.info ? `<div style="font-size:11px;color:var(--t3)">${escH(e.info)}</div>` : '') + `</div>` +
+      `<span style="width:14px;height:14px;border-radius:4px;background:${cor};flex-shrink:0" title="Cor da marca"></span>` +
+      `<button type="button" class="btn btn-ghost btn-sm" onclick="removerEmp('${escH(String(e.id))}')">Remover</button>`
+    box.appendChild(row)
+  })
+}
+function renderIdentidadeSelect() {
+  const fld = document.getElementById('fld-identidade')
+  const sel = document.getElementById('f-identidade')
+  if (!fld || !sel) return
+  // Marca obrigatória da conta: trava a escolha (o membro só vê a marca da equipe)
+  const forcada = _marcaForcada()
+  if (forcada) {
+    sel.innerHTML = ''
+    const o = document.createElement('option')
+    o.value = 'conta'
+    o.textContent = forcada.nome + ' — definido pela sua equipe'
+    sel.appendChild(o)
+    sel.disabled = true
+    fld.style.display = ''
+    return
+  }
+  sel.disabled = false
+  const emps = perfil.empreendimentos || []
+  if (!emps.length) {
+    fld.style.display = 'none'
+    sel.innerHTML = '<option value="corretor">Corretor</option>'
+    return
+  }
+  const atual = sel.value
+  sel.innerHTML = ''
+  const o0 = document.createElement('option')
+  o0.value = 'corretor'
+  o0.textContent = perfil.nome ? 'Você — ' + perfil.nome : 'Você (corretor)'
+  sel.appendChild(o0)
+  emps.forEach(e => {
+    const o = document.createElement('option')
+    o.value = String(e.id)
+    o.textContent = 'Empreendimento — ' + e.nome
+    sel.appendChild(o)
+  })
+  if (Array.from(sel.options).some(o => o.value === atual)) sel.value = atual
+  fld.style.display = ''
+}
+/* ── CONTA MULTIUSUÁRIO / EQUIPE (Prioridade 4) ──
+   A conta agrupa N usuários (plano imobiliária/loteadora). Leitura direta
+   do Supabase (RLS); convites/remoções passam pela rota /api/conta-membros
+   (service role valida papel de admin e limite de assentos). */
+let _conta = null
+let _marcaLogoTemp = null
+
+async function carregarConta() {
+  if (!window._sb || !window._uid || window._DEMO) return
+  try {
+    const { data: memb } = await window._sb.from('cpr_account_members')
+      .select('account_id, papel').eq('user_id', window._uid).limit(1).maybeSingle()
+    if (!memb) return
+    const { data: conta } = await window._sb.from('cpr_accounts')
+      .select('id, owner_id, nome, plano, max_users, marca_forcada')
+      .eq('id', memb.account_id).maybeSingle()
+    if (!conta) return
+    const { data: membros } = await window._sb.from('cpr_account_members')
+      .select('user_id, email, papel').eq('account_id', conta.id)
+    _conta = {
+      id: conta.id, ownerId: conta.owner_id, nome: conta.nome, plano: conta.plano,
+      maxUsers: conta.max_users || 1, marcaForcada: conta.marca_forcada || null,
+      papel: memb.papel, souAdmin: memb.papel === 'admin' || conta.owner_id === window._uid,
+      membros: membros || [],
+    }
+    renderIdentidadeSelect()
+    renderEquipe()
+  } catch(_) { /* sem conta multiusuário — segue individual */ }
+}
+
+/* Marca imposta pelo admin: vale para membros (não-admin) quando obrigatória */
+function _marcaForcada() {
+  const m = _conta && _conta.marcaForcada
+  return m && m.obrigatoria && m.nome && !_conta.souAdmin ? m : null
+}
+
+function renderEquipe() {
+  const card = document.getElementById('card-equipe')
+  if (!card) return
+  // Conta individual (1 assento, sem convidados) não vê o card — nada muda
+  // para o corretor solo de hoje.
+  if (!_conta || (_conta.maxUsers <= 1 && _conta.membros.length <= 1)) {
+    card.style.display = 'none'
+    return
+  }
+  card.style.display = ''
+  const planoLabel = { corretor:'Corretor', imobiliaria:'Imobiliária', loteadora:'Loteadora' }[_conta.plano] || _conta.plano
+  document.getElementById('eq-sub').textContent =
+    `Plano ${planoLabel} · ${_conta.membros.length} de ${_conta.maxUsers} usuário${_conta.maxUsers === 1 ? '' : 's'}` +
+    (_conta.souAdmin ? ' · você é admin' : '')
+
+  const box = document.getElementById('eq-lista')
+  box.innerHTML = ''
+  _conta.membros.forEach(m => {
+    const dono = m.user_id === _conta.ownerId
+    const row = document.createElement('div')
+    row.style.cssText = 'display:flex;align-items:center;gap:10px;padding:9px 12px;border:1px solid var(--b);border-radius:10px;background:var(--s2)'
+    row.innerHTML =
+      `<div style="flex:1;min-width:0"><div style="font-size:13px;font-weight:600">${escH(m.email || m.user_id)}</div>` +
+      `<div style="font-size:11px;color:var(--t3)">${dono ? 'Admin (dono da conta)' : escH(m.papel || 'corretor')}</div></div>` +
+      (_conta.souAdmin && !dono
+        ? `<button type="button" class="btn btn-ghost btn-sm" onclick="removerMembroConta('${escH(String(m.user_id))}')">Remover</button>`
+        : '')
+    box.appendChild(row)
+  })
+
+  document.getElementById('eq-convite').style.display =
+    _conta.souAdmin && _conta.membros.length < _conta.maxUsers ? '' : 'none'
+
+  // Marca da equipe: só o dono edita (RLS de update é owner-only)
+  const marcaBox = document.getElementById('eq-marca')
+  if (_conta.ownerId === window._uid) {
+    marcaBox.style.display = ''
+    const m = _conta.marcaForcada || {}
+    document.getElementById('mq-nome').value = m.nome || ''
+    document.getElementById('mq-info').value = m.info || ''
+    document.getElementById('mq-cor').value = m.cor || '#0F2D4A'
+    document.getElementById('mq-obrigatoria').checked = !!m.obrigatoria
+    if (m.logo) document.getElementById('mq-logo-prev').innerHTML = `<img src="${m.logo}" alt="Logo" style="width:100%;height:100%;object-fit:contain">`
+  } else {
+    marcaBox.style.display = 'none'
+  }
+}
+
+async function _tokenSessao() {
+  try {
+    const { data } = await window._sb.auth.getSession()
+    return data?.session?.access_token || ''
+  } catch(_) { return '' }
+}
+
+async function convidarMembro() {
+  if (window._DEMO) return demoBloqueio()
+  const inp = document.getElementById('eq-email')
+  const email = inp.value.trim().toLowerCase()
+  if (!email) { toast('Informe o email do convidado', true); return }
+  const token = await _tokenSessao()
+  if (!token) { toast('Sessão expirada — entre de novo', true); return }
+  toast('Enviando convite…')
+  try {
+    const r = await fetch(_APP_BASE + '/api/conta-membros', {
+      method: 'POST',
+      headers: { 'content-type': 'application/json', authorization: 'Bearer ' + token },
+      body: JSON.stringify({ email }),
+    })
+    const j = await r.json().catch(() => ({}))
+    if (!r.ok) { toast(j.error || 'Falha ao convidar', true); return }
+    inp.value = ''
+    toast('Convite enviado — o membro recebe o email para definir a senha')
+    carregarConta()
+  } catch(_) { toast('Falha de conexão ao convidar', true) }
+}
+
+async function removerMembroConta(userId) {
+  if (window._DEMO) return demoBloqueio()
+  if (!confirm('Remover este membro da equipe? O acesso dele pela sua conta será revogado (os dados dele ficam guardados).')) return
+  const token = await _tokenSessao()
+  if (!token) { toast('Sessão expirada — entre de novo', true); return }
+  try {
+    const r = await fetch(_APP_BASE + '/api/conta-membros', {
+      method: 'DELETE',
+      headers: { 'content-type': 'application/json', authorization: 'Bearer ' + token },
+      body: JSON.stringify({ userId }),
+    })
+    const j = await r.json().catch(() => ({}))
+    if (!r.ok) { toast(j.error || 'Falha ao remover', true); return }
+    toast('Membro removido')
+    carregarConta()
+  } catch(_) { toast('Falha de conexão ao remover', true) }
+}
+
+function carregarLogoMarcaEquipe(ev) {
+  const file = ev.target.files[0]
+  if (!file) return
+  if (file.size > 4 * 1024 * 1024) { toast('Logo muito grande — máx 4MB', true); return }
+  const reader = new FileReader()
+  reader.onload = e => {
+    const img = new Image()
+    img.onload = () => {
+      const MAX = 256
+      let { width, height } = img
+      if (width > MAX || height > MAX) {
+        const escala = Math.min(MAX / width, MAX / height)
+        width = Math.round(width * escala)
+        height = Math.round(height * escala)
+      }
+      const canvas = document.createElement('canvas')
+      canvas.width = width; canvas.height = height
+      canvas.getContext('2d').drawImage(img, 0, 0, width, height)
+      _marcaLogoTemp = canvas.toDataURL('image/png')
+      document.getElementById('mq-logo-prev').innerHTML = `<img src="${_marcaLogoTemp}" alt="Logo" style="width:100%;height:100%;object-fit:contain">`
+      toast('Logo carregado')
     }
     img.onerror = () => toast('Arquivo de imagem inválido', true)
     img.src = e.target.result
@@ -6600,10 +7304,112 @@ function carregarFotoImovel(ev) {
   reader.readAsDataURL(file)
 }
 
+async function salvarMarcaEquipe() {
+  if (window._DEMO) return demoBloqueio()
+  if (!_conta || _conta.ownerId !== window._uid) return
+  const marca = {
+    nome: document.getElementById('mq-nome').value.trim(),
+    info: document.getElementById('mq-info').value.trim(),
+    cor: document.getElementById('mq-cor').value || '#0F2D4A',
+    logo: _marcaLogoTemp || (_conta.marcaForcada && _conta.marcaForcada.logo) || null,
+    obrigatoria: document.getElementById('mq-obrigatoria').checked,
+  }
+  if (marca.obrigatoria && !marca.nome) { toast('Informe o nome da marca antes de torná-la obrigatória', true); return }
+  try {
+    const { error } = await window._sb.from('cpr_accounts')
+      .update({ marca_forcada: marca }).eq('id', _conta.id)
+    if (error) throw error
+    _conta.marcaForcada = marca
+    toast('Marca da equipe salva')
+  } catch(_) { toast('Falha ao salvar a marca da equipe', true) }
+}
+
+/* Resolve a identidade escolhida no form em campos snapshotados na proposta
+   (o histórico guarda a marca usada mesmo se o empreendimento mudar depois).
+   Se o admin da conta obrigou a marca da equipe, ela vence qualquer escolha. */
+function identidadeSelecionada() {
+  const forcada = _marcaForcada()
+  if (forcada) {
+    return { identTipo:'emp', empId:'conta', empNome: forcada.nome, empInfo: forcada.info || '', empCor: forcada.cor || '#0F2D4A', empLogo: forcada.logo || null }
+  }
+  const sel = document.getElementById('f-identidade')
+  const v = sel ? sel.value : 'corretor'
+  if (v && v !== 'corretor') {
+    const emp = (perfil.empreendimentos || []).find(e => String(e.id) === v)
+    if (emp) return { identTipo:'emp', empId: emp.id, empNome: emp.nome, empInfo: emp.info || '', empCor: emp.cor || '#0F2D4A', empLogo: emp.logo || null }
+  }
+  return { identTipo:'corretor' }
+}
+
+/* ── FOTOS DO IMÓVEL (galeria por proposta: 1 capa + até 9 fotos) ── */
+// Mesmo padrão do logo: redimensiona antes de guardar em base64, mas em
+// JPEG (foto de imóvel não precisa de transparência) pra manter o jsonb leve.
+const MAX_FOTOS = 10
+function carregarFotoImovel(ev) {
+  const files = Array.from(ev.target.files || [])
+  ev.target.value = ''
+  if (!files.length) return
+  const vagas = MAX_FOTOS - fotosAtuais.length
+  if (vagas <= 0) { toast(`Limite de ${MAX_FOTOS} fotos por proposta`, true); return }
+  if (files.length > vagas) toast(`Limite de ${MAX_FOTOS} fotos — adicionando só as ${vagas} primeiras`, true)
+  files.slice(0, vagas).forEach(file => {
+    if (file.size > 4 * 1024 * 1024) { toast(`Foto muito grande — máx 4MB (${file.name})`, true); return }
+    const reader = new FileReader()
+    reader.onload = e => {
+      const img = new Image()
+      img.onload = () => {
+        const MAX = 800
+        let { width, height } = img
+        if (width > MAX || height > MAX) {
+          const escala = Math.min(MAX / width, MAX / height)
+          width = Math.round(width * escala)
+          height = Math.round(height * escala)
+        }
+        const canvas = document.createElement('canvas')
+        canvas.width = width; canvas.height = height
+        canvas.getContext('2d').drawImage(img, 0, 0, width, height)
+        if (fotosAtuais.length < MAX_FOTOS) {
+          fotosAtuais.push(canvas.toDataURL('image/jpeg', 0.68))
+          renderFotosForm()
+        }
+      }
+      img.onerror = () => toast('Arquivo de imagem inválido', true)
+      img.src = e.target.result
+    }
+    reader.readAsDataURL(file)
+  })
+}
+
+function renderFotosForm() {
+  const box = document.getElementById('fotos-thumbs')
+  if (!box) return
+  box.innerHTML = ''
+  fotosAtuais.forEach((src, i) => {
+    const t = document.createElement('div')
+    t.className = 'foto-thumb'
+    t.title = i === 0 ? 'Capa da proposta' : 'Clique para tornar capa'
+    t.innerHTML = `<img src="${src}" alt="Foto ${i + 1}">` +
+      (i === 0 ? '<span class="capa-tag">Capa</span>' : '') +
+      `<button type="button" class="x" aria-label="Remover foto">×</button>`
+    t.onclick = () => {
+      if (i === 0) return
+      fotosAtuais.unshift(fotosAtuais.splice(i, 1)[0])
+      renderFotosForm()
+    }
+    t.querySelector('.x').onclick = ev => {
+      ev.stopPropagation()
+      fotosAtuais.splice(i, 1)
+      renderFotosForm()
+    }
+    box.appendChild(t)
+  })
+}
+
 function removerFotoImovel() {
-  fotoAtual = null
-  document.getElementById('f-foto').value = ''
-  document.getElementById('foto-prev').innerHTML = `<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>`
+  fotosAtuais = []
+  const inp = document.getElementById('f-foto')
+  if (inp) inp.value = ''
+  renderFotosForm()
 }
 
 /* ── TOAST ── */
