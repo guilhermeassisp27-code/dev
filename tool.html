@@ -299,8 +299,10 @@ input[type=color]{opacity:0;width:0;height:0;position:absolute}
 .skel-group{display:flex;flex-direction:column;gap:8px;margin-bottom:14px}
 
 /* ── PROPOSTA OUTPUT ── */
-.proposta{background:var(--s1);border:1px solid var(--b);border-radius:var(--radl);overflow:hidden;margin-top:20px;display:none}
+.proposta{background:var(--s1);border:1px solid var(--b);border-radius:var(--radl);overflow:hidden;margin-top:20px;display:none;font-family:var(--font-prop,var(--font))}
 .proposta.show{display:block}
+/* A fonte escolhida vale para o corpo; títulos serif do Timbrado continuam serif */
+.proposta.tema-timbrado .prop-corretor-nome,.proposta.tema-timbrado .prop-h2,.proposta.tema-timbrado .prop-sec-title,.proposta.tema-timbrado .ptf-nome{font-family:var(--font-prop-titulo,Georgia,'Times New Roman',serif)}
 
 .prop-corretor{
   display:flex;align-items:center;gap:16px;
@@ -2305,6 +2307,16 @@ input[type=color]{opacity:0;width:0;height:0;position:absolute}
               <div class="modelo-desc">Papel timbrado — cabeçalho e rodapé na sua cor, logo em destaque e tipografia serif elegante.</div>
             </button>
           </div>
+          <div style="margin-top:18px;padding-top:16px;border-top:1px solid var(--b)">
+            <label class="lbl" for="c-fonte" style="margin-bottom:6px;display:block">Fonte da proposta</label>
+            <p style="font-size:12px;color:var(--t2);margin-bottom:10px">A tipografia usada no texto das suas propostas.</p>
+            <select id="c-fonte" class="sel" onchange="selecionarFonte(this.value)" style="max-width:340px">
+              <option value="moderna">Moderna — sem serifa, atual (padrão)</option>
+              <option value="classica">Clássica — serifada, sóbria</option>
+              <option value="elegante">Elegante — serifada refinada</option>
+              <option value="neutra">Neutra — Helvetica, bem limpa</option>
+            </select>
+          </div>
         </div>
 
         <div class="card">
@@ -3493,6 +3505,7 @@ function construirProposta(d) {
   const modeloAtual = ['classico','moderno','minimalista','timbrado'].includes(perfil.modelo) ? perfil.modelo : 'classico'
   const propostaEl = document.getElementById('proposta')
   propostaEl.className = 'proposta' + (modeloAtual !== 'classico' ? ' tema-' + modeloAtual : '')
+  aplicarFonteProposta(propostaEl)
 
   /* ── Cabeçalho: corretor ou empreendimento (identidade escolhida no form) ── */
   const emp = d.identTipo === 'emp'
@@ -6982,6 +6995,8 @@ function carregarFormConfig() {
     prev.innerHTML = `<img src="${perfil.logo}" alt="Logo">`
   }
   marcarModeloSelecionado(perfil.modelo || 'classico')
+  const fonteSel = document.getElementById('c-fonte')
+  if (fonteSel) fonteSel.value = FONTES_PROPOSTA[perfil.fonte] ? perfil.fonte : 'moderna'
   renderEmps()
 }
 
@@ -6994,6 +7009,27 @@ function marcarModeloSelecionado(modelo) {
 function selecionarModelo(modelo) {
   perfil.modelo = modelo
   marcarModeloSelecionado(modelo)
+}
+
+/* ── FONTE DA PROPOSTA ── Fontes web-safe (não dependem de rede: funcionam
+   offline e no PDF). `titulo` vazio = usa a fonte do corpo. */
+const FONTES_PROPOSTA = {
+  moderna:  { corpo: 'var(--font)', titulo: '' },
+  classica: { corpo: "Georgia,'Times New Roman',serif", titulo: "Georgia,'Times New Roman',serif" },
+  elegante: { corpo: "'Palatino Linotype','Book Antiqua',Palatino,Georgia,serif", titulo: "'Palatino Linotype','Book Antiqua',Palatino,Georgia,serif" },
+  neutra:   { corpo: "'Helvetica Neue',Helvetica,Arial,sans-serif", titulo: '' },
+}
+function selecionarFonte(f) {
+  perfil.fonte = FONTES_PROPOSTA[f] ? f : 'moderna'
+}
+// Aplica a fonte escolhida ao elemento da proposta na geração.
+// Moderna = sem override (cai no fallback var(--font) do CSS).
+function aplicarFonteProposta(propostaEl) {
+  const f = FONTES_PROPOSTA[perfil.fonte] || FONTES_PROPOSTA.moderna
+  if (f.corpo && f.corpo !== 'var(--font)') propostaEl.style.setProperty('--font-prop', f.corpo)
+  else propostaEl.style.removeProperty('--font-prop')
+  if (f.titulo) propostaEl.style.setProperty('--font-prop-titulo', f.titulo)
+  else propostaEl.style.removeProperty('--font-prop-titulo')
 }
 
 function atualizarPreview() {
@@ -7014,6 +7050,7 @@ async function salvarConfig(ev) {
   perfil.tel   = document.getElementById('c-tel').value.trim()
   perfil.email = document.getElementById('c-email').value.trim()
   perfil.cor   = document.getElementById('c-cor').value
+  perfil.fonte = document.getElementById('c-fonte')?.value || 'moderna'
   document.querySelectorAll('#form-config textarea[data-tpl]').forEach(ta => {
     perfil[ta.dataset.tpl] = ta.value.trim()
   })
