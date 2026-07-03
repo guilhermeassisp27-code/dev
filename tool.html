@@ -2181,6 +2181,55 @@ input[type=color]{opacity:0;width:0;height:0;position:absolute}
           </button>
         </div>
 
+        <div class="card" id="card-equipe" style="display:none">
+          <div class="card-t">Equipe</div>
+          <p style="font-size:12px;color:var(--t2);margin-bottom:14px" id="eq-sub"></p>
+          <div id="eq-lista" style="display:flex;flex-direction:column;gap:8px;margin-bottom:14px"></div>
+          <div class="fg fg1" id="eq-convite" style="display:none">
+            <div class="field">
+              <label class="lbl" for="eq-email">Convidar por email</label>
+              <div style="display:flex;gap:8px">
+                <input id="eq-email" type="email" class="inp" placeholder="corretor@suaequipe.com.br" style="flex:1">
+                <button type="button" class="btn btn-ghost" onclick="convidarMembro()">Convidar</button>
+              </div>
+              <span class="hint">O convidado recebe um email para definir a senha e entra com acesso ativo pela sua conta.</span>
+            </div>
+          </div>
+          <div id="eq-marca" style="display:none;border-top:1px solid var(--b);margin-top:14px;padding-top:14px">
+            <div class="card-t" style="font-size:12px">Marca da equipe nas propostas</div>
+            <p style="font-size:12px;color:var(--t2);margin-bottom:12px">Defina a marca da imobiliária/loteadora e, se quiser, obrigue as propostas da equipe a sair com ela — cada membro segue no rodapé como corretor responsável.</p>
+            <div class="fg">
+              <div class="field">
+                <label class="lbl" for="mq-nome">Nome da marca</label>
+                <input id="mq-nome" type="text" class="inp" placeholder="Ex: Imobiliária Horizonte">
+              </div>
+              <div class="field">
+                <label class="lbl" for="mq-info">Linha de apoio (opcional)</label>
+                <input id="mq-info" type="text" class="inp" placeholder="Ex: CRECI-J 12.345">
+              </div>
+              <div class="field">
+                <label class="lbl" for="mq-cor">Cor da marca</label>
+                <input type="color" id="mq-cor" value="#0F2D4A" style="width:100%;height:38px;border:1px solid var(--b);border-radius:8px;background:var(--s2);cursor:pointer;padding:2px">
+              </div>
+              <div class="field">
+                <label class="lbl">Logo (opcional)</label>
+                <div style="display:flex;align-items:center;gap:10px">
+                  <div class="logo-preview" id="mq-logo-prev" style="width:44px;height:44px">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>
+                  </div>
+                  <label class="btn btn-ghost btn-sm" style="cursor:pointer">Enviar logo
+                    <input type="file" id="mq-logo" accept="image/*" style="display:none" onchange="carregarLogoMarcaEquipe(event)">
+                  </label>
+                </div>
+              </div>
+            </div>
+            <label style="display:flex;align-items:center;gap:8px;margin-top:12px;font-size:13px;cursor:pointer">
+              <input type="checkbox" id="mq-obrigatoria"> Obrigar a equipe a usar esta marca nas propostas
+            </label>
+            <button type="button" class="btn btn-ghost" style="margin-top:12px" onclick="salvarMarcaEquipe()">Salvar marca da equipe</button>
+          </div>
+        </div>
+
         <div class="card">
           <div class="card-t">Modelo da Proposta</div>
           <p style="font-size:12px;color:var(--t2);margin-bottom:14px">Escolha o estilo visual que sua proposta vai usar a partir de agora — pode trocar quando quiser, sem perder nenhum dado.</p>
@@ -2742,6 +2791,7 @@ function aplicarSidebar() {
 function initApp() {
   aplicarPerfil()
   aplicarTemaIcone()
+  carregarConta()   // conta multiusuário (equipe) — assíncrono, best-effort
   renderSidebarUser()
   atualizarBadgeHist()
   atualizarBadgeAgenda()
@@ -7024,6 +7074,19 @@ function renderIdentidadeSelect() {
   const fld = document.getElementById('fld-identidade')
   const sel = document.getElementById('f-identidade')
   if (!fld || !sel) return
+  // Marca obrigatória da conta: trava a escolha (o membro só vê a marca da equipe)
+  const forcada = _marcaForcada()
+  if (forcada) {
+    sel.innerHTML = ''
+    const o = document.createElement('option')
+    o.value = 'conta'
+    o.textContent = forcada.nome + ' — definido pela sua equipe'
+    sel.appendChild(o)
+    sel.disabled = true
+    fld.style.display = ''
+    return
+  }
+  sel.disabled = false
   const emps = perfil.empreendimentos || []
   if (!emps.length) {
     fld.style.display = 'none'
@@ -7045,9 +7108,193 @@ function renderIdentidadeSelect() {
   if (Array.from(sel.options).some(o => o.value === atual)) sel.value = atual
   fld.style.display = ''
 }
+/* ── CONTA MULTIUSUÁRIO / EQUIPE (Prioridade 4) ──
+   A conta agrupa N usuários (plano imobiliária/loteadora). Leitura direta
+   do Supabase (RLS); convites/remoções passam pela rota /api/conta-membros
+   (service role valida papel de admin e limite de assentos). */
+let _conta = null
+let _marcaLogoTemp = null
+
+async function carregarConta() {
+  if (!window._sb || !window._uid || window._DEMO) return
+  try {
+    const { data: memb } = await window._sb.from('cpr_account_members')
+      .select('account_id, papel').eq('user_id', window._uid).limit(1).maybeSingle()
+    if (!memb) return
+    const { data: conta } = await window._sb.from('cpr_accounts')
+      .select('id, owner_id, nome, plano, max_users, marca_forcada')
+      .eq('id', memb.account_id).maybeSingle()
+    if (!conta) return
+    const { data: membros } = await window._sb.from('cpr_account_members')
+      .select('user_id, email, papel').eq('account_id', conta.id)
+    _conta = {
+      id: conta.id, ownerId: conta.owner_id, nome: conta.nome, plano: conta.plano,
+      maxUsers: conta.max_users || 1, marcaForcada: conta.marca_forcada || null,
+      papel: memb.papel, souAdmin: memb.papel === 'admin' || conta.owner_id === window._uid,
+      membros: membros || [],
+    }
+    renderIdentidadeSelect()
+    renderEquipe()
+  } catch(_) { /* sem conta multiusuário — segue individual */ }
+}
+
+/* Marca imposta pelo admin: vale para membros (não-admin) quando obrigatória */
+function _marcaForcada() {
+  const m = _conta && _conta.marcaForcada
+  return m && m.obrigatoria && m.nome && !_conta.souAdmin ? m : null
+}
+
+function renderEquipe() {
+  const card = document.getElementById('card-equipe')
+  if (!card) return
+  // Conta individual (1 assento, sem convidados) não vê o card — nada muda
+  // para o corretor solo de hoje.
+  if (!_conta || (_conta.maxUsers <= 1 && _conta.membros.length <= 1)) {
+    card.style.display = 'none'
+    return
+  }
+  card.style.display = ''
+  const planoLabel = { corretor:'Corretor', imobiliaria:'Imobiliária', loteadora:'Loteadora' }[_conta.plano] || _conta.plano
+  document.getElementById('eq-sub').textContent =
+    `Plano ${planoLabel} · ${_conta.membros.length} de ${_conta.maxUsers} usuário${_conta.maxUsers === 1 ? '' : 's'}` +
+    (_conta.souAdmin ? ' · você é admin' : '')
+
+  const box = document.getElementById('eq-lista')
+  box.innerHTML = ''
+  _conta.membros.forEach(m => {
+    const dono = m.user_id === _conta.ownerId
+    const row = document.createElement('div')
+    row.style.cssText = 'display:flex;align-items:center;gap:10px;padding:9px 12px;border:1px solid var(--b);border-radius:10px;background:var(--s2)'
+    row.innerHTML =
+      `<div style="flex:1;min-width:0"><div style="font-size:13px;font-weight:600">${escH(m.email || m.user_id)}</div>` +
+      `<div style="font-size:11px;color:var(--t3)">${dono ? 'Admin (dono da conta)' : escH(m.papel || 'corretor')}</div></div>` +
+      (_conta.souAdmin && !dono
+        ? `<button type="button" class="btn btn-ghost btn-sm" onclick="removerMembroConta('${escH(String(m.user_id))}')">Remover</button>`
+        : '')
+    box.appendChild(row)
+  })
+
+  document.getElementById('eq-convite').style.display =
+    _conta.souAdmin && _conta.membros.length < _conta.maxUsers ? '' : 'none'
+
+  // Marca da equipe: só o dono edita (RLS de update é owner-only)
+  const marcaBox = document.getElementById('eq-marca')
+  if (_conta.ownerId === window._uid) {
+    marcaBox.style.display = ''
+    const m = _conta.marcaForcada || {}
+    document.getElementById('mq-nome').value = m.nome || ''
+    document.getElementById('mq-info').value = m.info || ''
+    document.getElementById('mq-cor').value = m.cor || '#0F2D4A'
+    document.getElementById('mq-obrigatoria').checked = !!m.obrigatoria
+    if (m.logo) document.getElementById('mq-logo-prev').innerHTML = `<img src="${m.logo}" alt="Logo" style="width:100%;height:100%;object-fit:contain">`
+  } else {
+    marcaBox.style.display = 'none'
+  }
+}
+
+async function _tokenSessao() {
+  try {
+    const { data } = await window._sb.auth.getSession()
+    return data?.session?.access_token || ''
+  } catch(_) { return '' }
+}
+
+async function convidarMembro() {
+  if (window._DEMO) return demoBloqueio()
+  const inp = document.getElementById('eq-email')
+  const email = inp.value.trim().toLowerCase()
+  if (!email) { toast('Informe o email do convidado', true); return }
+  const token = await _tokenSessao()
+  if (!token) { toast('Sessão expirada — entre de novo', true); return }
+  toast('Enviando convite…')
+  try {
+    const r = await fetch(_APP_BASE + '/api/conta-membros', {
+      method: 'POST',
+      headers: { 'content-type': 'application/json', authorization: 'Bearer ' + token },
+      body: JSON.stringify({ email }),
+    })
+    const j = await r.json().catch(() => ({}))
+    if (!r.ok) { toast(j.error || 'Falha ao convidar', true); return }
+    inp.value = ''
+    toast('Convite enviado — o membro recebe o email para definir a senha')
+    carregarConta()
+  } catch(_) { toast('Falha de conexão ao convidar', true) }
+}
+
+async function removerMembroConta(userId) {
+  if (window._DEMO) return demoBloqueio()
+  if (!confirm('Remover este membro da equipe? O acesso dele pela sua conta será revogado (os dados dele ficam guardados).')) return
+  const token = await _tokenSessao()
+  if (!token) { toast('Sessão expirada — entre de novo', true); return }
+  try {
+    const r = await fetch(_APP_BASE + '/api/conta-membros', {
+      method: 'DELETE',
+      headers: { 'content-type': 'application/json', authorization: 'Bearer ' + token },
+      body: JSON.stringify({ userId }),
+    })
+    const j = await r.json().catch(() => ({}))
+    if (!r.ok) { toast(j.error || 'Falha ao remover', true); return }
+    toast('Membro removido')
+    carregarConta()
+  } catch(_) { toast('Falha de conexão ao remover', true) }
+}
+
+function carregarLogoMarcaEquipe(ev) {
+  const file = ev.target.files[0]
+  if (!file) return
+  if (file.size > 4 * 1024 * 1024) { toast('Logo muito grande — máx 4MB', true); return }
+  const reader = new FileReader()
+  reader.onload = e => {
+    const img = new Image()
+    img.onload = () => {
+      const MAX = 256
+      let { width, height } = img
+      if (width > MAX || height > MAX) {
+        const escala = Math.min(MAX / width, MAX / height)
+        width = Math.round(width * escala)
+        height = Math.round(height * escala)
+      }
+      const canvas = document.createElement('canvas')
+      canvas.width = width; canvas.height = height
+      canvas.getContext('2d').drawImage(img, 0, 0, width, height)
+      _marcaLogoTemp = canvas.toDataURL('image/png')
+      document.getElementById('mq-logo-prev').innerHTML = `<img src="${_marcaLogoTemp}" alt="Logo" style="width:100%;height:100%;object-fit:contain">`
+      toast('Logo carregado')
+    }
+    img.onerror = () => toast('Arquivo de imagem inválido', true)
+    img.src = e.target.result
+  }
+  reader.readAsDataURL(file)
+}
+
+async function salvarMarcaEquipe() {
+  if (window._DEMO) return demoBloqueio()
+  if (!_conta || _conta.ownerId !== window._uid) return
+  const marca = {
+    nome: document.getElementById('mq-nome').value.trim(),
+    info: document.getElementById('mq-info').value.trim(),
+    cor: document.getElementById('mq-cor').value || '#0F2D4A',
+    logo: _marcaLogoTemp || (_conta.marcaForcada && _conta.marcaForcada.logo) || null,
+    obrigatoria: document.getElementById('mq-obrigatoria').checked,
+  }
+  if (marca.obrigatoria && !marca.nome) { toast('Informe o nome da marca antes de torná-la obrigatória', true); return }
+  try {
+    const { error } = await window._sb.from('cpr_accounts')
+      .update({ marca_forcada: marca }).eq('id', _conta.id)
+    if (error) throw error
+    _conta.marcaForcada = marca
+    toast('Marca da equipe salva')
+  } catch(_) { toast('Falha ao salvar a marca da equipe', true) }
+}
+
 /* Resolve a identidade escolhida no form em campos snapshotados na proposta
-   (o histórico guarda a marca usada mesmo se o empreendimento mudar depois) */
+   (o histórico guarda a marca usada mesmo se o empreendimento mudar depois).
+   Se o admin da conta obrigou a marca da equipe, ela vence qualquer escolha. */
 function identidadeSelecionada() {
+  const forcada = _marcaForcada()
+  if (forcada) {
+    return { identTipo:'emp', empId:'conta', empNome: forcada.nome, empInfo: forcada.info || '', empCor: forcada.cor || '#0F2D4A', empLogo: forcada.logo || null }
+  }
   const sel = document.getElementById('f-identidade')
   const v = sel ? sel.value : 'corretor'
   if (v && v !== 'corretor') {

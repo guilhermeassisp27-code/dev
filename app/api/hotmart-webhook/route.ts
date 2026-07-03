@@ -26,6 +26,109 @@ function resolvePlan(data: Record<string, unknown>): string {
   return OFFER_PLANS[offerCode] ?? 'corretorpro'
 }
 
+// Planos de CONTA multiusuário por oferta (Prioridade 4). As ofertas atuais
+// são todas de corretor individual (1 assento). Quando os pacotes Imobiliária/
+// Loteadora existirem na Hotmart, basta mapear o código da oferta aqui.
+//   exemplo: 'codigoimob': { plano: 'imobiliaria', maxUsers: 10 },
+const OFFER_ACCOUNTS: Record<string, { plano: string; maxUsers: number }> = {}
+
+function resolveAccountPlan(data: Record<string, unknown>): { plano: string; maxUsers: number } {
+  const purchase = data?.purchase as Record<string, unknown> | undefined
+  const offer = purchase?.offer as Record<string, unknown> | undefined
+  const offerCode = String(offer?.code ?? offer?.key ?? '')
+  return OFFER_ACCOUNTS[offerCode] ?? { plano: 'corretor', maxUsers: 1 }
+}
+
+// Factory concreta só para tipar o client (mesmo padrão de lib/corretor.ts);
+// o POST cria o client com exatamente esta chamada.
+function adminClient() {
+  return createClient(
+    process.env.NEXT_PUBLIC_SUPABASE_URL!,
+    process.env.SUPABASE_SERVICE_ROLE_KEY!,
+    { auth: { autoRefreshToken: false, persistSession: false } }
+  )
+}
+type AdminClient = ReturnType<typeof adminClient>
+
+// Garante a conta multiusuário do comprador (dono = admin). Best-effort:
+// qualquer erro aqui é só logado — a liberação do acesso individual NUNCA
+// pode falhar por causa da estrutura de conta.
+async function ensureAccount(
+  supabase: AdminClient,
+  userId: string,
+  email: string,
+  nome: string,
+  data: Record<string, unknown>
+): Promise<void> {
+  try {
+    const plano = resolveAccountPlan(data)
+    const { data: acc } = await supabase
+      .from('cpr_accounts')
+      .select('id')
+      .eq('owner_id', userId)
+      .maybeSingle()
+
+    let accountId = acc?.id as string | undefined
+    if (!accountId) {
+      const { data: created, error } = await supabase
+        .from('cpr_accounts')
+        .insert({ owner_id: userId, nome, plano: plano.plano, max_users: plano.maxUsers })
+        .select('id')
+        .single()
+      if (error) throw error
+      accountId = created?.id as string | undefined
+    } else {
+      // Renovação/upgrade pode trocar de oferta — atualiza plano e assentos,
+      // sem tocar no nome (o dono pode ter editado).
+      await supabase
+        .from('cpr_accounts')
+        .update({ plano: plano.plano, max_users: plano.maxUsers })
+        .eq('id', accountId)
+    }
+    if (accountId) {
+      await supabase
+        .from('cpr_account_members')
+        .upsert(
+          { account_id: accountId, user_id: userId, email, papel: 'admin' },
+          { onConflict: 'account_id,user_id' }
+        )
+    }
+  } catch (err) {
+    console.error('[hotmart-webhook] ensureAccount falhou (seguindo sem conta):', err)
+  }
+}
+
+// Ao cancelar a assinatura do dono, corta também o acesso dos membros que
+// só têm acesso POR esta conta (app_metadata.via_account). Membros com
+// assinatura própria não são tocados. Best-effort, nunca quebra o fluxo.
+async function revogarMembrosDaConta(supabase: AdminClient, ownerId: string): Promise<void> {
+  try {
+    const { data: acc } = await supabase
+      .from('cpr_accounts')
+      .select('id')
+      .eq('owner_id', ownerId)
+      .maybeSingle()
+    if (!acc?.id) return
+    const { data: membros } = await supabase
+      .from('cpr_account_members')
+      .select('user_id')
+      .eq('account_id', acc.id)
+      .neq('user_id', ownerId)
+    for (const m of membros ?? []) {
+      const { data: u } = await supabase.auth.admin.getUserById(m.user_id as string)
+      const meta = (u?.user?.app_metadata ?? {}) as Record<string, unknown>
+      if (meta.via_account === acc.id) {
+        await supabase.auth.admin.updateUserById(m.user_id as string, {
+          ban_duration: '87600h',
+          app_metadata: { ...meta, subscription_status: 'inactive' },
+        })
+      }
+    }
+  } catch (err) {
+    console.error('[hotmart-webhook] revogarMembrosDaConta falhou:', err)
+  }
+}
+
 // Escapa HTML básico — buyer.name vem direto do que o comprador digitou no
 // checkout da Hotmart, não confiar nele cru dentro do htmlContent do email.
 function escHtmlEmail(s: string): string {
@@ -128,11 +231,7 @@ export async function POST(req: NextRequest) {
   }
   const email = buyerEmail.toLowerCase()
 
-  const supabase = createClient(
-    process.env.NEXT_PUBLIC_SUPABASE_URL!,
-    process.env.SUPABASE_SERVICE_ROLE_KEY!,
-    { auth: { autoRefreshToken: false, persistSession: false } }
-  )
+  const supabase = adminClient()
 
   const appUrl =
     (process.env.NEXT_PUBLIC_APP_URL ?? '').replace(/\/$/, '') ||
@@ -198,6 +297,7 @@ export async function POST(req: NextRequest) {
           })
         }
       }
+      await ensureAccount(supabase, existing.id, email, buyer?.name ?? '', data)
       return NextResponse.json({ ok: true, action: 'reactivated' })
     }
 
@@ -229,6 +329,7 @@ export async function POST(req: NextRequest) {
       await supabase.auth.admin.updateUserById(userId, {
         app_metadata: { subscription_status: 'active', plan, welcome_sent: emailOk },
       })
+      await ensureAccount(supabase, userId, email, buyer?.name ?? '', data)
     }
     return NextResponse.json({ ok: true, action: 'created', emailSent: emailOk })
   }
@@ -299,6 +400,7 @@ export async function POST(req: NextRequest) {
           subscription_status: 'inactive',
         },
       })
+      await revogarMembrosDaConta(supabase, user.id)
     } else {
       console.error('[hotmart-webhook] cancelamento recebido mas usuário não encontrado:', email, event)
     }
