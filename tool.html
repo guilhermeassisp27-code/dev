@@ -1628,6 +1628,10 @@ input[type=color]{opacity:0;width:0;height:0;position:absolute}
             <div class="prop-sec-title">Próximos Passos</div>
             <p class="prop-text" id="p-proximos"></p>
           </div>
+          <div id="p-sec-obs" style="display:none">
+            <div class="prop-sec-title">Observações</div>
+            <p class="prop-text" id="p-obs"></p>
+          </div>
           <p class="prop-resp" id="p-resp" style="display:none"></p>
         </div>
 
@@ -2333,6 +2337,25 @@ input[type=color]{opacity:0;width:0;height:0;position:absolute}
         </div>
 
         <div class="card">
+          <div class="card-t">Textos da proposta</div>
+          <p style="font-size:12px;color:var(--t2);margin-bottom:14px">Personalize os textos que saem nas suas propostas. Use <code>{cliente}</code>, <code>{imovel}</code>, <code>{endereco}</code>, <code>{valor}</code>, <code>{corretor}</code> e <code>{creci}</code> — trocados automaticamente. Deixe em branco para usar o texto padrão.</p>
+          <div class="fg">
+            <div class="field f2">
+              <label class="lbl" for="c-prop-apres">Apresentação (abertura da proposta)</label>
+              <textarea id="c-prop-apres" data-tpl="propApresentacao" class="txa inp" placeholder="Prezado(a) {cliente}, é com prazer que apresento esta proposta para o {imovel} localizado em {endereco}. Elaborei as melhores condições para você decidir com segurança."></textarea>
+            </div>
+            <div class="field f2">
+              <label class="lbl" for="c-prop-prox">Próximos passos (fechamento)</label>
+              <textarea id="c-prop-prox" data-tpl="propProximos" class="txa inp" placeholder="1. Confirme seu interesse em até 48h. 2. Agende uma visita presencial. 3. Faço uma simulação personalizada. Estou à disposição — conte comigo."></textarea>
+            </div>
+            <div class="field f2">
+              <label class="lbl" for="c-prop-obs">Observações fixas (opcional — aparece no fim de toda proposta)</label>
+              <textarea id="c-prop-obs" data-tpl="propObs" class="txa inp" placeholder="Ex: Proposta válida por 7 dias. Valores sujeitos à análise de crédito e disponibilidade do imóvel."></textarea>
+            </div>
+          </div>
+        </div>
+
+        <div class="card">
           <div class="card-t">Mensagens de WhatsApp</div>
           <p style="font-size:12px;color:var(--t2);margin-bottom:14px">Uma mensagem pronta pra cada etapa do Funil, mais uma pra Agenda de Visitas. O botão de WhatsApp de cada lead manda automaticamente a mensagem da etapa em que ele está. Use <code>{cliente}</code>, <code>{corretor}</code>, <code>{imovel}</code> e <code>{creci}</code> — serão substituídos automaticamente. Se deixar em branco, usamos o texto padrão.</p>
           <div class="fg">
@@ -2782,7 +2805,7 @@ function toggleAjuda(id) {
 const escH = s => String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;')
 
 /* ── STATE ── */
-const PERFIL_DEFAULT = { nome:'',creci:'',tel:'',email:'',cor:'#C9882A',logo:null,modelo:'classico',slug:'',empreendimentos:[],msgBoasVindas:'',msgFollowUp:'',msgAgendamento:'',wppNovoContato:'',wppVisitaAgendada:'',wppVisitaRealizada:'',wppPropostaEnviada:'',wppNegociacao:'',wppVendaFechada:'',wppAgenda:'' }
+const PERFIL_DEFAULT = { nome:'',creci:'',tel:'',email:'',cor:'#C9882A',logo:null,modelo:'classico',fonte:'moderna',secoes:{},slug:'',empreendimentos:[],msgBoasVindas:'',msgFollowUp:'',msgAgendamento:'',wppNovoContato:'',wppVisitaAgendada:'',wppVisitaRealizada:'',wppPropostaEnviada:'',wppNegociacao:'',wppVendaFechada:'',wppAgenda:'',propApresentacao:'',propProximos:'',propObs:'' }
 // Parse defensivo: se o localStorage corromper (extensão de navegador, quota,
 // dado truncado), JSON.parse lançaria e a ferramenta abriria em tela branca.
 // Aqui caímos no fallback em vez de quebrar (achado de robustez da auditoria).
@@ -3629,8 +3652,11 @@ function construirProposta(d) {
     d.vagas && d.vagas !== '—' ? `${escH(d.vagas)} vaga${d.vagas === '1' ? '' : 's'}` : null,
   ].filter(Boolean).join(', ')
 
+  // Apresentação: texto personalizado do corretor (se houver) ou o padrão.
   document.getElementById('p-intro').innerHTML =
-    `Prezado(a) <strong>${escH(d.cliente)}</strong>, é com prazer que apresento esta proposta para o <strong>${escH(d.tipoImovel)}</strong> localizado em <strong>${escH(d.end)}</strong>${detalhes ? ` (${detalhes})` : ''}. Elaborei as melhores condições disponíveis para que você tome uma decisão com segurança e clareza.`
+    (perfil.propApresentacao && perfil.propApresentacao.trim())
+      ? preencherTemplateProposta(perfil.propApresentacao, d)
+      : `Prezado(a) <strong>${escH(d.cliente)}</strong>, é com prazer que apresento esta proposta para o <strong>${escH(d.tipoImovel)}</strong> localizado em <strong>${escH(d.end)}</strong>${detalhes ? ` (${detalhes})` : ''}. Elaborei as melhores condições disponíveis para que você tome uma decisão com segurança e clareza.`
 
   /* ── Modalidades por tipo ── */
   const modsEl = document.getElementById('p-mods')
@@ -3775,7 +3801,20 @@ function construirProposta(d) {
     : d.tipoNeg === 'Permuta'
     ? `<strong>1.</strong> Apresente documentação do seu imóvel para análise jurídica. <strong>2.</strong> Realizamos vistoria dos dois imóveis para confirmar valores. <strong>3.</strong> Fechamos o contrato de permuta. Estou à disposição para conduzir todo o processo.`
     : `<strong>1.</strong> Confirme interesse em até 48h para reservarmos o imóvel. <strong>2.</strong> Agende uma visita presencial para análise detalhada. <strong>3.</strong> Faço uma simulação de financiamento personalizada sem compromisso. Estou à disposição — entre em contato quando quiser.`
-  document.getElementById('p-proximos').innerHTML = ps
+  // Próximos passos: texto personalizado (se houver) ou o padrão por tipo.
+  document.getElementById('p-proximos').innerHTML =
+    (perfil.propProximos && perfil.propProximos.trim())
+      ? preencherTemplateProposta(perfil.propProximos, d)
+      : ps
+
+  // Observações fixas (opcional): só aparece se o corretor preencheu.
+  const obsEl = document.getElementById('p-sec-obs')
+  if (perfil.propObs && perfil.propObs.trim()) {
+    document.getElementById('p-obs').innerHTML = preencherTemplateProposta(perfil.propObs, d)
+    obsEl.style.display = ''
+  } else {
+    obsEl.style.display = 'none'
+  }
 
   /* ── Corretor responsável (só quando a proposta é do empreendimento) ── */
   const respEl = document.getElementById('p-resp')
@@ -5270,6 +5309,21 @@ function preencherTemplate(tpl, lead) {
     .replace(/\{corretor\}/g, corretor)
     .replace(/\{creci\}/g, creci)
     .replace(/\{imovel\}/g, imovel)
+}
+
+// Placeholders dos textos personalizados da proposta (dados vêm de `d`).
+// Retorna HTML seguro (escapado) com quebras de linha preservadas.
+function preencherTemplateProposta(tpl, d) {
+  const vals = {
+    cliente:  (d.cliente || '').trim() || 'cliente',
+    corretor: (perfil.nome || '').trim() || 'a equipe',
+    creci:    (perfil.creci || '').trim() || '—',
+    imovel:   (d.tipoImovel || '').trim() || 'imóvel',
+    endereco: (d.end || '').trim() || '',
+    valor:    d.valor ? 'R$ ' + d.valor : '',
+  }
+  const texto = String(tpl || '').replace(/\{(cliente|corretor|creci|imovel|endereco|valor)\}/g, (_, k) => vals[k])
+  return escH(texto).replace(/\n/g, '<br>')
 }
 
 // Abre o wa.me com um template já preenchido para o lead. Se não houver
