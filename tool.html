@@ -13,6 +13,11 @@
 <meta property="og:url" content="https://app.selosales.com.br">
 <meta name="twitter:card" content="summary_large_image">
 <meta name="twitter:image" content="https://app.selosales.com.br/og-image.png">
+<link rel="manifest" href="manifest.webmanifest">
+<meta name="theme-color" content="#0F2D4A">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="Selo">
+<link rel="apple-touch-icon" href="app-icon-192.png">
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
 <script>
 /* Define o tema (claro/escuro) o mais cedo possível, antes do CSS pintar a
@@ -2869,9 +2874,41 @@ async function salvarRemoto() {
       { onConflict: 'user_id' }
     )
     if (error) throw error
+    _syncPendente = false
   } catch(e) {
+    // Fila offline (PWA): marca pendência — o listener de 'online' e o timer
+    // re-tentam sozinhos assim que houver sinal.
+    _syncPendente = true
     throw e  // propaga para quem chamou mostrar o erro ao usuário
   }
+}
+
+/* ── PWA: modo offline + sincronização automática ──
+   O app abre sem internet (service worker cacheia o shell) e tudo que o
+   corretor salvar fica no localStorage. Quando o sinal volta, o que ficou
+   pendente sobe sozinho para o Supabase. */
+let _syncPendente = false
+let _avisouOffline = false
+
+async function sincronizarPendentes() {
+  if (!_syncPendente || !navigator.onLine || !window._sb || !window._uid) return
+  try {
+    await salvarRemoto()
+    toast('Conexão de volta — seus dados foram sincronizados')
+  } catch(_) { /* segue pendente; próxima tentativa no timer */ }
+}
+
+window.addEventListener('online', () => { _avisouOffline = false; sincronizarPendentes() })
+window.addEventListener('offline', () => {
+  if (_avisouOffline) return
+  _avisouOffline = true
+  toast('Sem conexão — pode continuar trabalhando, tudo fica salvo no aparelho')
+})
+setInterval(sincronizarPendentes, 60000)
+
+// Registra o service worker (https e localhost apenas; file:// não suporta)
+if ('serviceWorker' in navigator && (location.protocol === 'https:' || location.hostname === 'localhost')) {
+  navigator.serviceWorker.register('sw.js').catch(e => console.error('SW:', e))
 }
 
 /* ── VIEWS ── */
