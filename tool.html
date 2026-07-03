@@ -341,6 +341,7 @@ input[type=color]{opacity:0;width:0;height:0;position:absolute}
 .sim-note{font-size:10.5px;color:var(--t3);margin-top:8px;line-height:1.55}
 
 .prop-foot{padding:14px 24px;border-top:1px solid var(--b);display:flex;flex-wrap:wrap;gap:7px;align-items:center}
+.prop-resp{font-size:11.5px;color:var(--t3);border-top:1px dashed var(--b);padding-top:12px;margin-top:4px}
 
 /* ── MODELOS DE PROPOSTA (temas visuais) ──
    Reaproveitam os mesmos dados/IDs — só mudam classe + CSS, sem duplicar
@@ -1270,6 +1271,11 @@ input[type=color]{opacity:0;width:0;height:0;position:absolute}
               <label class="lbl" for="f-cliente">Nome do cliente <span class="req">*</span></label>
               <input id="f-cliente" type="text" class="inp" placeholder="Ex: João Silva" required autocomplete="name">
             </div>
+            <div class="field" id="fld-identidade" style="display:none">
+              <label class="lbl" for="f-identidade">Proposta em nome de</label>
+              <select id="f-identidade" class="sel"></select>
+              <span class="hint">Escolhendo um empreendimento, a proposta sai com a marca dele — seu nome e CRECI aparecem como corretor responsável no rodapé.</span>
+            </div>
           </div>
         </div>
 
@@ -1549,6 +1555,7 @@ input[type=color]{opacity:0;width:0;height:0;position:absolute}
             <div class="prop-sec-title">Próximos Passos</div>
             <p class="prop-text" id="p-proximos"></p>
           </div>
+          <p class="prop-resp" id="p-resp" style="display:none"></p>
         </div>
 
         <!-- Ações -->
@@ -2108,6 +2115,41 @@ input[type=color]{opacity:0;width:0;height:0;position:absolute}
         </div>
 
         <div class="card">
+          <div class="card-t">Empreendimentos e Marcas</div>
+          <p style="font-size:12px;color:var(--t2);margin-bottom:14px">Cadastre loteamentos, construtoras ou empreendimentos para gerar propostas com a marca deles. Seu nome e CRECI seguem na proposta como corretor responsável, de forma discreta no rodapé.</p>
+          <div id="emp-lista" style="display:flex;flex-direction:column;gap:8px;margin-bottom:14px"></div>
+          <div class="fg">
+            <div class="field">
+              <label class="lbl" for="e-nome">Nome do empreendimento</label>
+              <input id="e-nome" type="text" class="inp" placeholder="Ex: Montana Residence">
+            </div>
+            <div class="field">
+              <label class="lbl" for="e-info">Linha de apoio (opcional)</label>
+              <input id="e-info" type="text" class="inp" placeholder="Ex: Loteamento fechado — Sorocaba, SP">
+            </div>
+            <div class="field">
+              <label class="lbl" for="e-cor">Cor da marca</label>
+              <input type="color" id="e-cor" value="#0F2D4A" style="width:100%;height:38px;border:1px solid var(--b);border-radius:8px;background:var(--s2);cursor:pointer;padding:2px">
+            </div>
+            <div class="field">
+              <label class="lbl">Logo (opcional)</label>
+              <div style="display:flex;align-items:center;gap:10px">
+                <div class="logo-preview" id="e-logo-prev" style="width:44px;height:44px">
+                  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>
+                </div>
+                <label class="btn btn-ghost btn-sm" style="cursor:pointer">Enviar logo
+                  <input type="file" id="e-logo" accept="image/*" style="display:none" onchange="carregarLogoEmp(event)">
+                </label>
+              </div>
+            </div>
+          </div>
+          <button type="button" class="btn btn-ghost" style="margin-top:12px" onclick="adicionarEmp()">
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+            Adicionar empreendimento
+          </button>
+        </div>
+
+        <div class="card">
           <div class="card-t">Modelo da Proposta</div>
           <p style="font-size:12px;color:var(--t2);margin-bottom:14px">Escolha o estilo visual que sua proposta vai usar a partir de agora — pode trocar quando quiser, sem perder nenhum dado.</p>
           <div class="modelo-grid" id="modelo-grid" role="radiogroup" aria-label="Modelo da proposta">
@@ -2354,7 +2396,10 @@ function seedDemoData() {
   perfil = {
     nome:'Carlos Andrade', creci:'152.347-F',
     tel:'(11) 98765-4321', email:'carlos.andrade@imoveis.com.br',
-    cor:'#15A37A', logo:null, modelo:'moderno'
+    cor:'#15A37A', logo:null, modelo:'moderno',
+    empreendimentos: [
+      { id:'emp-demo', nome:'Montana Residence', info:'Loteamento fechado — Alphaville', cor:'#0F2D4A', logo:null },
+    ],
   }
 
   historico = [
@@ -2576,7 +2621,7 @@ function toggleAjuda(id) {
 const escH = s => String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;')
 
 /* ── STATE ── */
-const PERFIL_DEFAULT = { nome:'',creci:'',tel:'',email:'',cor:'#C9882A',logo:null,modelo:'classico',slug:'',msgBoasVindas:'',msgFollowUp:'',msgAgendamento:'',wppNovoContato:'',wppVisitaAgendada:'',wppVisitaRealizada:'',wppPropostaEnviada:'',wppNegociacao:'',wppVendaFechada:'',wppAgenda:'' }
+const PERFIL_DEFAULT = { nome:'',creci:'',tel:'',email:'',cor:'#C9882A',logo:null,modelo:'classico',slug:'',empreendimentos:[],msgBoasVindas:'',msgFollowUp:'',msgAgendamento:'',wppNovoContato:'',wppVisitaAgendada:'',wppVisitaRealizada:'',wppPropostaEnviada:'',wppNegociacao:'',wppVendaFechada:'',wppAgenda:'' }
 // Parse defensivo: se o localStorage corromper (extensão de navegador, quota,
 // dado truncado), JSON.parse lançaria e a ferramenta abriria em tela branca.
 // Aqui caímos no fallback em vez de quebrar (achado de robustez da auditoria).
@@ -2756,6 +2801,8 @@ function showView(name) {
   const roots  = { dashboard:'Visão geral', agenda:'Funil', form:'Propostas', history:'Propostas', visita:'Documentos', contratos:'Documentos', config:'Conta', imoveis:'Imóveis', funil:'Funil', vendas:'Funil', ajuda:'Conta' }
   document.getElementById('crumb-page').textContent = labels[name] || name
   document.getElementById('crumb-root').textContent = roots[name] || name
+  if (name === 'form') renderIdentidadeSelect()
+  if (name === 'config') renderEmps()
   // topbar buttons only for form
   const btnEx = document.getElementById('btn-exemplo')
   if (btnEx) btnEx.style.display = name === 'form' ? '' : 'none'
@@ -3015,7 +3062,8 @@ async function gerarLinkProposta() {
   const prop = document.getElementById('proposta')
   if (!prop || !prop.classList.contains('show')) { toast('Gere a proposta primeiro', true); return }
 
-  const cor = perfil.cor || '#C9882A'
+  // Proposta em nome de empreendimento usa a cor da marca dele no link público
+  const cor = (snapProposta && snapProposta.identTipo === 'emp' && snapProposta.empCor) || perfil.cor || '#C9882A'
   const vars = `:root{--bg:#fff;--s1:#fff;--s2:#f5f5f7;--s3:#ececef;--b:rgba(0,0,0,.08);--bm:rgba(0,0,0,.16);--t:#1d1d1f;--t2:#6e6e73;--t3:#86868b;--p:#0F2D4A;--ph:#0A2138;--ps:rgba(15,45,74,.12);--p2:#C9882A;--bp:${cor};--bph:${cor};--bps:${cor}22;--rad:10px;--radl:18px;--font:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Helvetica,Arial,sans-serif}body{margin:0;background:#EEF1F4}.proposta{margin-top:0!important}`
   // Clona e remove a barra de ações (Salvar/Gerar link/...) — o cliente não vê isso.
   const clone = prop.cloneNode(true)
@@ -3237,6 +3285,7 @@ function gerarProposta(ev) {
     complem:    document.getElementById('f-complem')?.value.trim() || '',
     cond:       document.getElementById('f-cond').value.trim(),
     foto:       fotoAtual,
+    ...identidadeSelecionada(),
   }
   snapProposta = d
   _propostaJaSalva = false   // nova geração libera o salvar de novo
@@ -3275,25 +3324,42 @@ function construirProposta(d) {
   const propostaEl = document.getElementById('proposta')
   propostaEl.className = 'proposta' + (modeloAtual !== 'classico' ? ' tema-' + modeloAtual : '')
 
-  /* ── Cabeçalho corretor ── */
-  document.getElementById('pc-nome').textContent = perfil.nome || '—'
-  document.getElementById('pc-creci').textContent = perfil.creci ? 'CRECI ' + perfil.creci : ''
+  /* ── Cabeçalho: corretor ou empreendimento (identidade escolhida no form) ── */
+  const emp = d.identTipo === 'emp'
+    ? { nome: d.empNome || 'Empreendimento', info: d.empInfo || '', cor: d.empCor || '#0F2D4A', logo: d.empLogo || null }
+    : null
+  const corMarca = emp ? emp.cor : (perfil.cor || '#C9882A')
+  // Vars de marca no elemento da proposta: com empreendimento, sobrescrevem as
+  // do :root (valem no preview, no print e viajam no HTML do link público).
+  if (emp) {
+    propostaEl.style.setProperty('--bp', corMarca)
+    propostaEl.style.setProperty('--bph', escurecer(corMarca, 0.12))
+    propostaEl.style.setProperty('--bps', corMarca + '1F')
+  } else {
+    propostaEl.style.removeProperty('--bp')
+    propostaEl.style.removeProperty('--bph')
+    propostaEl.style.removeProperty('--bps')
+  }
+
+  document.getElementById('pc-nome').textContent = emp ? emp.nome : (perfil.nome || '—')
+  document.getElementById('pc-creci').textContent = emp ? emp.info : (perfil.creci ? 'CRECI ' + perfil.creci : '')
   const contatos = [perfil.tel, perfil.email].filter(Boolean).join(' · ')
-  document.getElementById('pc-contato').textContent = contatos
+  document.getElementById('pc-contato').textContent = emp ? '' : contatos
 
   const logoEl = document.getElementById('pc-logo')
   logoEl.innerHTML = ''
-  if (perfil.logo) {
+  logoEl.style.background = ''
+  const logoSrc = emp ? emp.logo : perfil.logo
+  if (logoSrc) {
     const img = document.createElement('img')
-    img.src = perfil.logo
-    img.alt = 'Logo ' + escH(perfil.nome)
+    img.src = logoSrc
+    img.alt = 'Logo ' + escH(emp ? emp.nome : perfil.nome)
     logoEl.appendChild(img)
   } else {
-    const cor = perfil.cor || '#C9882A'
-    logoEl.style.background = cor + '22'
+    logoEl.style.background = corMarca + '22'
     const letra = document.createElement('span')
-    letra.style.cssText = `font-size:20px;font-weight:800;color:${cor}`
-    letra.textContent = (perfil.nome || 'C')[0].toUpperCase()
+    letra.style.cssText = `font-size:20px;font-weight:800;color:${corMarca}`
+    letra.textContent = ((emp ? emp.nome : perfil.nome) || 'C')[0].toUpperCase()
     logoEl.appendChild(letra)
   }
 
@@ -3485,6 +3551,17 @@ function construirProposta(d) {
     ? `<strong>1.</strong> Apresente documentação do seu imóvel para análise jurídica. <strong>2.</strong> Realizamos vistoria dos dois imóveis para confirmar valores. <strong>3.</strong> Fechamos o contrato de permuta. Estou à disposição para conduzir todo o processo.`
     : `<strong>1.</strong> Confirme interesse em até 48h para reservarmos o imóvel. <strong>2.</strong> Agende uma visita presencial para análise detalhada. <strong>3.</strong> Faço uma simulação de financiamento personalizada sem compromisso. Estou à disposição — entre em contato quando quiser.`
   document.getElementById('p-proximos').innerHTML = ps
+
+  /* ── Corretor responsável (só quando a proposta é do empreendimento) ── */
+  const respEl = document.getElementById('p-resp')
+  if (emp) {
+    const linhas = ['Corretor(a) responsável: ' + (perfil.nome || '—') + (perfil.creci ? ' — CRECI ' + perfil.creci : '')]
+    if (contatos) linhas.push(contatos)
+    respEl.textContent = linhas.join(' · ')
+    respEl.style.display = ''
+  } else {
+    respEl.style.display = 'none'
+  }
 }
 
 /* ── COPIAR TEXTO (inclui todas as seções) ── */
@@ -3520,6 +3597,8 @@ function copiar() {
 
   const sobre   = document.getElementById('p-sobre').innerText
   const proximos= document.getElementById('p-proximos').innerText
+  const respEl  = document.getElementById('p-resp')
+  const resp    = respEl && respEl.style.display !== 'none' ? respEl.textContent : ''
 
   const linhasCabecalho = [nome, creci ? 'CRECI ' + creci : null].filter(Boolean).join(' | ')
   const txt = [
@@ -3537,6 +3616,7 @@ function copiar() {
     sobre,
     '',
     proximos,
+    ...(resp ? ['', resp] : []),
   ].join('\n')
 
   navigator.clipboard.writeText(txt)
@@ -3983,6 +4063,16 @@ function duplicarProposta(i) {
 
     // Campos condicionais de permuta
     if (h.complem) set('f-complem', h.complem)
+
+    // Identidade (corretor × empreendimento) — se o empreendimento da proposta
+    // original ainda existir, mantém; senão volta para o corretor
+    renderIdentidadeSelect()
+    const identSel = document.getElementById('f-identidade')
+    if (identSel) {
+      identSel.value = h.identTipo === 'emp' &&
+        (perfil.empreendimentos || []).some(e => String(e.id) === String(h.empId))
+        ? String(h.empId) : 'corretor'
+    }
 
     atualizarTipoNeg()
 
@@ -6580,6 +6670,7 @@ function carregarFormConfig() {
     prev.innerHTML = `<img src="${perfil.logo}" alt="Logo">`
   }
   marcarModeloSelecionado(perfil.modelo || 'classico')
+  renderEmps()
 }
 
 /* ── MODELO DE PROPOSTA (tema visual) ── */
@@ -6721,6 +6812,129 @@ function removerLogo() {
   document.getElementById('logo-prev').innerHTML = `<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>`
   document.getElementById('cfg-prev-logo').innerHTML = `<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>`
   renderSidebarUser()
+}
+
+/* ── EMPREENDIMENTOS: marcas que podem assinar a proposta ──
+   Guardados dentro do perfil (jsonb) — sem coluna nova no Supabase.
+   Cada um tem nome, linha de apoio, cor e logo; a proposta gerada com
+   um empreendimento assume a identidade dele e o corretor vai para o
+   rodapé como responsável. */
+const _EMP_LOGO_ICON = `<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>`
+let _empLogoTemp = null
+function carregarLogoEmp(ev) {
+  const file = ev.target.files[0]
+  if (!file) return
+  if (file.size > 4 * 1024 * 1024) { toast('Logo muito grande — máx 4MB', true); return }
+  const reader = new FileReader()
+  reader.onload = e => {
+    const img = new Image()
+    img.onload = () => {
+      const MAX = 256
+      let { width, height } = img
+      if (width > MAX || height > MAX) {
+        const escala = Math.min(MAX / width, MAX / height)
+        width = Math.round(width * escala)
+        height = Math.round(height * escala)
+      }
+      const canvas = document.createElement('canvas')
+      canvas.width = width; canvas.height = height
+      canvas.getContext('2d').drawImage(img, 0, 0, width, height)
+      _empLogoTemp = canvas.toDataURL('image/png')
+      document.getElementById('e-logo-prev').innerHTML = `<img src="${_empLogoTemp}" alt="Logo" style="width:100%;height:100%;object-fit:contain">`
+      toast('Logo carregado')
+    }
+    img.onerror = () => toast('Arquivo de imagem inválido', true)
+    img.src = e.target.result
+  }
+  reader.readAsDataURL(file)
+}
+async function adicionarEmp() {
+  const nome = document.getElementById('e-nome').value.trim()
+  if (!nome) { toast('Informe o nome do empreendimento', true); return }
+  if (!Array.isArray(perfil.empreendimentos)) perfil.empreendimentos = []
+  perfil.empreendimentos.push({
+    id: 'emp-' + Date.now(),
+    nome,
+    info: document.getElementById('e-info').value.trim(),
+    cor: document.getElementById('e-cor').value || '#0F2D4A',
+    logo: _empLogoTemp,
+  })
+  document.getElementById('e-nome').value = ''
+  document.getElementById('e-info').value = ''
+  document.getElementById('e-logo').value = ''
+  _empLogoTemp = null
+  document.getElementById('e-logo-prev').innerHTML = _EMP_LOGO_ICON
+  renderEmps(); renderIdentidadeSelect()
+  localStorage.setItem('cpr_perfil', JSON.stringify(perfil))
+  try { await salvarRemoto(); toast('Empreendimento adicionado') }
+  catch(_) { toast('Adicionado localmente — verifique sua conexão', true) }
+}
+async function removerEmp(id) {
+  perfil.empreendimentos = (perfil.empreendimentos || []).filter(e => String(e.id) !== String(id))
+  renderEmps(); renderIdentidadeSelect()
+  localStorage.setItem('cpr_perfil', JSON.stringify(perfil))
+  try { await salvarRemoto(); toast('Empreendimento removido') }
+  catch(_) { toast('Removido localmente — verifique sua conexão', true) }
+}
+function renderEmps() {
+  const box = document.getElementById('emp-lista')
+  if (!box) return
+  const emps = perfil.empreendimentos || []
+  if (!emps.length) {
+    box.innerHTML = '<span class="hint">Nenhum empreendimento cadastrado ainda.</span>'
+    return
+  }
+  box.innerHTML = ''
+  emps.forEach(e => {
+    const cor = escH(e.cor || '#0F2D4A')
+    const row = document.createElement('div')
+    row.style.cssText = 'display:flex;align-items:center;gap:10px;padding:9px 12px;border:1px solid var(--b);border-radius:10px;background:var(--s2)'
+    const logo = e.logo
+      ? `<img src="${e.logo}" alt="" style="width:30px;height:30px;object-fit:contain;border-radius:6px;flex-shrink:0">`
+      : `<span style="width:30px;height:30px;border-radius:6px;background:${cor}22;color:${cor};display:inline-flex;align-items:center;justify-content:center;font-weight:800;flex-shrink:0">${escH((e.nome || 'E')[0].toUpperCase())}</span>`
+    row.innerHTML = logo +
+      `<div style="flex:1;min-width:0"><div style="font-size:13px;font-weight:600">${escH(e.nome)}</div>` +
+      (e.info ? `<div style="font-size:11px;color:var(--t3)">${escH(e.info)}</div>` : '') + `</div>` +
+      `<span style="width:14px;height:14px;border-radius:4px;background:${cor};flex-shrink:0" title="Cor da marca"></span>` +
+      `<button type="button" class="btn btn-ghost btn-sm" onclick="removerEmp('${escH(String(e.id))}')">Remover</button>`
+    box.appendChild(row)
+  })
+}
+function renderIdentidadeSelect() {
+  const fld = document.getElementById('fld-identidade')
+  const sel = document.getElementById('f-identidade')
+  if (!fld || !sel) return
+  const emps = perfil.empreendimentos || []
+  if (!emps.length) {
+    fld.style.display = 'none'
+    sel.innerHTML = '<option value="corretor">Corretor</option>'
+    return
+  }
+  const atual = sel.value
+  sel.innerHTML = ''
+  const o0 = document.createElement('option')
+  o0.value = 'corretor'
+  o0.textContent = perfil.nome ? 'Você — ' + perfil.nome : 'Você (corretor)'
+  sel.appendChild(o0)
+  emps.forEach(e => {
+    const o = document.createElement('option')
+    o.value = String(e.id)
+    o.textContent = 'Empreendimento — ' + e.nome
+    sel.appendChild(o)
+  })
+  if (Array.from(sel.options).some(o => o.value === atual)) sel.value = atual
+  fld.style.display = ''
+}
+/* Resolve a identidade escolhida no form em campos snapshotados na proposta
+   (o histórico guarda a marca usada mesmo se o empreendimento mudar depois) */
+function identidadeSelecionada() {
+  const sel = document.getElementById('f-identidade')
+  const v = sel ? sel.value : 'corretor'
+  if (v && v !== 'corretor') {
+    const emp = (perfil.empreendimentos || []).find(e => String(e.id) === v)
+    if (emp) return { identTipo:'emp', empId: emp.id, empNome: emp.nome, empInfo: emp.info || '', empCor: emp.cor || '#0F2D4A', empLogo: emp.logo || null }
+  }
+  return { identTipo:'corretor' }
 }
 
 /* ── FOTO DO IMÓVEL (por proposta, não persiste no perfil) ── */
