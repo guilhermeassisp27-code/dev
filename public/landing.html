@@ -408,6 +408,24 @@
   .checkout-safe{font-size:12.5px;color:var(--ink-2);text-align:center;margin-top:9px;display:flex;align-items:center;justify-content:center;gap:5px;line-height:1.5}
   .checkout-safe svg{width:13px;height:13px;color:var(--ink-2);flex-shrink:0}
 
+  /* ---------- planos para equipes (imobiliária / loteadora) ---------- */
+  .team-plans{
+    margin-top:28px;padding:26px 28px;border-radius:var(--rad-xl);
+    background:var(--surface-2);border:1px solid var(--line-l);
+  }
+  .team-plans-head{text-align:center;margin-bottom:20px}
+  .team-plans-head h3{font-family:var(--font-h);font-size:19px;font-weight:800;color:var(--navy-2);margin-bottom:6px}
+  .team-plans-head p{font-size:14px;color:var(--ink-2)}
+  .team-plans-grid{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+  .team-plan{
+    display:flex;flex-direction:column;gap:10px;padding:20px;
+    background:var(--surface-card);border:1px solid var(--line-l);border-radius:var(--rad-l);
+  }
+  .team-plan-name{font-family:var(--font-h);font-size:15px;font-weight:700;color:var(--navy-2)}
+  .team-plan-seats{font-size:13px;color:var(--ink-2)}
+  .team-plan .cta{min-height:46px;font-size:14.5px;padding:0 20px;margin-top:4px}
+  @media(max-width:560px){.team-plans-grid{grid-template-columns:1fr}}
+
   /* ---------- objections ---------- */
   .obj{background:var(--surface-2)}
   .obj h2{font-size:32px;text-align:center;margin-bottom:38px}
@@ -698,20 +716,6 @@
   .roi-stat .big{font-family:var(--font-h);font-size:30px;font-weight:800;color:var(--navy-2);line-height:1}
   .roi-stat .lbl{font-size:11px;color:var(--ink-2);margin-top:4px;font-weight:600;letter-spacing:.04em;text-transform:uppercase}
   @media(max-width:560px){.roi-anchor{flex-direction:column;text-align:center}.roi-anchor-ico{margin:0 auto}}
-
-  /* ---------- faixa de preço de lançamento (escassez real) ---------- */
-  .deadline{
-    display:flex;align-items:center;justify-content:center;gap:16px;flex-wrap:wrap;
-    background:linear-gradient(135deg,rgba(239,68,68,.10),rgba(239,68,68,.03));
-    border:1.5px solid rgba(239,68,68,.4);border-radius:var(--rad-l);
-    padding:16px 24px;margin-bottom:32px;text-align:center;
-  }
-  .deadline-txt{font-size:14.5px;color:var(--ink);font-weight:600}
-  .deadline-txt strong{color:var(--urgency)}
-  .deadline-clock{display:flex;gap:8px}
-  .deadline-clock div{background:var(--urgency);border:1px solid rgba(239,68,68,.7);border-radius:8px;padding:6px 10px;min-width:46px;text-align:center}
-  .deadline-clock b{display:block;font-family:var(--font-h);font-size:18px;color:var(--white);line-height:1}
-  .deadline-clock span{display:block;font-size:9px;color:rgba(255,255,255,.75);text-transform:uppercase;letter-spacing:.04em;margin-top:2px}
 
   /* ---------- video demo ---------- */
   .vdemo{background:var(--surface);border-top:1px solid var(--line-l);border-bottom:1px solid var(--line-l)}
@@ -1325,15 +1329,6 @@ try { if (localStorage.getItem('selo_cookie_consent') === 'accepted') window.loa
       </div>
     </div>
 
-    <div class="deadline" id="deadline-banner">
-      <span class="deadline-txt"><strong>Preço de lançamento até 30 de junho.</strong> Assine agora e garanta R$ 67/mês — quem entra no lançamento não paga os R$ 97 do preço cheio.</span>
-      <div class="deadline-clock" id="deadline-clock">
-        <div><b id="dl-d">--</b><span>dias</span></div>
-        <div><b id="dl-h">--</b><span>horas</span></div>
-        <div><b id="dl-m">--</b><span>min</span></div>
-      </div>
-    </div>
-
     <div class="plans">
       <!-- Mensal -->
       <div class="plan">
@@ -1379,6 +1374,25 @@ try { if (localStorage.getItem('selo_cookie_consent') === 'accepted') window.loa
         </ul>
         <a class="cta" data-plan="anual" data-value="497" href="https://pay.hotmart.com/Y106494635I?off=xs8grn1m" target="_blank" rel="noopener">Começar teste grátis</a>
         <p class="checkout-safe"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg> Checkout seguro via Hotmart · 7 dias grátis</p>
+      </div>
+    </div>
+
+    <div class="team-plans">
+      <div class="team-plans-head">
+        <h3>Tem uma equipe de corretores?</h3>
+        <p>Planos com múltiplos acessos para imobiliárias e loteadoras — cada corretor com seu próprio login, marca da equipe opcional.</p>
+      </div>
+      <div class="team-plans-grid">
+        <div class="team-plan">
+          <div class="team-plan-name">Imobiliária</div>
+          <div class="team-plan-seats">Até 5 corretores na mesma conta</div>
+          <a class="cta plan-ghost" data-plan="imobiliaria" href="https://pay.hotmart.com/Y106494635I?off=c9r311s7" target="_blank" rel="noopener">Ver plano Imobiliária</a>
+        </div>
+        <div class="team-plan">
+          <div class="team-plan-name">Loteadora</div>
+          <div class="team-plan-seats">Até 15 corretores na mesma conta</div>
+          <a class="cta plan-ghost" data-plan="loteadora" href="https://pay.hotmart.com/Y106494635I?off=226wqzhj" target="_blank" rel="noopener">Ver plano Loteadora</a>
+        </div>
       </div>
     </div>
 
@@ -1677,24 +1691,6 @@ try { if (localStorage.getItem('selo_cookie_consent') === 'accepted') window.loa
     }, { threshold: 0.4 });
     vcObs.observe(planosEl);
   }
-
-  /* contagem do preço de lançamento — termina 30/06/2026 23:59 (horário de Brasília) */
-  (function(){
-    var deadline = new Date('2026-06-30T23:59:59-03:00').getTime();
-    var dEl = document.getElementById('dl-d'), hEl = document.getElementById('dl-h'), mEl = document.getElementById('dl-m');
-    var banner = document.getElementById('deadline-banner');
-    if (!dEl || !hEl || !mEl) return;
-    function tick(){
-      var diff = deadline - Date.now();
-      if (diff <= 0) { if (banner) banner.style.display = 'none'; return; }
-      var d = Math.floor(diff / 86400000);
-      var h = Math.floor((diff % 86400000) / 3600000);
-      var m = Math.floor((diff % 3600000) / 60000);
-      dEl.textContent = d; hEl.textContent = h; mEl.textContent = m;
-    }
-    tick();
-    setInterval(tick, 60000);
-  })();
 
   /* barra fixa no celular após passar do hero */
   var bar = document.getElementById('stickbar');

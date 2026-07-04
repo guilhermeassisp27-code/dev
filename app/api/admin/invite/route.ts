@@ -9,14 +9,21 @@ function getSupabase() {
   )
 }
 
+// Achado C5 da auditoria (2026-07-03): este endpoint autenticava com a
+// SERVICE ROLE KEY passada como query param (?token=) — a chave mais
+// poderosa do projeto (bypass total de RLS + admin de Auth) trafegando em
+// URL, que fica gravada em histórico de navegador, logs de acesso do
+// Vercel/proxies, e qualquer lugar por onde a URL passe. Um vazamento ali
+// seria comprometimento total do banco.
+//
+// Agora usa um token DEDICADO (ADMIN_API_TOKEN — gere um valor aleatório
+// próprio, não reaproveite nenhuma outra chave) e SÓ via header. O suporte
+// a query string foi removido de propósito: se você colava a URL direto no
+// navegador, troque por curl -H "x-admin-token: ..." (já é como o POST
+// sempre foi documentado — ver docs/email-acesso-setup.md).
 function checkAuth(req: NextRequest) {
-  const token =
-    req.headers.get('x-admin-token') ||
-    req.nextUrl.searchParams.get('token')
-  return (
-    !!process.env.SUPABASE_SERVICE_ROLE_KEY &&
-    token === process.env.SUPABASE_SERVICE_ROLE_KEY
-  )
+  const token = req.headers.get('x-admin-token')
+  return !!process.env.ADMIN_API_TOKEN && token === process.env.ADMIN_API_TOKEN
 }
 
 function getAppUrl() {
@@ -42,11 +49,12 @@ async function findUser(supabase: ReturnType<typeof getSupabase>, email: string)
   return undefined
 }
 
-// GET /api/admin/invite?email=X&token=Y[&mode=send|link][&plan=...]
+// GET /api/admin/invite?email=X[&mode=send|link][&plan=...]
+// Autentica via header x-admin-token (ver checkAuth) — nunca por query
+// string. Use curl: veja docs/email-acesso-setup.md para os comandos.
 //   - sem mode: só consulta o status do usuário
 //   - mode=send: garante a conta ativa e DISPARA o email de definir senha (Brevo)
 //   - mode=link: garante a conta ativa e RETORNA o actionLink (envio manual)
-// Pensado para uso direto no navegador (cola a URL), sem terminal.
 export async function GET(req: NextRequest) {
   if (!checkAuth(req)) {
     return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })

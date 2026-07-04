@@ -37,7 +37,8 @@ Cancelamento/reembolso na Hotmart → webhook marca `inactive` e bane a conta.
 |----------|----------------|
 | `NEXT_PUBLIC_SUPABASE_URL` | URL do projeto Supabase |
 | `NEXT_PUBLIC_SUPABASE_ANON_KEY` | Chave pública (browser) |
-| `SUPABASE_SERVICE_ROLE_KEY` | **Secret.** Admin (webhook + endpoint admin) |
+| `SUPABASE_SERVICE_ROLE_KEY` | **Secret.** Admin (webhook + Auth Admin API) |
+| `ADMIN_API_TOKEN` | **Secret.** Autentica `/api/admin/invite` — gere um valor aleatório PRÓPRIO (ex.: `openssl rand -hex 32`), nunca reaproveite a service role key aqui |
 | `NEXT_PUBLIC_APP_URL` | `https://usecorretorpro.vercel.app` (sem barra final) |
 | `NEXT_PUBLIC_TOOL_URL` | URL da ferramenta (GitHub Pages) |
 | `HOTMART_WEBHOOK_TOKEN` | Hottok do webhook da Hotmart |
@@ -85,13 +86,16 @@ Se a URL não estiver aqui, o link do email não estabelece a sessão.
 ## Endpoint admin — convidar / reenviar acesso manualmente
 
 `POST /api/admin/invite` — autentica com o header `x-admin-token` =
-`SUPABASE_SERVICE_ROLE_KEY`.
+`ADMIN_API_TOKEN` (token dedicado — **não** é a service role key; ver seção
+de variáveis acima). Autenticação é SÓ por header, nunca por query string —
+a chave nunca deve trafegar em URL (fica em histórico de navegador e logs
+de acesso).
 
 Criar/ativar + enviar o email pelo Brevo:
 ```bash
 curl -X POST https://usecorretorpro.vercel.app/api/admin/invite \
   -H "Content-Type: application/json" \
-  -H "x-admin-token: <SERVICE_ROLE_KEY>" \
+  -H "x-admin-token: <ADMIN_API_TOKEN>" \
   -d '{"email":"comprador@email.com","name":"Nome","plan":"mensal"}'
 ```
 Resposta: `emailSent: true/false` e `emailError` (se o Brevo falhar).
@@ -100,14 +104,15 @@ Gerar link para envio MANUAL (WhatsApp), sem depender do email:
 ```bash
 curl -X POST https://usecorretorpro.vercel.app/api/admin/invite \
   -H "Content-Type: application/json" \
-  -H "x-admin-token: <SERVICE_ROLE_KEY>" \
+  -H "x-admin-token: <ADMIN_API_TOKEN>" \
   -d '{"email":"comprador@email.com","name":"Nome","plan":"mensal","mode":"link"}'
 ```
 Resposta: `actionLink` — envie esse link direto pro comprador.
 
 Consultar status de um usuário:
 ```bash
-curl "https://usecorretorpro.vercel.app/api/admin/invite?email=comprador@email.com&token=<SERVICE_ROLE_KEY>"
+curl "https://usecorretorpro.vercel.app/api/admin/invite?email=comprador@email.com" \
+  -H "x-admin-token: <ADMIN_API_TOKEN>"
 ```
 
 ## Diagnóstico rápido
