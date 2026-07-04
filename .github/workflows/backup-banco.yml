@@ -1,0 +1,72 @@
+name: Backup diário do banco (Supabase)
+
+# Achado C3 da auditoria (2026-07-03): o produto não tinha NENHUM backup
+# próprio — só o backup automático do Supabase (diário no plano Pro, PITR é
+# add-on pago). Combinado com o achado C2 (o salvarRemoto reescreve o
+# documento jsonb inteiro sem versionamento — dois dispositivos podem se
+# sobrescrever), um erro no banco hoje não tem como ser desfeito. Este
+# workflow faz um dump completo via pg_dump todo dia e guarda como artifact
+# do GitHub Actions — não é um substituto de PITR de verdade, mas compra o
+# direito de errar sem depender só do plano do Supabase.
+#
+# PRÉ-REQUISITO (Settings → Secrets and variables → Actions):
+#   - SUPABASE_DB_URL (secret, obrigatório): a connection string direta do
+#     Postgres. Pegue em Supabase → Project Settings → Database →
+#     Connection string → "URI" (use a conexão direta, não o pooler/
+#     transaction mode — pg_dump precisa da conexão de sessão completa).
+#     Formato: postgresql://postgres:<senha>@<host>:5432/postgres
+#
+# Os dumps ficam disponíveis em Actions → este workflow → run → Artifacts,
+# por 35 dias (cobre bem mais que o suficiente pra notar e recuperar de um
+# erro). Para restaurar: baixe o artifact, descompacte, e rode
+#   pg_restore --no-owner --no-privileges -d <string-de-conexao> dump.sql.gz
+# (ou peça ajuda a um agente — tenha este comando à mão).
+
+on:
+  schedule:
+    - cron: "0 8 * * *" # 08:00 UTC ≈ 05:00 BRT, todo dia (fora do horário de pico)
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  backup:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Instalar cliente Postgres
+        run: sudo apt-get update && sudo apt-get install -y postgresql-client
+
+      - name: Dump do banco
+        env:
+          SUPABASE_DB_URL: ${{ secrets.SUPABASE_DB_URL }}
+          PGSSLMODE: require
+        run: |
+          if [ -z "$SUPABASE_DB_URL" ]; then
+            echo "::error::SUPABASE_DB_URL não configurado — ver comentário no topo deste workflow."
+            exit 1
+          fi
+          data=$(date -u +%Y-%m-%d)
+          pg_dump "$SUPABASE_DB_URL" \
+            --no-owner --no-privileges --no-acl \
+            --format=plain \
+            --file="backup-selo-${data}.sql"
+          # Falha alto e cedo se o dump saiu vazio/quebrado (ex.: connection
+          # string errada) — melhor um workflow vermelho do que um backup
+          # silenciosamente inútil.
+          tamanho=$(stat -c%s "backup-selo-${data}.sql")
+          echo "Dump gerado: ${tamanho} bytes"
+          if [ "$tamanho" -lt 1000 ]; then
+            echo "::error::Dump suspeito de vazio (${tamanho} bytes) — verifique SUPABASE_DB_URL."
+            exit 1
+          fi
+          gzip "backup-selo-${data}.sql"
+          echo "BACKUP_FILE=backup-selo-${data}.sql.gz" >> "$GITHUB_ENV"
+
+      - name: Publicar como artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: ${{ env.BACKUP_FILE }}
+          path: ${{ env.BACKUP_FILE }}
+          retention-days: 35
+          compression-level: 0 # já vem gzipado — comprimir de novo é desperdício de CPU

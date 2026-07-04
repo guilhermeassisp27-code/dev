@@ -45,14 +45,26 @@ async function comAssinaturaAtiva(supabase: ReturnType<typeof admin>, row: Owner
 // postgrest-js se mostrou pouco confiável neste projeto (retornou "não
 // encontrado" para slugs reais em produção). Mantém o scan como fallback
 // defensivo só para o caso da função ainda não existir no banco.
+// Código do Postgres para "função não existe" — só nesse caso vale o
+// fallback. Achado C4 da auditoria: antes, a RPC retornando 0 linhas
+// (slug simplesmente não existe) também caía no scan de até 2000 perfis
+// — DoS de custo/latência auto-infligido nesta rota pública sem auth.
+const PG_UNDEFINED_FUNCTION = '42883'
+
 async function resolveSlug(slug: string) {
   const supabase = admin()
 
   const rpc = await supabase.rpc('cpr_resolve_slug', { p_slug: slug })
-  if (rpc.error) {
-    console.error('[captura] rpc cpr_resolve_slug falhou:', rpc.error.message)
-  } else if (rpc.data && rpc.data.length > 0) {
-    return await comAssinaturaAtiva(supabase, rpc.data[0] as OwnerRow)
+  if (!rpc.error) {
+    // RPC funcionou: 0 linhas = slug não encontrado, ponto final.
+    if (rpc.data && rpc.data.length > 0) {
+      return await comAssinaturaAtiva(supabase, rpc.data[0] as OwnerRow)
+    }
+    return null
+  }
+  console.error('[captura] rpc cpr_resolve_slug falhou:', rpc.error.message)
+  if (rpc.error.code !== PG_UNDEFINED_FUNCTION) {
+    return null
   }
 
   console.error('[captura] usando fallback de scan para resolver slug — verifique se cpr_resolve_slug existe no banco')

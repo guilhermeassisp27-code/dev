@@ -79,19 +79,33 @@ function projetar(im: Record<string, unknown>): ImovelPublico {
 
 type OwnerRow = { user_id: string; perfil: Record<string, unknown> | null }
 
+// Código do Postgres para "função não existe" (undefined_function) — só
+// nesse caso vale tentar o fallback. Achado C4 da auditoria: antes, a RPC
+// retornando 0 linhas (slug simplesmente não existe — não é erro!) também
+// caía no fallback, e QUALQUER slug inexistente disparava um scan de até
+// 2000 perfis (com logo em base64) numa rota pública sem autenticação —
+// DoS de custo/latência auto-infligido, trivial de explorar com um bot.
+const PG_UNDEFINED_FUNCTION = '42883'
+
 async function resolveOwner(
   supabase: ReturnType<typeof admin>,
   slug: string
 ): Promise<OwnerRow | null> {
   // Caminho principal: função SQL que usa o índice em perfil->>'slug'.
   const rpc = await supabase.rpc('cpr_resolve_slug', { p_slug: slug })
-  if (!rpc.error && Array.isArray(rpc.data) && rpc.data.length > 0) {
-    return rpc.data[0] as OwnerRow
+  if (!rpc.error) {
+    // RPC funcionou: 0 linhas = slug não encontrado, ponto final.
+    if (Array.isArray(rpc.data) && rpc.data.length > 0) {
+      return rpc.data[0] as OwnerRow
+    }
+    return null
   }
-  if (rpc.error) {
-    console.error('[vitrine] rpc cpr_resolve_slug falhou:', rpc.error.message)
+  console.error('[vitrine] rpc cpr_resolve_slug falhou:', rpc.error.message)
+  if (rpc.error.code !== PG_UNDEFINED_FUNCTION) {
+    // Erro real (não "função ausente") — não adianta escanear a tabela.
+    return null
   }
-  // Fallback defensivo (mesma estratégia do /api/captura).
+  // Fallback só quando a função em si não existe (deploy sem a migração).
   const scan = await supabase.from('cpr_user_data').select('user_id, perfil').limit(2000)
   if (scan.error) {
     console.error('[vitrine] scan falhou:', scan.error.message)

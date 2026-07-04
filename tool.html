@@ -18,7 +18,17 @@
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-title" content="Selo">
 <link rel="apple-touch-icon" href="app-icon-192.png">
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
+<!-- Achado C8 da auditoria (2026-07-03): a tag usava a tag flutuante "@2",
+     que resolve para qualquer versão 2.x publicada — não determinística
+     entre usuários e sem controle de quando uma mudança chega ao ar.
+     Versão fixada em 2.105.4 (mesma major.minor já usada no server via
+     package.json). SRI (integrity=) ainda falta: exige calcular o hash
+     sha384 do arquivo servido pelo CDN nesta versão exata — não deve ser
+     adivinhado (um hash errado quebra o carregamento do script). Gerar com:
+       curl -s https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.105.4/dist/umd/supabase.min.js \
+         | openssl dgst -sha384 -binary | openssl base64 -A
+     e colar em integrity="sha384-<hash>" abaixo, junto com crossorigin. -->
+<script crossorigin="anonymous" src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.105.4/dist/umd/supabase.min.js"></script>
 <script>
 /* Define o tema (claro/escuro) o mais cedo possível, antes do CSS pintar a
    tela, para evitar flash de tema errado. Prioridade: localStorage > prefers-color-scheme > escuro. */

@@ -15,6 +15,10 @@ const TOOL_URL =
   process.env.NEXT_PUBLIC_TOOL_URL ||
   'https://app.selosales.com.br'
 
+const APP_URL =
+  process.env.NEXT_PUBLIC_APP_URL ||
+  'https://selosales.com.br'
+
 // Valida o destino de redirecionamento contra uma whitelist de origens.
 // Sem isso, ?redirect_to=https://site-malicioso.com receberia os tokens de
 // sessão no hash (open redirect → sequestro de sessão). Só permitimos a
@@ -54,6 +58,7 @@ export default function AcessoPage() {
   const [senha, setSenha] = useState('')
   const [loading, setLoading] = useState(false)
   const [erro, setErro] = useState('')
+  const [banido, setBanido] = useState(false)
   const [modo, setModo] = useState<'login' | 'recuperar'>('login')
   const [recEnviado, setRecEnviado] = useState(false)
 
@@ -61,12 +66,20 @@ export default function AcessoPage() {
     e.preventDefault()
     setLoading(true)
     setErro('')
+    setBanido(false)
 
     const supabase = createImplicitClient()
     const { data, error } = await supabase.auth.signInWithPassword({ email, password: senha })
 
     if (error) {
-      if (error.message.includes('Invalid login')) {
+      // Achado C11 da auditoria (2026-07-03): assinante cancelado que quer
+      // voltar a pagar batia numa mensagem genérica de "tente novamente" —
+      // sem porta de volta, a receita de reativação se perdia em silêncio.
+      // O GoTrue do Supabase retorna "User is banned" para conta banida
+      // (cancelamento/reembolso via webhook, ver hotmart-webhook/route.ts).
+      if (/banned/i.test(error.message)) {
+        setBanido(true)
+      } else if (error.message.includes('Invalid login')) {
         setErro('Email ou senha incorretos.')
       } else if (error.message.includes('not confirmed') || error.message.includes('confirmed')) {
         setErro('Conta ainda não ativada. Verifique seu email para definir a senha.')
@@ -89,6 +102,7 @@ export default function AcessoPage() {
     e.preventDefault()
     setLoading(true)
     setErro('')
+    setBanido(false)
 
     const supabase = createImplicitClient()
     const appUrl =
@@ -132,7 +146,40 @@ export default function AcessoPage() {
 
         {/* Card */}
         <div className="auth-card">
-          {modo === 'recuperar' && recEnviado ? (
+          {banido ? (
+            <div className="auth-success">
+              <div className="auth-banido-icon">
+                <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#C9882A" strokeWidth="2.2">
+                  <path d="M12 9v4M12 17h.01" strokeLinecap="round" />
+                  <circle cx="12" cy="12" r="9" />
+                </svg>
+              </div>
+              <h2 className="auth-success-title">Sua assinatura está inativa</h2>
+              <p className="auth-success-text">
+                O acesso desta conta foi suspenso (cancelamento ou reembolso).
+                Para voltar a usar o Selo, reative sua assinatura — leva
+                menos de 2 minutos.
+              </p>
+              <a
+                href={`${APP_URL}/#planos`}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="auth-submit auth-reativar"
+              >
+                Reativar assinatura
+              </a>
+              <button
+                onClick={() => {
+                  setBanido(false)
+                  setErro('')
+                }}
+                className="auth-link-btn"
+                style={{ marginTop: 16 }}
+              >
+                Voltar para o login
+              </button>
+            </div>
+          ) : modo === 'recuperar' && recEnviado ? (
             <div className="auth-success">
               <div className="auth-success-icon">
                 <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#22C55E" strokeWidth="2.5">
@@ -201,6 +248,7 @@ export default function AcessoPage() {
                   onClick={() => {
                     setModo(modo === 'login' ? 'recuperar' : 'login')
                     setErro('')
+                    setBanido(false)
                   }}
                   className="auth-link-btn"
                 >
@@ -393,6 +441,25 @@ export default function AcessoPage() {
           align-items: center;
           justify-content: center;
           margin: 0 auto 18px;
+        }
+
+        .auth-banido-icon {
+          width: 52px;
+          height: 52px;
+          background: rgba(201, 136, 42, 0.14);
+          border-radius: 50%;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          margin: 0 auto 18px;
+        }
+
+        .auth-reativar {
+          display: block;
+          text-align: center;
+          text-decoration: none;
+          box-sizing: border-box;
+          margin-top: 8px;
         }
 
         .auth-success-title {

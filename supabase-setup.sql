@@ -168,6 +168,14 @@ as $$
   limit 1;
 $$;
 
+-- SEGURANÇA (2026-07-03): Postgres concede EXECUTE a PUBLIC por padrão em
+-- funções novas — isso inclui os papéis "anon" e "authenticated" do
+-- PostgREST/Supabase. Sem o revoke abaixo, QUALQUER pessoa com a anon key
+-- (pública, embutida no tool.html) podia chamar
+-- rpc('cpr_resolve_slug', {p_slug}) e receber o perfil INTEIRO de qualquer
+-- corretor (telefone, e-mail, logo, templates) — slugs são públicos por
+-- definição (é o link do site do corretor). Achado C1 da auditoria.
+revoke execute on function public.cpr_resolve_slug(text) from public, anon, authenticated;
 grant execute on function public.cpr_resolve_slug(text) to service_role;
 
 -- ============================================================
@@ -307,6 +315,10 @@ set search_path = public
 as $$
   select account_id from public.cpr_account_members where user_id = auth.uid()
 $$;
+-- Higiene (2026-07-03): revoga de anon/public o EXECUTE que o Postgres
+-- concede por padrão. Risco baixo (auth.uid() é nulo para anon, a função
+-- retorna vazio), mas alinhado ao mesmo tratamento de cpr_resolve_slug.
+revoke execute on function public.cpr_my_account_ids() from public, anon;
 grant execute on function public.cpr_my_account_ids() to authenticated;
 
 -- SELECT conta: dono ou membro
@@ -334,3 +346,31 @@ create policy "cpm_select_member"
 -- Sem policies de INSERT/UPDATE/DELETE para authenticated: convites e
 -- remoções passam pela rota /api/conta-membros (service role), que valida
 -- papel de admin e o limite de assentos do plano.
+
+-- ============================================================
+-- Migração: CHECK constraints em colunas de enum (2026-07-03)
+-- Essas colunas eram só texto livre com o conjunto de valores documentado
+-- em comentário — nada impedia um update do próprio corretor gravar um
+-- valor fora da lista (silenciosamente quebrando filtros no client).
+-- Idempotente: DO block ignora "já existe" se a constraint já foi criada.
+-- ============================================================
+do $$ begin
+  alter table public.cpr_public_leads
+    add constraint cpr_public_leads_status_check
+    check (status in ('pendente', 'importado', 'descartado'));
+exception when duplicate_object then null;
+end $$;
+
+do $$ begin
+  alter table public.cpr_accounts
+    add constraint cpr_accounts_plano_check
+    check (plano in ('corretor', 'imobiliaria', 'loteadora'));
+exception when duplicate_object then null;
+end $$;
+
+do $$ begin
+  alter table public.cpr_account_members
+    add constraint cpr_account_members_papel_check
+    check (papel in ('admin', 'corretor', 'consultor'));
+exception when duplicate_object then null;
+end $$;
