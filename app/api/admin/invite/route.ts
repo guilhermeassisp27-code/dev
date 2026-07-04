@@ -35,8 +35,19 @@ function getAppUrl() {
 
 type ActionLinkData = { properties?: { action_link?: string } }
 
+// Achado C6 da auditoria: caminho rápido via função SQL indexada
+// (cpr_user_id_by_email); o scan paginado fica só como fallback
+// pré-migração.
 async function findUser(supabase: ReturnType<typeof getSupabase>, email: string) {
   const alvo = email.toLowerCase()
+  const rpc = await supabase.rpc('cpr_user_id_by_email', { p_email: alvo })
+  if (!rpc.error) {
+    if (!rpc.data) return undefined
+    const { data, error } = await supabase.auth.admin.getUserById(String(rpc.data))
+    if (!error && data?.user) return data.user
+    return undefined
+  }
+  console.error('[admin/invite] rpc cpr_user_id_by_email indisponível, usando scan:', rpc.error.message)
   const perPage = 200
   for (let page = 1; page <= 50; page++) {
     const { data, error } = await supabase.auth.admin.listUsers({ page, perPage })

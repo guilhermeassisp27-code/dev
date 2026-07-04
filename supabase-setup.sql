@@ -348,6 +348,43 @@ create policy "cpm_select_member"
 -- papel de admin e o limite de assentos do plano.
 
 -- ============================================================
+-- Migração: revisão otimista do documento do usuário (2026-07-03)
+-- Achado C2 da auditoria: salvarRemoto() reescrevia as 5 colunas jsonb
+-- inteiras num upsert cego (last-write-wins) — dois dispositivos abertos
+-- se sobrescreviam mutuamente e o dado perdido era irrecuperável.
+-- A coluna rev permite o update condicional (.eq('rev', n)): se outro
+-- dispositivo salvou no meio, o update afeta 0 linhas e o client mescla
+-- os dois estados antes de tentar de novo, em vez de atropelar.
+-- Rows existentes nascem com rev 0 — compatível com o client novo; o
+-- client antigo (upsert sem rev) continua funcionando até todo mundo
+-- recarregar a página.
+-- ============================================================
+alter table public.cpr_user_data
+  add column if not exists rev bigint not null default 0;
+
+-- ============================================================
+-- Migração: lookup de usuário por email via SQL (2026-07-03)
+-- Achado C6 da auditoria: o webhook da Hotmart (e as rotas de convite)
+-- localizavam usuário por email paginando listUsers() — um scan O(n) da
+-- base INTEIRA de contas a cada evento de pagamento. Com a base crescendo
+-- isso estoura o timeout da function na Vercel e eventos de compra/
+-- cancelamento passam a falhar. Esta função consulta auth.users indexado.
+-- SECURITY DEFINER + revoke: só o service role pode chamar (mesmo
+-- tratamento de cpr_resolve_slug — nunca expor a anon/authenticated).
+-- ============================================================
+create or replace function public.cpr_user_id_by_email(p_email text)
+returns uuid
+language sql
+stable
+security definer
+set search_path = public, auth
+as $$
+  select id from auth.users where lower(email) = lower(p_email) limit 1;
+$$;
+revoke execute on function public.cpr_user_id_by_email(text) from public, anon, authenticated;
+grant execute on function public.cpr_user_id_by_email(text) to service_role;
+
+-- ============================================================
 -- Migração: CHECK constraints em colunas de enum (2026-07-03)
 -- Essas colunas eram só texto livre com o conjunto de valores documentado
 -- em comentário — nada impedia um update do próprio corretor gravar um

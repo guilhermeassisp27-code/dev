@@ -2925,6 +2925,17 @@ function initApp() {
 }
 
 async function sair() {
+  // Achado C7 da auditoria (2026-07-03): o logout limpava o cache local SEM
+  // checar a pendência de sincronização — trabalho feito offline era
+  // destruído sem aviso. Tenta subir uma última vez; se não der, o corretor
+  // decide se sai mesmo assim.
+  if (_syncPendente && window._sb && window._uid) {
+    try { await salvarRemoto() } catch(_) {}
+  }
+  if (_syncPendente) {
+    const seguir = confirm('Há alterações que ainda não subiram para a nuvem (sem conexão ou sessão expirada). Se sair agora, elas serão apagadas deste aparelho. Sair mesmo assim?')
+    if (!seguir) return
+  }
   if (window._sb) await window._sb.auth.signOut()
   // Limpa o cache local para não deixar PII (perfil/histórico/leads) no dispositivo
   try { localStorage.removeItem('cpr_perfil'); localStorage.removeItem('cpr_hist'); localStorage.removeItem('cpr_leads'); localStorage.removeItem('cpr_imoveis'); localStorage.removeItem('cpr_vendas') } catch(_) {}
@@ -2934,15 +2945,33 @@ async function sair() {
 /* ── SYNC SUPABASE: perfil + histórico ficam atrelados à conta ──
    Persiste na tabela cpr_user_data (RLS por user_id). localStorage
    funciona como cache offline; a nuvem é a fonte de verdade. */
+
+// Achado C2 da auditoria (2026-07-03): revisão otimista do documento.
+// null = modo legado (coluna rev ainda não existe no banco, ou nada foi
+// carregado) → salvarRemoto usa o upsert cego de sempre. Com número, o
+// save vira um update condicional: se outro dispositivo salvou no meio,
+// mesclamos em vez de atropelar (antes, o último save VENCIA e apagava
+// silenciosamente o que o outro aparelho tinha criado).
+let _rev = null
+
 async function carregarRemoto() {
   if (!window._sb || !window._uid) return
   try {
-    const { data, error } = await window._sb
+    let { data, error } = await window._sb
       .from('cpr_user_data')
-      .select('perfil,historico,leads,imoveis,vendas')
+      .select('perfil,historico,leads,imoveis,vendas,rev')
       .eq('user_id', window._uid)
       .maybeSingle()
+    if (error && error.code === '42703') {
+      // Banco ainda sem a coluna rev (migração SQL não rodada) — modo legado.
+      ;({ data, error } = await window._sb
+        .from('cpr_user_data')
+        .select('perfil,historico,leads,imoveis,vendas')
+        .eq('user_id', window._uid)
+        .maybeSingle())
+    }
     if (error) return
+    _rev = data && data.rev != null ? Number(data.rev) : (data ? null : 0)
     if (data) {
       if (data.perfil && typeof data.perfil === 'object') {
         perfil = Object.assign({ ...PERFIL_DEFAULT }, data.perfil)
@@ -2974,14 +3003,102 @@ async function carregarRemoto() {
   } catch(e) { /* offline → segue com o cache local */ }
 }
 
+// Merge por id quando outro dispositivo salvou no meio (conflito de rev).
+// Regra: o que só existe lá entra aqui; o que existe nos dois fica com a
+// versão local (é a que o corretor está editando neste aparelho).
+// Trade-off consciente: um item excluído AQUI durante um conflito pode
+// voltar do outro aparelho — preferimos ressuscitar um item a perder
+// silenciosamente um lead/proposta criado no outro dispositivo.
+function _mesclarArrays(local, remoto) {
+  if (!Array.isArray(remoto) || !remoto.length) return local
+  if (!Array.isArray(local) || !local.length) return remoto
+  const ids = new Set(local.map((i) => i && i.id))
+  const soRemoto = remoto.filter((i) => i && i.id != null && !ids.has(i.id))
+  // Itens só-remotos entram na frente: todos os domínios usam unshift para
+  // item novo, então "na frente" = mais recente, consistente com o app.
+  return soRemoto.length ? soRemoto.concat(local) : local
+}
+
+function _mesclarDocRemoto(doc) {
+  historico = _mesclarArrays(historico, doc.historico)
+  leads     = _mesclarArrays(leads, doc.leads)
+  imoveis   = _mesclarArrays(imoveis, doc.imoveis)
+  vendas    = _mesclarArrays(vendas, doc.vendas)
+  // perfil: local vence — é um objeto único e é o que o corretor está vendo.
+  try {
+    localStorage.setItem('cpr_hist', JSON.stringify(historico))
+    localStorage.setItem('cpr_leads', JSON.stringify(leads))
+    localStorage.setItem('cpr_imoveis', JSON.stringify(imoveis))
+    localStorage.setItem('cpr_vendas', JSON.stringify(vendas))
+  } catch(_) {}
+}
+
+// Update condicional por revisão (C2). Retorna true se salvou. Faz UMA
+// re-tentativa após mesclar — se ainda assim conflitar (outro save no
+// exato meio), fica pendente e o timer de sync resolve no próximo ciclo.
+async function _salvarComRev(doc) {
+  for (let tentativa = 0; tentativa < 2; tentativa++) {
+    const alvo = _rev
+    const { data, error } = await window._sb
+      .from('cpr_user_data')
+      .update({ ...doc, rev: alvo + 1 })
+      .eq('user_id', window._uid)
+      .eq('rev', alvo)
+      .select('rev')
+    if (error) {
+      if (error.code === '42703') {
+        // Banco sem a coluna rev (migração revertida?) — volta ao legado.
+        _rev = null
+        const up = await window._sb.from('cpr_user_data').upsert(
+          { user_id: window._uid, ...doc }, { onConflict: 'user_id' })
+        if (up.error) throw up.error
+        return true
+      }
+      throw error
+    }
+    if (Array.isArray(data) && data.length) { _rev = alvo + 1; return true }
+
+    // 0 linhas afetadas: ou a row não existe (primeiro save da conta), ou
+    // outro dispositivo salvou por cima da rev que tínhamos.
+    const atual = await window._sb
+      .from('cpr_user_data')
+      .select('historico,leads,imoveis,vendas,rev')
+      .eq('user_id', window._uid)
+      .maybeSingle()
+    if (atual.error) throw atual.error
+    if (!atual.data) {
+      const ins = await window._sb
+        .from('cpr_user_data')
+        .insert({ user_id: window._uid, ...doc, rev: 1 })
+      if (ins.error) {
+        // 23505 = outro dispositivo inseriu no exato meio — reloop mescla.
+        if (ins.error.code === '23505') continue
+        throw ins.error
+      }
+      _rev = 1
+      return true
+    }
+    // Conflito real: traz o que veio de fora e tenta de novo com a rev nova.
+    _mesclarDocRemoto(atual.data)
+    _rev = atual.data.rev != null ? Number(atual.data.rev) : 0
+    doc = { perfil, historico, leads, imoveis, vendas, updated_at: new Date().toISOString() }
+    try { toast('Alterações de outro dispositivo foram trazidas para cá') } catch(_) {}
+  }
+  return false
+}
+
 async function salvarRemoto() {
   if (!window._sb || !window._uid) return
   try {
-    const { error } = await window._sb.from('cpr_user_data').upsert(
-      { user_id: window._uid, perfil, historico, leads, imoveis, vendas, updated_at: new Date().toISOString() },
-      { onConflict: 'user_id' }
-    )
-    if (error) throw error
+    const doc = { perfil, historico, leads, imoveis, vendas, updated_at: new Date().toISOString() }
+    if (_rev === null) {
+      // Modo legado (coluna rev ainda não existe): upsert como sempre foi.
+      const { error } = await window._sb.from('cpr_user_data').upsert(
+        { user_id: window._uid, ...doc }, { onConflict: 'user_id' })
+      if (error) throw error
+    } else if (!(await _salvarComRev(doc))) {
+      throw new Error('conflito de sincronização persistente')
+    }
     _syncPendente = false
   } catch(e) {
     // Fila offline (PWA): marca pendência — o listener de 'online' e o timer
@@ -2997,13 +3114,31 @@ async function salvarRemoto() {
    pendente sobe sozinho para o Supabase. */
 let _syncPendente = false
 let _avisouOffline = false
+let _avisouSessaoExpirada = false
+
+// Erro de autenticação (sessão/refresh token expirado) nunca se resolve
+// sozinho no timer — precisa que o corretor entre de novo.
+function _ehErroDeAuth(e) {
+  const msg = String((e && (e.message || e.error_description)) || '')
+  const code = e && (e.code || e.status)
+  return code === 401 || code === 403 || code === 'PGRST301' || /jwt|expired|invalid token|refresh token/i.test(msg)
+}
 
 async function sincronizarPendentes() {
   if (!_syncPendente || !navigator.onLine || !window._sb || !window._uid) return
   try {
     await salvarRemoto()
     toast('Conexão de volta — seus dados foram sincronizados')
-  } catch(_) { /* segue pendente; próxima tentativa no timer */ }
+    _avisouSessaoExpirada = false
+  } catch(e) {
+    // Achado C7 da auditoria: a falha era engolida para sempre — se o token
+    // tivesse expirado, o corretor via "tudo certo" e o dado nunca subia.
+    if (_ehErroDeAuth(e) && !_avisouSessaoExpirada) {
+      _avisouSessaoExpirada = true
+      toast('Sua sessão expirou — entre novamente para sincronizar o que ficou pendente', true)
+    }
+    /* segue pendente; próxima tentativa no timer */
+  }
 }
 
 window.addEventListener('online', () => { _avisouOffline = false; sincronizarPendentes() })
