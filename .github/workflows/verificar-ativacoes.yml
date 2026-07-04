@@ -1,0 +1,62 @@
+name: Verificar ativações pendentes (pagante sem email)
+
+# Achado M2 da auditoria (2026-07-03): se o envio do email de "definir
+# senha" falhar nos DOIS eventos da Hotmart (ex.: Brevo fora do ar), o
+# cliente PAGOU, tem conta ativa, mas nunca recebe o link — e ninguém é
+# avisado (o erro morre num console.error nos logs da Vercel). Retry da
+# Hotmart não reenvia (o evento já respondeu 200).
+#
+# Este workflow roda todo dia e fica VERMELHO se existir usuário ativo,
+# criado há mais de 1 hora, que nunca logou e está com welcome_sent=false
+# — o sinal exato de "pagante esperando o email". Workflow vermelho = vá
+# reenviar via /api/admin/invite (docs/email-acesso-setup.md).
+#
+# Reusa o MESMO secret do backup diário (SUPABASE_DB_URL) — nenhuma
+# configuração nova além da que o backup-banco.yml já pede.
+
+on:
+  schedule:
+    - cron: "30 11 * * *" # 11:30 UTC ≈ 08:30 BRT, logo depois do QA diário
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  verificar:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Instalar cliente Postgres
+        run: sudo apt-get update && sudo apt-get install -y postgresql-client
+
+      - name: Procurar pagantes sem email de ativação
+        env:
+          SUPABASE_DB_URL: ${{ secrets.SUPABASE_DB_URL }}
+          PGSSLMODE: require
+        run: |
+          if [ -z "$SUPABASE_DB_URL" ]; then
+            echo "::error::SUPABASE_DB_URL não configurado — mesmo secret do backup-banco.yml."
+            exit 1
+          fi
+          # Emails mascarados no log (a***@dominio) — o log do Actions não é
+          # lugar para PII completa; o reenvio usa o /api/admin/invite.
+          pendentes=$(psql "$SUPABASE_DB_URL" -t -A -F '|' -c "
+            select
+              left(email, 1) || '***@' || split_part(email, '@', 2),
+              to_char(created_at, 'YYYY-MM-DD HH24:MI')
+            from auth.users
+            where coalesce(raw_app_meta_data->>'subscription_status', '') = 'active'
+              and coalesce(raw_app_meta_data->>'welcome_sent', 'false') <> 'true'
+              and last_sign_in_at is null
+              and created_at < now() - interval '1 hour'
+            order by created_at desc
+            limit 50;
+          ")
+          if [ -n "$pendentes" ]; then
+            echo "::error::Há pagante(s) com conta ativa que NUNCA receberam o email de definir senha:"
+            echo "$pendentes"
+            echo ""
+            echo "Reenvie via POST /api/admin/invite (docs/email-acesso-setup.md) e confira os logs do Brevo."
+            exit 1
+          fi
+          echo "Nenhuma ativação pendente — todos os pagantes receberam o email (ou já logaram)."

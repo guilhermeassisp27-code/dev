@@ -244,7 +244,26 @@ export async function POST(req: NextRequest) {
   const setPasswordUrl = `${appUrl}/definir-senha`
 
   // Localiza um usuário existente pelo email (renovação, cancelamento, etc.).
+  // Achado C6 da auditoria (2026-07-03): isso era um scan paginado da base
+  // INTEIRA via listUsers a cada evento — com a base crescendo, estourava o
+  // timeout da function e o webhook de pagamento passava a falhar. Caminho
+  // rápido: função SQL indexada (cpr_user_id_by_email, supabase-setup.sql).
+  // O scan antigo fica só como fallback para quando a migração ainda não
+  // rodou (função ausente).
   async function findUser(alvo: string) {
+    const rpc = await supabase.rpc('cpr_user_id_by_email', { p_email: alvo })
+    if (!rpc.error) {
+      if (!rpc.data) return undefined // email não existe — resposta definitiva
+      const { data, error } = await supabase.auth.admin.getUserById(String(rpc.data))
+      if (error) {
+        // Erro transitório depois de CONFIRMAR que o usuário existe: não dá
+        // pra devolver "não achei" (criaria conta duplicada / pularia um
+        // cancelamento). Propaga → 500 → a Hotmart retenta o evento.
+        throw new Error(`getUserById falhou para usuário existente: ${error.message}`)
+      }
+      return data?.user ?? undefined
+    }
+    console.error('[hotmart-webhook] rpc cpr_user_id_by_email indisponível, usando scan:', rpc.error.message)
     const perPage = 200
     for (let page = 1; page <= 500; page++) {
       const { data, error } = await supabase.auth.admin.listUsers({ page, perPage })
@@ -397,15 +416,24 @@ export async function POST(req: NextRequest) {
   ) {
     const user = await findUser(email)
     if (user) {
-      await supabase.auth.admin.updateUserById(user.id, {
+      const { error: banErr } = await supabase.auth.admin.updateUserById(user.id, {
         ban_duration: '87600h',
         app_metadata: {
           ...(user.app_metadata ?? {}),
           subscription_status: 'inactive',
         },
       })
+      if (banErr) {
+        // Achado M3 da auditoria (2026-07-03): esse erro era ignorado e a
+        // resposta seguia 200 — a Hotmart não retentava e o usuário
+        // cancelado ficava com acesso PARA SEMPRE. 500 força o retry.
+        console.error('[hotmart-webhook] falha ao revogar acesso do cancelado:', email, banErr.message)
+        return NextResponse.json({ error: 'revoke failed' }, { status: 500 })
+      }
       await revogarMembrosDaConta(supabase, user.id)
     } else {
+      // Usuário não existe (compra nunca criou conta / email trocado na
+      // Hotmart): retry não ajuda — 200 de propósito, mas com log alto.
       console.error('[hotmart-webhook] cancelamento recebido mas usuário não encontrado:', email, event)
     }
     return NextResponse.json({ ok: true, action: 'revoked' })
