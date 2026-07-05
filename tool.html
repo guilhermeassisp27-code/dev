@@ -655,34 +655,55 @@ input[type=color]{opacity:0;width:0;height:0;position:absolute}
    Tela de visão agregada: cruza leads/imoveis/vendas já existentes, sem
    array novo no jsonb. Gráfico de barras é SVG puro gerado por JS — zero
    dependência nova, mesmo princípio dos módulos anteriores do pivô. */
-/* ── Dashboard v2 (2026-07-04): hierarquia editorial, sem "caixas de IA" ── */
-/* Faixa-herói: a comissão do mês é o número dominante da tela (é a promessa
-   do produto). Fundo navy sólido da marca, âmbar como o dado que importa. */
-.dash-hero{background:var(--p);color:#fff;border-radius:16px;padding:26px 30px;display:flex;align-items:flex-end;justify-content:space-between;gap:28px;flex-wrap:wrap;margin-bottom:14px}
-.dash-hero-main{min-width:0}
-.dash-hero-cap{font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:.1em;color:rgba(232,237,242,.62)}
-.dash-hero-val{font-size:42px;font-weight:700;letter-spacing:-1.2px;line-height:1.05;margin-top:8px;color:#fff;font-variant-numeric:tabular-nums}
-.dash-hero-delta{display:inline-flex;align-items:center;gap:5px;font-size:12.5px;font-weight:600;margin-top:10px;padding:3px 9px;border-radius:100px;background:rgba(255,255,255,.08)}
-.dash-hero-delta.up{color:#5FD39A}.dash-hero-delta.down{color:#F6A6A6}
-.dash-hero-delta-cap{color:rgba(232,237,242,.55);font-weight:500}
-.dash-hero-hint{font-size:12.5px;color:rgba(232,237,242,.5);margin-top:10px}
-.dash-hero-side{text-align:right;flex-shrink:0}
-.dash-hero-side-cap{font-size:10.5px;font-weight:600;text-transform:uppercase;letter-spacing:.09em;color:rgba(232,237,242,.55)}
-.dash-hero-side-val{font-size:22px;font-weight:600;letter-spacing:-.4px;color:var(--p2);margin-top:5px;font-variant-numeric:tabular-nums}
-@media(max-width:560px){.dash-hero{padding:22px}.dash-hero-val{font-size:34px}.dash-hero-side{text-align:left}}
+/* ══ Dashboard = CENTRAL DE COMANDO (2026-07-04) ══
+   Espelha as ferramentas líderes para corretor (Follow Up Boss, kvCORE/
+   BoldTrail): o herói é o TRABALHO — quem contatar, o que é de hoje, o
+   pipeline — não um pôster de métricas. Número existe, mas numa barra fina. */
+.dash-top{display:flex;align-items:flex-end;justify-content:space-between;gap:16px;flex-wrap:wrap;margin-bottom:26px}
+.dash-th-n{display:inline-flex;align-items:center;justify-content:center;min-width:20px;height:20px;padding:0 6px;border-radius:100px;background:var(--p2);color:#fff;font-size:11px;font-weight:700;margin-left:2px}
+.dash-th-link{margin-left:auto;font-size:11.5px;font-weight:600;color:var(--p2);cursor:pointer;text-transform:none;letter-spacing:0}
+.dash-th-link:hover{text-decoration:underline}
 
-/* Instrumento: um painel único cortado por fios de 1px (o gap revela o
-   fundo). Zero borda por célula, zero sombra, zero hover-pulo. */
-.dash-strip{display:grid;grid-template-columns:repeat(3,1fr);gap:1px;background:var(--b);border:1px solid var(--b);border-radius:14px;overflow:hidden}
-.dash-strip--sec{margin-top:14px}
-@media(max-width:620px){.dash-strip{grid-template-columns:1fr}}
-.dash-kpi{background:var(--s1);padding:16px 18px;display:flex;flex-direction:column;gap:6px;min-width:0}
-.dash-kpi-l{font-size:10.5px;font-weight:600;text-transform:uppercase;letter-spacing:.06em;color:var(--t3);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
-.dash-kpi-v{font-size:22px;font-weight:600;color:var(--t);letter-spacing:-.4px;font-variant-numeric:tabular-nums}
-.dash-kpi.alerta .dash-kpi-v{color:var(--p2)}
-.dash-kpi-delta{display:inline-flex;align-items:center;gap:4px;font-size:11px;font-weight:600;margin-top:1px;line-height:1}
-.dash-kpi-delta.up{color:#1FA971}.dash-kpi-delta.down{color:#D9534F}
-.dash-kpi-delta-cap{color:var(--t3);font-weight:500;margin-left:2px}
+/* Barra fina de números: uma linha de células com fio de 1px, discreta. */
+.dash-statbar{display:grid;grid-template-columns:repeat(4,1fr);gap:1px;background:var(--b);border:1px solid var(--b);border-radius:12px;overflow:hidden;margin-bottom:20px}
+@media(max-width:720px){.dash-statbar{grid-template-columns:repeat(2,1fr)}}
+.dash-stat{background:var(--s1);padding:13px 16px;min-width:0}
+.dash-stat-l{font-size:10px;font-weight:600;text-transform:uppercase;letter-spacing:.06em;color:var(--t3);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.dash-stat-v{font-size:19px;font-weight:600;color:var(--t);letter-spacing:-.3px;margin-top:3px;font-variant-numeric:tabular-nums;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.dash-stat-v.money{color:var(--p)}
+.dash-stat-delta{font-size:10.5px;font-weight:600;margin-left:5px}
+.dash-stat-delta.up{color:#1FA971}.dash-stat-delta.down{color:#C77}
+
+/* Área de trabalho: coluna larga (inbox de leads) + coluna estreita (hoje). */
+.dash-work{display:grid;grid-template-columns:1.55fr 1fr;gap:16px;margin-bottom:16px}
+.dash-work>*{min-width:0}
+@media(max-width:900px){.dash-work{grid-template-columns:1fr}}
+
+/* Inbox de leads (o coração da central): linha por lead, ação na própria linha. */
+.dash-lead{display:flex;align-items:center;gap:13px;padding:13px 4px;border-bottom:1px solid var(--b)}
+.dash-lead:last-child{border-bottom:none}
+.dash-avatar{width:38px;height:38px;border-radius:50%;flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:14px;font-weight:600;color:var(--p);background:var(--ps)}
+.dash-lead-info{min-width:0;flex:1}
+.dash-lead-nome{font-size:14px;font-weight:600;color:var(--t);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.dash-lead-meta{font-size:12px;color:var(--t3);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;margin-top:1px}
+.dash-lead-tag{flex-shrink:0;font-size:11px;font-weight:600;padding:3px 9px;border-radius:100px;white-space:nowrap}
+.dash-lead-tag[data-nivel="critico"]{background:#FBEAEA;color:#B4443C}
+.dash-lead-tag[data-nivel="atencao"]{background:var(--bps);color:var(--bph)}
+.dash-lead-acts{display:flex;gap:6px;flex-shrink:0}
+.dash-ic{width:34px;height:34px;border-radius:9px;display:flex;align-items:center;justify-content:center;border:1px solid var(--b);background:var(--s1);cursor:pointer;color:var(--t2);transition:background-color .15s,border-color .15s,color .15s;flex-shrink:0}
+.dash-ic:hover{border-color:var(--bm)}
+.dash-ic.wa{background:var(--p);border-color:var(--p);color:#fff}
+.dash-ic.wa:hover{background:var(--ph)}
+.dash-empty{font-size:13px;color:var(--t3);padding:8px 4px;line-height:1.6}
+.dash-empty b{color:var(--t2);font-weight:600}
+
+/* Pipeline horizontal: esteira de negócios com rampa navy→âmbar. */
+.dash-pipe{display:flex;gap:8px;margin-top:2px}
+.dash-pipe-col{flex:1;min-width:0}
+.dash-pipe-bar{height:6px;border-radius:100px;margin-bottom:9px}
+.dash-pipe-n{font-size:20px;font-weight:600;color:var(--t);letter-spacing:-.4px;font-variant-numeric:tabular-nums;line-height:1}
+.dash-pipe-l{font-size:10.5px;color:var(--t3);margin-top:4px;line-height:1.3;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+@media(max-width:680px){.dash-pipe{flex-wrap:wrap}.dash-pipe-col{flex:1 1 30%}}
 .dash-grid{display:grid;grid-template-columns:1.3fr 1fr;gap:16px;margin-top:20px}
 @media(max-width:900px){.dash-grid{grid-template-columns:1fr}}
 .dash-grid>*{min-width:0}  /* deixa os cards encolherem no mobile (sem isso o gráfico/listas forçam overflow) */
@@ -993,19 +1014,41 @@ input[type=color]{opacity:0;width:0;height:0;position:absolute}
          existentes. Não cria array novo — só lê e calcula em cima do que
          já está salvo no jsonb (cpr_user_data). -->
     <div class="view active" id="view-dashboard">
-      <div class="ph">
-        <h1>Dashboard</h1>
-        <p>Visão geral do seu negócio — leads, imóveis e vendas em um só lugar.</p>
+      <div class="dash-top">
+        <div class="ph" style="margin:0">
+          <h1 id="dash-saudacao">Central de comando</h1>
+          <p id="dash-resumo-dia">Seu dia de trabalho, num lugar só.</p>
+        </div>
+        <button class="btn btn-green" onclick="showView('form')">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+          Nova proposta
+        </button>
       </div>
 
       <div id="onboarding-card"></div>
 
-      <div class="dash-hero" id="dash-hero"></div>
+      <!-- Barra fina de números: presente, mas sem dominar (o trabalho é o herói) -->
+      <div class="dash-statbar" id="dash-kpis"></div>
 
-      <div class="dash-strip" id="dash-kpis"></div>
+      <!-- Área de trabalho: quem precisa de você + o que é de hoje -->
+      <div class="dash-work">
+        <div class="card dash-work-main">
+          <div class="card-t">Precisam de você agora <span class="dash-th-n" id="dash-atencao-n"></span></div>
+          <div id="dash-atencao"></div>
+        </div>
+        <div class="card dash-work-side">
+          <div class="card-t">Para não esquecer hoje</div>
+          <div id="dash-lembretes"></div>
+        </div>
+      </div>
 
-      <div class="dash-strip dash-strip--sec" id="dash-extra-kpis"></div>
+      <!-- Pipeline horizontal: o funil como esteira de negócios -->
+      <div class="card">
+        <div class="card-t">Seu funil de vendas <a class="dash-th-link" onclick="showView('funil')">Abrir funil →</a></div>
+        <div id="dash-funil-resumo"></div>
+      </div>
 
+      <!-- Secundário: tendência de vendas + leads de maior valor -->
       <div class="dash-grid">
         <div class="card">
           <div class="dash-chart-head">
@@ -1013,49 +1056,14 @@ input[type=color]{opacity:0;width:0;height:0;position:absolute}
             <div class="dash-period-btns" id="dash-period-btns">
               <button class="dash-period-btn" data-periodo="6m" onclick="mudarPeriodoDashboard('6m')">6 meses</button>
               <button class="dash-period-btn" data-periodo="12m" onclick="mudarPeriodoDashboard('12m')">12 meses</button>
-              <button class="dash-period-btn" data-periodo="ano" onclick="mudarPeriodoDashboard('ano')">Ano corrente</button>
+              <button class="dash-period-btn" data-periodo="ano" onclick="mudarPeriodoDashboard('ano')">Ano</button>
             </div>
           </div>
           <div class="dash-chart-wrap" id="dash-chart"></div>
         </div>
         <div class="card">
-          <div class="card-t">Funil de vendas (resumo)</div>
-          <div id="dash-funil-resumo"></div>
-        </div>
-      </div>
-
-      <div class="dash-grid">
-        <div class="card">
-          <div class="card-t">Leads que precisam de atenção agora</div>
-          <div id="dash-atencao"></div>
-        </div>
-        <div class="card">
-          <div class="card-t">Top 5 leads ativos mais valiosos</div>
+          <div class="card-t">Leads mais valiosos</div>
           <div id="dash-ranking"></div>
-        </div>
-      </div>
-
-      <div class="dash-grid">
-        <div class="card">
-          <div class="card-t">Lembretes de hoje e atrasados</div>
-          <div id="dash-lembretes"></div>
-        </div>
-        <div class="card">
-          <div class="card-t">Atalhos rápidos</div>
-          <div class="dash-atalhos">
-            <button class="btn btn-green btn-sm" onclick="showView('form')">
-              <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
-              Nova proposta
-            </button>
-            <button class="btn btn-ghost btn-sm" onclick="showView('agenda')">
-              <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
-              Novo lead
-            </button>
-            <button class="btn btn-ghost btn-sm" onclick="showView('imoveis')">
-              <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
-              Novo imóvel
-            </button>
-          </div>
         </div>
       </div>
     </div><!-- /view-dashboard -->
@@ -6524,47 +6532,52 @@ function renderDashboard() {
     return { txt: (p >= 0 ? '+' : '') + p + '%', dir: p >= 0 ? 'up' : 'down' }
   }
 
-  // ── Faixa-herói: a comissão é a promessa do produto, então é o número
-  //    dominante da tela (não mais uma caixa igual às outras). ──
-  const heroEl = document.getElementById('dash-hero')
-  if (heroEl) {
-    // Delta só quando há comissão no mês — um "-100%" sobre zero (ainda não
-    // fechou nada) é desânimo, não informação.
-    const d = comissaoMes > 0 ? deltaPct(comissaoMes, comissaoMesAnt) : null
-    const sub = comissaoMes > 0
-      ? (d ? `<div class="dash-hero-delta ${d.dir}">${d.dir === 'up' ? '▲' : '▼'} ${escH(d.txt)} <span class="dash-hero-delta-cap">vs mês anterior</span></div>` : '')
-      : `<div class="dash-hero-hint">Sua próxima venda fechada aparece aqui</div>`
-    heroEl.innerHTML = `
-      <div class="dash-hero-main">
-        <div class="dash-hero-cap">Comissão no mês</div>
-        <div class="dash-hero-val">${escH(formatarMoedaBR(comissaoMes))}</div>
-        ${sub}
-      </div>
-      <div class="dash-hero-side">
-        <div class="dash-hero-side-cap">Comissão no ano</div>
-        <div class="dash-hero-side-val">${escH(formatarMoedaBR(comissaoAno))}</div>
-      </div>`
+  // ── Saudação + resumo do dia (o que um FUB/kvCORE diz ao abrir) ──
+  const h = hoje.getHours()
+  const saud = h < 12 ? 'Bom dia' : h < 18 ? 'Boa tarde' : 'Boa noite'
+  const primeiroNome = (perfil.nome || '').trim().split(' ')[0]
+  const elSaud = document.getElementById('dash-saudacao')
+  if (elSaud) elSaud.textContent = primeiroNome ? `${saud}, ${primeiroNome}` : `${saud}`
+  const elResumo = document.getElementById('dash-resumo-dia')
+  if (elResumo) {
+    const partes = []
+    if (leadsAlerta > 0) partes.push(`<b>${leadsAlerta}</b> lead${leadsAlerta === 1 ? '' : 's'} pedindo atenção`)
+    const pend = pendenciasDeHoje()
+    if (pend > 0) partes.push(`<b>${pend}</b> ${pend === 1 ? 'tarefa' : 'tarefas'} para hoje`)
+    elResumo.innerHTML = partes.length
+      ? `Você tem ${partes.join(' e ')}.`
+      : 'Tudo em dia por aqui — bom trabalho.'
   }
 
-  // Instrumento (metade operacional): contagens do dia a dia, peso leve.
-  const kpis = [
-    { l: 'Leads ativos',            v: String(leadsAtivos),        alerta:false },
-    { l: 'Leads em alerta',         v: String(leadsAlerta),        alerta:leadsAlerta>0 },
-    { l: 'Vendas fechadas no mês',  v: String(vendasDoMes.length), alerta:false, delta:deltaPct(vendasDoMes.length, vendasMesAnt.length) },
+  // ── Barra fina de números (a comissão está aqui, mas sem dominar) ──
+  const stats = [
+    { l: 'Comissão no mês', v: formatarMoedaBR(comissaoMes), money:true },
+    { l: 'Comissão no ano', v: formatarMoedaBR(comissaoAno), money:true },
+    { l: 'Vendas no mês',   v: String(vendasDoMes.length) },
+    { l: 'Leads em alerta', v: String(leadsAlerta) },
   ]
-  elKpis.innerHTML = kpis.map(k => `
-    <div class="dash-kpi${k.alerta ? ' alerta' : ''}">
-      <span class="dash-kpi-l">${escH(k.l)}</span>
-      <span class="dash-kpi-v">${escH(k.v)}</span>
-      ${k.delta ? `<span class="dash-kpi-delta ${k.delta.dir}">${k.delta.dir === 'up' ? '▲' : '▼'} ${escH(k.delta.txt)}<span class="dash-kpi-delta-cap">vs mês ant.</span></span>` : ''}
+  elKpis.innerHTML = stats.map(s => `
+    <div class="dash-stat">
+      <div class="dash-stat-l">${escH(s.l)}</div>
+      <div class="dash-stat-v${s.money ? ' money' : ''}">${escH(s.v)}</div>
     </div>`).join('')
 
-  renderDashboardExtraKpis()
   renderDashboardChart()
   renderDashboardFunilResumo()
   renderDashboardAtencao()
   renderDashboardRanking()
   renderDashboardLembretes()
+}
+
+// Quantos lembretes vencem hoje ou estão atrasados (para o resumo do dia).
+// Mesma fonte do renderDashboardLembretes: lead.lembretes[] (data YYYY-MM-DD).
+function pendenciasDeHoje() {
+  const hojeStr = new Date().toISOString().slice(0, 10)
+  let n = 0
+  leads.forEach(l => (l.lembretes || []).forEach(r => {
+    if (!r.concluido && r.data && r.data <= hojeStr) n++
+  }))
+  return n
 }
 
 // Converte "dd/mm/aaaa" (formato pt-BR usado em lead.criadoEm) para Date.
@@ -6760,26 +6773,22 @@ function renderDashboardLembretes() {
   pendentes.sort((a, b) => (a.r.data || '').localeCompare(b.r.data || ''))
 
   if (pendentes.length === 0) {
-    el.innerHTML = `<p style="font-size:13px;color:var(--t3)">Nenhum lembrete para hoje ou atrasado — tudo em dia.</p>`
+    el.innerHTML = `<div class="dash-empty"><b>Nada vencendo hoje.</b> Seus lembretes de leads aparecem aqui no dia certo, pra você não deixar ninguém sem resposta.</div>`
     return
   }
 
-  el.innerHTML = pendentes.slice(0, 8).map(({ l, r, atrasado }) => `
-    <div class="dash-atencao-item">
-      <span class="lead-alert" data-nivel="${atrasado ? 'critico' : 'atencao'}" title="${atrasado ? 'Lembrete atrasado' : 'Lembrete de hoje'}">
-        <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
-        ${atrasado ? 'Atrasado' : 'Hoje'}
-      </span>
-      <div class="dash-atencao-info">
-        <div class="dash-atencao-cliente">${escH(l.cliente || '—')}</div>
-        <div class="dash-atencao-meta">${escH(r.texto)}</div>
+  el.innerHTML = pendentes.slice(0, 7).map(({ l, r, atrasado }) => `
+    <div class="dash-lead">
+      <div class="dash-lead-info">
+        <div class="dash-lead-nome">${escH(l.cliente || '—')}</div>
+        <div class="dash-lead-meta">${escH(r.texto)}</div>
       </div>
-      <button class="btn btn-green btn-sm" onclick="enviarWhatsappEtapa(${l.id})" title="Enviar mensagem da etapa atual no WhatsApp">
-        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 11.5a8.38 8.38 0 01-.9 3.8 8.5 8.5 0 01-7.6 4.7 8.38 8.38 0 01-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 01-.9-3.8 8.5 8.5 0 014.7-7.6 8.38 8.38 0 013.8-.9h.5a8.48 8.48 0 018 8v.5z"/></svg>
-      </button>
-      <button class="btn btn-ghost btn-sm" onclick="abrirLeadModal(${l.id});showView('funil')" title="Ver lead no Funil">
-        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
-      </button>
+      <span class="dash-lead-tag" data-nivel="${atrasado ? 'critico' : 'atencao'}">${atrasado ? 'Atrasado' : 'Hoje'}</span>
+      <div class="dash-lead-acts">
+        <button class="dash-ic wa" onclick="enviarWhatsappEtapa(${l.id})" title="Enviar mensagem no WhatsApp" aria-label="WhatsApp">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 11.5a8.38 8.38 0 01-.9 3.8 8.5 8.5 0 01-7.6 4.7 8.38 8.38 0 01-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 01-.9-3.8 8.5 8.5 0 014.7-7.6 8.38 8.38 0 013.8-.9h.5a8.48 8.48 0 018 8v.5z"/></svg>
+        </button>
+      </div>
     </div>`).join('')
 }
 
@@ -6793,41 +6802,19 @@ function renderDashboardFunilResumo() {
     return
   }
 
-  // Rampa navy (frio, aprofundando ao longo do funil) + âmbar SÓ na venda
-  // fechada — o único estado quente é a vitória. Substitui o arco-íris das
-  // cores de estágio (que seguem valendo no kanban) só aqui na dashboard.
+  // Pipeline horizontal (esteira de negócios, como Pipedrive/FUB): cada
+  // etapa é uma coluna com barra + contagem. Rampa navy aprofundando até o
+  // âmbar da venda fechada — o único quente é a vitória.
   const RAMPA = ['#AEBECE', '#8AA0B6', '#66849E', '#456781', '#294D6B', '#C9882A']
-  const corDe = (i) => RAMPA[i] || RAMPA[RAMPA.length - 1]
-
-  const total = leads.length
-  const R = 54, C = 2 * Math.PI * R
-  let acc = 0
-  const segs = FUNIL_ESTAGIOS.map((e, i) => {
+  const cols = FUNIL_ESTAGIOS.map((e, i) => {
     const n = leads.filter(l => estagioFunilLead(l) === e.key).length
-    if (n === 0) return ''
-    const len = (n / total) * C
-    const seg = `<circle cx="70" cy="70" r="${R}" fill="none" stroke="${corDe(i)}" stroke-width="15" stroke-linecap="butt" stroke-dasharray="${len.toFixed(2)} ${(C - len).toFixed(2)}" stroke-dashoffset="${(-acc).toFixed(2)}" transform="rotate(-90 70 70)"></circle>`
-    acc += len
-    return seg
-  }).join('')
-  const legenda = FUNIL_ESTAGIOS.map((e, i) => {
-    const n = leads.filter(l => estagioFunilLead(l) === e.key).length
-    return `<div class="dash-donut-leg">
-      <span class="dash-donut-dot" style="background:${corDe(i)}"></span>
-      <span class="dash-donut-leg-l">${escH(e.label)}</span>
-      <span class="dash-donut-leg-n">${n}</span>
+    return `<div class="dash-pipe-col">
+      <div class="dash-pipe-bar" style="background:${RAMPA[i]};opacity:${n > 0 ? 1 : 0.28}"></div>
+      <div class="dash-pipe-n"${n === 0 ? ' style="color:var(--t3)"' : ''}>${n}</div>
+      <div class="dash-pipe-l">${escH(e.label)}</div>
     </div>`
   }).join('')
-  el.innerHTML = `<div class="dash-donut-wrap">
-    <div class="dash-donut">
-      <svg viewBox="0 0 140 140" width="140" height="140">
-        <circle cx="70" cy="70" r="${R}" fill="none" stroke="var(--s2)" stroke-width="15"></circle>
-        ${segs}
-      </svg>
-      <div class="dash-donut-center"><span class="dash-donut-total">${total}</span><span class="dash-donut-cap">leads</span></div>
-    </div>
-    <div class="dash-donut-legenda">${legenda}</div>
-  </div>`
+  el.innerHTML = `<div class="dash-pipe">${cols}</div>`
 }
 
 // Top 5 leads com alerta (crítico primeiro), com atalho direto pro follow-up.
@@ -6839,29 +6826,33 @@ function renderDashboardAtencao() {
     .map(l => ({ l, alerta: alertaLead(l) }))
     .filter(x => x.alerta.nivel)
     .sort((a, b) => b.alerta.dias - a.alerta.dias)
-    .slice(0, 5)
+    .slice(0, 6)
+
+  const badge = document.getElementById('dash-atencao-n')
+  if (badge) badge.textContent = comAlerta.length ? String(comAlerta.length) : ''
 
   if (comAlerta.length === 0) {
-    el.innerHTML = `<p style="font-size:13px;color:var(--t3)">Nenhum lead pedindo atenção agora — tudo em dia.</p>`
+    el.innerHTML = `<div class="dash-empty"><b>Tudo em dia.</b> Nenhum lead esfriando agora — quando algum ficar dias sem contato, ele aparece aqui pra você agir na hora.</div>`
     return
   }
 
+  const inicial = (nome) => (String(nome || '?').trim()[0] || '?').toUpperCase()
   el.innerHTML = comAlerta.map(({ l, alerta }) => `
-    <div class="dash-atencao-item">
-      <button class="lead-alert" data-nivel="${alerta.nivel}" onclick="abrirFollowUpLead(${l.id})" title="Ver sugestão de mensagem de follow-up">
-        <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
-        ${alerta.dias}d
-      </button>
-      <div class="dash-atencao-info">
-        <div class="dash-atencao-cliente">${escH(l.cliente || '—')}</div>
-        <div class="dash-atencao-meta">${escH(l.imovel || 'Sem imóvel vinculado')}</div>
+    <div class="dash-lead">
+      <div class="dash-avatar">${escH(inicial(l.cliente))}</div>
+      <div class="dash-lead-info">
+        <div class="dash-lead-nome">${escH(l.cliente || '—')}</div>
+        <div class="dash-lead-meta">${escH(l.imovel || 'Sem imóvel vinculado')} · ${alerta.dias}d sem contato</div>
       </div>
-      <button class="btn btn-green btn-sm" onclick="enviarWhatsappEtapa(${l.id})" title="Enviar mensagem da etapa atual no WhatsApp">
-        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 11.5a8.38 8.38 0 01-.9 3.8 8.5 8.5 0 01-7.6 4.7 8.38 8.38 0 01-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 01-.9-3.8 8.5 8.5 0 014.7-7.6 8.38 8.38 0 013.8-.9h.5a8.48 8.48 0 018 8v.5z"/></svg>
-      </button>
-      <button class="btn btn-ghost btn-sm" onclick="showView('funil')" title="Ver no Funil">
-        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
-      </button>
+      <span class="dash-lead-tag" data-nivel="${alerta.nivel}">${alerta.nivel === 'critico' ? 'Esfriando' : 'Atenção'}</span>
+      <div class="dash-lead-acts">
+        <button class="dash-ic wa" onclick="enviarWhatsappEtapa(${l.id})" title="Enviar mensagem no WhatsApp" aria-label="WhatsApp">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 11.5a8.38 8.38 0 01-.9 3.8 8.5 8.5 0 01-7.6 4.7 8.38 8.38 0 01-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 01-.9-3.8 8.5 8.5 0 014.7-7.6 8.38 8.38 0 013.8-.9h.5a8.48 8.48 0 018 8v.5z"/></svg>
+        </button>
+        <button class="dash-ic" onclick="abrirLeadModal(${l.id});showView('funil')" title="Abrir lead no Funil" aria-label="Abrir">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
+        </button>
+      </div>
     </div>`).join('')
 }
 
