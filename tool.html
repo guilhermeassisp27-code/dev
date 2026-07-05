@@ -655,13 +655,34 @@ input[type=color]{opacity:0;width:0;height:0;position:absolute}
    Tela de visão agregada: cruza leads/imoveis/vendas já existentes, sem
    array novo no jsonb. Gráfico de barras é SVG puro gerado por JS — zero
    dependência nova, mesmo princípio dos módulos anteriores do pivô. */
-.dash-kpis{display:grid;grid-template-columns:repeat(3,1fr);gap:12px}
-@media(max-width:620px){.dash-kpis{grid-template-columns:repeat(2,1fr)}}
-.dash-kpi{background:var(--s1);border:1px solid var(--b);border-radius:var(--radl);padding:18px 18px;display:flex;flex-direction:column;gap:7px;min-width:0;box-shadow:var(--shadow-sm);transition:transform .2s ease,box-shadow .2s ease}
-.dash-kpi:hover{transform:translateY(-2px);box-shadow:var(--shadow-lg)}
-.dash-kpi-l{font-size:10.5px;font-weight:700;text-transform:uppercase;letter-spacing:.06em;color:var(--t3);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
-.dash-kpi-v{font-size:21px;font-weight:700;color:var(--t);letter-spacing:-.3px}
-.dash-kpi.alerta .dash-kpi-v{color:#F97316}
+/* ── Dashboard v2 (2026-07-04): hierarquia editorial, sem "caixas de IA" ── */
+/* Faixa-herói: a comissão do mês é o número dominante da tela (é a promessa
+   do produto). Fundo navy sólido da marca, âmbar como o dado que importa. */
+.dash-hero{background:var(--p);color:#fff;border-radius:16px;padding:26px 30px;display:flex;align-items:flex-end;justify-content:space-between;gap:28px;flex-wrap:wrap;margin-bottom:14px}
+.dash-hero-main{min-width:0}
+.dash-hero-cap{font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:.1em;color:rgba(232,237,242,.62)}
+.dash-hero-val{font-size:42px;font-weight:700;letter-spacing:-1.2px;line-height:1.05;margin-top:8px;color:#fff;font-variant-numeric:tabular-nums}
+.dash-hero-delta{display:inline-flex;align-items:center;gap:5px;font-size:12.5px;font-weight:600;margin-top:10px;padding:3px 9px;border-radius:100px;background:rgba(255,255,255,.08)}
+.dash-hero-delta.up{color:#5FD39A}.dash-hero-delta.down{color:#F6A6A6}
+.dash-hero-delta-cap{color:rgba(232,237,242,.55);font-weight:500}
+.dash-hero-hint{font-size:12.5px;color:rgba(232,237,242,.5);margin-top:10px}
+.dash-hero-side{text-align:right;flex-shrink:0}
+.dash-hero-side-cap{font-size:10.5px;font-weight:600;text-transform:uppercase;letter-spacing:.09em;color:rgba(232,237,242,.55)}
+.dash-hero-side-val{font-size:22px;font-weight:600;letter-spacing:-.4px;color:var(--p2);margin-top:5px;font-variant-numeric:tabular-nums}
+@media(max-width:560px){.dash-hero{padding:22px}.dash-hero-val{font-size:34px}.dash-hero-side{text-align:left}}
+
+/* Instrumento: um painel único cortado por fios de 1px (o gap revela o
+   fundo). Zero borda por célula, zero sombra, zero hover-pulo. */
+.dash-strip{display:grid;grid-template-columns:repeat(3,1fr);gap:1px;background:var(--b);border:1px solid var(--b);border-radius:14px;overflow:hidden}
+.dash-strip--sec{margin-top:14px}
+@media(max-width:620px){.dash-strip{grid-template-columns:1fr}}
+.dash-kpi{background:var(--s1);padding:16px 18px;display:flex;flex-direction:column;gap:6px;min-width:0}
+.dash-kpi-l{font-size:10.5px;font-weight:600;text-transform:uppercase;letter-spacing:.06em;color:var(--t3);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.dash-kpi-v{font-size:22px;font-weight:600;color:var(--t);letter-spacing:-.4px;font-variant-numeric:tabular-nums}
+.dash-kpi.alerta .dash-kpi-v{color:var(--p2)}
+.dash-kpi-delta{display:inline-flex;align-items:center;gap:4px;font-size:11px;font-weight:600;margin-top:1px;line-height:1}
+.dash-kpi-delta.up{color:#1FA971}.dash-kpi-delta.down{color:#D9534F}
+.dash-kpi-delta-cap{color:var(--t3);font-weight:500;margin-left:2px}
 .dash-grid{display:grid;grid-template-columns:1.3fr 1fr;gap:16px;margin-top:20px}
 @media(max-width:900px){.dash-grid{grid-template-columns:1fr}}
 .dash-grid>*{min-width:0}  /* deixa os cards encolherem no mobile (sem isso o gráfico/listas forçam overflow) */
@@ -691,26 +712,24 @@ input[type=color]{opacity:0;width:0;height:0;position:absolute}
 .dash-rank-cliente{font-size:13px;font-weight:700;color:var(--t);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .dash-rank-meta{font-size:11px;color:var(--t3);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .dash-rank-valor{font-size:12.5px;font-weight:800;color:var(--p);flex-shrink:0}
-.dash-extra-kpis{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-top:20px}
-@media(max-width:900px){.dash-extra-kpis{grid-template-columns:1fr 1fr}}
-@media(max-width:560px){.dash-extra-kpis{grid-template-columns:1fr}}
+/* Cards do dashboard: planos, fio de 1px, sem sombra flutuante (a sombra em
+   tudo é a "cara de IA"). Escopo só na dashboard por enquanto. */
+#view-dashboard .card{box-shadow:none;padding:22px 24px}
+#view-dashboard .card:hover{box-shadow:none}
+.dash-grid{margin-top:14px}
 
-/* ── DASHBOARD PREMIUM: delta vs mês anterior + donut do funil ── */
-.dash-kpi-delta{display:inline-flex;align-items:center;gap:5px;font-size:11px;font-weight:700;margin-top:1px;line-height:1}
-.dash-kpi-delta.up{color:#22C55E}
-.dash-kpi-delta.down{color:#EF4444}
-.dash-kpi-delta-cap{color:var(--t3);font-weight:500;margin-left:2px}
-.dash-donut-wrap{display:flex;align-items:center;gap:20px;flex-wrap:wrap}
-.dash-donut{position:relative;width:140px;height:140px;flex-shrink:0}
-.dash-donut svg{display:block;filter:drop-shadow(0 4px 10px rgba(0,0,0,.18))}
+/* ── donut do funil: rampa navy→âmbar (sem arco-íris), plano ── */
+.dash-donut-wrap{display:flex;align-items:center;gap:24px;flex-wrap:wrap}
+.dash-donut{position:relative;width:132px;height:132px;flex-shrink:0}
+.dash-donut svg{display:block}
 .dash-donut-center{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;pointer-events:none}
-.dash-donut-total{font-size:30px;font-weight:800;color:var(--t);line-height:1;letter-spacing:-.5px}
+.dash-donut-total{font-size:30px;font-weight:700;color:var(--t);line-height:1;letter-spacing:-.5px;font-variant-numeric:tabular-nums}
 .dash-donut-cap{font-size:10.5px;color:var(--t3);text-transform:uppercase;letter-spacing:.08em;margin-top:3px}
-.dash-donut-legenda{flex:1;min-width:160px;display:flex;flex-direction:column;gap:8px}
-.dash-donut-leg{display:flex;align-items:center;gap:9px;font-size:12.5px}
-.dash-donut-dot{width:10px;height:10px;border-radius:3px;flex-shrink:0}
+.dash-donut-legenda{flex:1;min-width:170px;display:flex;flex-direction:column;gap:9px}
+.dash-donut-leg{display:flex;align-items:center;gap:10px;font-size:12.5px}
+.dash-donut-dot{width:9px;height:9px;border-radius:2px;flex-shrink:0}
 .dash-donut-leg-l{flex:1;color:var(--t2);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.dash-donut-leg-n{font-weight:800;color:var(--t)}
+.dash-donut-leg-n{font-weight:700;color:var(--t);font-variant-numeric:tabular-nums}
 
 /* ── VENDAS ── */
 .vendas-kpis{display:grid;grid-template-columns:repeat(3,1fr);gap:14px}
@@ -981,9 +1000,11 @@ input[type=color]{opacity:0;width:0;height:0;position:absolute}
 
       <div id="onboarding-card"></div>
 
-      <div class="dash-kpis" id="dash-kpis"></div>
+      <div class="dash-hero" id="dash-hero"></div>
 
-      <div class="dash-extra-kpis" id="dash-extra-kpis"></div>
+      <div class="dash-strip" id="dash-kpis"></div>
+
+      <div class="dash-strip dash-strip--sec" id="dash-extra-kpis"></div>
 
       <div class="dash-grid">
         <div class="card">
@@ -6503,19 +6524,39 @@ function renderDashboard() {
     return { txt: (p >= 0 ? '+' : '') + p + '%', dir: p >= 0 ? 'up' : 'down' }
   }
 
+  // ── Faixa-herói: a comissão é a promessa do produto, então é o número
+  //    dominante da tela (não mais uma caixa igual às outras). ──
+  const heroEl = document.getElementById('dash-hero')
+  if (heroEl) {
+    // Delta só quando há comissão no mês — um "-100%" sobre zero (ainda não
+    // fechou nada) é desânimo, não informação.
+    const d = comissaoMes > 0 ? deltaPct(comissaoMes, comissaoMesAnt) : null
+    const sub = comissaoMes > 0
+      ? (d ? `<div class="dash-hero-delta ${d.dir}">${d.dir === 'up' ? '▲' : '▼'} ${escH(d.txt)} <span class="dash-hero-delta-cap">vs mês anterior</span></div>` : '')
+      : `<div class="dash-hero-hint">Sua próxima venda fechada aparece aqui</div>`
+    heroEl.innerHTML = `
+      <div class="dash-hero-main">
+        <div class="dash-hero-cap">Comissão no mês</div>
+        <div class="dash-hero-val">${escH(formatarMoedaBR(comissaoMes))}</div>
+        ${sub}
+      </div>
+      <div class="dash-hero-side">
+        <div class="dash-hero-side-cap">Comissão no ano</div>
+        <div class="dash-hero-side-val">${escH(formatarMoedaBR(comissaoAno))}</div>
+      </div>`
+  }
+
+  // Instrumento (metade operacional): contagens do dia a dia, peso leve.
   const kpis = [
-    { l: 'Leads ativos',            v: String(leadsAtivos),                 alerta:false },
-    { l: 'Leads em alerta',         v: String(leadsAlerta),                 alerta:leadsAlerta>0 },
-    { l: 'Imóveis disponíveis',     v: String(imoveisDisponiveis),          alerta:false },
-    { l: 'Vendas fechadas no mês',  v: String(vendasDoMes.length),          alerta:false, delta:deltaPct(vendasDoMes.length, vendasMesAnt.length) },
-    { l: 'Comissão no mês',         v: formatarMoedaBR(comissaoMes),        alerta:false, delta:deltaPct(comissaoMes, comissaoMesAnt) },
-    { l: 'Comissão no ano',         v: formatarMoedaBR(comissaoAno),        alerta:false },
+    { l: 'Leads ativos',            v: String(leadsAtivos),        alerta:false },
+    { l: 'Leads em alerta',         v: String(leadsAlerta),        alerta:leadsAlerta>0 },
+    { l: 'Vendas fechadas no mês',  v: String(vendasDoMes.length), alerta:false, delta:deltaPct(vendasDoMes.length, vendasMesAnt.length) },
   ]
   elKpis.innerHTML = kpis.map(k => `
     <div class="dash-kpi${k.alerta ? ' alerta' : ''}">
       <span class="dash-kpi-l">${escH(k.l)}</span>
       <span class="dash-kpi-v">${escH(k.v)}</span>
-      ${k.delta ? `<span class="dash-kpi-delta ${k.delta.dir}">${k.delta.dir === 'up' ? '▲' : '▼'} ${escH(k.delta.txt)}<span class="dash-kpi-delta-cap">vs mês anterior</span></span>` : ''}
+      ${k.delta ? `<span class="dash-kpi-delta ${k.delta.dir}">${k.delta.dir === 'up' ? '▲' : '▼'} ${escH(k.delta.txt)}<span class="dash-kpi-delta-cap">vs mês ant.</span></span>` : ''}
     </div>`).join('')
 
   renderDashboardExtraKpis()
@@ -6566,9 +6607,10 @@ function renderDashboardExtraKpis() {
     ? vendas.reduce((s, v) => s + valorParaNumero(v.valor), 0) / vendas.length
     : 0
 
+  const imoveisDisponiveis = imoveis.filter(i => (i.status || 'disponivel') === 'disponivel').length
   const extraKpis = [
-    { l: 'Taxa de conversão (geral)', v: totalLeads > 0 ? `${taxaConversao}%` : '—' },
-    { l: 'Tempo médio até fechar',    v: tempoMedio !== null ? `${tempoMedio} dia${tempoMedio === 1 ? '' : 's'}` : '—' },
+    { l: 'Imóveis disponíveis',       v: String(imoveisDisponiveis) },
+    { l: 'Taxa de conversão',         v: totalLeads > 0 ? `${taxaConversao}%` : '—' },
     { l: 'Ticket médio das vendas',   v: vendas.length > 0 ? formatarMoedaBR(ticketMedioVendas) : '—' },
   ]
   el.innerHTML = extraKpis.map(k => `
@@ -6751,21 +6793,27 @@ function renderDashboardFunilResumo() {
     return
   }
 
+  // Rampa navy (frio, aprofundando ao longo do funil) + âmbar SÓ na venda
+  // fechada — o único estado quente é a vitória. Substitui o arco-íris das
+  // cores de estágio (que seguem valendo no kanban) só aqui na dashboard.
+  const RAMPA = ['#AEBECE', '#8AA0B6', '#66849E', '#456781', '#294D6B', '#C9882A']
+  const corDe = (i) => RAMPA[i] || RAMPA[RAMPA.length - 1]
+
   const total = leads.length
   const R = 54, C = 2 * Math.PI * R
   let acc = 0
-  const segs = FUNIL_ESTAGIOS.map(e => {
+  const segs = FUNIL_ESTAGIOS.map((e, i) => {
     const n = leads.filter(l => estagioFunilLead(l) === e.key).length
     if (n === 0) return ''
     const len = (n / total) * C
-    const seg = `<circle cx="70" cy="70" r="${R}" fill="none" stroke="${e.cor}" stroke-width="16" stroke-linecap="butt" stroke-dasharray="${len.toFixed(2)} ${(C - len).toFixed(2)}" stroke-dashoffset="${(-acc).toFixed(2)}" transform="rotate(-90 70 70)"></circle>`
+    const seg = `<circle cx="70" cy="70" r="${R}" fill="none" stroke="${corDe(i)}" stroke-width="15" stroke-linecap="butt" stroke-dasharray="${len.toFixed(2)} ${(C - len).toFixed(2)}" stroke-dashoffset="${(-acc).toFixed(2)}" transform="rotate(-90 70 70)"></circle>`
     acc += len
     return seg
   }).join('')
-  const legenda = FUNIL_ESTAGIOS.map(e => {
+  const legenda = FUNIL_ESTAGIOS.map((e, i) => {
     const n = leads.filter(l => estagioFunilLead(l) === e.key).length
     return `<div class="dash-donut-leg">
-      <span class="dash-donut-dot" style="background:${e.cor}"></span>
+      <span class="dash-donut-dot" style="background:${corDe(i)}"></span>
       <span class="dash-donut-leg-l">${escH(e.label)}</span>
       <span class="dash-donut-leg-n">${n}</span>
     </div>`
@@ -6773,7 +6821,7 @@ function renderDashboardFunilResumo() {
   el.innerHTML = `<div class="dash-donut-wrap">
     <div class="dash-donut">
       <svg viewBox="0 0 140 140" width="140" height="140">
-        <circle cx="70" cy="70" r="${R}" fill="none" stroke="var(--s2)" stroke-width="16"></circle>
+        <circle cx="70" cy="70" r="${R}" fill="none" stroke="var(--s2)" stroke-width="15"></circle>
         ${segs}
       </svg>
       <div class="dash-donut-center"><span class="dash-donut-total">${total}</span><span class="dash-donut-cap">leads</span></div>
