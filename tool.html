@@ -201,10 +201,11 @@ body{font-family:var(--font);background:var(--bg);color:var(--t);-webkit-font-sm
 .onb-step.done .onb-step-cta{display:none}
 
 /* ── CARD ── */
-.card{background:var(--s1);border:1px solid var(--b);border-radius:var(--radl);padding:26px;margin-bottom:16px;box-shadow:var(--shadow-sm);transition:box-shadow .2s ease,border-color .2s ease,transform .2s ease,background-color .2s ease}
-.card:hover{box-shadow:var(--shadow-lg)}
-.card-t{font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.09em;color:var(--t3);margin-bottom:18px;display:flex;align-items:center;gap:8px}
-.card-t::after{content:'';flex:1;height:1px;background:var(--b)}
+/* Pele de marca propagada (2026-07-04): cards planos (sem sombra flutuante,
+   sem hover-pulo) e cabeçalhos confiantes em caixa normal — não a etiqueta
+   minúscula em MAIÚSCULA espaçada com fio, que era o maior "tell" de IA. */
+.card{background:var(--s1);border:1px solid var(--b);border-radius:var(--radl);padding:24px;margin-bottom:16px;transition:border-color .2s ease,background-color .2s ease}
+.card-t{font-size:15px;font-weight:600;letter-spacing:-.1px;color:var(--t);margin-bottom:15px;display:flex;align-items:center;gap:8px}
 
 /* ── TUTORIAIS (accordion) ── */
 .tut-item{background:var(--s1);border:1px solid var(--b);border-radius:var(--radl);margin-bottom:10px;overflow:hidden;box-shadow:var(--shadow-sm);transition:box-shadow .2s ease}
@@ -761,11 +762,6 @@ input[type=color]{opacity:0;width:0;height:0;position:absolute}
 .dash-rank-valor{font-size:12.5px;font-weight:800;color:var(--p);flex-shrink:0}
 /* Cards do dashboard: planos, fio de 1px, sem sombra flutuante (a sombra em
    tudo é a "cara de IA"). Escopo só na dashboard por enquanto. */
-#view-dashboard .card{box-shadow:none;padding:22px 24px}
-/* Cabeçalhos confiantes (não a etiqueta minúscula em maiúscula espaçada, o
-   maior "tell" de template de IA): sentence-case, peso e cor de verdade. */
-#view-dashboard .card-t{font-size:15px;font-weight:600;text-transform:none;letter-spacing:-.1px;color:var(--t);margin-bottom:15px}
-#view-dashboard .card-t::after{display:none}
 #view-dashboard .card:hover{box-shadow:none}
 .dash-grid{margin-top:14px}
 
