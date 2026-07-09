@@ -120,6 +120,30 @@ body{font-family:var(--font);background:var(--bg);color:var(--t);-webkit-font-sm
 .u-name{font-size:13px;font-weight:600;color:var(--t);line-height:1.2;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:140px}
 .u-plan{font-size:11px;color:var(--t3)}
 
+/* ══ Cromo NAVY permanente (2026-07-04) ══
+   Ferramentas sérias de corretor (Chime, Sierra, kvCORE) têm cromo escuro/
+   de marca — não "dashboard claro genérico de template". A sidebar vira navy
+   fixo (independe do tema claro/escuro), com a marca como ESTRUTURA. Mata a
+   maior "aparência de Claude" do produto. */
+.sidebar,.mob-bar{background:var(--p);border-color:rgba(255,255,255,.09)}
+.sb-head{border-bottom-color:rgba(255,255,255,.09)}
+.sb-foot{border-top-color:rgba(255,255,255,.09)}
+.sb-logo,.mob-logo{color:#fff}
+.sb-logo em,.mob-logo em{color:var(--p2)}
+.sb-sec{color:rgba(232,237,242,.42)}
+.sb-item{color:rgba(232,237,242,.80)}
+.sb-item svg{color:rgba(232,237,242,.55)}
+.sb-item:hover{background:rgba(255,255,255,.07);color:#fff}
+.sb-item:hover svg{color:#fff}
+.sb-item.active{background:rgba(201,136,42,.20);color:#fff}
+.sb-item.active svg{color:var(--p2)}
+.sidebar .sb-badge{background:rgba(255,255,255,.14)!important;color:#fff!important}
+.sb-collapse,.theme-toggle{background:rgba(255,255,255,.07);border-color:rgba(255,255,255,.13);color:rgba(232,237,242,.65)}
+.sb-collapse:hover,.theme-toggle:hover{color:#fff;background:rgba(255,255,255,.12)}
+.sb-user:hover{background:rgba(255,255,255,.07)}
+.u-name{color:#fff}
+.u-plan{color:rgba(232,237,242,.5)}
+
 /* ── MAIN ── */
 .main{margin-left:var(--sw);min-height:100vh;display:flex;flex-direction:column;transition:margin-left .22s ease}
 .topbar{position:sticky;top:0;z-index:50;background:var(--bg-blur);backdrop-filter:blur(20px) saturate(1.6);-webkit-backdrop-filter:blur(20px) saturate(1.6);border-bottom:1px solid var(--b);height:var(--th);display:flex;align-items:center;padding:0 32px;gap:12px;flex-shrink:0}
@@ -275,6 +299,8 @@ input[type=color]{opacity:0;width:0;height:0;position:absolute}
 .btn-primary{background:var(--p);color:#fff}
 .btn-primary:hover{background:var(--ph)}
 .btn-green{background:var(--g);color:#fff}
+.btn-amber{background:var(--p2);color:#fff;border-color:var(--p2)}
+.btn-amber:hover{background:var(--bph)}
 .btn-green:hover{background:#16a34a}
 .btn-ghost{background:var(--s2);color:var(--t2);border:1px solid var(--b)}
 .btn-ghost:hover{background:var(--s3);color:var(--t)}
@@ -736,6 +762,10 @@ input[type=color]{opacity:0;width:0;height:0;position:absolute}
 /* Cards do dashboard: planos, fio de 1px, sem sombra flutuante (a sombra em
    tudo é a "cara de IA"). Escopo só na dashboard por enquanto. */
 #view-dashboard .card{box-shadow:none;padding:22px 24px}
+/* Cabeçalhos confiantes (não a etiqueta minúscula em maiúscula espaçada, o
+   maior "tell" de template de IA): sentence-case, peso e cor de verdade. */
+#view-dashboard .card-t{font-size:15px;font-weight:600;text-transform:none;letter-spacing:-.1px;color:var(--t);margin-bottom:15px}
+#view-dashboard .card-t::after{display:none}
 #view-dashboard .card:hover{box-shadow:none}
 .dash-grid{margin-top:14px}
 
@@ -1019,7 +1049,7 @@ input[type=color]{opacity:0;width:0;height:0;position:absolute}
           <h1 id="dash-saudacao">Central de comando</h1>
           <p id="dash-resumo-dia">Seu dia de trabalho, num lugar só.</p>
         </div>
-        <button class="btn btn-green" onclick="showView('form')">
+        <button class="btn btn-amber" onclick="showView('form')">
           <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
           Nova proposta
         </button>
