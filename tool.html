@@ -77,6 +77,11 @@ html[data-tema="claro"]{
 html{scroll-behavior:smooth}
 html,body{transition:background-color .25s ease,color .25s ease}
 *{transition:background-color .2s ease,border-color .2s ease,color .2s ease,box-shadow .2s ease}
+/* Assinatura da família de ícones Selo: cantos e pontas arredondados em TODO
+   traço de ícone. É o maior diferencial visual do stock (Feather/Lucide tem
+   canto reto). Só afeta traços — em formas preenchidas (barras, pontos) é no-op.
+   Ícones que definem o próprio linecap/linejoin continuam mandando. */
+svg{stroke-linecap:round;stroke-linejoin:round}
 body{font-family:var(--font);background:var(--bg);color:var(--t);-webkit-font-smoothing:antialiased;min-height:100vh}
 
 /* ── SIDEBAR ── */
@@ -4376,7 +4381,7 @@ function renderHistory(filtrados) {
             <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1"/></svg>
           </button>
           <button class="btn btn-ghost btn-sm" onclick="excluirProposta(${realIdx})" aria-label="Excluir">
-            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 01-2 2H8a2 2 0 01-2-2L5 6"/><path d="M10 11v6M14 11v6"/><path d="M9 6V4h6v2"/></svg>
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 7h16"/><path d="M9 7V5a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2"/><path d="M6.6 7l.8 12.1a1.8 1.8 0 0 0 1.8 1.7h5.6a1.8 1.8 0 0 0 1.8-1.7L17.4 7"/><path d="M10 11.5v5M14 11.5v5"/></svg>
           </button>
         </div>
       </div>
@@ -4725,7 +4730,7 @@ function renderVisitas() {
             <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
           </button>
           <button class="btn btn-ghost btn-sm" onclick="excluirVisita(${v.id})" aria-label="Excluir">
-            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 01-2 2H8a2 2 0 01-2-2L5 6"/><path d="M10 11v6M14 11v6"/><path d="M9 6V4h6v2"/></svg>
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 7h16"/><path d="M9 7V5a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2"/><path d="M6.6 7l.8 12.1a1.8 1.8 0 0 0 1.8 1.7h5.6a1.8 1.8 0 0 0 1.8-1.7L17.4 7"/><path d="M10 11.5v5M14 11.5v5"/></svg>
           </button>
         </div>
       </div>
@@ -5708,7 +5713,7 @@ function renderAgenda() {
           </button>
           ${acoes}
           <button class="btn btn-ghost btn-sm" onclick="excluirLead(${l.id})" aria-label="Excluir">
-            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 01-2 2H8a2 2 0 01-2-2L5 6"/><path d="M10 11v6M14 11v6"/><path d="M9 6V4h6v2"/></svg>
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 7h16"/><path d="M9 7V5a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2"/><path d="M6.6 7l.8 12.1a1.8 1.8 0 0 0 1.8 1.7h5.6a1.8 1.8 0 0 0 1.8-1.7L17.4 7"/><path d="M10 11.5v5M14 11.5v5"/></svg>
           </button>
         </div>
       </div>
@@ -6080,7 +6085,7 @@ function renderLeadModalConteudo() {
             <div class="lm-reminder-data${vencido ? ' vencido' : ''}">${r.data ? fmtDataBR(r.data) : 'Sem data'}${vencido ? ' — atrasado' : ''}</div>
           </div>
           <button class="btn btn-ghost btn-sm" onclick="removerLembreteLead(${idx})" aria-label="Remover lembrete">
-            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 01-2 2H8a2 2 0 01-2-2L5 6"/></svg>
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 7h16"/><path d="M9 7V5a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2"/><path d="M6.6 7l.8 12.1a1.8 1.8 0 0 0 1.8 1.7h5.6a1.8 1.8 0 0 0 1.8-1.7L17.4 7"/></svg>
           </button>
         </div>`
       }).join('')
@@ -6931,7 +6936,7 @@ function renderVendas() {
             <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 4H4a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2v-7"/><path d="M18.5 2.5a2.12 2.12 0 013 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
           </button>
           <button class="btn btn-ghost btn-sm" onclick="excluirVenda(${v.id})" aria-label="Excluir">
-            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 01-2 2H8a2 2 0 01-2-2L5 6"/><path d="M10 11v6M14 11v6"/><path d="M9 6V4h6v2"/></svg>
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 7h16"/><path d="M9 7V5a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2"/><path d="M6.6 7l.8 12.1a1.8 1.8 0 0 0 1.8 1.7h5.6a1.8 1.8 0 0 0 1.8-1.7L17.4 7"/><path d="M10 11.5v5M14 11.5v5"/></svg>
           </button>
         </div>
       </div>
@@ -7121,7 +7126,7 @@ function renderImoveis() {
             Editar
           </button>
           <button type="button" class="btn btn-ghost btn-sm" onclick="excluirImovel(${im.id})" aria-label="Excluir">
-            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 01-2 2H8a2 2 0 01-2-2L5 6"/><path d="M10 11v6M14 11v6"/><path d="M9 6V4h6v2"/></svg>
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 7h16"/><path d="M9 7V5a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2"/><path d="M6.6 7l.8 12.1a1.8 1.8 0 0 0 1.8 1.7h5.6a1.8 1.8 0 0 0 1.8-1.7L17.4 7"/><path d="M10 11.5v5M14 11.5v5"/></svg>
           </button>
         </div>
       </div>
