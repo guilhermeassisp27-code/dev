@@ -56,6 +56,12 @@ Next.js app (Vercel: https://selosales.com.br — domínio próprio)
 | `app/(auth)/definir-senha/page.tsx` | Define senha após convite |
 | `middleware.ts` | Redireciona sessão ativa para tool.html |
 | `supabase-setup.sql` | SQL para criar tabela cpr_user_data + RLS + GRANT |
+| `app/api/whatsapp-webhook/route.ts` | Webhook da WhatsApp Cloud API — bot de atendimento de leads (F0) |
+| `lib/leadbot.ts` | Motor de conversa do bot (Claude) — só qualifica, nunca fala preço/comissão |
+| `lib/whatsapp.ts` | Cliente da Graph API do WhatsApp (envio de mensagens) |
+| `supabase-whatsapp-setup.sql` | Tabelas cpr_wa_* + RLS + expurgo LGPD do bot de WhatsApp |
+| `docs/plano-whatsapp-leads.md` | Plano estratégico do atendimento de leads por WhatsApp |
+| `docs/whatsapp-f0-setup.md` | Checklist manual (Meta/Vercel/Supabase) para ativar o piloto |
 | `marketing/` | Materiais de marketing (imagens, plano de tráfego) |
 | `marketing/logo/selo/` | Kit de marca oficial do Selo (logos, cores, tipografia) — ver `brand-tokens.json` como fonte única de cor/tipografia e `LEIA-ME.md` para o mapa de arquivos |
 | `public/landing.html` | Landing page servida na raiz do app Vercel (via rewrite em `next.config.js`) |
