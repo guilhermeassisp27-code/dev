@@ -227,6 +227,14 @@ body{font-family:var(--font);background:var(--bg);color:var(--t);-webkit-font-sm
    gigante em cima" típico de ferramenta genérica. O .dash-top do dashboard
    é o mesmo padrão de cabeçalho, reaproveitado nas outras telas. */
 .dash-top .ph{margin:0}
+/* Seções das Configurações: etiqueta em caixa normal (a versão minúscula
+   em MAIÚSCULA espaçada era o "tell" de IA que a pele de marca matou). */
+.cfg-sec{font-size:13.5px;font-weight:650;color:var(--t2);margin:30px 2px 12px}
+.cfg-sec:first-of-type{margin-top:4px}
+
+/* Passo numerado do fluxo de criação — o ponto-âmbar ecoa o acento da
+   família de ícones (ponto-lacre do selo). */
+.step-n{display:inline-flex;align-items:center;justify-content:center;width:22px;height:22px;border-radius:50%;background:rgba(201,136,42,.15);color:var(--p2);font-size:11.5px;font-weight:700;flex-shrink:0;font-variant-numeric:tabular-nums}
 .novo-panel{display:none;margin-bottom:20px}
 .novo-panel.open{display:block;animation:viewIn .3s ease}
 .panel-x{margin-left:auto;width:26px;height:26px;border-radius:8px;border:none;background:none;color:var(--t3);display:flex;align-items:center;justify-content:center;cursor:pointer;flex-shrink:0;padding:0}
@@ -1451,17 +1459,10 @@ input[type=color]{opacity:0;width:0;height:0;position:absolute}
         <p>Preencha os dados do cliente e do imóvel para gerar a proposta com sua marca.</p>
       </div>
 
-      <div class="demo-row">
-        <button class="btn btn-ghost btn-sm" onclick="carregarExemplo()">
-          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="5 3 19 12 5 21 5 3"/></svg>
-          Ver exemplo preenchido
-        </button>
-      </div>
-
       <form id="form" onsubmit="gerarProposta(event)" novalidate>
 
         <div class="card">
-          <div class="card-t">Cliente</div>
+          <div class="card-t"><span class="step-n">1</span> Cliente</div>
           <div class="fg fg1">
             <div class="field">
               <label class="lbl" for="f-cliente">Nome do cliente <span class="req">*</span></label>
@@ -1476,7 +1477,7 @@ input[type=color]{opacity:0;width:0;height:0;position:absolute}
         </div>
 
         <div class="card">
-          <div class="card-t">Imóvel</div>
+          <div class="card-t"><span class="step-n">2</span> Imóvel</div>
           <div class="fg">
             <div class="field">
               <label class="lbl" for="f-tipo-imovel">Tipo do imóvel <span class="req">*</span></label>
@@ -1650,7 +1651,7 @@ input[type=color]{opacity:0;width:0;height:0;position:absolute}
         </div>
 
         <div class="card">
-          <div class="card-t">Condições e Observações</div>
+          <div class="card-t"><span class="step-n">3</span> Condições e Observações</div>
           <div class="fg fg1">
             <div class="field">
               <div class="lbl-row">
@@ -2268,6 +2269,7 @@ input[type=color]{opacity:0;width:0;height:0;position:absolute}
       </div>
 
       <form id="form-config" onsubmit="salvarConfig(event)" novalidate>
+        <div class="cfg-sec">Você e sua marca</div>
         <div class="card">
           <div class="card-t">Identidade Profissional</div>
           <div class="fg">
@@ -2413,6 +2415,7 @@ input[type=color]{opacity:0;width:0;height:0;position:absolute}
           </div>
         </div>
 
+        <div class="cfg-sec">Como sua proposta sai</div>
         <div class="card">
           <div class="card-t">Modelo da Proposta</div>
           <p style="font-size:12px;color:var(--t2);margin-bottom:14px">Escolha o estilo visual que sua proposta vai usar a partir de agora — pode trocar quando quiser, sem perder nenhum dado.</p>
@@ -2480,6 +2483,7 @@ input[type=color]{opacity:0;width:0;height:0;position:absolute}
           </div>
         </div>
 
+        <div class="cfg-sec">Mensagens prontas</div>
         <div class="card">
           <div class="card-t">Mensagens de WhatsApp</div>
           <p style="font-size:12px;color:var(--t2);margin-bottom:14px">Uma mensagem pronta pra cada etapa do Funil, mais uma pra Agenda de Visitas. O botão de WhatsApp de cada lead manda automaticamente a mensagem da etapa em que ele está. Use <code>{cliente}</code>, <code>{corretor}</code>, <code>{imovel}</code> e <code>{creci}</code> — serão substituídos automaticamente. Se deixar em branco, usamos o texto padrão.</p>
@@ -2527,7 +2531,8 @@ input[type=color]{opacity:0;width:0;height:0;position:absolute}
       <!-- M10 da auditoria: sem isto, todo dispositivo novo obrigava o
            corretor a passar pelo "esqueci minha senha". Fora do form de
            perfil de propósito — senha não entra no salvarConfig(). -->
-      <div class="card" style="margin-top:16px">
+      <div class="cfg-sec">Sua conta</div>
+      <div class="card">
         <div class="card-t">Senha de acesso</div>
         <p style="font-size:12px;color:var(--t2);margin-bottom:14px">Defina ou troque a senha que você usa para entrar em outro celular ou computador.</p>
         <div class="fg">
