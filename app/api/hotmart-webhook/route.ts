@@ -168,6 +168,9 @@ async function enviarEmailRecuperacao(destino: string, nome: string, plano: stri
   try {
     const resp = await fetch('https://api.brevo.com/v3/smtp/email', {
       method: 'POST',
+      // M19: sem timeout, um Brevo pendurado segura a função serverless até o
+      // limite do Vercel — e o webhook de PAGAMENTO não pode morrer por email.
+      signal: AbortSignal.timeout(8000),
       headers: {
         'api-key': process.env.BREVO_API_KEY,
         'content-type': 'application/json',

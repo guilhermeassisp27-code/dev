@@ -77,11 +77,19 @@ Cancelamento/reembolso na Hotmart → webhook marca `inactive` e bane a conta.
 ## Passo 3 — Allowlist de redirect no Supabase
 
 Supabase → Authentication → URL Configuration:
-- **Site URL:** `https://usecorretorpro.vercel.app`
-- **Redirect URLs:** adicione `https://usecorretorpro.vercel.app/definir-senha`
-  e `https://usecorretorpro.vercel.app/**`
+- **Site URL:** `https://selosales.com.br`
+- **Redirect URLs:** adicione `https://selosales.com.br/definir-senha`
+  e `https://selosales.com.br/**`
 
 Se a URL não estiver aqui, o link do email não estabelece a sessão.
+
+## Passo 4 — Validade do link de senha (M9 da auditoria)
+
+Supabase → Authentication → Sessions/Email → **Email OTP Expiration**: o
+padrão é 1 hora, curto demais para quem compra à noite e abre o email de
+manhã. Configurar para **86400 segundos (24 horas)** — os templates de email
+já prometem "expira em 24 horas", então este passo é obrigatório para a
+promessa ser verdadeira.
 
 ## Endpoint admin — convidar / reenviar acesso manualmente
 

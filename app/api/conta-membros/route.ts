@@ -51,19 +51,22 @@ type Ctx = {
 }
 
 // Resolve o usuário do JWT e a conta em que ele é membro.
-async function contexto(req: NextRequest): Promise<Ctx | null> {
+// M22: quem é membro de 2+ contas pode indicar QUAL conta via ?account_id=
+// (GET) ou body.accountId (POST/DELETE) — sem indicação, o comportamento
+// antigo (primeira conta) vale, então usuários de conta única não mudam.
+async function contexto(req: NextRequest, accountId?: string): Promise<Ctx | null> {
   const jwt = (req.headers.get('authorization') ?? '').replace(/^Bearer\s+/i, '').trim()
   if (!jwt) return null
   const supabase = admin()
   const { data: auth, error } = await supabase.auth.getUser(jwt)
   if (error || !auth?.user) return null
 
-  const { data: memb } = await supabase
+  let query = supabase
     .from('cpr_account_members')
     .select('account_id, papel')
     .eq('user_id', auth.user.id)
-    .limit(1)
-    .maybeSingle()
+  if (accountId) query = query.eq('account_id', accountId)
+  const { data: memb } = await query.limit(1).maybeSingle()
   if (!memb) return null
 
   const { data: conta } = await supabase
@@ -93,7 +96,7 @@ async function listarMembros(ctx: Ctx): Promise<Membro[]> {
 }
 
 export async function GET(req: NextRequest) {
-  const ctx = await contexto(req)
+  const ctx = await contexto(req, req.nextUrl.searchParams.get('account_id') || undefined)
   if (!ctx) return cors(NextResponse.json({ error: 'unauthorized' }, { status: 401 }))
   const membros = await listarMembros(ctx)
   return cors(
@@ -135,18 +138,34 @@ async function findUser(supabase: ReturnType<typeof admin>, alvo: string) {
   return undefined
 }
 
-export async function POST(req: NextRequest) {
-  const ctx = await contexto(req)
-  if (!ctx) return cors(NextResponse.json({ error: 'unauthorized' }, { status: 401 }))
-  if (!ctx.souAdmin)
-    return cors(NextResponse.json({ error: 'apenas o admin da conta convida membros' }, { status: 403 }))
+// M14: limite de convites por admin (10 a cada 10 min). Em memória — vale por
+// instância da função, então não é garantia dura, mas fecha o abuso barato de
+// disparar resetPasswordForEmail em massa para emails arbitrários.
+const _convites = new Map<string, number[]>()
+function convitesExcedidos(userId: string): boolean {
+  const agora = Date.now()
+  const janela = (_convites.get(userId) ?? []).filter((t) => agora - t < 10 * 60_000)
+  if (janela.length >= 10) return true
+  janela.push(agora)
+  _convites.set(userId, janela)
+  return false
+}
 
+export async function POST(req: NextRequest) {
   let body: Record<string, unknown>
   try {
     body = await req.json()
   } catch {
     return cors(NextResponse.json({ error: 'invalid json' }, { status: 400 }))
   }
+
+  const ctx = await contexto(req, body.accountId ? String(body.accountId) : undefined)
+  if (!ctx) return cors(NextResponse.json({ error: 'unauthorized' }, { status: 401 }))
+  if (!ctx.souAdmin)
+    return cors(NextResponse.json({ error: 'apenas o admin da conta convida membros' }, { status: 403 }))
+  if (convitesExcedidos(ctx.userId))
+    return cors(NextResponse.json({ error: 'muitos convites em pouco tempo — aguarde alguns minutos' }, { status: 429 }))
+
   const email = String(body.email ?? '').trim().toLowerCase()
   if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email))
     return cors(NextResponse.json({ error: 'email inválido' }, { status: 400 }))
@@ -165,6 +184,8 @@ export async function POST(req: NextRequest) {
   const { supabase } = ctx
   const existente = await findUser(supabase, email)
   let userId = existente?.id
+  // null = nenhum email era necessário (convidado já tinha conta/senha)
+  let emailSent: boolean | null = null
 
   if (!existente) {
     // Cria o acesso do convidado; o email de definir senha sai em seguida.
@@ -183,6 +204,9 @@ export async function POST(req: NextRequest) {
       const { error: mailErr } = await supabase.auth.resetPasswordForEmail(email, {
         redirectTo: `${appUrl}/definir-senha`,
       })
+      // M14: o resultado do email vai no JSON (emailSent) — o admin precisa
+      // saber que o convidado NÃO recebeu o link para reenviar/avisar.
+      emailSent = !mailErr
       if (mailErr) console.error('[conta-membros] envio do link de senha falhou:', mailErr.message)
     }
   } else {
@@ -211,21 +235,43 @@ export async function POST(req: NextRequest) {
     return cors(NextResponse.json({ error: 'falha ao vincular membro' }, { status: 500 }))
   }
 
-  return cors(NextResponse.json({ ok: true, userId }))
+  // M14: o check de assentos lá em cima corre contra convites concorrentes
+  // (check-then-insert). Recontagem pós-upsert com compensação: se a corrida
+  // estourou o limite, desfaz ESTE vínculo e devolve 409 — sem precisar de
+  // migração/lock no banco.
+  const { count } = await supabase
+    .from('cpr_account_members')
+    .select('user_id', { count: 'exact', head: true })
+    .eq('account_id', ctx.conta.id)
+  if ((count ?? 0) > ctx.conta.max_users) {
+    await supabase
+      .from('cpr_account_members')
+      .delete()
+      .eq('account_id', ctx.conta.id)
+      .eq('user_id', userId)
+    return cors(
+      NextResponse.json(
+        { error: `limite do plano atingido (${ctx.conta.max_users} usuário${ctx.conta.max_users === 1 ? '' : 's'})` },
+        { status: 409 }
+      )
+    )
+  }
+
+  return cors(NextResponse.json({ ok: true, userId, emailSent }))
 }
 
 export async function DELETE(req: NextRequest) {
-  const ctx = await contexto(req)
-  if (!ctx) return cors(NextResponse.json({ error: 'unauthorized' }, { status: 401 }))
-  if (!ctx.souAdmin)
-    return cors(NextResponse.json({ error: 'apenas o admin da conta remove membros' }, { status: 403 }))
-
   let body: Record<string, unknown>
   try {
     body = await req.json()
   } catch {
     return cors(NextResponse.json({ error: 'invalid json' }, { status: 400 }))
   }
+
+  const ctx = await contexto(req, body.accountId ? String(body.accountId) : undefined)
+  if (!ctx) return cors(NextResponse.json({ error: 'unauthorized' }, { status: 401 }))
+  if (!ctx.souAdmin)
+    return cors(NextResponse.json({ error: 'apenas o admin da conta remove membros' }, { status: 403 }))
   const alvo = String(body.userId ?? '')
   if (!alvo) return cors(NextResponse.json({ error: 'userId obrigatório' }, { status: 400 }))
   if (alvo === ctx.conta.owner_id)

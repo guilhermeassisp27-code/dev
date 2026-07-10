@@ -50,7 +50,8 @@ export async function getTaxas(): Promise<TaxasResult> {
       encodeURIComponent(`Modalidade eq '${modalidade}'`)
 
     // Cache diário (revalidate) — não bate no BC a cada acesso.
-    const r = await fetch(url, { next: { revalidate: 86400 } })
+    // M19: timeout de 8s — Olinda/BC fora do ar cai no FALLBACK em vez de pendurar.
+    const r = await fetch(url, { next: { revalidate: 86400 }, signal: AbortSignal.timeout(8000) })
     if (!r.ok) return FALLBACK
     const json = (await r.json()) as { value?: Array<Record<string, unknown>> }
     const rows = json.value ?? []

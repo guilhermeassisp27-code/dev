@@ -7782,7 +7782,13 @@ async function convidarMembro() {
     const j = await r.json().catch(() => ({}))
     if (!r.ok) { toast(j.error || 'Falha ao convidar', true); return }
     inp.value = ''
-    toast('Convite enviado — o membro recebe o email para definir a senha')
+    // emailSent=false: convidado NOVO cujo email de senha falhou (M14) —
+    // avisar o admin em vez de prometer um email que não saiu.
+    if (j.emailSent === false) {
+      toast('Membro adicionado, mas o email de senha falhou — peça para ele usar "Esqueci minha senha" na tela de acesso', true)
+    } else {
+      toast('Convite enviado — o membro recebe o email para definir a senha')
+    }
     carregarConta()
   } catch(_) { toast('Falha de conexão ao convidar', true) }
 }
