@@ -18,17 +18,15 @@
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-title" content="Selo">
 <link rel="apple-touch-icon" href="app-icon-192.png">
-<!-- Achado C8 da auditoria (2026-07-03): a tag usava a tag flutuante "@2",
-     que resolve para qualquer versão 2.x publicada — não determinística
-     entre usuários e sem controle de quando uma mudança chega ao ar.
-     Versão fixada em 2.105.4 (mesma major.minor já usada no server via
-     package.json). SRI (integrity=) ainda falta: exige calcular o hash
-     sha384 do arquivo servido pelo CDN nesta versão exata — não deve ser
-     adivinhado (um hash errado quebra o carregamento do script). Gerar com:
-       curl -s https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.105.4/dist/umd/supabase.min.js \
-         | openssl dgst -sha384 -binary | openssl base64 -A
-     e colar em integrity="sha384-<hash>" abaixo, junto com crossorigin. -->
-<script crossorigin="anonymous" src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.105.4/dist/umd/supabase.min.js"></script>
+<!-- Achado C8/M8 da auditoria: supabase-js agora é AUTO-HOSPEDADO
+     (vendor/supabase-js-2.105.4.js, bytes do tarball oficial do npm) em vez
+     de vir do jsDelivr. Sem CDN de terceiro: SRI deixa de ser necessário
+     (mesma origem, coberto pelo script-src 'self' do CSP abaixo) e um CDN
+     comprometido deixa de ser vetor. Para atualizar a versão: baixar o novo
+     tarball do npm, trocar o arquivo em vendor/, atualizar este src, o
+     PRECACHE do sw.js e bumpar o nome do cache do SW. -->
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline'; img-src 'self' data: blob: https:; font-src 'self' data:; connect-src 'self' https://kdudodqmijlzqwnkxpjo.supabase.co https://selosales.com.br; object-src 'none'; base-uri 'self'">
+<script src="vendor/supabase-js-2.105.4.js"></script>
 <script>
 /* Define o tema (claro/escuro) o mais cedo possível, antes do CSS pintar a
    tela, para evitar flash de tema errado. Prioridade: localStorage > prefers-color-scheme > escuro. */
@@ -2920,6 +2918,15 @@ function toggleAjuda(id) {
 
 /* ── ESC HTML ── */
 const escH = s => String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;')
+/* Sanitiza valores usados em src="" dentro de innerHTML (M7 da auditoria):
+   só passa data-URI de imagem bem formado ou URL https limpa — qualquer
+   outra string (ex.: `x" onerror=alert(1)`) vira '' e a imagem não renderiza. */
+const safeSrc = s => {
+  s = String(s || '')
+  if (/^data:image\/(png|jpe?g|webp|gif|svg\+xml);base64,[A-Za-z0-9+/=]*$/.test(s)) return s
+  if (/^https:\/\/[^"'<>\s\\]+$/.test(s)) return s
+  return ''
+}
 
 /* ── STATE ── */
 const PERFIL_DEFAULT = { nome:'',creci:'',tel:'',email:'',cor:'#C9882A',logo:null,modelo:'classico',fonte:'moderna',secoes:{},slug:'',empreendimentos:[],msgBoasVindas:'',msgFollowUp:'',msgAgendamento:'',wppNovoContato:'',wppVisitaAgendada:'',wppVisitaRealizada:'',wppPropostaEnviada:'',wppNegociacao:'',wppVendaFechada:'',wppAgenda:'',propApresentacao:'',propProximos:'',propObs:'' }
@@ -3867,7 +3874,7 @@ function construirProposta(d) {
 
   // Marca d'água do logo no fundo (aparece só no modelo Timbrado, via CSS).
   const marcaEl = document.getElementById('p-marca-dagua')
-  if (marcaEl) marcaEl.innerHTML = logoSrc ? `<img src="${logoSrc}" alt="">` : ''
+  if (marcaEl) marcaEl.innerHTML = logoSrc ? `<img src="${safeSrc(logoSrc)}" alt="">` : ''
 
   /* ── Header ── */
   document.getElementById('p-titulo').textContent = `${d.tipoNeg} — ${d.tipoImovel} · ${d.end.split(',')[0].trim()}`
@@ -7172,7 +7179,7 @@ function renderImoveis() {
     if (im.dorms) metaParts.push(im.dorms + ' dorm.')
     if (im.vagas) metaParts.push(im.vagas + ' vaga' + (im.vagas === '1' ? '' : 's'))
     const fotoHtml = im.foto
-      ? `<img src="${im.foto}" alt="Foto do imóvel">`
+      ? `<img src="${safeSrc(im.foto)}" alt="Foto do imóvel">`
       : `<svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>`
     const nFotos = Array.isArray(im.fotos) ? im.fotos.length : (im.foto ? 1 : 0)
     const contadorHtml = nFotos > 1
@@ -7255,7 +7262,7 @@ function renderFotosImovelForm() {
     const t = document.createElement('div')
     t.className = 'foto-thumb'
     t.title = i === 0 ? 'Capa do imóvel' : 'Clique para tornar capa'
-    t.innerHTML = `<img src="${src}" alt="Foto ${i + 1}">` +
+    t.innerHTML = `<img src="${safeSrc(src)}" alt="Foto ${i + 1}">` +
       (i === 0 ? '<span class="capa-tag">Capa</span>' : '') +
       `<button type="button" class="x" aria-label="Remover foto">×</button>`
     t.onclick = () => {
@@ -7362,7 +7369,7 @@ function carregarFormConfig() {
   atualizarCor(perfil.cor || '#C9882A')
   if (perfil.logo) {
     const prev = document.getElementById('logo-prev')
-    prev.innerHTML = `<img src="${perfil.logo}" alt="Logo">`
+    prev.innerHTML = `<img src="${safeSrc(perfil.logo)}" alt="Logo">`
   }
   marcarModeloSelecionado(perfil.modelo || 'classico')
   const fonteSel = document.getElementById('c-fonte')
@@ -7530,9 +7537,9 @@ function carregarLogo(ev) {
 
 function aplicarLogoPreview() {
   const prev = document.getElementById('logo-prev')
-  prev.innerHTML = `<img src="${perfil.logo}" alt="Logo">`
+  prev.innerHTML = `<img src="${safeSrc(perfil.logo)}" alt="Logo">`
   const prevCfg = document.getElementById('cfg-prev-logo')
-  prevCfg.innerHTML = `<img src="${perfil.logo}" alt="Logo" style="width:100%;height:100%;object-fit:contain">`
+  prevCfg.innerHTML = `<img src="${safeSrc(perfil.logo)}" alt="Logo" style="width:100%;height:100%;object-fit:contain">`
   renderSidebarUser()
 }
 
@@ -7569,7 +7576,7 @@ function carregarLogoEmp(ev) {
       canvas.width = width; canvas.height = height
       canvas.getContext('2d').drawImage(img, 0, 0, width, height)
       _empLogoTemp = canvas.toDataURL('image/png')
-      document.getElementById('e-logo-prev').innerHTML = `<img src="${_empLogoTemp}" alt="Logo" style="width:100%;height:100%;object-fit:contain">`
+      document.getElementById('e-logo-prev').innerHTML = `<img src="${safeSrc(_empLogoTemp)}" alt="Logo" style="width:100%;height:100%;object-fit:contain">`
       toast('Logo carregado')
     }
     img.onerror = () => toast('Arquivo de imagem inválido', true)
@@ -7619,7 +7626,7 @@ function renderEmps() {
     const row = document.createElement('div')
     row.style.cssText = 'display:flex;align-items:center;gap:10px;padding:9px 12px;border:1px solid var(--b);border-radius:10px;background:var(--s2)'
     const logo = e.logo
-      ? `<img src="${e.logo}" alt="" style="width:30px;height:30px;object-fit:contain;border-radius:6px;flex-shrink:0">`
+      ? `<img src="${safeSrc(e.logo)}" alt="" style="width:30px;height:30px;object-fit:contain;border-radius:6px;flex-shrink:0">`
       : `<span style="width:30px;height:30px;border-radius:6px;background:${cor}22;color:${cor};display:inline-flex;align-items:center;justify-content:center;font-weight:800;flex-shrink:0">${escH((e.nome || 'E')[0].toUpperCase())}</span>`
     row.innerHTML = logo +
       `<div style="flex:1;min-width:0"><div style="font-size:13px;font-weight:600">${escH(e.nome)}</div>` +
@@ -7745,7 +7752,7 @@ function renderEquipe() {
     document.getElementById('mq-info').value = m.info || ''
     document.getElementById('mq-cor').value = m.cor || '#0F2D4A'
     document.getElementById('mq-obrigatoria').checked = !!m.obrigatoria
-    if (m.logo) document.getElementById('mq-logo-prev').innerHTML = `<img src="${m.logo}" alt="Logo" style="width:100%;height:100%;object-fit:contain">`
+    if (m.logo) document.getElementById('mq-logo-prev').innerHTML = `<img src="${safeSrc(m.logo)}" alt="Logo" style="width:100%;height:100%;object-fit:contain">`
   } else {
     marcaBox.style.display = 'none'
   }
@@ -7817,7 +7824,7 @@ function carregarLogoMarcaEquipe(ev) {
       canvas.width = width; canvas.height = height
       canvas.getContext('2d').drawImage(img, 0, 0, width, height)
       _marcaLogoTemp = canvas.toDataURL('image/png')
-      document.getElementById('mq-logo-prev').innerHTML = `<img src="${_marcaLogoTemp}" alt="Logo" style="width:100%;height:100%;object-fit:contain">`
+      document.getElementById('mq-logo-prev').innerHTML = `<img src="${safeSrc(_marcaLogoTemp)}" alt="Logo" style="width:100%;height:100%;object-fit:contain">`
       toast('Logo carregado')
     }
     img.onerror = () => toast('Arquivo de imagem inválido', true)
@@ -7910,7 +7917,7 @@ function renderFotosForm() {
     const t = document.createElement('div')
     t.className = 'foto-thumb'
     t.title = i === 0 ? 'Capa da proposta' : 'Clique para tornar capa'
-    t.innerHTML = `<img src="${src}" alt="Foto ${i + 1}">` +
+    t.innerHTML = `<img src="${safeSrc(src)}" alt="Foto ${i + 1}">` +
       (i === 0 ? '<span class="capa-tag">Capa</span>' : '') +
       `<button type="button" class="x" aria-label="Remover foto">×</button>`
     t.onclick = () => {

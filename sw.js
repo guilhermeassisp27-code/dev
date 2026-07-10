@@ -3,27 +3,24 @@
    Estratégia:
    - Navegação (abrir o app): network-first com fallback no cache —
      online sempre pega a versão nova; offline abre a última em cache.
-   - supabase-js (CDN): cache-first — biblioteca versionada, muda raro.
+   - supabase-js (auto-hospedado em /vendor/): cache-first — o nome do
+     arquivo carrega a versão, então nunca muda por baixo do cache.
    - NUNCA intercepta chamadas de dados (supabase.co, /api/) nem
      métodos além de GET: dados dinâmicos não podem vir de cache.
    Para publicar uma versão nova do shell, o network-first já resolve;
    o nome do cache muda apenas em mudança estrutural do SW.
 
-   Achado C8 da auditoria (2026-07-03): a URL do CDN usava a tag flutuante
-   "@2" — a PRIMEIRA versão 2.x que um PWA instalado cacheava ficava presa
-   ali PARA SEMPRE (cache-first nunca revalida), inclusive correções de
-   segurança do supabase-js publicadas depois. Corrigido fixando a versão
-   exata (mesma do tool.html) e bumpando o nome do cache para v2 — isso
-   invalida o cache antigo de qualquer PWA já instalado, forçando o
-   download da versão pinada no próximo fetch. Da próxima vez que a versão
-   do supabase-js mudar de propósito, repita os dois passos juntos: mude a
-   URL AQUI E em tool.html, e bump o CACHE de novo.
+   Achado C8/M8: supabase-js agora é auto-hospedado em /vendor/ (bytes do
+   tarball oficial do npm) — sem CDN de terceiro no caminho. O arquivo é
+   versionado no nome, então cache-first é seguro: uma versão nova chega
+   com nome novo. Ao atualizar a versão: trocar o arquivo em vendor/,
+   atualizar o src no tool.html, este PRECACHE e bumpar o CACHE.
    ============================================================ */
-const CACHE = 'selo-pwa-v2'
+const CACHE = 'selo-pwa-v3'
 const PRECACHE = [
   '/',
   '/tool.html',
-  'https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.105.4/dist/umd/supabase.min.js',
+  '/vendor/supabase-js-2.105.4.js',
 ]
 
 self.addEventListener('install', (ev) => {
@@ -76,8 +73,8 @@ self.addEventListener('fetch', (ev) => {
     return
   }
 
-  // Biblioteca do CDN: cache-first (mesma cautela do resp.ok acima).
-  if (url.hostname === 'cdn.jsdelivr.net') {
+  // Biblioteca vendorizada (nome versionado): cache-first (mesma cautela do resp.ok acima).
+  if (url.origin === self.location.origin && url.pathname.startsWith('/vendor/')) {
     ev.respondWith(
       caches.match(req).then(
         (hit) =>
