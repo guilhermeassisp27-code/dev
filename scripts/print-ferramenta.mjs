@@ -10,12 +10,12 @@
 // Variáveis de ambiente (secrets no GitHub):
 //   DEMO_EMAIL, DEMO_PASSWORD  -> conta de demonstração (assinatura ativa)
 // Opcionais:
-//   APP_URL  (default: https://usecorretorpro.vercel.app)
+//   APP_URL  (default: https://selosales.com.br)
 //   OUT      (default: public/print-ferramenta.png)
 
 import { chromium } from 'playwright'
 
-const APP = process.env.APP_URL || 'https://usecorretorpro.vercel.app'
+const APP = process.env.APP_URL || 'https://selosales.com.br'
 const EMAIL = process.env.DEMO_EMAIL
 const PASS = process.env.DEMO_PASSWORD
 

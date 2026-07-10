@@ -43,18 +43,28 @@ jobs:
       - uses: actions/checkout@v4
       - name: Rodar agente de dados
         uses: anthropics/claude-code-action@v1
+        # M18 da auditoria: sem credencial, o agente inventaria números.
+        # A chave read-only entra por env (criar o secret SUPABASE_READONLY_KEY
+        # com uma chave de acesso SOMENTE LEITURA — nunca a service role).
+        env:
+          SUPABASE_URL: ${{ secrets.NEXT_PUBLIC_SUPABASE_URL }}
+          SUPABASE_READONLY_KEY: ${{ secrets.SUPABASE_READONLY_KEY }}
         with:
           anthropic_api_key: ${{ secrets.ANTHROPIC_API_KEY }}
           claude_args: |
             --model claude-sonnet-4-6
             --max-turns 25
-            --allowedTools "Read,Edit,Write,Glob,Grep,Bash(git:*),Bash(gh:*),Bash(npx tsc:*)"
+            --allowedTools "Read,Edit,Write,Glob,Grep,Bash(git:*),Bash(gh:*),Bash(npx tsc:*),Bash(curl:*)"
           prompt: |
             Use o agente "dados". Gere o relatório semanal de assinantes do
             CorretorPRO: ativos, cancelados/churn, taxa de ativação, mix de
-            planos e engajamento (propostas salvas). Salve em
-            relatorios/dados-AAAA-MM-DD.md e abra um PR com o relatório.
-            Não exponha emails nem PII; use apenas agregados.
+            planos e engajamento (propostas salvas). Consulte o Supabase com
+            as variáveis de ambiente SUPABASE_URL e SUPABASE_READONLY_KEY.
+            REGRA INEGOCIÁVEL: se as credenciais não estiverem definidas ou a
+            consulta falhar, NÃO estime nem invente nenhum número — escreva no
+            relatório que os dados não estavam acessíveis e o que faltou.
+            Salve em relatorios/dados-AAAA-MM-DD.md e abra um PR com o
+            relatório. Não exponha emails nem PII; use apenas agregados.
 
   conteudo-marketing:
     if: github.event.schedule == '0 12 2,16 * *' || github.event.inputs.agente == 'marketing'
