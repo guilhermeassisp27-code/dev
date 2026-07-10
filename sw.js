@@ -21,6 +21,7 @@ const PRECACHE = [
   '/',
   '/tool.html',
   '/vendor/supabase-js-2.105.4.js',
+  '/vendor/fonts/Geist-Variable.woff2',
 ]
 
 self.addEventListener('install', (ev) => {

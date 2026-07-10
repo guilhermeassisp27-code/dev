@@ -41,6 +41,16 @@
 })()
 </script>
 <style>
+/* M24 da auditoria: Geist era declarada no stack mas nunca carregada — todo
+   mundo via fonte de sistema. Variável (100-900) auto-hospedada em vendor/,
+   OFL, 68KB, font-display:swap. Precacheada pelo sw.js para o PWA offline. */
+@font-face{
+  font-family:'Geist';
+  src:url('vendor/fonts/Geist-Variable.woff2') format('woff2-variations');
+  font-weight:100 900;
+  font-style:normal;
+  font-display:swap;
+}
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
 :root{
   --p:#0F2D4A; --ph:#0A2138; --ps:rgba(15,45,74,.12);

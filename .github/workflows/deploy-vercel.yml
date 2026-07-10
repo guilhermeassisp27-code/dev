@@ -57,9 +57,11 @@ jobs:
           # PWA: instalável e offline (service worker + manifest + ícones)
           cp sw.js _site/sw.js
           cp manifest.webmanifest _site/manifest.webmanifest
-          # supabase-js auto-hospedado (C8/M8: sem CDN de terceiro)
-          mkdir -p _site/vendor
+          # supabase-js auto-hospedado (C8/M8: sem CDN de terceiro) +
+          # fonte Geist (M24) — ambos precacheados pelo sw.js
+          mkdir -p _site/vendor/fonts
           cp vendor/supabase-js-2.105.4.js _site/vendor/
+          cp vendor/fonts/Geist-Variable.woff2 vendor/fonts/GEIST-LICENSE.txt _site/vendor/fonts/
           cp marketing/logo/selo/app-icon-192.png _site/app-icon-192.png
           cp marketing/logo/selo/app-icon-512.png _site/app-icon-512.png
           # Social share image (PNG exported from og-image.svg, if present)

@@ -18,6 +18,16 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Geist:wght@300;400;500;600;700&family=Geist+Mono:wght@400;500&display=swap" rel="stylesheet">
 <style>
+  /* M24 da auditoria: a fonte Geist era declarada mas nunca carregada —
+     todo mundo via fonte de sistema. Variável (100-900) auto-hospedada,
+     OFL, 68KB, com font-display:swap para não segurar a pintura. */
+  @font-face{
+    font-family:'Geist';
+    src:url('/fonts/Geist-Variable.woff2') format('woff2-variations');
+    font-weight:100 900;
+    font-style:normal;
+    font-display:swap;
+  }
   :root{
     --navy:#0A2138;
     --navy-2:#0F2D4A;
