@@ -435,3 +435,37 @@ select cron.schedule(
      where status = 'descartado'
        and created_at < now() - interval '90 days' $$
 );
+
+-- ============================================================
+-- Migração: fotos no Supabase Storage (M12 da auditoria, 2026-07-10)
+-- Fotos comprimidas saem do jsonb (base64 estourava o localStorage de ~5MB
+-- com 2 propostas pesadas) e vão para o bucket cpr-fotos. No documento fica
+-- só a URL pública. Leitura pública (as fotos aparecem na proposta pública
+-- /p/[id]); escrita apenas na pasta do próprio usuário ({uid}/...).
+-- Enquanto este SQL não rodar, o client cai sozinho no base64 legado.
+--
+-- ROLLBACK:
+--   drop policy if exists "cpr_fotos_upload_own" on storage.objects;
+--   drop policy if exists "cpr_fotos_read_public" on storage.objects;
+--   delete from storage.buckets where id = 'cpr-fotos';
+-- ============================================================
+insert into storage.buckets (id, name, public)
+values ('cpr-fotos', 'cpr-fotos', true)
+on conflict (id) do nothing;
+
+do $$ begin
+  create policy "cpr_fotos_upload_own" on storage.objects
+    for insert to authenticated
+    with check (
+      bucket_id = 'cpr-fotos'
+      and (storage.foldername(name))[1] = auth.uid()::text
+    );
+exception when duplicate_object then null;
+end $$;
+
+do $$ begin
+  create policy "cpr_fotos_read_public" on storage.objects
+    for select to public
+    using (bucket_id = 'cpr-fotos');
+exception when duplicate_object then null;
+end $$;

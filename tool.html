@@ -7296,6 +7296,40 @@ function renderImoveis() {
 // Galeria de fotos do imóvel — mesma mecânica da galeria da proposta
 // (carregarFotoImovel/renderFotosForm): comprime em canvas para 800px e
 // guarda base64 JPEG, mantendo o jsonb leve. [0] é sempre a capa.
+/* M12 da auditoria: fotos em base64 dentro do jsonb estouravam o localStorage
+   (~5MB) com 2 propostas pesadas. A foto comprimida agora sobe para o
+   Supabase Storage (bucket cpr-fotos, pasta do dono) e o documento guarda só
+   a URL pública. Fallback: sem sessão (demo), sem rede ou bucket ausente, a
+   foto fica em base64 como sempre — nada quebra, só não ganha a migração.
+   Objetos não são apagados ao remover a foto do formulário: propostas já
+   salvas podem referenciar a mesma URL. */
+async function subirFotoStorage(dataUrl) {
+  if (!window._sb || !window._uid || window._DEMO) return null
+  try {
+    const m = /^data:image\/jpeg;base64,(.+)$/.exec(dataUrl)
+    if (!m) return null
+    const bin = atob(m[1])
+    const bytes = new Uint8Array(bin.length)
+    for (let i = 0; i < bin.length; i++) bytes[i] = bin.charCodeAt(i)
+    const nome = window._uid + '/' + Date.now() + '-' + Math.random().toString(36).slice(2, 8) + '.jpg'
+    const { error } = await window._sb.storage.from('cpr-fotos')
+      .upload(nome, new Blob([bytes], { type: 'image/jpeg' }), { contentType: 'image/jpeg', cacheControl: '31536000' })
+    if (error) return null
+    const { data } = window._sb.storage.from('cpr-fotos').getPublicUrl(nome)
+    return (data && data.publicUrl) || null
+  } catch(_) { return null }
+}
+
+// Troca o base64 pela URL do Storage quando o upload termina (busca por
+// valor: o índice pode ter mudado se o corretor reordenou/removeu no meio).
+function _migrarFotoPraUrl(lista, dataUrl, render) {
+  subirFotoStorage(dataUrl).then(url => {
+    if (!url) return
+    const k = lista.indexOf(dataUrl)
+    if (k !== -1) { lista[k] = url; render() }
+  })
+}
+
 function carregarFotosImovel(ev) {
   const files = Array.from(ev.target.files || [])
   ev.target.value = ''
@@ -7320,8 +7354,10 @@ function carregarFotosImovel(ev) {
         canvas.width = width; canvas.height = height
         canvas.getContext('2d').drawImage(img, 0, 0, width, height)
         if (fotosImovelAtuais.length < MAX_FOTOS) {
-          fotosImovelAtuais.push(canvas.toDataURL('image/jpeg', 0.72))
+          const dataUrl = canvas.toDataURL('image/jpeg', 0.72)
+          fotosImovelAtuais.push(dataUrl)
           renderFotosImovelForm()
+          _migrarFotoPraUrl(fotosImovelAtuais, dataUrl, renderFotosImovelForm)
         }
       }
       img.onerror = () => toast('Arquivo de imagem inválido', true)
@@ -7981,8 +8017,10 @@ function carregarFotoImovel(ev) {
         canvas.width = width; canvas.height = height
         canvas.getContext('2d').drawImage(img, 0, 0, width, height)
         if (fotosAtuais.length < MAX_FOTOS) {
-          fotosAtuais.push(canvas.toDataURL('image/jpeg', 0.68))
+          const dataUrl = canvas.toDataURL('image/jpeg', 0.68)
+          fotosAtuais.push(dataUrl)
           renderFotosForm()
+          _migrarFotoPraUrl(fotosAtuais, dataUrl, renderFotosForm)
         }
       }
       img.onerror = () => toast('Arquivo de imagem inválido', true)
