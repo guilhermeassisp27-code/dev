@@ -84,7 +84,10 @@ export async function getTaxas(): Promise<TaxasResult> {
   }
 }
 
-// ── Matemática idêntica à da ferramenta (tool.html: calcParcela/calcSAC) ──
+// ── Matemática espelhada da ferramenta (tool.html: calcParcela/calcSAC) ──
+// M1 da auditoria: o teste tests/financiamento.test.mjs extrai as duas
+// implementações dos arquivos reais e falha se divergirem — ao mudar aqui,
+// mude lá e rode `npm test`.
 export function parcelaPrice(pv: number, taxaAnual: number, meses: number): number {
   const i = Math.pow(1 + taxaAnual / 100, 1 / 12) - 1
   if (i <= 0) return pv / meses

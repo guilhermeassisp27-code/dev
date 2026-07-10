@@ -1556,6 +1556,29 @@ try { if (localStorage.getItem('selo_cookie_consent') === 'accepted') window.loa
 })();
 </script>
 
+<!-- M6 da auditoria: a demo real roda num iframe cross-origin
+     (app.selosales.com.br) — o Pixel daqui não enxerga nada lá dentro.
+     A ferramenta manda os eventos-chave por postMessage e este listener
+     os converte em eventos do fbq. Origem validada; payload sem PII. -->
+<script>
+(function(){
+  window.addEventListener('message', function(ev){
+    if (ev.origin !== 'https://app.selosales.com.br') return;
+    var d = ev.data || {};
+    if (!d.seloDemo || typeof fbq !== 'function') return;
+    if (d.seloDemo === 'checkout_demo') {
+      fbq('track', 'InitiateCheckout', { content_name: 'demo-plataforma', currency: 'BRL' });
+    } else if (d.seloDemo === 'demo_aberta') {
+      fbq('trackCustom', 'DemoPlataformaAberta');
+    } else if (d.seloDemo === 'proposta_gerada') {
+      fbq('trackCustom', 'DemoPlataformaProposta');
+    } else if (d.seloDemo === 'tour_fim') {
+      fbq('trackCustom', 'DemoPlataformaTourFim');
+    }
+  });
+})();
+</script>
+
 <!-- Dispara InitiateCheckout no Pixel ao clicar para o checkout da Hotmart -->
 <script>
 (function(){

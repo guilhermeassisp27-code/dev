@@ -2513,6 +2513,27 @@ input[type=color]{opacity:0;width:0;height:0;position:absolute}
           <button type="button" class="btn btn-ghost" onclick="showView('form')">Cancelar</button>
         </div>
       </form>
+
+      <!-- M10 da auditoria: sem isto, todo dispositivo novo obrigava o
+           corretor a passar pelo "esqueci minha senha". Fora do form de
+           perfil de propósito — senha não entra no salvarConfig(). -->
+      <div class="card" style="margin-top:16px">
+        <div class="card-t">Senha de acesso</div>
+        <p style="font-size:12px;color:var(--t2);margin-bottom:14px">Defina ou troque a senha que você usa para entrar em outro celular ou computador.</p>
+        <div class="fg">
+          <div class="field">
+            <label class="lbl" for="c-senha-nova">Nova senha</label>
+            <input id="c-senha-nova" type="password" class="inp" placeholder="Mínimo 8 caracteres" autocomplete="new-password" minlength="8">
+          </div>
+          <div class="field">
+            <label class="lbl" for="c-senha-conf">Confirmar nova senha</label>
+            <input id="c-senha-conf" type="password" class="inp" placeholder="Repita a senha" autocomplete="new-password" minlength="8">
+          </div>
+        </div>
+        <div style="margin-top:14px">
+          <button type="button" class="btn btn-primary" id="btn-senha" onclick="salvarSenha()">Salvar senha</button>
+        </div>
+      </div>
     </div><!-- /view-config -->
 
     <!-- ══════════════════ VIEW: TUTORIAIS / AJUDA ══════════════════
@@ -2569,6 +2590,7 @@ const _CHECKOUT_URL = 'https://pay.hotmart.com/Y106494635I'
       carregarExemplo()
       mostrarBannerDemo()
       iniciarTourDemo()
+      _demoTrack('demo_aberta')
     } catch(e) { console.error('Demo init:', e) }
     return
   }
@@ -2680,8 +2702,18 @@ function mostrarBannerDemo() {
     document.head.appendChild(st)
   }
 }
+/* M6 da auditoria: a demo roda num iframe cross-origin dentro da landing —
+   o Meta Pixel (que vive na landing) não enxerga nada aqui dentro. Estes
+   postMessages levam os eventos-chave do funil até a landing, que dispara
+   o fbq. Payload sem nenhum dado pessoal, por isso targetOrigin '*'. */
+function _demoTrack(evento) {
+  if (!window._DEMO) return
+  try { if (window.parent !== window) window.parent.postMessage({ seloDemo: evento }, '*') } catch(_) {}
+}
+
 function demoBloqueio() {
   if (typeof toast === 'function') toast('Recurso disponível para assinantes — assine para liberar')
+  _demoTrack('checkout_demo')
   window.open(_DEMO_CHECKOUT, '_blank', 'noopener')
 }
 
@@ -2753,7 +2785,7 @@ function iniciarTourDemo() {
   card.style.cssText = 'position:fixed;z-index:10002;left:50%;transform:translateX(-50%);bottom:78px;width:min(420px,92vw);background:var(--s1);border:1px solid var(--bm);border-radius:18px;padding:22px 24px;box-shadow:var(--shadow-lg);font-family:inherit'
   back.appendChild(ring); back.appendChild(card); document.body.appendChild(back)
 
-  function fim() { back.remove(); window.removeEventListener('resize', render) }
+  function fim() { back.remove(); window.removeEventListener('resize', render); _demoTrack('tour_fim') }
   function render() {
     const p = PASSOS[i]
     if (p.view) { try { showView(p.view) } catch(_) {} }
@@ -3044,7 +3076,7 @@ async function sair() {
   // destruído sem aviso. Tenta subir uma última vez; se não der, o corretor
   // decide se sai mesmo assim.
   if (_syncPendente && window._sb && window._uid) {
-    try { await salvarRemoto() } catch(_) {}
+    try { await salvarRemoto() } catch(e) { toastErroSave(e) }
   }
   if (_syncPendente) {
     const seguir = confirm('Há alterações que ainda não subiram para a nuvem (sem conexão ou sessão expirada). Se sair agora, elas serão apagadas deste aparelho. Sair mesmo assim?')
@@ -3236,6 +3268,46 @@ function _ehErroDeAuth(e) {
   const msg = String((e && (e.message || e.error_description)) || '')
   const code = e && (e.code || e.status)
   return code === 401 || code === 403 || code === 'PGRST301' || /jwt|expired|invalid token|refresh token/i.test(msg)
+}
+
+/* M10 da auditoria: criar/trocar senha direto no perfil. */
+async function salvarSenha() {
+  if (window._DEMO) return demoBloqueio()
+  const nova = document.getElementById('c-senha-nova').value
+  const conf = document.getElementById('c-senha-conf').value
+  if (nova.length < 8) { toast('A senha precisa ter pelo menos 8 caracteres', true); return }
+  if (nova !== conf) { toast('As senhas não conferem', true); return }
+  const btn = document.getElementById('btn-senha')
+  btn.disabled = true
+  try {
+    const { error } = await window._sb.auth.updateUser({ password: nova })
+    if (error) throw error
+    document.getElementById('c-senha-nova').value = ''
+    document.getElementById('c-senha-conf').value = ''
+    toast('Senha atualizada — use-a no próximo acesso em qualquer aparelho')
+  } catch(e) {
+    const msg = String((e && e.message) || '')
+    if (/same.*password|different from the old/i.test(msg)) toast('A nova senha precisa ser diferente da atual', true)
+    else if (_ehErroDeAuth(e)) toast('Sua sessão expirou — entre novamente para trocar a senha', true)
+    else toast('Não foi possível atualizar a senha — tente novamente', true)
+  } finally {
+    btn.disabled = false
+  }
+}
+
+/* M4 da auditoria: erro de permissão (42501/RLS) e sessão expirada NÃO são
+   "sem internet" — a mensagem antiga escondia falha permanente atrás de um
+   aviso de conexão e o corretor nunca descobria que nada estava subindo. */
+function toastErroSave(e) {
+  const code = String((e && e.code) || '')
+  const msg = String((e && (e.message || e.error_description)) || '')
+  if (code === '42501' || /row-level security|permission denied/i.test(msg)) {
+    toast('Erro de permissão ao salvar (42501) — seus dados estão no aparelho; avise o suporte', true)
+  } else if (_ehErroDeAuth(e)) {
+    toast('Sua sessão expirou — entre novamente para salvar online', true)
+  } else {
+    toast('Salvo localmente — verifique sua conexão', true)
+  }
 }
 
 async function sincronizarPendentes() {
@@ -3581,7 +3653,7 @@ async function gerarLinkProposta() {
     if (_propostaJaSalva && _ultimoItemSalvo) {
       _ultimoItemSalvo.linkId = data.id
       localStorage.setItem('cpr_hist', JSON.stringify(historico))
-      salvarRemoto().catch(() => {})
+      salvarRemoto().catch(toastErroSave)
     } else if (snapProposta) {
       await salvarProposta() // salva já com o linkId (via ...snapProposta)
     }
@@ -3738,9 +3810,13 @@ function statusLinkProposta(h) {
 }
 
 /* ── CALCULAR PARCELA (Tabela Price) ── */
+/* M1 da auditoria: esta matemática existe TAMBÉM em lib/taxas.ts
+   (parcelaPrice/sac). O teste tests/financiamento.test.mjs extrai as duas
+   implementações dos arquivos reais e falha se divergirem — ao mudar aqui,
+   mude lá e rode `npm test`. */
 function calcParcela(pv, taxaAnual, meses) {
   const i = Math.pow(1 + taxaAnual/100, 1/12) - 1
-  if (i === 0) return pv / meses
+  if (i <= 0) return pv / meses
   return pv * (i * Math.pow(1+i,meses)) / (Math.pow(1+i,meses) - 1)
 }
 
@@ -3804,6 +3880,7 @@ function gerarProposta(ev) {
     btn.disabled = false
     btn.innerHTML = '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg> Gerar Proposta'
     setTimeout(() => prop.scrollIntoView({ behavior:'smooth', block:'start' }), 60)
+    _demoTrack('proposta_gerada')
   }, 1700)
 }
 
@@ -4253,8 +4330,8 @@ async function salvarProposta() {
   try {
     await salvarRemoto()
     toast('Proposta salva em Minhas Propostas!')
-  } catch(_) {
-    toast('Salvo localmente — verifique sua conexão', true)
+  } catch(e) {
+    toastErroSave(e)
   }
 }
 
@@ -4522,7 +4599,7 @@ function definirStatus(idx, statusKey) {
   if (!historico[idx]) return
   historico[idx].status = statusKey
   localStorage.setItem('cpr_hist', JSON.stringify(historico))
-  salvarRemoto().catch(() => {})
+  salvarRemoto().catch(toastErroSave)
   const st = getStatusInfo(statusKey)
   // Re-renderiza mantendo filtros
   const q = (document.getElementById('hist-search')?.value || '').trim()
@@ -4779,8 +4856,8 @@ async function salvarVisita() {
   try {
     await salvarRemoto()
     toast('Registro de visita salvo!')
-  } catch(_) {
-    toast('Salvo localmente — verifique sua conexão', true)
+  } catch(e) {
+    toastErroSave(e)
   }
 }
 
@@ -4826,7 +4903,7 @@ function excluirVisita(id) {
   if (i === -1) return
   historico.splice(i, 1)
   localStorage.setItem('cpr_hist', JSON.stringify(historico))
-  salvarRemoto().catch(() => {})
+  salvarRemoto().catch(toastErroSave)
   atualizarBadgeHist()
   renderVisitas()
   toast('Registro removido')
@@ -5247,7 +5324,7 @@ async function togglePublicarImovel(id) {
   if (im.publicado && !perfil.slug) { try { await garantirSlug() } catch(_) {} }
   localStorage.setItem('cpr_imoveis', JSON.stringify(imoveis))
   renderImoveis()
-  try { await salvarRemoto() } catch(_) {}
+  try { await salvarRemoto() } catch(e) { toastErroSave(e) }
   toast(im.publicado ? 'Imóvel publicado no seu site ✓' : 'Imóvel removido do site')
 }
 
@@ -5256,7 +5333,7 @@ async function ativarMeuSite() {
   if (window._DEMO) return demoBloqueio()
   await garantirSlug()
   renderImoveis()
-  try { await salvarRemoto() } catch(_) {}
+  try { await salvarRemoto() } catch(e) { toastErroSave(e) }
   toast('Seu site público foi ativado!')
 }
 
@@ -5387,7 +5464,7 @@ async function aceitarCaptura(id) {
     await window._sb.from('cpr_public_leads').update({ status: 'importado' }).eq('id', id)
     await salvarRemoto()
     toast('Lead adicionado à agenda — defina a data da visita.')
-  } catch(_) { toast('Salvo localmente — verifique sua conexão', true) }
+  } catch(e) { toastErroSave(e) }
   atualizarBadgeAgenda()
   renderAgenda()
 }
@@ -5427,8 +5504,8 @@ async function salvarLead(ev) {
   try {
     await salvarRemoto()
     toast('Visita agendada!')
-  } catch(_) {
-    toast('Salvo localmente — verifique sua conexão', true)
+  } catch(e) {
+    toastErroSave(e)
   }
   fecharPainelNovo('painel-nova-visita')
   document.getElementById('agenda-content').scrollIntoView({ behavior:'smooth', block:'start' })
@@ -5491,7 +5568,7 @@ async function marcarContatoLead(id) {
   l.ultimaInteracao = new Date().toISOString()
   localStorage.setItem('cpr_leads', JSON.stringify(leads))
   renderAgenda()
-  try { await salvarRemoto() } catch(_) {}
+  try { await salvarRemoto() } catch(e) { toastErroSave(e) }
   toast('Contato registrado — alerta zerado')
 }
 
@@ -5622,7 +5699,7 @@ function enviarTemplateWhatsapp(leadId, tplKey) {
   if (l) {
     l.ultimaInteracao = new Date().toISOString()
     localStorage.setItem('cpr_leads', JSON.stringify(leads))
-    salvarRemoto().catch(() => {})
+    salvarRemoto().catch(toastErroSave)
   }
 }
 
@@ -5727,7 +5804,7 @@ async function enviarFollowUpWhatsapp(id) {
   const back = document.getElementById('followup-modal-back')
   if (back) back.remove()
   renderAgenda()
-  try { await salvarRemoto() } catch(_) {}
+  try { await salvarRemoto() } catch(e) { toastErroSave(e) }
 }
 
 function renderAgenda() {
@@ -5814,7 +5891,7 @@ async function marcarRealizada(id) {
   atualizarBadgeAgenda()
   atualizarBadgeFunil()
   renderAgenda()
-  try { await salvarRemoto() } catch(_) {}
+  try { await salvarRemoto() } catch(e) { toastErroSave(e) }
   toast('Visita realizada — gerando o Registro de Visita...')
   // Jornada conectada: gera o termo e oferece a proposta com os dados do lead.
   usarLeadParaVisita(id)
@@ -5829,7 +5906,7 @@ async function excluirLead(id) {
   atualizarBadgeAgenda()
   atualizarBadgeFunil()
   renderAgenda()
-  try { await salvarRemoto() } catch(_) {}
+  try { await salvarRemoto() } catch(e) { toastErroSave(e) }
   toast('Agendamento removido')
 }
 
@@ -5881,7 +5958,7 @@ async function moverEstagioLead(id, novoEstagio) {
   localStorage.setItem('cpr_leads', JSON.stringify(leads))
   renderFunil()
   atualizarBadgeFunil()
-  try { await salvarRemoto() } catch(_) { toast('Salvo localmente — verifique sua conexão', true); return }
+  try { await salvarRemoto() } catch(e) { toastErroSave(e); return }
   toast('Lead movido para "' + (FUNIL_ESTAGIOS.find(e => e.key === novoEstagio)?.label || novoEstagio) + '"')
 }
 
@@ -5946,8 +6023,8 @@ async function salvarLeadFunil(ev) {
   try {
     await salvarRemoto()
     toast('Lead adicionado ao funil!')
-  } catch(_) {
-    toast('Salvo localmente — verifique sua conexão', true)
+  } catch(e) {
+    toastErroSave(e)
   }
   fecharPainelNovo('painel-novo-contato')
   ofereceBoasVindasWhatsapp(item.id)
@@ -6192,8 +6269,8 @@ async function persistirLead(l, msgSucesso) {
   try {
     await salvarRemoto()
     if (msgSucesso) toast(msgSucesso)
-  } catch(_) {
-    toast('Salvo localmente — verifique sua conexão', true)
+  } catch(e) {
+    toastErroSave(e)
   }
 }
 
@@ -6406,8 +6483,8 @@ async function confirmarVenda() {
   try {
     await salvarRemoto()
     toast('Venda registrada!')
-  } catch(_) {
-    toast('Salvo localmente — verifique sua conexão', true)
+  } catch(e) {
+    toastErroSave(e)
   }
 
   // Sugere marcar o imóvel do catálogo como Vendido/Locado, sem forçar.
@@ -6447,7 +6524,7 @@ async function marcarImovelComoVendido(imovelId, novoStatus) {
   localStorage.setItem('cpr_imoveis', JSON.stringify(imoveis))
   renderImoveis()
   atualizarBadgeImoveis()
-  try { await salvarRemoto() } catch(_) {}
+  try { await salvarRemoto() } catch(e) { toastErroSave(e) }
   toast('Imóvel marcado como ' + IMOVEL_STATUS_LABEL[novoStatus])
 }
 
@@ -6509,7 +6586,7 @@ async function excluirVenda(id) {
   localStorage.setItem('cpr_vendas', JSON.stringify(vendas))
   renderVendas()
   atualizarBadgeVendas()
-  try { await salvarRemoto() } catch(_) {}
+  try { await salvarRemoto() } catch(e) { toastErroSave(e) }
   toast('Venda removida')
 }
 
@@ -7088,8 +7165,8 @@ async function salvarImovel(ev) {
   try {
     await salvarRemoto()
     toast(idEdicao ? 'Imóvel atualizado!' : 'Imóvel cadastrado!')
-  } catch(_) {
-    toast('Salvo localmente — verifique sua conexão', true)
+  } catch(e) {
+    toastErroSave(e)
   }
   document.getElementById('imoveis-content').scrollIntoView({ behavior:'smooth', block:'start' })
 }
@@ -7135,7 +7212,7 @@ async function excluirImovel(id) {
   localStorage.setItem('cpr_imoveis', JSON.stringify(imoveis))
   atualizarBadgeImoveis()
   renderImoveis()
-  try { await salvarRemoto() } catch(_) {}
+  try { await salvarRemoto() } catch(e) { toastErroSave(e) }
   toast('Imóvel removido')
 }
 
@@ -7448,8 +7525,8 @@ async function salvarConfig(ev) {
   try {
     await salvarRemoto()
     toast('Perfil salvo! Suas propostas terão sua marca.')
-  } catch(_) {
-    toast('Salvo localmente — verifique sua conexão', true)
+  } catch(e) {
+    toastErroSave(e)
   }
   showView('form')
 }

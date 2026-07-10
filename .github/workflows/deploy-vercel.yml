@@ -26,6 +26,16 @@ jobs:
             https://api.github.com/repos/${{ github.repository }}/pages \
             -d '{"source":{"branch":"gh-pages","path":"/"}}' || true
 
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      # C12/M1 da auditoria: a matemática financeira duplicada (tool.html ×
+      # lib/taxas.ts) é validada antes de qualquer deploy — divergência
+      # silenciosa quebra o workflow em vez de gerar proposta errada.
+      - name: Testes da matemática financeira
+        run: node --test tests/*.test.mjs
+
       - name: Prepare site
         run: |
           mkdir -p _site
@@ -35,9 +45,15 @@ jobs:
           cp termos.html _site/termos.html
           cp privacidade.html _site/privacidade.html
           # The authenticated tool — servido na raiz (app.selosales.com.br) e
-          # também em /tool.html (compatibilidade com links antigos)
-          cp tool.html _site/index.html
-          cp tool.html _site/tool.html
+          # também em /tool.html (compatibilidade com links antigos).
+          # C12 da auditoria: minifica no deploy (~-24% bruto, ~-28% gzip);
+          # se o minificador falhar, cai na cópia crua — o deploy não quebra.
+          npx --yes html-minifier-terser@7 tool.html \
+            --collapse-whitespace --conservative-collapse \
+            --minify-js true --minify-css true --remove-comments \
+            -o _site/index.html \
+            && cp _site/index.html _site/tool.html \
+            || { echo "minificação falhou — usando cópia crua"; cp tool.html _site/index.html; cp tool.html _site/tool.html; }
           # PWA: instalável e offline (service worker + manifest + ícones)
           cp sw.js _site/sw.js
           cp manifest.webmanifest _site/manifest.webmanifest

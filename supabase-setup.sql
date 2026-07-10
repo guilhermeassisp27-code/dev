@@ -411,3 +411,27 @@ do $$ begin
     check (papel in ('admin', 'corretor', 'consultor'));
 exception when duplicate_object then null;
 end $$;
+
+-- ============================================================
+-- Migração: retenção de dados / LGPD (M21 da auditoria, 2026-07-10)
+-- Leads públicos DESCARTADOS carregam nome/telefone de terceiros e não têm
+-- nenhuma utilidade após o descarte — expurgo automático em 90 dias via
+-- pg_cron (extensão nativa do Supabase; ativar em Database → Extensions).
+--
+-- NOTA — propostas públicas assinadas (cpr_public_proposals) ficam FORA
+-- deste expurgo de propósito: o documento assinado é a prova de
+-- intermediação que protege a comissão do corretor (a proposta de valor
+-- central do Selo). Definir prazo de retenção para elas é decisão de
+-- produto/jurídica pendente do fundador.
+--
+-- ROLLBACK: select cron.unschedule('expurgo-leads-descartados');
+-- ============================================================
+create extension if not exists pg_cron;
+
+select cron.schedule(
+  'expurgo-leads-descartados',
+  '30 3 * * *',   -- todo dia 03:30 UTC
+  $$ delete from public.cpr_public_leads
+     where status = 'descartado'
+       and created_at < now() - interval '90 days' $$
+);
