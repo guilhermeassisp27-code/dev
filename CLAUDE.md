@@ -99,7 +99,9 @@ Sem esse grant, todas as escritas retornam 403/42501.
 
 ## Regras para agentes
 
-1. **Branch de desenvolvimento**: `claude/development-session-O10kI`
+1. **Branch de desenvolvimento**: `claude/selo-redesign-continue-plgpy4`
+   (substitui `claude/development-session-O10kI` — todo o trabalho daquele
+   branch foi trazido para cá via cherry-pick em 2026-07-10)
    - Commitar e pushar neste branch
    - Nunca pushar direto em `main` sem autorização explícita
    - `main` é production — PR necessário
@@ -120,7 +122,7 @@ Sem esse grant, todas as escritas retornam 403/42501.
    - Vale para Reels, carrosséis, stories, e-mails e textos da ferramenta.
    - **Vídeo do avatar: limite de 10 segundos** (limitação da ferramenta do fundador). Todo roteiro de Reel com avatar é UMA ideia objetiva, ~22 a 25 palavras de fala. Conteúdo com várias partes (ex.: "4 regras") vira carrossel, ou a fala puxa o gancho e as partes aparecem como texto na tela.
 
-8. **Redesign da ferramenta (pendente)**: o fundador acha o visual atual "com cara de IA / feio". Não tentar "deixar mais bonito" no genérico — isso recai no mesmo resultado. O caminho acordado: (a) partir de 1–3 referências visuais reais que o fundador escolher; (b) definir um design system enxuto (tipografia, escala de espaçamento, 1 cor de acento, menos caixas/bordas, mais respiro); (c) redesenhar UMA tela até ficar certa como referência; (d) propagar. Sem referência concreta, não começar.
+8. **Redesign da ferramenta (Fase 2 — executado, aguardando merge)**: o caminho acordado foi cumprido: (a) referências reais de CRM de corretor (FUB/kvCORE/Chime); (b) design system enxuto (Geist carregada de verdade, cromo navy, cards planos, cabeçalhos confiantes em caixa normal, 1 acento âmbar, família de ícones própria com ponto-lacre); (c) Dashboard "central de comando" como tela-referência aprovada; (d) propagado para todas as telas (content-first: lista/board/catálogo como herói da tela, formulário de criação atrás da ação primária do cabeçalho) e landing alinhada ao produto (screenshots do design novo, etiquetas de seção em caixa normal). Regras que ficam: nunca reintroduzir a etiqueta minúscula em MAIÚSCULA espaçada nem emoji na UI; tela nova segue o padrão dash-top + painel recolhível; a cor pessoal do corretor (--bp/--bph/--bps) NUNCA aparece no chrome do app — só na proposta.
 
 ## Comandos úteis
 
