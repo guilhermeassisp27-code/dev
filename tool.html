@@ -212,6 +212,19 @@ body{font-family:var(--font);background:var(--bg);color:var(--t);-webkit-font-sm
 .card{background:var(--s1);border:1px solid var(--b);border-radius:var(--radl);padding:24px;margin-bottom:16px;transition:border-color .2s ease,background-color .2s ease}
 .card-t{font-size:15px;font-weight:600;letter-spacing:-.1px;color:var(--t);margin-bottom:15px;display:flex;align-items:center;gap:8px}
 
+/* ── TELAS DE TRABALHO CONTENT-FIRST (2026-07-10) ──
+   Mesma tese do dashboard: o trabalho (lista, board, catálogo) é o herói da
+   tela; o formulário de criação fica atrás da ação primária no cabeçalho —
+   como nos CRMs de corretor de verdade, e o oposto do layout "formulário
+   gigante em cima" típico de ferramenta genérica. O .dash-top do dashboard
+   é o mesmo padrão de cabeçalho, reaproveitado nas outras telas. */
+.dash-top .ph{margin:0}
+.novo-panel{display:none;margin-bottom:20px}
+.novo-panel.open{display:block;animation:viewIn .3s ease}
+.panel-x{margin-left:auto;width:26px;height:26px;border-radius:8px;border:none;background:none;color:var(--t3);display:flex;align-items:center;justify-content:center;cursor:pointer;flex-shrink:0;padding:0}
+.panel-x:hover{background:var(--s2);color:var(--t)}
+#captacao-inbox:not(:empty){margin-bottom:20px}
+
 /* ── TUTORIAIS (accordion) ── */
 .tut-item{background:var(--s1);border:1px solid var(--b);border-radius:var(--radl);margin-bottom:10px;overflow:hidden;box-shadow:var(--shadow-sm);transition:box-shadow .2s ease}
 .tut-item:hover{box-shadow:var(--shadow-lg)}
@@ -306,7 +319,9 @@ input[type=color]{opacity:0;width:0;height:0;position:absolute}
 .btn-primary:hover{background:var(--ph)}
 .btn-green{background:var(--g);color:#fff}
 .btn-amber{background:var(--p2);color:#fff;border-color:var(--p2)}
-.btn-amber:hover{background:var(--bph)}
+/* hover fixo em âmbar-escuro Selo — var(--bph) é a cor PESSOAL do corretor
+   e vazaria a marca dele para o chrome do app */
+.btn-amber:hover{background:#A8721F}
 .btn-green:hover{background:#16a34a}
 .btn-ghost{background:var(--s2);color:var(--t2);border:1px solid var(--b)}
 .btn-ghost:hover{background:var(--s3);color:var(--t)}
@@ -720,7 +735,7 @@ input[type=color]{opacity:0;width:0;height:0;position:absolute}
 .dash-lead-meta{font-size:12px;color:var(--t3);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;margin-top:1px}
 .dash-lead-tag{flex-shrink:0;font-size:11px;font-weight:600;padding:3px 9px;border-radius:100px;white-space:nowrap}
 .dash-lead-tag[data-nivel="critico"]{background:#FBEAEA;color:#B4443C}
-.dash-lead-tag[data-nivel="atencao"]{background:var(--bps);color:var(--bph)}
+.dash-lead-tag[data-nivel="atencao"]{background:#F8EFDF;color:#A8721F}
 .dash-lead-acts{display:flex;gap:6px;flex-shrink:0}
 .dash-ic{width:34px;height:34px;border-radius:9px;display:flex;align-items:center;justify-content:center;border:1px solid var(--b);background:var(--s1);cursor:pointer;color:var(--t2);transition:background-color .15s,border-color .15s,color .15s;flex-shrink:0}
 .dash-ic:hover{border-color:var(--bm)}
@@ -1101,13 +1116,68 @@ input[type=color]{opacity:0;width:0;height:0;position:absolute}
 
     <!-- ══════════════════ VIEW: AGENDA DE VISITAS ══════════════════ -->
     <div class="view" id="view-agenda">
-      <div class="ph">
-        <h1>Agenda de Visitas</h1>
-        <p>Cadastre o lead antes da visita acontecer — depois, marque como realizada e gere o Registro de Visita ou a Proposta sem redigitar nada.</p>
+      <div class="dash-top">
+        <div class="ph">
+          <h1>Agenda de Visitas</h1>
+          <p>Suas visitas e os leads que chegam pelos seus links, num lugar só.</p>
+        </div>
+        <button class="btn btn-amber" onclick="togglePainelNovo('painel-nova-visita','l-cliente')">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+          Agendar visita
+        </button>
       </div>
 
-      <!-- Captação pública de leads: link que o corretor compartilha; quem preenche cai aqui -->
-      <div class="card" id="card-captacao">
+      <!-- Leads recebidos pelos links públicos: é trabalho pendente, fica no topo -->
+      <div id="captacao-inbox"></div>
+
+      <div class="novo-panel" id="painel-nova-visita">
+        <form id="form-lead" onsubmit="salvarLead(event)" novalidate>
+          <div class="card">
+            <div class="card-t">Novo agendamento
+              <button type="button" class="panel-x" onclick="fecharPainelNovo('painel-nova-visita')" aria-label="Fechar">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+              </button>
+            </div>
+            <div class="fg">
+              <div class="field">
+                <label class="lbl" for="l-cliente">Nome do cliente <span class="req">*</span></label>
+                <input id="l-cliente" type="text" class="inp" placeholder="Ex: João Silva" required autocomplete="name">
+              </div>
+              <div class="field">
+                <label class="lbl" for="l-tel">Telefone</label>
+                <input id="l-tel" type="tel" class="inp" placeholder="(11) 99999-9999">
+              </div>
+              <div class="field f2">
+                <label class="lbl" for="l-imovel">Imóvel de interesse <span class="req">*</span></label>
+                <input id="l-imovel" type="text" class="inp" placeholder="Ex: Apartamento — Av. Paulista, 1000, Bela Vista, São Paulo, SP" required>
+              </div>
+              <div class="field">
+                <label class="lbl" for="l-data">Data da visita <span class="req">*</span></label>
+                <input id="l-data" type="date" class="inp" required>
+              </div>
+              <div class="field">
+                <label class="lbl" for="l-hora">Horário</label>
+                <input id="l-hora" type="time" class="inp">
+              </div>
+              <div class="field f2">
+                <label class="lbl" for="l-obs">Observações (opcional)</label>
+                <textarea id="l-obs" class="txa inp" placeholder="Ex: cliente veio de indicação, já tem FGTS disponível..."></textarea>
+              </div>
+            </div>
+          </div>
+
+          <button type="submit" class="gen-btn" id="btn-lead">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+            Agendar visita
+          </button>
+        </form>
+      </div>
+
+      <div class="card-t" style="margin-bottom:12px">Visitas agendadas</div>
+      <div id="agenda-content"></div>
+
+      <!-- Captação pública de leads: link que o corretor compartilha; quem preenche cai no inbox lá em cima -->
+      <div class="card" id="card-captacao" style="margin-top:28px">
         <div class="card-t">Captar leads pela internet</div>
         <p style="color:var(--t2);font-size:13px;margin:-4px 0 14px;line-height:1.6">Compartilhe seu link de contato (bio do Instagram, status do WhatsApp, anúncios). Quem preencher entra automaticamente na sua agenda — você só aceita e segue para a visita.</p>
         <div class="field f2">
@@ -1139,49 +1209,6 @@ input[type=color]{opacity:0;width:0;height:0;position:absolute}
             </button>
           </div>
         </div>
-        <div id="captacao-inbox" style="margin-top:16px"></div>
-      </div>
-
-      <form id="form-lead" onsubmit="salvarLead(event)" novalidate>
-        <div class="card">
-          <div class="card-t">Novo agendamento</div>
-          <div class="fg">
-            <div class="field">
-              <label class="lbl" for="l-cliente">Nome do cliente <span class="req">*</span></label>
-              <input id="l-cliente" type="text" class="inp" placeholder="Ex: João Silva" required autocomplete="name">
-            </div>
-            <div class="field">
-              <label class="lbl" for="l-tel">Telefone</label>
-              <input id="l-tel" type="tel" class="inp" placeholder="(11) 99999-9999">
-            </div>
-            <div class="field f2">
-              <label class="lbl" for="l-imovel">Imóvel de interesse <span class="req">*</span></label>
-              <input id="l-imovel" type="text" class="inp" placeholder="Ex: Apartamento — Av. Paulista, 1000, Bela Vista, São Paulo, SP" required>
-            </div>
-            <div class="field">
-              <label class="lbl" for="l-data">Data da visita <span class="req">*</span></label>
-              <input id="l-data" type="date" class="inp" required>
-            </div>
-            <div class="field">
-              <label class="lbl" for="l-hora">Horário</label>
-              <input id="l-hora" type="time" class="inp">
-            </div>
-            <div class="field f2">
-              <label class="lbl" for="l-obs">Observações (opcional)</label>
-              <textarea id="l-obs" class="txa inp" placeholder="Ex: cliente veio de indicação, já tem FGTS disponível..."></textarea>
-            </div>
-          </div>
-        </div>
-
-        <button type="submit" class="gen-btn" id="btn-lead">
-          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
-          Agendar visita
-        </button>
-      </form>
-
-      <div style="margin-top:28px">
-        <div class="card-t" style="margin-bottom:12px">Visitas agendadas</div>
-        <div id="agenda-content"></div>
       </div>
     </div><!-- /view-agenda -->
 
@@ -1191,13 +1218,24 @@ input[type=color]{opacity:0;width:0;height:0;position:absolute}
          Cada lead ganha um campo `estagioFunil`, mapeado automaticamente a
          partir do `status` antigo para quem já tinha leads salvos. -->
     <div class="view" id="view-funil">
-      <div class="ph">
-        <h1>Funil de Vendas</h1>
-        <p>Acompanhe cada lead pelas etapas do processo comercial, do primeiro contato até a venda fechada — sem precisar reorganizar nada na Agenda de Visitas.</p>
+      <div class="dash-top">
+        <div class="ph">
+          <h1>Funil de Vendas</h1>
+          <p>Cada lead na etapa certa, do primeiro contato até a venda fechada.</p>
+        </div>
+        <button class="btn btn-amber" onclick="togglePainelNovo('painel-novo-contato','fl-cliente')">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+          Novo contato
+        </button>
       </div>
 
+      <div class="novo-panel" id="painel-novo-contato">
       <div class="card" id="card-funil-novo">
-        <div class="card-t">Novo contato</div>
+        <div class="card-t">Novo contato
+          <button type="button" class="panel-x" onclick="fecharPainelNovo('painel-novo-contato')" aria-label="Fechar">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+          </button>
+        </div>
         <form id="form-funil-lead" onsubmit="salvarLeadFunil(event)" novalidate>
           <div class="fg">
             <div class="field">
@@ -1230,22 +1268,32 @@ input[type=color]{opacity:0;width:0;height:0;position:absolute}
           </button>
         </form>
       </div>
+      </div><!-- /painel-novo-contato -->
 
-      <div style="margin-top:24px">
-        <div id="funil-board"></div>
-      </div>
+      <div id="funil-board"></div>
     </div><!-- /view-funil -->
 
     <!-- ══════════════════ VIEW: MEUS IMÓVEIS ══════════════════ -->
     <div class="view" id="view-imoveis">
-      <div class="ph">
-        <h1>Meus Imóveis</h1>
-        <p>Seu catálogo de imóveis em carteira — a base para gerar propostas e acompanhar vendas e locações sem redigitar nada.</p>
+      <div class="dash-top">
+        <div class="ph">
+          <h1>Meus Imóveis</h1>
+          <p>Seu catálogo em carteira — a base para propostas, vendas e locações.</p>
+        </div>
+        <button class="btn btn-amber" onclick="togglePainelNovo('painel-novo-imovel','im-tipo')">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+          Novo imóvel
+        </button>
       </div>
 
+      <div class="novo-panel" id="painel-novo-imovel">
       <form id="form-imovel" onsubmit="salvarImovel(event)" novalidate>
         <div class="card">
-          <div class="card-t" id="imovel-form-titulo">Novo imóvel</div>
+          <div class="card-t"><span id="imovel-form-titulo">Novo imóvel</span>
+            <button type="button" class="panel-x" onclick="cancelarEdicaoImovel()" aria-label="Fechar">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+            </button>
+          </div>
           <input type="hidden" id="im-id" value="">
           <div class="fg">
             <div class="field">
@@ -1349,11 +1397,10 @@ input[type=color]{opacity:0;width:0;height:0;position:absolute}
           <button type="button" class="btn btn-ghost" id="btn-imovel-cancelar" style="display:none" onclick="cancelarEdicaoImovel()">Cancelar edição</button>
         </div>
       </form>
+      </div><!-- /painel-novo-imovel -->
 
-      <div style="margin-top:28px">
-        <div class="card-t" style="margin-bottom:12px">Imóveis cadastrados</div>
-        <div id="imoveis-content"></div>
-      </div>
+      <div class="card-t" style="margin-bottom:12px">Imóveis cadastrados</div>
+      <div id="imoveis-content"></div>
     </div><!-- /view-imoveis -->
 
     <!-- ══════════════════ VIEW: VENDAS ══════════════════
@@ -2611,7 +2658,7 @@ function mostrarBannerDemo() {
   b.id = 'demo-banner'
   b.style.cssText = 'position:fixed;left:0;right:0;bottom:0;z-index:9999;display:flex;align-items:center;justify-content:center;gap:14px;flex-wrap:wrap;padding:11px 16px;background:var(--s1);border-top:1px solid var(--bm);box-shadow:0 -8px 24px rgba(0,0,0,.25);font-family:inherit'
   b.innerHTML =
-    '<span style="font-size:13.5px;color:var(--t);font-weight:600">🔓 <b>Modo demonstração</b> — explore à vontade. Para salvar e enviar, assine.</span>' +
+    '<span style="font-size:13.5px;color:var(--t);font-weight:600"><b>Modo demonstração</b> — explore à vontade. Para salvar e enviar, assine.</span>' +
     '<a href="' + _DEMO_CHECKOUT + '" target="_blank" rel="noopener" style="background:#22C55E;color:#06281A;text-decoration:none;border-radius:980px;padding:9px 18px;font-size:13.5px;font-weight:800;white-space:nowrap">Assinar agora</a>'
   document.body.appendChild(b)
   document.body.classList.add('cpr-demo')
@@ -2687,7 +2734,7 @@ function seedDemoData() {
 /* ── TOUR GUIADO (só no modo demo): destaca cada funcionalidade em passos ── */
 function iniciarTourDemo() {
   const PASSOS = [
-    { t:'Bem-vindo 👋', x:'Esta é a plataforma real do Selo — já preenchida com dados de exemplo pra você explorar. Em poucos passos eu mostro tudo que ela faz.', sel:null, view:'form' },
+    { t:'Bem-vindo', x:'Esta é a plataforma real do Selo — já preenchida com dados de exemplo pra você explorar. Em poucos passos eu mostro tudo que ela faz.', sel:null, view:'form' },
     { t:'Meus Imóveis', x:'Cadastre cada imóvel da sua carteira com foto, valor e status — disponível, reservado, vendido ou locado. É a base do seu catálogo.', sel:'.sb-item[data-view="imoveis"]', view:'imoveis' },
     { t:'Proposta em 60 segundos', x:'Preencha os dados e gere uma proposta profissional com a sua marca — já com simulação de financiamento SAC e Price calculada. Clique em “Gerar Proposta” pra ver.', sel:'#gen-btn', view:'form' },
     { t:'Status das propostas (CRM)', x:'Cada proposta vira um card e caminha pelo status: Nova → Enviada → Em negociação → Fechada. Você acompanha todas num lugar só.', sel:'.sb-item[data-view="history"]', view:'history' },
@@ -2856,7 +2903,7 @@ function renderAjuda() {
         '</button>' +
         '<div class="tut-body">' +
           '<ol>' + t.passos.map(p => '<li>' + p + '</li>').join('') + '</ol>' +
-          (t.dica ? '<p class="tut-dica">💡 ' + t.dica + '</p>' : '') +
+          (t.dica ? '<p class="tut-dica"><b>Dica:</b> ' + t.dica + '</p>' : '') +
         '</div>' +
       '</div>'
     )
@@ -3268,6 +3315,26 @@ function showView(name) {
   }
   closeSidebar()
   window.scrollTo({ top: 0, behavior: 'smooth' })
+}
+
+/* ── Painéis "novo" recolhíveis (telas content-first) ──
+   O formulário de criação fica atrás da ação primária do cabeçalho:
+   abrir foca o primeiro campo; salvar, cancelar ou o X fecham. */
+function abrirPainelNovo(id, focoId) {
+  const p = document.getElementById(id)
+  if (!p) return
+  p.classList.add('open')
+  if (focoId) setTimeout(() => { const f = document.getElementById(focoId); if (f) f.focus() }, 120)
+}
+function fecharPainelNovo(id) {
+  const p = document.getElementById(id)
+  if (p) p.classList.remove('open')
+}
+function togglePainelNovo(id, focoId) {
+  const p = document.getElementById(id)
+  if (!p) return
+  if (p.classList.contains('open')) fecharPainelNovo(id)
+  else abrirPainelNovo(id, focoId)
 }
 
 /* ── VALOR FORMATTER ── */
@@ -5356,6 +5423,7 @@ async function salvarLead(ev) {
   } catch(_) {
     toast('Salvo localmente — verifique sua conexão', true)
   }
+  fecharPainelNovo('painel-nova-visita')
   document.getElementById('agenda-content').scrollIntoView({ behavior:'smooth', block:'start' })
   ofereceBoasVindasWhatsapp(item.id)
 }
@@ -5664,6 +5732,7 @@ function renderAgenda() {
       <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
       <h3>Nenhuma visita agendada</h3>
       <p>Cadastre um lead com a próxima visita para começar a organizar seu funil.</p>
+      <button class="btn btn-amber" style="margin-top:16px" onclick="abrirPainelNovo('painel-nova-visita','l-cliente');window.scrollTo({top:0,behavior:'smooth'})">Agendar visita</button>
     </div>`
     return
   }
@@ -5873,6 +5942,7 @@ async function salvarLeadFunil(ev) {
   } catch(_) {
     toast('Salvo localmente — verifique sua conexão', true)
   }
+  fecharPainelNovo('painel-novo-contato')
   ofereceBoasVindasWhatsapp(item.id)
 }
 
@@ -5897,7 +5967,8 @@ function renderFunil() {
     el.innerHTML = `<div class="hist-empty">
       <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M22 3H2l8 9.46V19l4 2v-8.54L22 3z"/></svg>
       <h3>Nenhum lead no funil ainda</h3>
-      <p>Adicione um novo contato acima ou cadastre uma visita na Agenda — os leads aparecem aqui automaticamente.</p>
+      <p>Adicione um novo contato ou cadastre uma visita na Agenda — os leads aparecem aqui automaticamente.</p>
+      <button class="btn btn-amber" style="margin-top:16px" onclick="abrirPainelNovo('painel-novo-contato','fl-cliente');window.scrollTo({top:0,behavior:'smooth'})">Novo contato</button>
     </div>`
     return
   }
@@ -6476,8 +6547,8 @@ function passosOnboarding() {
   return [
     { done: !!(perfil.nome && perfil.creci), label: 'Complete seu perfil (nome e CRECI)', cta: 'Configurar', view: 'config' },
     { done: historico.some(h => h.docTipo !== 'visita'), label: 'Gere sua primeira proposta', cta: 'Criar proposta', view: 'form' },
-    { done: (leads || []).length > 0, label: 'Adicione seu primeiro lead no funil', cta: 'Abrir funil', view: 'funil' },
-    { done: (imoveis || []).length > 0, label: 'Cadastre seu primeiro imóvel', cta: 'Cadastrar', view: 'imoveis' },
+    { done: (leads || []).length > 0, label: 'Adicione seu primeiro lead no funil', cta: 'Abrir funil', view: 'funil', painel: 'painel-novo-contato', foco: 'fl-cliente' },
+    { done: (imoveis || []).length > 0, label: 'Cadastre seu primeiro imóvel', cta: 'Cadastrar', view: 'imoveis', painel: 'painel-novo-imovel', foco: 'im-tipo' },
   ]
 }
 
@@ -6514,7 +6585,7 @@ function renderOnboarding() {
         <div class="onb-step${p.done ? ' done' : ''}">
           <span class="onb-check">${check}</span>
           <span class="onb-step-label">${escH(p.label)}</span>
-          <button class="onb-step-cta" onclick="showView('${p.view}')">${escH(p.cta)}</button>
+          <button class="onb-step-cta" onclick="showView('${p.view}')${p.painel ? `;abrirPainelNovo('${p.painel}','${p.foco}')` : ''}">${escH(p.cta)}</button>
         </div>`).join('')}
     </div>`
   el.classList.add('show')
@@ -7006,6 +7077,7 @@ async function salvarImovel(ev) {
   atualizarBadgeImoveis()
   renderImoveis()
   limparFormImovel()
+  fecharPainelNovo('painel-novo-imovel')
   try {
     await salvarRemoto()
     toast(idEdicao ? 'Imóvel atualizado!' : 'Imóvel cadastrado!')
@@ -7038,11 +7110,13 @@ function editarImovel(id) {
   document.getElementById('imovel-form-titulo').textContent = 'Editar imóvel'
   document.getElementById('btn-imovel-txt').textContent = 'Salvar alterações'
   document.getElementById('btn-imovel-cancelar').style.display = ''
+  abrirPainelNovo('painel-novo-imovel')
   document.getElementById('form-imovel').scrollIntoView({ behavior:'smooth', block:'start' })
 }
 
 function cancelarEdicaoImovel() {
   limparFormImovel()
+  fecharPainelNovo('painel-novo-imovel')
 }
 
 async function excluirImovel(id) {
@@ -7067,6 +7141,7 @@ function renderImoveis() {
       <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M3 9l9-7 9 7"/><path d="M9 22V12h6v10"/><path d="M5 10v10a1 1 0 001 1h12a1 1 0 001-1V10"/></svg>
       <h3>Nenhum imóvel cadastrado</h3>
       <p>Cadastre o primeiro imóvel da sua carteira para começar seu catálogo.</p>
+      <button class="btn btn-amber" style="margin-top:16px" onclick="abrirPainelNovo('painel-novo-imovel','im-tipo');window.scrollTo({top:0,behavior:'smooth'})">Cadastrar imóvel</button>
     </div>`
     return
   }
@@ -7248,7 +7323,7 @@ function ofereceProposta(id, cliente) {
   box.id = 'jornada-proposta'
   box.style.cssText = 'margin:16px auto 0;max-width:680px;background:var(--gs);border:1px solid rgba(34,197,94,.42);border-radius:16px;padding:16px 18px;display:flex;align-items:center;gap:12px;flex-wrap:wrap;justify-content:center;text-align:center'
   box.innerHTML =
-    '<span style="font-size:14px;color:var(--t);font-weight:600">✅ Termo pronto! Gerar a proposta para <b style="color:var(--t)">' + escH(cliente || 'o cliente') + '</b> com os mesmos dados?</span>' +
+    '<span style="font-size:14px;color:var(--t);font-weight:600">Termo pronto. Gerar a proposta para <b style="color:var(--t)">' + escH(cliente || 'o cliente') + '</b> com os mesmos dados?</span>' +
     '<span style="display:flex;gap:8px">' +
       '<button class="btn btn-green btn-sm" onclick="(function(){usarLeadParaProposta(' + id + ');var e=document.getElementById(\'jornada-proposta\');if(e)e.remove()})()">Gerar proposta</button>' +
       '<button class="btn btn-ghost btn-sm" onclick="(function(){var e=document.getElementById(\'jornada-proposta\');if(e)e.remove()})()">Agora não</button>' +
