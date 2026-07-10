@@ -33,7 +33,9 @@ jobs:
           claude_args: |
             --model claude-sonnet-4-6
             --max-turns 20
-            --allowedTools "Read,Grep,Glob,Bash(git:*),Bash(gh:*)"
+            # M17 da auditoria: o agente lê conteúdo de PR (não confiável) —
+            # ferramentas restritas a leitura + comentar; nada de git/gh amplos.
+            --allowedTools "Read,Grep,Glob,Bash(git diff:*),Bash(git log:*),Bash(git show:*),Bash(gh pr diff:*),Bash(gh pr view:*),Bash(gh pr comment:*)"
           prompt: |
             Use o agente "revisor". Avalie a melhoria proposta neste Pull Request
             (use `gh pr diff` e leia os arquivos alterados + o CLAUDE.md). Dê seu

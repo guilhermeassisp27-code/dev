@@ -41,7 +41,7 @@ jobs:
           DEMO_EMAIL: ${{ secrets.DEMO_EMAIL }}
           DEMO_PASSWORD: ${{ secrets.DEMO_PASSWORD }}
           APP_URL: https://selosales.vercel.app
-          TOOL_URL: https://guilhermeassisp27-code.github.io/dev/tool.html
+          TOOL_URL: https://app.selosales.com.br
         run: node scripts/gravar-demo.mjs
 
       - name: Converter para MP4 (vertical, pronto para Reels)

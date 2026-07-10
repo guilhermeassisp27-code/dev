@@ -9,7 +9,7 @@
 
 import { chromium } from 'playwright'
 
-const APP = process.env.APP_URL || 'https://selosales.vercel.app'
+const APP = process.env.APP_URL || 'https://selosales.com.br'
 const EMAIL = process.env.DEMO_EMAIL
 const PASS = process.env.DEMO_PASSWORD
 

@@ -8,6 +8,9 @@ name: QA da Ferramenta (fluxo crítico)
 # VERMELHO avisando que a persistência quebrou.
 #
 # PRÉ-REQUISITO: secrets DEMO_EMAIL e DEMO_PASSWORD.
+# M16 da auditoria: a conta DEVE ser uma conta de QA exclusiva (nunca a de
+# um cliente nem a demo pública) — o teste escreve e apaga uma proposta
+# de marcador nessa conta a cada execução.
 
 on:
   schedule:
@@ -42,5 +45,5 @@ jobs:
         env:
           DEMO_EMAIL: ${{ secrets.DEMO_EMAIL }}
           DEMO_PASSWORD: ${{ secrets.DEMO_PASSWORD }}
-          APP_URL: https://selosales.vercel.app
+          APP_URL: https://selosales.com.br
         run: node scripts/qa-smoke.mjs

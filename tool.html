@@ -18,17 +18,15 @@
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-title" content="Selo">
 <link rel="apple-touch-icon" href="app-icon-192.png">
-<!-- Achado C8 da auditoria (2026-07-03): a tag usava a tag flutuante "@2",
-     que resolve para qualquer versão 2.x publicada — não determinística
-     entre usuários e sem controle de quando uma mudança chega ao ar.
-     Versão fixada em 2.105.4 (mesma major.minor já usada no server via
-     package.json). SRI (integrity=) ainda falta: exige calcular o hash
-     sha384 do arquivo servido pelo CDN nesta versão exata — não deve ser
-     adivinhado (um hash errado quebra o carregamento do script). Gerar com:
-       curl -s https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.105.4/dist/umd/supabase.min.js \
-         | openssl dgst -sha384 -binary | openssl base64 -A
-     e colar em integrity="sha384-<hash>" abaixo, junto com crossorigin. -->
-<script crossorigin="anonymous" src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.105.4/dist/umd/supabase.min.js"></script>
+<!-- Achado C8/M8 da auditoria: supabase-js agora é AUTO-HOSPEDADO
+     (vendor/supabase-js-2.105.4.js, bytes do tarball oficial do npm) em vez
+     de vir do jsDelivr. Sem CDN de terceiro: SRI deixa de ser necessário
+     (mesma origem, coberto pelo script-src 'self' do CSP abaixo) e um CDN
+     comprometido deixa de ser vetor. Para atualizar a versão: baixar o novo
+     tarball do npm, trocar o arquivo em vendor/, atualizar este src, o
+     PRECACHE do sw.js e bumpar o nome do cache do SW. -->
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline'; img-src 'self' data: blob: https:; font-src 'self' data:; connect-src 'self' https://kdudodqmijlzqwnkxpjo.supabase.co https://selosales.com.br; object-src 'none'; base-uri 'self'">
+<script src="vendor/supabase-js-2.105.4.js"></script>
 <script>
 /* Define o tema (claro/escuro) o mais cedo possível, antes do CSS pintar a
    tela, para evitar flash de tema errado. Prioridade: localStorage > prefers-color-scheme > escuro. */
@@ -43,6 +41,16 @@
 })()
 </script>
 <style>
+/* M24 da auditoria: Geist era declarada no stack mas nunca carregada — todo
+   mundo via fonte de sistema. Variável (100-900) auto-hospedada em vendor/,
+   OFL, 68KB, font-display:swap. Precacheada pelo sw.js para o PWA offline. */
+@font-face{
+  font-family:'Geist';
+  src:url('vendor/fonts/Geist-Variable.woff2') format('woff2-variations');
+  font-weight:100 900;
+  font-style:normal;
+  font-display:swap;
+}
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
 :root{
   --p:#0F2D4A; --ph:#0A2138; --ps:rgba(15,45,74,.12);
@@ -77,6 +85,11 @@ html[data-tema="claro"]{
 html{scroll-behavior:smooth}
 html,body{transition:background-color .25s ease,color .25s ease}
 *{transition:background-color .2s ease,border-color .2s ease,color .2s ease,box-shadow .2s ease}
+/* Assinatura da família de ícones Selo: cantos e pontas arredondados em TODO
+   traço de ícone. É o maior diferencial visual do stock (Feather/Lucide tem
+   canto reto). Só afeta traços — em formas preenchidas (barras, pontos) é no-op.
+   Ícones que definem o próprio linecap/linejoin continuam mandando. */
+svg{stroke-linecap:round;stroke-linejoin:round}
 body{font-family:var(--font);background:var(--bg);color:var(--t);-webkit-font-smoothing:antialiased;min-height:100vh}
 
 /* ── SIDEBAR ── */
@@ -119,6 +132,30 @@ body{font-family:var(--font);background:var(--bg);color:var(--t);-webkit-font-sm
 .u-av img{width:100%;height:100%;object-fit:cover;border-radius:50%}
 .u-name{font-size:13px;font-weight:600;color:var(--t);line-height:1.2;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:140px}
 .u-plan{font-size:11px;color:var(--t3)}
+
+/* ══ Cromo NAVY permanente (2026-07-04) ══
+   Ferramentas sérias de corretor (Chime, Sierra, kvCORE) têm cromo escuro/
+   de marca — não "dashboard claro genérico de template". A sidebar vira navy
+   fixo (independe do tema claro/escuro), com a marca como ESTRUTURA. Mata a
+   maior "aparência de Claude" do produto. */
+.sidebar,.mob-bar{background:var(--p);border-color:rgba(255,255,255,.09)}
+.sb-head{border-bottom-color:rgba(255,255,255,.09)}
+.sb-foot{border-top-color:rgba(255,255,255,.09)}
+.sb-logo,.mob-logo{color:#fff}
+.sb-logo em,.mob-logo em{color:var(--p2)}
+.sb-sec{color:rgba(232,237,242,.42)}
+.sb-item{color:rgba(232,237,242,.80)}
+.sb-item svg{color:rgba(232,237,242,.55)}
+.sb-item:hover{background:rgba(255,255,255,.07);color:#fff}
+.sb-item:hover svg{color:#fff}
+.sb-item.active{background:rgba(201,136,42,.20);color:#fff}
+.sb-item.active svg{color:var(--p2)}
+.sidebar .sb-badge{background:rgba(255,255,255,.14)!important;color:#fff!important}
+.sb-collapse,.theme-toggle{background:rgba(255,255,255,.07);border-color:rgba(255,255,255,.13);color:rgba(232,237,242,.65)}
+.sb-collapse:hover,.theme-toggle:hover{color:#fff;background:rgba(255,255,255,.12)}
+.sb-user:hover{background:rgba(255,255,255,.07)}
+.u-name{color:#fff}
+.u-plan{color:rgba(232,237,242,.5)}
 
 /* ── MAIN ── */
 .main{margin-left:var(--sw);min-height:100vh;display:flex;flex-direction:column;transition:margin-left .22s ease}
@@ -177,10 +214,32 @@ body{font-family:var(--font);background:var(--bg);color:var(--t);-webkit-font-sm
 .onb-step.done .onb-step-cta{display:none}
 
 /* ── CARD ── */
-.card{background:var(--s1);border:1px solid var(--b);border-radius:var(--radl);padding:26px;margin-bottom:16px;box-shadow:var(--shadow-sm);transition:box-shadow .2s ease,border-color .2s ease,transform .2s ease,background-color .2s ease}
-.card:hover{box-shadow:var(--shadow-lg)}
-.card-t{font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.09em;color:var(--t3);margin-bottom:18px;display:flex;align-items:center;gap:8px}
-.card-t::after{content:'';flex:1;height:1px;background:var(--b)}
+/* Pele de marca propagada (2026-07-04): cards planos (sem sombra flutuante,
+   sem hover-pulo) e cabeçalhos confiantes em caixa normal — não a etiqueta
+   minúscula em MAIÚSCULA espaçada com fio, que era o maior "tell" de IA. */
+.card{background:var(--s1);border:1px solid var(--b);border-radius:var(--radl);padding:24px;margin-bottom:16px;transition:border-color .2s ease,background-color .2s ease}
+.card-t{font-size:15px;font-weight:600;letter-spacing:-.1px;color:var(--t);margin-bottom:15px;display:flex;align-items:center;gap:8px}
+
+/* ── TELAS DE TRABALHO CONTENT-FIRST (2026-07-10) ──
+   Mesma tese do dashboard: o trabalho (lista, board, catálogo) é o herói da
+   tela; o formulário de criação fica atrás da ação primária no cabeçalho —
+   como nos CRMs de corretor de verdade, e o oposto do layout "formulário
+   gigante em cima" típico de ferramenta genérica. O .dash-top do dashboard
+   é o mesmo padrão de cabeçalho, reaproveitado nas outras telas. */
+.dash-top .ph{margin:0}
+/* Seções das Configurações: etiqueta em caixa normal (a versão minúscula
+   em MAIÚSCULA espaçada era o "tell" de IA que a pele de marca matou). */
+.cfg-sec{font-size:13.5px;font-weight:650;color:var(--t2);margin:30px 2px 12px}
+.cfg-sec:first-of-type{margin-top:4px}
+
+/* Passo numerado do fluxo de criação — o ponto-âmbar ecoa o acento da
+   família de ícones (ponto-lacre do selo). */
+.step-n{display:inline-flex;align-items:center;justify-content:center;width:22px;height:22px;border-radius:50%;background:rgba(201,136,42,.15);color:var(--p2);font-size:11.5px;font-weight:700;flex-shrink:0;font-variant-numeric:tabular-nums}
+.novo-panel{display:none;margin-bottom:20px}
+.novo-panel.open{display:block;animation:viewIn .3s ease}
+.panel-x{margin-left:auto;width:26px;height:26px;border-radius:8px;border:none;background:none;color:var(--t3);display:flex;align-items:center;justify-content:center;cursor:pointer;flex-shrink:0;padding:0}
+.panel-x:hover{background:var(--s2);color:var(--t)}
+#captacao-inbox:not(:empty){margin-bottom:20px}
 
 /* ── TUTORIAIS (accordion) ── */
 .tut-item{background:var(--s1);border:1px solid var(--b);border-radius:var(--radl);margin-bottom:10px;overflow:hidden;box-shadow:var(--shadow-sm);transition:box-shadow .2s ease}
@@ -275,6 +334,10 @@ input[type=color]{opacity:0;width:0;height:0;position:absolute}
 .btn-primary{background:var(--p);color:#fff}
 .btn-primary:hover{background:var(--ph)}
 .btn-green{background:var(--g);color:#fff}
+.btn-amber{background:var(--p2);color:#fff;border-color:var(--p2)}
+/* hover fixo em âmbar-escuro Selo — var(--bph) é a cor PESSOAL do corretor
+   e vazaria a marca dele para o chrome do app */
+.btn-amber:hover{background:#A8721F}
 .btn-green:hover{background:#16a34a}
 .btn-ghost{background:var(--s2);color:var(--t2);border:1px solid var(--b)}
 .btn-ghost:hover{background:var(--s3);color:var(--t)}
@@ -655,13 +718,55 @@ input[type=color]{opacity:0;width:0;height:0;position:absolute}
    Tela de visão agregada: cruza leads/imoveis/vendas já existentes, sem
    array novo no jsonb. Gráfico de barras é SVG puro gerado por JS — zero
    dependência nova, mesmo princípio dos módulos anteriores do pivô. */
-.dash-kpis{display:grid;grid-template-columns:repeat(3,1fr);gap:12px}
-@media(max-width:620px){.dash-kpis{grid-template-columns:repeat(2,1fr)}}
-.dash-kpi{background:var(--s1);border:1px solid var(--b);border-radius:var(--radl);padding:18px 18px;display:flex;flex-direction:column;gap:7px;min-width:0;box-shadow:var(--shadow-sm);transition:transform .2s ease,box-shadow .2s ease}
-.dash-kpi:hover{transform:translateY(-2px);box-shadow:var(--shadow-lg)}
-.dash-kpi-l{font-size:10.5px;font-weight:700;text-transform:uppercase;letter-spacing:.06em;color:var(--t3);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
-.dash-kpi-v{font-size:21px;font-weight:700;color:var(--t);letter-spacing:-.3px}
-.dash-kpi.alerta .dash-kpi-v{color:#F97316}
+/* ══ Dashboard = CENTRAL DE COMANDO (2026-07-04) ══
+   Espelha as ferramentas líderes para corretor (Follow Up Boss, kvCORE/
+   BoldTrail): o herói é o TRABALHO — quem contatar, o que é de hoje, o
+   pipeline — não um pôster de métricas. Número existe, mas numa barra fina. */
+.dash-top{display:flex;align-items:flex-end;justify-content:space-between;gap:16px;flex-wrap:wrap;margin-bottom:26px}
+.dash-th-n{display:inline-flex;align-items:center;justify-content:center;min-width:20px;height:20px;padding:0 6px;border-radius:100px;background:var(--p2);color:#fff;font-size:11px;font-weight:700;margin-left:2px}
+.dash-th-link{margin-left:auto;font-size:11.5px;font-weight:600;color:var(--p2);cursor:pointer;text-transform:none;letter-spacing:0}
+.dash-th-link:hover{text-decoration:underline}
+
+/* Barra fina de números: uma linha de células com fio de 1px, discreta. */
+.dash-statbar{display:grid;grid-template-columns:repeat(4,1fr);gap:1px;background:var(--b);border:1px solid var(--b);border-radius:12px;overflow:hidden;margin-bottom:20px}
+@media(max-width:720px){.dash-statbar{grid-template-columns:repeat(2,1fr)}}
+.dash-stat{background:var(--s1);padding:13px 16px;min-width:0}
+.dash-stat-l{font-size:10px;font-weight:600;text-transform:uppercase;letter-spacing:.06em;color:var(--t3);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.dash-stat-v{font-size:19px;font-weight:600;color:var(--t);letter-spacing:-.3px;margin-top:3px;font-variant-numeric:tabular-nums;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.dash-stat-v.money{color:var(--p)}
+.dash-stat-delta{font-size:10.5px;font-weight:600;margin-left:5px}
+.dash-stat-delta.up{color:#1FA971}.dash-stat-delta.down{color:#C77}
+
+/* Área de trabalho: coluna larga (inbox de leads) + coluna estreita (hoje). */
+.dash-work{display:grid;grid-template-columns:1.55fr 1fr;gap:16px;margin-bottom:16px}
+.dash-work>*{min-width:0}
+@media(max-width:900px){.dash-work{grid-template-columns:1fr}}
+
+/* Inbox de leads (o coração da central): linha por lead, ação na própria linha. */
+.dash-lead{display:flex;align-items:center;gap:13px;padding:13px 4px;border-bottom:1px solid var(--b)}
+.dash-lead:last-child{border-bottom:none}
+.dash-avatar{width:38px;height:38px;border-radius:50%;flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:14px;font-weight:600;color:var(--p);background:var(--ps)}
+.dash-lead-info{min-width:0;flex:1}
+.dash-lead-nome{font-size:14px;font-weight:600;color:var(--t);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.dash-lead-meta{font-size:12px;color:var(--t3);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;margin-top:1px}
+.dash-lead-tag{flex-shrink:0;font-size:11px;font-weight:600;padding:3px 9px;border-radius:100px;white-space:nowrap}
+.dash-lead-tag[data-nivel="critico"]{background:#FBEAEA;color:#B4443C}
+.dash-lead-tag[data-nivel="atencao"]{background:#F8EFDF;color:#A8721F}
+.dash-lead-acts{display:flex;gap:6px;flex-shrink:0}
+.dash-ic{width:34px;height:34px;border-radius:9px;display:flex;align-items:center;justify-content:center;border:1px solid var(--b);background:var(--s1);cursor:pointer;color:var(--t2);transition:background-color .15s,border-color .15s,color .15s;flex-shrink:0}
+.dash-ic:hover{border-color:var(--bm)}
+.dash-ic.wa{background:var(--p);border-color:var(--p);color:#fff}
+.dash-ic.wa:hover{background:var(--ph)}
+.dash-empty{font-size:13px;color:var(--t3);padding:8px 4px;line-height:1.6}
+.dash-empty b{color:var(--t2);font-weight:600}
+
+/* Pipeline horizontal: esteira de negócios com rampa navy→âmbar. */
+.dash-pipe{display:flex;gap:8px;margin-top:2px}
+.dash-pipe-col{flex:1;min-width:0}
+.dash-pipe-bar{height:6px;border-radius:100px;margin-bottom:9px}
+.dash-pipe-n{font-size:20px;font-weight:600;color:var(--t);letter-spacing:-.4px;font-variant-numeric:tabular-nums;line-height:1}
+.dash-pipe-l{font-size:10.5px;color:var(--t3);margin-top:4px;line-height:1.3;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+@media(max-width:680px){.dash-pipe{flex-wrap:wrap}.dash-pipe-col{flex:1 1 30%}}
 .dash-grid{display:grid;grid-template-columns:1.3fr 1fr;gap:16px;margin-top:20px}
 @media(max-width:900px){.dash-grid{grid-template-columns:1fr}}
 .dash-grid>*{min-width:0}  /* deixa os cards encolherem no mobile (sem isso o gráfico/listas forçam overflow) */
@@ -691,26 +796,23 @@ input[type=color]{opacity:0;width:0;height:0;position:absolute}
 .dash-rank-cliente{font-size:13px;font-weight:700;color:var(--t);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .dash-rank-meta{font-size:11px;color:var(--t3);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .dash-rank-valor{font-size:12.5px;font-weight:800;color:var(--p);flex-shrink:0}
-.dash-extra-kpis{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-top:20px}
-@media(max-width:900px){.dash-extra-kpis{grid-template-columns:1fr 1fr}}
-@media(max-width:560px){.dash-extra-kpis{grid-template-columns:1fr}}
+/* Cards do dashboard: planos, fio de 1px, sem sombra flutuante (a sombra em
+   tudo é a "cara de IA"). Escopo só na dashboard por enquanto. */
+#view-dashboard .card:hover{box-shadow:none}
+.dash-grid{margin-top:14px}
 
-/* ── DASHBOARD PREMIUM: delta vs mês anterior + donut do funil ── */
-.dash-kpi-delta{display:inline-flex;align-items:center;gap:5px;font-size:11px;font-weight:700;margin-top:1px;line-height:1}
-.dash-kpi-delta.up{color:#22C55E}
-.dash-kpi-delta.down{color:#EF4444}
-.dash-kpi-delta-cap{color:var(--t3);font-weight:500;margin-left:2px}
-.dash-donut-wrap{display:flex;align-items:center;gap:20px;flex-wrap:wrap}
-.dash-donut{position:relative;width:140px;height:140px;flex-shrink:0}
-.dash-donut svg{display:block;filter:drop-shadow(0 4px 10px rgba(0,0,0,.18))}
+/* ── donut do funil: rampa navy→âmbar (sem arco-íris), plano ── */
+.dash-donut-wrap{display:flex;align-items:center;gap:24px;flex-wrap:wrap}
+.dash-donut{position:relative;width:132px;height:132px;flex-shrink:0}
+.dash-donut svg{display:block}
 .dash-donut-center{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;pointer-events:none}
-.dash-donut-total{font-size:30px;font-weight:800;color:var(--t);line-height:1;letter-spacing:-.5px}
+.dash-donut-total{font-size:30px;font-weight:700;color:var(--t);line-height:1;letter-spacing:-.5px;font-variant-numeric:tabular-nums}
 .dash-donut-cap{font-size:10.5px;color:var(--t3);text-transform:uppercase;letter-spacing:.08em;margin-top:3px}
-.dash-donut-legenda{flex:1;min-width:160px;display:flex;flex-direction:column;gap:8px}
-.dash-donut-leg{display:flex;align-items:center;gap:9px;font-size:12.5px}
-.dash-donut-dot{width:10px;height:10px;border-radius:3px;flex-shrink:0}
+.dash-donut-legenda{flex:1;min-width:170px;display:flex;flex-direction:column;gap:9px}
+.dash-donut-leg{display:flex;align-items:center;gap:10px;font-size:12.5px}
+.dash-donut-dot{width:9px;height:9px;border-radius:2px;flex-shrink:0}
 .dash-donut-leg-l{flex:1;color:var(--t2);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.dash-donut-leg-n{font-weight:800;color:var(--t)}
+.dash-donut-leg-n{font-weight:700;color:var(--t);font-variant-numeric:tabular-nums}
 
 /* ── VENDAS ── */
 .vendas-kpis{display:grid;grid-template-columns:repeat(3,1fr);gap:14px}
@@ -870,58 +972,58 @@ input[type=color]{opacity:0;width:0;height:0;position:absolute}
   <nav class="sb-nav" aria-label="Navegação">
     <div class="sb-sec">Visão geral</div>
     <button class="sb-item active" data-view="dashboard" onclick="showView('dashboard')">
-      <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="9"/><rect x="14" y="3" width="7" height="5"/><rect x="14" y="12" width="7" height="9"/><rect x="3" y="16" width="7" height="5"/></svg>
+      <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="3.5"/><path d="M3 9h18"/><path d="M9 21V9"/><circle cx="6" cy="6" r=".9" fill="currentColor" stroke="none"/></svg>
       Dashboard
     </button>
     <div class="sb-sec">Funil</div>
     <button class="sb-item" data-view="agenda" onclick="showView('agenda')">
-      <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+      <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4.5" width="18" height="16.5" rx="3"/><path d="M3 9.5h18"/><path d="M8 3v3M16 3v3"/><circle cx="12" cy="15" r="1.5" fill="currentColor" stroke="none"/></svg>
       Agenda de Visitas
       <span class="sb-badge" id="sb-count-agenda" style="margin-left:auto;background:var(--ps);color:var(--p);font-size:10px;font-weight:700;padding:2px 7px;border-radius:100px;display:none"></span>
     </button>
     <button class="sb-item" data-view="funil" onclick="showView('funil')">
-      <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 3H2l8 9.46V19l4 2v-8.54L22 3z"/></svg>
+      <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M4 5h16l-6 7.2V19l-4 2v-8.8L4 5z"/></svg>
       Funil de Vendas
       <span class="sb-badge" id="sb-count-funil" style="margin-left:auto;background:var(--ps);color:var(--p);font-size:10px;font-weight:700;padding:2px 7px;border-radius:100px;display:none"></span>
     </button>
     <button class="sb-item" data-view="vendas" onclick="showView('vendas')">
-      <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 000 7h5a3.5 3.5 0 010 7H6"/></svg>
+      <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M20.6 13.4l-7.2 7.2a2 2 0 0 1-2.83 0l-6.17-6.17a2 2 0 0 1-.6-1.42V4.5A1.5 1.5 0 0 1 5.3 3h8.51a2 2 0 0 1 1.42.6l5.37 5.37a2 2 0 0 1 0 2.83z"/><circle cx="8.5" cy="8.5" r="1.4" fill="currentColor" stroke="none"/></svg>
       Vendas
       <span class="sb-badge" id="sb-count-vendas" style="margin-left:auto;background:var(--ps);color:var(--p);font-size:10px;font-weight:700;padding:2px 7px;border-radius:100px;display:none"></span>
     </button>
     <div class="sb-sec">Imóveis</div>
     <button class="sb-item" data-view="imoveis" onclick="showView('imoveis')">
-      <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 9l9-7 9 7"/><path d="M9 22V12h6v10"/><path d="M5 10v10a1 1 0 001 1h12a1 1 0 001-1V10"/></svg>
+      <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M3.5 10.5 12 3.5l8.5 7"/><path d="M5.5 9.3V20a1 1 0 0 0 1 1h11a1 1 0 0 0 1-1V9.3"/><path d="M9.8 21v-5.2a1 1 0 0 1 1-1h2.4a1 1 0 0 1 1 1V21"/></svg>
       Meus Imóveis
       <span class="sb-badge" id="sb-count-imoveis" style="margin-left:auto;background:var(--ps);color:var(--p);font-size:10px;font-weight:700;padding:2px 7px;border-radius:100px;display:none"></span>
     </button>
     <div class="sb-sec">Propostas</div>
     <button class="sb-item" data-view="form" onclick="showView('form')">
-      <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+      <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><rect x="4.5" y="3" width="15" height="18" rx="2.8"/><path d="M12 8.5v7M8.5 12h7"/></svg>
       Nova Proposta
     </button>
     <button class="sb-item" data-view="history" onclick="showView('history')">
-      <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
+      <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M6 3h7l5 5v12.5a1 1 0 0 1-1 1H6a1 1 0 0 1-1-1V4a1 1 0 0 1 1-1z"/><path d="M13 3v5h5"/><path d="M8.5 13h7M8.5 16.5h4.5"/></svg>
       Minhas Propostas
       <span class="sb-badge" id="sb-count" style="margin-left:auto;background:var(--ps);color:var(--p);font-size:10px;font-weight:700;padding:2px 7px;border-radius:100px;display:none"></span>
     </button>
     <div class="sb-sec">Documentos</div>
     <button class="sb-item" data-view="visita" onclick="showView('visita')">
-      <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 01-2 2H5a2 2 0 01-2-2V5a2 2 0 012-2h11"/></svg>
+      <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3l7 2.5v5.6c0 4.4-2.95 7.9-7 9.4-4.05-1.5-7-5-7-9.4V5.5L12 3z"/><path d="M9 11.6l2 2 4-4.6"/></svg>
       Registro de Visita
       <span class="sb-badge" id="sb-count-visita" style="margin-left:auto;background:var(--ps);color:var(--p);font-size:10px;font-weight:700;padding:2px 7px;border-radius:100px;display:none"></span>
     </button>
     <button class="sb-item" data-view="contratos" onclick="showView('contratos')">
-      <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="8" y1="13" x2="16" y2="13"/><line x1="8" y1="17" x2="13" y2="17"/></svg>
+      <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M6 3h7l5 5v12.5a1 1 0 0 1-1 1H6a1 1 0 0 1-1-1V4a1 1 0 0 1 1-1z"/><path d="M13 3v5h5"/><path d="M8.3 16.2c1-1.1 1.7.9 2.7 0s1.7.9 2.7 0"/></svg>
       Contratos
     </button>
     <div class="sb-sec">Conta</div>
     <button class="sb-item" data-view="config" onclick="showView('config')">
-      <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 00.33 1.82l.06.06a2 2 0 010 2.83 2 2 0 01-2.83 0l-.06-.06a1.65 1.65 0 00-1.82-.33 1.65 1.65 0 00-1 1.51V21a2 2 0 01-2 2 2 2 0 01-2-2v-.09A1.65 1.65 0 009 19.4a1.65 1.65 0 00-1.82.33l-.06.06a2 2 0 01-2.83 0 2 2 0 010-2.83l.06-.06A1.65 1.65 0 004.68 15a1.65 1.65 0 00-1.51-1H3a2 2 0 01-2-2 2 2 0 012-2h.09A1.65 1.65 0 004.6 9a1.65 1.65 0 00-.33-1.82l-.06-.06a2 2 0 010-2.83 2 2 0 012.83 0l.06.06A1.65 1.65 0 009 4.68a1.65 1.65 0 001-1.51V3a2 2 0 012-2 2 2 0 012 2v.09a1.65 1.65 0 001 1.51 1.65 1.65 0 001.82-.33l.06-.06a2 2 0 012.83 0 2 2 0 010 2.83l-.06.06A1.65 1.65 0 0019.4 9a1.65 1.65 0 001.51 1H21a2 2 0 012 2 2 2 0 01-2 2h-.09a1.65 1.65 0 00-1.51 1z"/></svg>
+      <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M4 7.5h9M17.5 7.5H20"/><circle cx="15" cy="7.5" r="2.3"/><path d="M4 16.5h3.5M12 16.5H20"/><circle cx="9" cy="16.5" r="2.3"/></svg>
       Configurações
     </button>
     <button class="sb-item" data-view="ajuda" onclick="showView('ajuda')">
-      <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M9.09 9a3 3 0 015.83 1c0 2-3 3-3 3"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
+      <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M9.2 9.3a2.9 2.9 0 0 1 5.6 1.05c0 1.9-2.8 2.35-2.8 3.75"/><circle cx="12" cy="17.2" r="1.05" fill="currentColor" stroke="none"/></svg>
       Tutoriais / Ajuda
     </button>
   </nav>
@@ -934,7 +1036,7 @@ input[type=color]{opacity:0;width:0;height:0;position:absolute}
       </div>
     </button>
     <button class="sb-item" onclick="sair()" style="margin-top:2px" title="Sair da conta">
-      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 21H5a2 2 0 01-2-2V5a2 2 0 012-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M9.5 21H6a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h3.5"/><path d="M16 16l4-4-4-4"/><path d="M20 12H9.5"/></svg>
       Sair
     </button>
   </div>
@@ -974,17 +1076,41 @@ input[type=color]{opacity:0;width:0;height:0;position:absolute}
          existentes. Não cria array novo — só lê e calcula em cima do que
          já está salvo no jsonb (cpr_user_data). -->
     <div class="view active" id="view-dashboard">
-      <div class="ph">
-        <h1>Dashboard</h1>
-        <p>Visão geral do seu negócio — leads, imóveis e vendas em um só lugar.</p>
+      <div class="dash-top">
+        <div class="ph" style="margin:0">
+          <h1 id="dash-saudacao">Central de comando</h1>
+          <p id="dash-resumo-dia">Seu dia de trabalho, num lugar só.</p>
+        </div>
+        <button class="btn btn-amber" onclick="showView('form')">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+          Nova proposta
+        </button>
       </div>
 
       <div id="onboarding-card"></div>
 
-      <div class="dash-kpis" id="dash-kpis"></div>
+      <!-- Barra fina de números: presente, mas sem dominar (o trabalho é o herói) -->
+      <div class="dash-statbar" id="dash-kpis"></div>
 
-      <div class="dash-extra-kpis" id="dash-extra-kpis"></div>
+      <!-- Área de trabalho: quem precisa de você + o que é de hoje -->
+      <div class="dash-work">
+        <div class="card dash-work-main">
+          <div class="card-t">Precisam de você agora <span class="dash-th-n" id="dash-atencao-n"></span></div>
+          <div id="dash-atencao"></div>
+        </div>
+        <div class="card dash-work-side">
+          <div class="card-t">Para não esquecer hoje</div>
+          <div id="dash-lembretes"></div>
+        </div>
+      </div>
 
+      <!-- Pipeline horizontal: o funil como esteira de negócios -->
+      <div class="card">
+        <div class="card-t">Seu funil de vendas <a class="dash-th-link" onclick="showView('funil')">Abrir funil →</a></div>
+        <div id="dash-funil-resumo"></div>
+      </div>
+
+      <!-- Secundário: tendência de vendas + leads de maior valor -->
       <div class="dash-grid">
         <div class="card">
           <div class="dash-chart-head">
@@ -992,62 +1118,82 @@ input[type=color]{opacity:0;width:0;height:0;position:absolute}
             <div class="dash-period-btns" id="dash-period-btns">
               <button class="dash-period-btn" data-periodo="6m" onclick="mudarPeriodoDashboard('6m')">6 meses</button>
               <button class="dash-period-btn" data-periodo="12m" onclick="mudarPeriodoDashboard('12m')">12 meses</button>
-              <button class="dash-period-btn" data-periodo="ano" onclick="mudarPeriodoDashboard('ano')">Ano corrente</button>
+              <button class="dash-period-btn" data-periodo="ano" onclick="mudarPeriodoDashboard('ano')">Ano</button>
             </div>
           </div>
           <div class="dash-chart-wrap" id="dash-chart"></div>
         </div>
         <div class="card">
-          <div class="card-t">Funil de vendas (resumo)</div>
-          <div id="dash-funil-resumo"></div>
-        </div>
-      </div>
-
-      <div class="dash-grid">
-        <div class="card">
-          <div class="card-t">Leads que precisam de atenção agora</div>
-          <div id="dash-atencao"></div>
-        </div>
-        <div class="card">
-          <div class="card-t">Top 5 leads ativos mais valiosos</div>
+          <div class="card-t">Leads mais valiosos</div>
           <div id="dash-ranking"></div>
-        </div>
-      </div>
-
-      <div class="dash-grid">
-        <div class="card">
-          <div class="card-t">Lembretes de hoje e atrasados</div>
-          <div id="dash-lembretes"></div>
-        </div>
-        <div class="card">
-          <div class="card-t">Atalhos rápidos</div>
-          <div class="dash-atalhos">
-            <button class="btn btn-green btn-sm" onclick="showView('form')">
-              <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
-              Nova proposta
-            </button>
-            <button class="btn btn-ghost btn-sm" onclick="showView('agenda')">
-              <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
-              Novo lead
-            </button>
-            <button class="btn btn-ghost btn-sm" onclick="showView('imoveis')">
-              <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
-              Novo imóvel
-            </button>
-          </div>
         </div>
       </div>
     </div><!-- /view-dashboard -->
 
     <!-- ══════════════════ VIEW: AGENDA DE VISITAS ══════════════════ -->
     <div class="view" id="view-agenda">
-      <div class="ph">
-        <h1>Agenda de Visitas</h1>
-        <p>Cadastre o lead antes da visita acontecer — depois, marque como realizada e gere o Registro de Visita ou a Proposta sem redigitar nada.</p>
+      <div class="dash-top">
+        <div class="ph">
+          <h1>Agenda de Visitas</h1>
+          <p>Suas visitas e os leads que chegam pelos seus links, num lugar só.</p>
+        </div>
+        <button class="btn btn-amber" onclick="togglePainelNovo('painel-nova-visita','l-cliente')">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+          Agendar visita
+        </button>
       </div>
 
-      <!-- Captação pública de leads: link que o corretor compartilha; quem preenche cai aqui -->
-      <div class="card" id="card-captacao">
+      <!-- Leads recebidos pelos links públicos: é trabalho pendente, fica no topo -->
+      <div id="captacao-inbox"></div>
+
+      <div class="novo-panel" id="painel-nova-visita">
+        <form id="form-lead" onsubmit="salvarLead(event)" novalidate>
+          <div class="card">
+            <div class="card-t">Novo agendamento
+              <button type="button" class="panel-x" onclick="fecharPainelNovo('painel-nova-visita')" aria-label="Fechar">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+              </button>
+            </div>
+            <div class="fg">
+              <div class="field">
+                <label class="lbl" for="l-cliente">Nome do cliente <span class="req">*</span></label>
+                <input id="l-cliente" type="text" class="inp" placeholder="Ex: João Silva" required autocomplete="name">
+              </div>
+              <div class="field">
+                <label class="lbl" for="l-tel">Telefone</label>
+                <input id="l-tel" type="tel" class="inp" placeholder="(11) 99999-9999">
+              </div>
+              <div class="field f2">
+                <label class="lbl" for="l-imovel">Imóvel de interesse <span class="req">*</span></label>
+                <input id="l-imovel" type="text" class="inp" placeholder="Ex: Apartamento — Av. Paulista, 1000, Bela Vista, São Paulo, SP" required>
+              </div>
+              <div class="field">
+                <label class="lbl" for="l-data">Data da visita <span class="req">*</span></label>
+                <input id="l-data" type="date" class="inp" required>
+              </div>
+              <div class="field">
+                <label class="lbl" for="l-hora">Horário</label>
+                <input id="l-hora" type="time" class="inp">
+              </div>
+              <div class="field f2">
+                <label class="lbl" for="l-obs">Observações (opcional)</label>
+                <textarea id="l-obs" class="txa inp" placeholder="Ex: cliente veio de indicação, já tem FGTS disponível..."></textarea>
+              </div>
+            </div>
+          </div>
+
+          <button type="submit" class="gen-btn" id="btn-lead">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+            Agendar visita
+          </button>
+        </form>
+      </div>
+
+      <div class="card-t" style="margin-bottom:12px">Visitas agendadas</div>
+      <div id="agenda-content"></div>
+
+      <!-- Captação pública de leads: link que o corretor compartilha; quem preenche cai no inbox lá em cima -->
+      <div class="card" id="card-captacao" style="margin-top:28px">
         <div class="card-t">Captar leads pela internet</div>
         <p style="color:var(--t2);font-size:13px;margin:-4px 0 14px;line-height:1.6">Compartilhe seu link de contato (bio do Instagram, status do WhatsApp, anúncios). Quem preencher entra automaticamente na sua agenda — você só aceita e segue para a visita.</p>
         <div class="field f2">
@@ -1079,49 +1225,6 @@ input[type=color]{opacity:0;width:0;height:0;position:absolute}
             </button>
           </div>
         </div>
-        <div id="captacao-inbox" style="margin-top:16px"></div>
-      </div>
-
-      <form id="form-lead" onsubmit="salvarLead(event)" novalidate>
-        <div class="card">
-          <div class="card-t">Novo agendamento</div>
-          <div class="fg">
-            <div class="field">
-              <label class="lbl" for="l-cliente">Nome do cliente <span class="req">*</span></label>
-              <input id="l-cliente" type="text" class="inp" placeholder="Ex: João Silva" required autocomplete="name">
-            </div>
-            <div class="field">
-              <label class="lbl" for="l-tel">Telefone</label>
-              <input id="l-tel" type="tel" class="inp" placeholder="(11) 99999-9999">
-            </div>
-            <div class="field f2">
-              <label class="lbl" for="l-imovel">Imóvel de interesse <span class="req">*</span></label>
-              <input id="l-imovel" type="text" class="inp" placeholder="Ex: Apartamento — Av. Paulista, 1000, Bela Vista, São Paulo, SP" required>
-            </div>
-            <div class="field">
-              <label class="lbl" for="l-data">Data da visita <span class="req">*</span></label>
-              <input id="l-data" type="date" class="inp" required>
-            </div>
-            <div class="field">
-              <label class="lbl" for="l-hora">Horário</label>
-              <input id="l-hora" type="time" class="inp">
-            </div>
-            <div class="field f2">
-              <label class="lbl" for="l-obs">Observações (opcional)</label>
-              <textarea id="l-obs" class="txa inp" placeholder="Ex: cliente veio de indicação, já tem FGTS disponível..."></textarea>
-            </div>
-          </div>
-        </div>
-
-        <button type="submit" class="gen-btn" id="btn-lead">
-          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
-          Agendar visita
-        </button>
-      </form>
-
-      <div style="margin-top:28px">
-        <div class="card-t" style="margin-bottom:12px">Visitas agendadas</div>
-        <div id="agenda-content"></div>
       </div>
     </div><!-- /view-agenda -->
 
@@ -1131,13 +1234,24 @@ input[type=color]{opacity:0;width:0;height:0;position:absolute}
          Cada lead ganha um campo `estagioFunil`, mapeado automaticamente a
          partir do `status` antigo para quem já tinha leads salvos. -->
     <div class="view" id="view-funil">
-      <div class="ph">
-        <h1>Funil de Vendas</h1>
-        <p>Acompanhe cada lead pelas etapas do processo comercial, do primeiro contato até a venda fechada — sem precisar reorganizar nada na Agenda de Visitas.</p>
+      <div class="dash-top">
+        <div class="ph">
+          <h1>Funil de Vendas</h1>
+          <p>Cada lead na etapa certa, do primeiro contato até a venda fechada.</p>
+        </div>
+        <button class="btn btn-amber" onclick="togglePainelNovo('painel-novo-contato','fl-cliente')">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+          Novo contato
+        </button>
       </div>
 
+      <div class="novo-panel" id="painel-novo-contato">
       <div class="card" id="card-funil-novo">
-        <div class="card-t">Novo contato</div>
+        <div class="card-t">Novo contato
+          <button type="button" class="panel-x" onclick="fecharPainelNovo('painel-novo-contato')" aria-label="Fechar">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+          </button>
+        </div>
         <form id="form-funil-lead" onsubmit="salvarLeadFunil(event)" novalidate>
           <div class="fg">
             <div class="field">
@@ -1170,22 +1284,32 @@ input[type=color]{opacity:0;width:0;height:0;position:absolute}
           </button>
         </form>
       </div>
+      </div><!-- /painel-novo-contato -->
 
-      <div style="margin-top:24px">
-        <div id="funil-board"></div>
-      </div>
+      <div id="funil-board"></div>
     </div><!-- /view-funil -->
 
     <!-- ══════════════════ VIEW: MEUS IMÓVEIS ══════════════════ -->
     <div class="view" id="view-imoveis">
-      <div class="ph">
-        <h1>Meus Imóveis</h1>
-        <p>Seu catálogo de imóveis em carteira — a base para gerar propostas e acompanhar vendas e locações sem redigitar nada.</p>
+      <div class="dash-top">
+        <div class="ph">
+          <h1>Meus Imóveis</h1>
+          <p>Seu catálogo em carteira — a base para propostas, vendas e locações.</p>
+        </div>
+        <button class="btn btn-amber" onclick="togglePainelNovo('painel-novo-imovel','im-tipo')">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+          Novo imóvel
+        </button>
       </div>
 
+      <div class="novo-panel" id="painel-novo-imovel">
       <form id="form-imovel" onsubmit="salvarImovel(event)" novalidate>
         <div class="card">
-          <div class="card-t" id="imovel-form-titulo">Novo imóvel</div>
+          <div class="card-t"><span id="imovel-form-titulo">Novo imóvel</span>
+            <button type="button" class="panel-x" onclick="cancelarEdicaoImovel()" aria-label="Fechar">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+            </button>
+          </div>
           <input type="hidden" id="im-id" value="">
           <div class="fg">
             <div class="field">
@@ -1289,11 +1413,10 @@ input[type=color]{opacity:0;width:0;height:0;position:absolute}
           <button type="button" class="btn btn-ghost" id="btn-imovel-cancelar" style="display:none" onclick="cancelarEdicaoImovel()">Cancelar edição</button>
         </div>
       </form>
+      </div><!-- /painel-novo-imovel -->
 
-      <div style="margin-top:28px">
-        <div class="card-t" style="margin-bottom:12px">Imóveis cadastrados</div>
-        <div id="imoveis-content"></div>
-      </div>
+      <div class="card-t" style="margin-bottom:12px">Imóveis cadastrados</div>
+      <div id="imoveis-content"></div>
     </div><!-- /view-imoveis -->
 
     <!-- ══════════════════ VIEW: VENDAS ══════════════════
@@ -1336,17 +1459,10 @@ input[type=color]{opacity:0;width:0;height:0;position:absolute}
         <p>Preencha os dados do cliente e do imóvel para gerar a proposta com sua marca.</p>
       </div>
 
-      <div class="demo-row">
-        <button class="btn btn-ghost btn-sm" onclick="carregarExemplo()">
-          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="5 3 19 12 5 21 5 3"/></svg>
-          Ver exemplo preenchido
-        </button>
-      </div>
-
       <form id="form" onsubmit="gerarProposta(event)" novalidate>
 
         <div class="card">
-          <div class="card-t">Cliente</div>
+          <div class="card-t"><span class="step-n">1</span> Cliente</div>
           <div class="fg fg1">
             <div class="field">
               <label class="lbl" for="f-cliente">Nome do cliente <span class="req">*</span></label>
@@ -1361,7 +1477,7 @@ input[type=color]{opacity:0;width:0;height:0;position:absolute}
         </div>
 
         <div class="card">
-          <div class="card-t">Imóvel</div>
+          <div class="card-t"><span class="step-n">2</span> Imóvel</div>
           <div class="fg">
             <div class="field">
               <label class="lbl" for="f-tipo-imovel">Tipo do imóvel <span class="req">*</span></label>
@@ -1535,7 +1651,7 @@ input[type=color]{opacity:0;width:0;height:0;position:absolute}
         </div>
 
         <div class="card">
-          <div class="card-t">Condições e Observações</div>
+          <div class="card-t"><span class="step-n">3</span> Condições e Observações</div>
           <div class="fg fg1">
             <div class="field">
               <div class="lbl-row">
@@ -2153,6 +2269,7 @@ input[type=color]{opacity:0;width:0;height:0;position:absolute}
       </div>
 
       <form id="form-config" onsubmit="salvarConfig(event)" novalidate>
+        <div class="cfg-sec">Você e sua marca</div>
         <div class="card">
           <div class="card-t">Identidade Profissional</div>
           <div class="fg">
@@ -2298,6 +2415,7 @@ input[type=color]{opacity:0;width:0;height:0;position:absolute}
           </div>
         </div>
 
+        <div class="cfg-sec">Como sua proposta sai</div>
         <div class="card">
           <div class="card-t">Modelo da Proposta</div>
           <p style="font-size:12px;color:var(--t2);margin-bottom:14px">Escolha o estilo visual que sua proposta vai usar a partir de agora — pode trocar quando quiser, sem perder nenhum dado.</p>
@@ -2365,6 +2483,7 @@ input[type=color]{opacity:0;width:0;height:0;position:absolute}
           </div>
         </div>
 
+        <div class="cfg-sec">Mensagens prontas</div>
         <div class="card">
           <div class="card-t">Mensagens de WhatsApp</div>
           <p style="font-size:12px;color:var(--t2);margin-bottom:14px">Uma mensagem pronta pra cada etapa do Funil, mais uma pra Agenda de Visitas. O botão de WhatsApp de cada lead manda automaticamente a mensagem da etapa em que ele está. Use <code>{cliente}</code>, <code>{corretor}</code>, <code>{imovel}</code> e <code>{creci}</code> — serão substituídos automaticamente. Se deixar em branco, usamos o texto padrão.</p>
@@ -2408,6 +2527,28 @@ input[type=color]{opacity:0;width:0;height:0;position:absolute}
           <button type="button" class="btn btn-ghost" onclick="showView('form')">Cancelar</button>
         </div>
       </form>
+
+      <!-- M10 da auditoria: sem isto, todo dispositivo novo obrigava o
+           corretor a passar pelo "esqueci minha senha". Fora do form de
+           perfil de propósito — senha não entra no salvarConfig(). -->
+      <div class="cfg-sec">Sua conta</div>
+      <div class="card">
+        <div class="card-t">Senha de acesso</div>
+        <p style="font-size:12px;color:var(--t2);margin-bottom:14px">Defina ou troque a senha que você usa para entrar em outro celular ou computador.</p>
+        <div class="fg">
+          <div class="field">
+            <label class="lbl" for="c-senha-nova">Nova senha</label>
+            <input id="c-senha-nova" type="password" class="inp" placeholder="Mínimo 8 caracteres" autocomplete="new-password" minlength="8">
+          </div>
+          <div class="field">
+            <label class="lbl" for="c-senha-conf">Confirmar nova senha</label>
+            <input id="c-senha-conf" type="password" class="inp" placeholder="Repita a senha" autocomplete="new-password" minlength="8">
+          </div>
+        </div>
+        <div style="margin-top:14px">
+          <button type="button" class="btn btn-primary" id="btn-senha" onclick="salvarSenha()">Salvar senha</button>
+        </div>
+      </div>
     </div><!-- /view-config -->
 
     <!-- ══════════════════ VIEW: TUTORIAIS / AJUDA ══════════════════
@@ -2464,6 +2605,7 @@ const _CHECKOUT_URL = 'https://pay.hotmart.com/Y106494635I'
       carregarExemplo()
       mostrarBannerDemo()
       iniciarTourDemo()
+      _demoTrack('demo_aberta')
     } catch(e) { console.error('Demo init:', e) }
     return
   }
@@ -2551,7 +2693,7 @@ function mostrarBannerDemo() {
   b.id = 'demo-banner'
   b.style.cssText = 'position:fixed;left:0;right:0;bottom:0;z-index:9999;display:flex;align-items:center;justify-content:center;gap:14px;flex-wrap:wrap;padding:11px 16px;background:var(--s1);border-top:1px solid var(--bm);box-shadow:0 -8px 24px rgba(0,0,0,.25);font-family:inherit'
   b.innerHTML =
-    '<span style="font-size:13.5px;color:var(--t);font-weight:600">🔓 <b>Modo demonstração</b> — explore à vontade. Para salvar e enviar, assine.</span>' +
+    '<span style="font-size:13.5px;color:var(--t);font-weight:600"><b>Modo demonstração</b> — explore à vontade. Para salvar e enviar, assine.</span>' +
     '<a href="' + _DEMO_CHECKOUT + '" target="_blank" rel="noopener" style="background:#22C55E;color:#06281A;text-decoration:none;border-radius:980px;padding:9px 18px;font-size:13.5px;font-weight:800;white-space:nowrap">Assinar agora</a>'
   document.body.appendChild(b)
   document.body.classList.add('cpr-demo')
@@ -2575,8 +2717,18 @@ function mostrarBannerDemo() {
     document.head.appendChild(st)
   }
 }
+/* M6 da auditoria: a demo roda num iframe cross-origin dentro da landing —
+   o Meta Pixel (que vive na landing) não enxerga nada aqui dentro. Estes
+   postMessages levam os eventos-chave do funil até a landing, que dispara
+   o fbq. Payload sem nenhum dado pessoal, por isso targetOrigin '*'. */
+function _demoTrack(evento) {
+  if (!window._DEMO) return
+  try { if (window.parent !== window) window.parent.postMessage({ seloDemo: evento }, '*') } catch(_) {}
+}
+
 function demoBloqueio() {
   if (typeof toast === 'function') toast('Recurso disponível para assinantes — assine para liberar')
+  _demoTrack('checkout_demo')
   window.open(_DEMO_CHECKOUT, '_blank', 'noopener')
 }
 
@@ -2627,7 +2779,7 @@ function seedDemoData() {
 /* ── TOUR GUIADO (só no modo demo): destaca cada funcionalidade em passos ── */
 function iniciarTourDemo() {
   const PASSOS = [
-    { t:'Bem-vindo 👋', x:'Esta é a plataforma real do Selo — já preenchida com dados de exemplo pra você explorar. Em poucos passos eu mostro tudo que ela faz.', sel:null, view:'form' },
+    { t:'Bem-vindo', x:'Esta é a plataforma real do Selo — já preenchida com dados de exemplo pra você explorar. Em poucos passos eu mostro tudo que ela faz.', sel:null, view:'form' },
     { t:'Meus Imóveis', x:'Cadastre cada imóvel da sua carteira com foto, valor e status — disponível, reservado, vendido ou locado. É a base do seu catálogo.', sel:'.sb-item[data-view="imoveis"]', view:'imoveis' },
     { t:'Proposta em 60 segundos', x:'Preencha os dados e gere uma proposta profissional com a sua marca — já com simulação de financiamento SAC e Price calculada. Clique em “Gerar Proposta” pra ver.', sel:'#gen-btn', view:'form' },
     { t:'Status das propostas (CRM)', x:'Cada proposta vira um card e caminha pelo status: Nova → Enviada → Em negociação → Fechada. Você acompanha todas num lugar só.', sel:'.sb-item[data-view="history"]', view:'history' },
@@ -2648,7 +2800,7 @@ function iniciarTourDemo() {
   card.style.cssText = 'position:fixed;z-index:10002;left:50%;transform:translateX(-50%);bottom:78px;width:min(420px,92vw);background:var(--s1);border:1px solid var(--bm);border-radius:18px;padding:22px 24px;box-shadow:var(--shadow-lg);font-family:inherit'
   back.appendChild(ring); back.appendChild(card); document.body.appendChild(back)
 
-  function fim() { back.remove(); window.removeEventListener('resize', render) }
+  function fim() { back.remove(); window.removeEventListener('resize', render); _demoTrack('tour_fim') }
   function render() {
     const p = PASSOS[i]
     if (p.view) { try { showView(p.view) } catch(_) {} }
@@ -2796,7 +2948,7 @@ function renderAjuda() {
         '</button>' +
         '<div class="tut-body">' +
           '<ol>' + t.passos.map(p => '<li>' + p + '</li>').join('') + '</ol>' +
-          (t.dica ? '<p class="tut-dica">💡 ' + t.dica + '</p>' : '') +
+          (t.dica ? '<p class="tut-dica"><b>Dica:</b> ' + t.dica + '</p>' : '') +
         '</div>' +
       '</div>'
     )
@@ -2813,6 +2965,15 @@ function toggleAjuda(id) {
 
 /* ── ESC HTML ── */
 const escH = s => String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;')
+/* Sanitiza valores usados em src="" dentro de innerHTML (M7 da auditoria):
+   só passa data-URI de imagem bem formado ou URL https limpa — qualquer
+   outra string (ex.: `x" onerror=alert(1)`) vira '' e a imagem não renderiza. */
+const safeSrc = s => {
+  s = String(s || '')
+  if (/^data:image\/(png|jpe?g|webp|gif|svg\+xml);base64,[A-Za-z0-9+/=]*$/.test(s)) return s
+  if (/^https:\/\/[^"'<>\s\\]+$/.test(s)) return s
+  return ''
+}
 
 /* ── STATE ── */
 const PERFIL_DEFAULT = { nome:'',creci:'',tel:'',email:'',cor:'#C9882A',logo:null,modelo:'classico',fonte:'moderna',secoes:{},slug:'',empreendimentos:[],msgBoasVindas:'',msgFollowUp:'',msgAgendamento:'',wppNovoContato:'',wppVisitaAgendada:'',wppVisitaRealizada:'',wppPropostaEnviada:'',wppNegociacao:'',wppVendaFechada:'',wppAgenda:'',propApresentacao:'',propProximos:'',propObs:'' }
@@ -2930,7 +3091,7 @@ async function sair() {
   // destruído sem aviso. Tenta subir uma última vez; se não der, o corretor
   // decide se sai mesmo assim.
   if (_syncPendente && window._sb && window._uid) {
-    try { await salvarRemoto() } catch(_) {}
+    try { await salvarRemoto() } catch(e) { toastErroSave(e) }
   }
   if (_syncPendente) {
     const seguir = confirm('Há alterações que ainda não subiram para a nuvem (sem conexão ou sessão expirada). Se sair agora, elas serão apagadas deste aparelho. Sair mesmo assim?')
@@ -3124,6 +3285,46 @@ function _ehErroDeAuth(e) {
   return code === 401 || code === 403 || code === 'PGRST301' || /jwt|expired|invalid token|refresh token/i.test(msg)
 }
 
+/* M10 da auditoria: criar/trocar senha direto no perfil. */
+async function salvarSenha() {
+  if (window._DEMO) return demoBloqueio()
+  const nova = document.getElementById('c-senha-nova').value
+  const conf = document.getElementById('c-senha-conf').value
+  if (nova.length < 8) { toast('A senha precisa ter pelo menos 8 caracteres', true); return }
+  if (nova !== conf) { toast('As senhas não conferem', true); return }
+  const btn = document.getElementById('btn-senha')
+  btn.disabled = true
+  try {
+    const { error } = await window._sb.auth.updateUser({ password: nova })
+    if (error) throw error
+    document.getElementById('c-senha-nova').value = ''
+    document.getElementById('c-senha-conf').value = ''
+    toast('Senha atualizada — use-a no próximo acesso em qualquer aparelho')
+  } catch(e) {
+    const msg = String((e && e.message) || '')
+    if (/same.*password|different from the old/i.test(msg)) toast('A nova senha precisa ser diferente da atual', true)
+    else if (_ehErroDeAuth(e)) toast('Sua sessão expirou — entre novamente para trocar a senha', true)
+    else toast('Não foi possível atualizar a senha — tente novamente', true)
+  } finally {
+    btn.disabled = false
+  }
+}
+
+/* M4 da auditoria: erro de permissão (42501/RLS) e sessão expirada NÃO são
+   "sem internet" — a mensagem antiga escondia falha permanente atrás de um
+   aviso de conexão e o corretor nunca descobria que nada estava subindo. */
+function toastErroSave(e) {
+  const code = String((e && e.code) || '')
+  const msg = String((e && (e.message || e.error_description)) || '')
+  if (code === '42501' || /row-level security|permission denied/i.test(msg)) {
+    toast('Erro de permissão ao salvar (42501) — seus dados estão no aparelho; avise o suporte', true)
+  } else if (_ehErroDeAuth(e)) {
+    toast('Sua sessão expirou — entre novamente para salvar online', true)
+  } else {
+    toast('Salvo localmente — verifique sua conexão', true)
+  }
+}
+
 async function sincronizarPendentes() {
   if (!_syncPendente || !navigator.onLine || !window._sb || !window._uid) return
   try {
@@ -3208,6 +3409,26 @@ function showView(name) {
   }
   closeSidebar()
   window.scrollTo({ top: 0, behavior: 'smooth' })
+}
+
+/* ── Painéis "novo" recolhíveis (telas content-first) ──
+   O formulário de criação fica atrás da ação primária do cabeçalho:
+   abrir foca o primeiro campo; salvar, cancelar ou o X fecham. */
+function abrirPainelNovo(id, focoId) {
+  const p = document.getElementById(id)
+  if (!p) return
+  p.classList.add('open')
+  if (focoId) setTimeout(() => { const f = document.getElementById(focoId); if (f) f.focus() }, 120)
+}
+function fecharPainelNovo(id) {
+  const p = document.getElementById(id)
+  if (p) p.classList.remove('open')
+}
+function togglePainelNovo(id, focoId) {
+  const p = document.getElementById(id)
+  if (!p) return
+  if (p.classList.contains('open')) fecharPainelNovo(id)
+  else abrirPainelNovo(id, focoId)
 }
 
 /* ── VALOR FORMATTER ── */
@@ -3447,7 +3668,7 @@ async function gerarLinkProposta() {
     if (_propostaJaSalva && _ultimoItemSalvo) {
       _ultimoItemSalvo.linkId = data.id
       localStorage.setItem('cpr_hist', JSON.stringify(historico))
-      salvarRemoto().catch(() => {})
+      salvarRemoto().catch(toastErroSave)
     } else if (snapProposta) {
       await salvarProposta() // salva já com o linkId (via ...snapProposta)
     }
@@ -3604,9 +3825,13 @@ function statusLinkProposta(h) {
 }
 
 /* ── CALCULAR PARCELA (Tabela Price) ── */
+/* M1 da auditoria: esta matemática existe TAMBÉM em lib/taxas.ts
+   (parcelaPrice/sac). O teste tests/financiamento.test.mjs extrai as duas
+   implementações dos arquivos reais e falha se divergirem — ao mudar aqui,
+   mude lá e rode `npm test`. */
 function calcParcela(pv, taxaAnual, meses) {
   const i = Math.pow(1 + taxaAnual/100, 1/12) - 1
-  if (i === 0) return pv / meses
+  if (i <= 0) return pv / meses
   return pv * (i * Math.pow(1+i,meses)) / (Math.pow(1+i,meses) - 1)
 }
 
@@ -3670,6 +3895,7 @@ function gerarProposta(ev) {
     btn.disabled = false
     btn.innerHTML = '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg> Gerar Proposta'
     setTimeout(() => prop.scrollIntoView({ behavior:'smooth', block:'start' }), 60)
+    _demoTrack('proposta_gerada')
   }, 1700)
 }
 
@@ -3740,7 +3966,7 @@ function construirProposta(d) {
 
   // Marca d'água do logo no fundo (aparece só no modelo Timbrado, via CSS).
   const marcaEl = document.getElementById('p-marca-dagua')
-  if (marcaEl) marcaEl.innerHTML = logoSrc ? `<img src="${logoSrc}" alt="">` : ''
+  if (marcaEl) marcaEl.innerHTML = logoSrc ? `<img src="${safeSrc(logoSrc)}" alt="">` : ''
 
   /* ── Header ── */
   document.getElementById('p-titulo').textContent = `${d.tipoNeg} — ${d.tipoImovel} · ${d.end.split(',')[0].trim()}`
@@ -4119,8 +4345,8 @@ async function salvarProposta() {
   try {
     await salvarRemoto()
     toast('Proposta salva em Minhas Propostas!')
-  } catch(_) {
-    toast('Salvo localmente — verifique sua conexão', true)
+  } catch(e) {
+    toastErroSave(e)
   }
 }
 
@@ -4321,7 +4547,7 @@ function renderHistory(filtrados) {
             <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1"/></svg>
           </button>
           <button class="btn btn-ghost btn-sm" onclick="excluirProposta(${realIdx})" aria-label="Excluir">
-            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 01-2 2H8a2 2 0 01-2-2L5 6"/><path d="M10 11v6M14 11v6"/><path d="M9 6V4h6v2"/></svg>
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 7h16"/><path d="M9 7V5a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2"/><path d="M6.6 7l.8 12.1a1.8 1.8 0 0 0 1.8 1.7h5.6a1.8 1.8 0 0 0 1.8-1.7L17.4 7"/><path d="M10 11.5v5M14 11.5v5"/></svg>
           </button>
         </div>
       </div>
@@ -4388,7 +4614,7 @@ function definirStatus(idx, statusKey) {
   if (!historico[idx]) return
   historico[idx].status = statusKey
   localStorage.setItem('cpr_hist', JSON.stringify(historico))
-  salvarRemoto().catch(() => {})
+  salvarRemoto().catch(toastErroSave)
   const st = getStatusInfo(statusKey)
   // Re-renderiza mantendo filtros
   const q = (document.getElementById('hist-search')?.value || '').trim()
@@ -4645,8 +4871,8 @@ async function salvarVisita() {
   try {
     await salvarRemoto()
     toast('Registro de visita salvo!')
-  } catch(_) {
-    toast('Salvo localmente — verifique sua conexão', true)
+  } catch(e) {
+    toastErroSave(e)
   }
 }
 
@@ -4670,7 +4896,7 @@ function renderVisitas() {
             <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
           </button>
           <button class="btn btn-ghost btn-sm" onclick="excluirVisita(${v.id})" aria-label="Excluir">
-            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 01-2 2H8a2 2 0 01-2-2L5 6"/><path d="M10 11v6M14 11v6"/><path d="M9 6V4h6v2"/></svg>
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 7h16"/><path d="M9 7V5a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2"/><path d="M6.6 7l.8 12.1a1.8 1.8 0 0 0 1.8 1.7h5.6a1.8 1.8 0 0 0 1.8-1.7L17.4 7"/><path d="M10 11.5v5M14 11.5v5"/></svg>
           </button>
         </div>
       </div>
@@ -4692,7 +4918,7 @@ function excluirVisita(id) {
   if (i === -1) return
   historico.splice(i, 1)
   localStorage.setItem('cpr_hist', JSON.stringify(historico))
-  salvarRemoto().catch(() => {})
+  salvarRemoto().catch(toastErroSave)
   atualizarBadgeHist()
   renderVisitas()
   toast('Registro removido')
@@ -5113,7 +5339,7 @@ async function togglePublicarImovel(id) {
   if (im.publicado && !perfil.slug) { try { await garantirSlug() } catch(_) {} }
   localStorage.setItem('cpr_imoveis', JSON.stringify(imoveis))
   renderImoveis()
-  try { await salvarRemoto() } catch(_) {}
+  try { await salvarRemoto() } catch(e) { toastErroSave(e) }
   toast(im.publicado ? 'Imóvel publicado no seu site ✓' : 'Imóvel removido do site')
 }
 
@@ -5122,7 +5348,7 @@ async function ativarMeuSite() {
   if (window._DEMO) return demoBloqueio()
   await garantirSlug()
   renderImoveis()
-  try { await salvarRemoto() } catch(_) {}
+  try { await salvarRemoto() } catch(e) { toastErroSave(e) }
   toast('Seu site público foi ativado!')
 }
 
@@ -5253,7 +5479,7 @@ async function aceitarCaptura(id) {
     await window._sb.from('cpr_public_leads').update({ status: 'importado' }).eq('id', id)
     await salvarRemoto()
     toast('Lead adicionado à agenda — defina a data da visita.')
-  } catch(_) { toast('Salvo localmente — verifique sua conexão', true) }
+  } catch(e) { toastErroSave(e) }
   atualizarBadgeAgenda()
   renderAgenda()
 }
@@ -5293,9 +5519,10 @@ async function salvarLead(ev) {
   try {
     await salvarRemoto()
     toast('Visita agendada!')
-  } catch(_) {
-    toast('Salvo localmente — verifique sua conexão', true)
+  } catch(e) {
+    toastErroSave(e)
   }
+  fecharPainelNovo('painel-nova-visita')
   document.getElementById('agenda-content').scrollIntoView({ behavior:'smooth', block:'start' })
   ofereceBoasVindasWhatsapp(item.id)
 }
@@ -5356,7 +5583,7 @@ async function marcarContatoLead(id) {
   l.ultimaInteracao = new Date().toISOString()
   localStorage.setItem('cpr_leads', JSON.stringify(leads))
   renderAgenda()
-  try { await salvarRemoto() } catch(_) {}
+  try { await salvarRemoto() } catch(e) { toastErroSave(e) }
   toast('Contato registrado — alerta zerado')
 }
 
@@ -5487,7 +5714,7 @@ function enviarTemplateWhatsapp(leadId, tplKey) {
   if (l) {
     l.ultimaInteracao = new Date().toISOString()
     localStorage.setItem('cpr_leads', JSON.stringify(leads))
-    salvarRemoto().catch(() => {})
+    salvarRemoto().catch(toastErroSave)
   }
 }
 
@@ -5592,7 +5819,7 @@ async function enviarFollowUpWhatsapp(id) {
   const back = document.getElementById('followup-modal-back')
   if (back) back.remove()
   renderAgenda()
-  try { await salvarRemoto() } catch(_) {}
+  try { await salvarRemoto() } catch(e) { toastErroSave(e) }
 }
 
 function renderAgenda() {
@@ -5604,6 +5831,7 @@ function renderAgenda() {
       <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
       <h3>Nenhuma visita agendada</h3>
       <p>Cadastre um lead com a próxima visita para começar a organizar seu funil.</p>
+      <button class="btn btn-amber" style="margin-top:16px" onclick="abrirPainelNovo('painel-nova-visita','l-cliente');window.scrollTo({top:0,behavior:'smooth'})">Agendar visita</button>
     </div>`
     return
   }
@@ -5653,7 +5881,7 @@ function renderAgenda() {
           </button>
           ${acoes}
           <button class="btn btn-ghost btn-sm" onclick="excluirLead(${l.id})" aria-label="Excluir">
-            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 01-2 2H8a2 2 0 01-2-2L5 6"/><path d="M10 11v6M14 11v6"/><path d="M9 6V4h6v2"/></svg>
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 7h16"/><path d="M9 7V5a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2"/><path d="M6.6 7l.8 12.1a1.8 1.8 0 0 0 1.8 1.7h5.6a1.8 1.8 0 0 0 1.8-1.7L17.4 7"/><path d="M10 11.5v5M14 11.5v5"/></svg>
           </button>
         </div>
       </div>
@@ -5678,7 +5906,7 @@ async function marcarRealizada(id) {
   atualizarBadgeAgenda()
   atualizarBadgeFunil()
   renderAgenda()
-  try { await salvarRemoto() } catch(_) {}
+  try { await salvarRemoto() } catch(e) { toastErroSave(e) }
   toast('Visita realizada — gerando o Registro de Visita...')
   // Jornada conectada: gera o termo e oferece a proposta com os dados do lead.
   usarLeadParaVisita(id)
@@ -5693,7 +5921,7 @@ async function excluirLead(id) {
   atualizarBadgeAgenda()
   atualizarBadgeFunil()
   renderAgenda()
-  try { await salvarRemoto() } catch(_) {}
+  try { await salvarRemoto() } catch(e) { toastErroSave(e) }
   toast('Agendamento removido')
 }
 
@@ -5745,7 +5973,7 @@ async function moverEstagioLead(id, novoEstagio) {
   localStorage.setItem('cpr_leads', JSON.stringify(leads))
   renderFunil()
   atualizarBadgeFunil()
-  try { await salvarRemoto() } catch(_) { toast('Salvo localmente — verifique sua conexão', true); return }
+  try { await salvarRemoto() } catch(e) { toastErroSave(e); return }
   toast('Lead movido para "' + (FUNIL_ESTAGIOS.find(e => e.key === novoEstagio)?.label || novoEstagio) + '"')
 }
 
@@ -5810,9 +6038,10 @@ async function salvarLeadFunil(ev) {
   try {
     await salvarRemoto()
     toast('Lead adicionado ao funil!')
-  } catch(_) {
-    toast('Salvo localmente — verifique sua conexão', true)
+  } catch(e) {
+    toastErroSave(e)
   }
+  fecharPainelNovo('painel-novo-contato')
   ofereceBoasVindasWhatsapp(item.id)
 }
 
@@ -5837,7 +6066,8 @@ function renderFunil() {
     el.innerHTML = `<div class="hist-empty">
       <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M22 3H2l8 9.46V19l4 2v-8.54L22 3z"/></svg>
       <h3>Nenhum lead no funil ainda</h3>
-      <p>Adicione um novo contato acima ou cadastre uma visita na Agenda — os leads aparecem aqui automaticamente.</p>
+      <p>Adicione um novo contato ou cadastre uma visita na Agenda — os leads aparecem aqui automaticamente.</p>
+      <button class="btn btn-amber" style="margin-top:16px" onclick="abrirPainelNovo('painel-novo-contato','fl-cliente');window.scrollTo({top:0,behavior:'smooth'})">Novo contato</button>
     </div>`
     return
   }
@@ -6025,7 +6255,7 @@ function renderLeadModalConteudo() {
             <div class="lm-reminder-data${vencido ? ' vencido' : ''}">${r.data ? fmtDataBR(r.data) : 'Sem data'}${vencido ? ' — atrasado' : ''}</div>
           </div>
           <button class="btn btn-ghost btn-sm" onclick="removerLembreteLead(${idx})" aria-label="Remover lembrete">
-            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 01-2 2H8a2 2 0 01-2-2L5 6"/></svg>
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 7h16"/><path d="M9 7V5a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2"/><path d="M6.6 7l.8 12.1a1.8 1.8 0 0 0 1.8 1.7h5.6a1.8 1.8 0 0 0 1.8-1.7L17.4 7"/></svg>
           </button>
         </div>`
       }).join('')
@@ -6054,8 +6284,8 @@ async function persistirLead(l, msgSucesso) {
   try {
     await salvarRemoto()
     if (msgSucesso) toast(msgSucesso)
-  } catch(_) {
-    toast('Salvo localmente — verifique sua conexão', true)
+  } catch(e) {
+    toastErroSave(e)
   }
 }
 
@@ -6268,8 +6498,8 @@ async function confirmarVenda() {
   try {
     await salvarRemoto()
     toast('Venda registrada!')
-  } catch(_) {
-    toast('Salvo localmente — verifique sua conexão', true)
+  } catch(e) {
+    toastErroSave(e)
   }
 
   // Sugere marcar o imóvel do catálogo como Vendido/Locado, sem forçar.
@@ -6309,7 +6539,7 @@ async function marcarImovelComoVendido(imovelId, novoStatus) {
   localStorage.setItem('cpr_imoveis', JSON.stringify(imoveis))
   renderImoveis()
   atualizarBadgeImoveis()
-  try { await salvarRemoto() } catch(_) {}
+  try { await salvarRemoto() } catch(e) { toastErroSave(e) }
   toast('Imóvel marcado como ' + IMOVEL_STATUS_LABEL[novoStatus])
 }
 
@@ -6371,7 +6601,7 @@ async function excluirVenda(id) {
   localStorage.setItem('cpr_vendas', JSON.stringify(vendas))
   renderVendas()
   atualizarBadgeVendas()
-  try { await salvarRemoto() } catch(_) {}
+  try { await salvarRemoto() } catch(e) { toastErroSave(e) }
   toast('Venda removida')
 }
 
@@ -6416,8 +6646,8 @@ function passosOnboarding() {
   return [
     { done: !!(perfil.nome && perfil.creci), label: 'Complete seu perfil (nome e CRECI)', cta: 'Configurar', view: 'config' },
     { done: historico.some(h => h.docTipo !== 'visita'), label: 'Gere sua primeira proposta', cta: 'Criar proposta', view: 'form' },
-    { done: (leads || []).length > 0, label: 'Adicione seu primeiro lead no funil', cta: 'Abrir funil', view: 'funil' },
-    { done: (imoveis || []).length > 0, label: 'Cadastre seu primeiro imóvel', cta: 'Cadastrar', view: 'imoveis' },
+    { done: (leads || []).length > 0, label: 'Adicione seu primeiro lead no funil', cta: 'Abrir funil', view: 'funil', painel: 'painel-novo-contato', foco: 'fl-cliente' },
+    { done: (imoveis || []).length > 0, label: 'Cadastre seu primeiro imóvel', cta: 'Cadastrar', view: 'imoveis', painel: 'painel-novo-imovel', foco: 'im-tipo' },
   ]
 }
 
@@ -6454,7 +6684,7 @@ function renderOnboarding() {
         <div class="onb-step${p.done ? ' done' : ''}">
           <span class="onb-check">${check}</span>
           <span class="onb-step-label">${escH(p.label)}</span>
-          <button class="onb-step-cta" onclick="showView('${p.view}')">${escH(p.cta)}</button>
+          <button class="onb-step-cta" onclick="showView('${p.view}')${p.painel ? `;abrirPainelNovo('${p.painel}','${p.foco}')` : ''}">${escH(p.cta)}</button>
         </div>`).join('')}
     </div>`
   el.classList.add('show')
@@ -6503,27 +6733,52 @@ function renderDashboard() {
     return { txt: (p >= 0 ? '+' : '') + p + '%', dir: p >= 0 ? 'up' : 'down' }
   }
 
-  const kpis = [
-    { l: 'Leads ativos',            v: String(leadsAtivos),                 alerta:false },
-    { l: 'Leads em alerta',         v: String(leadsAlerta),                 alerta:leadsAlerta>0 },
-    { l: 'Imóveis disponíveis',     v: String(imoveisDisponiveis),          alerta:false },
-    { l: 'Vendas fechadas no mês',  v: String(vendasDoMes.length),          alerta:false, delta:deltaPct(vendasDoMes.length, vendasMesAnt.length) },
-    { l: 'Comissão no mês',         v: formatarMoedaBR(comissaoMes),        alerta:false, delta:deltaPct(comissaoMes, comissaoMesAnt) },
-    { l: 'Comissão no ano',         v: formatarMoedaBR(comissaoAno),        alerta:false },
+  // ── Saudação + resumo do dia (o que um FUB/kvCORE diz ao abrir) ──
+  const h = hoje.getHours()
+  const saud = h < 12 ? 'Bom dia' : h < 18 ? 'Boa tarde' : 'Boa noite'
+  const primeiroNome = (perfil.nome || '').trim().split(' ')[0]
+  const elSaud = document.getElementById('dash-saudacao')
+  if (elSaud) elSaud.textContent = primeiroNome ? `${saud}, ${primeiroNome}` : `${saud}`
+  const elResumo = document.getElementById('dash-resumo-dia')
+  if (elResumo) {
+    const partes = []
+    if (leadsAlerta > 0) partes.push(`<b>${leadsAlerta}</b> lead${leadsAlerta === 1 ? '' : 's'} pedindo atenção`)
+    const pend = pendenciasDeHoje()
+    if (pend > 0) partes.push(`<b>${pend}</b> ${pend === 1 ? 'tarefa' : 'tarefas'} para hoje`)
+    elResumo.innerHTML = partes.length
+      ? `Você tem ${partes.join(' e ')}.`
+      : 'Tudo em dia por aqui — bom trabalho.'
+  }
+
+  // ── Barra fina de números (a comissão está aqui, mas sem dominar) ──
+  const stats = [
+    { l: 'Comissão no mês', v: formatarMoedaBR(comissaoMes), money:true },
+    { l: 'Comissão no ano', v: formatarMoedaBR(comissaoAno), money:true },
+    { l: 'Vendas no mês',   v: String(vendasDoMes.length) },
+    { l: 'Leads em alerta', v: String(leadsAlerta) },
   ]
-  elKpis.innerHTML = kpis.map(k => `
-    <div class="dash-kpi${k.alerta ? ' alerta' : ''}">
-      <span class="dash-kpi-l">${escH(k.l)}</span>
-      <span class="dash-kpi-v">${escH(k.v)}</span>
-      ${k.delta ? `<span class="dash-kpi-delta ${k.delta.dir}">${k.delta.dir === 'up' ? '▲' : '▼'} ${escH(k.delta.txt)}<span class="dash-kpi-delta-cap">vs mês anterior</span></span>` : ''}
+  elKpis.innerHTML = stats.map(s => `
+    <div class="dash-stat">
+      <div class="dash-stat-l">${escH(s.l)}</div>
+      <div class="dash-stat-v${s.money ? ' money' : ''}">${escH(s.v)}</div>
     </div>`).join('')
 
-  renderDashboardExtraKpis()
   renderDashboardChart()
   renderDashboardFunilResumo()
   renderDashboardAtencao()
   renderDashboardRanking()
   renderDashboardLembretes()
+}
+
+// Quantos lembretes vencem hoje ou estão atrasados (para o resumo do dia).
+// Mesma fonte do renderDashboardLembretes: lead.lembretes[] (data YYYY-MM-DD).
+function pendenciasDeHoje() {
+  const hojeStr = new Date().toISOString().slice(0, 10)
+  let n = 0
+  leads.forEach(l => (l.lembretes || []).forEach(r => {
+    if (!r.concluido && r.data && r.data <= hojeStr) n++
+  }))
+  return n
 }
 
 // Converte "dd/mm/aaaa" (formato pt-BR usado em lead.criadoEm) para Date.
@@ -6566,9 +6821,10 @@ function renderDashboardExtraKpis() {
     ? vendas.reduce((s, v) => s + valorParaNumero(v.valor), 0) / vendas.length
     : 0
 
+  const imoveisDisponiveis = imoveis.filter(i => (i.status || 'disponivel') === 'disponivel').length
   const extraKpis = [
-    { l: 'Taxa de conversão (geral)', v: totalLeads > 0 ? `${taxaConversao}%` : '—' },
-    { l: 'Tempo médio até fechar',    v: tempoMedio !== null ? `${tempoMedio} dia${tempoMedio === 1 ? '' : 's'}` : '—' },
+    { l: 'Imóveis disponíveis',       v: String(imoveisDisponiveis) },
+    { l: 'Taxa de conversão',         v: totalLeads > 0 ? `${taxaConversao}%` : '—' },
     { l: 'Ticket médio das vendas',   v: vendas.length > 0 ? formatarMoedaBR(ticketMedioVendas) : '—' },
   ]
   el.innerHTML = extraKpis.map(k => `
@@ -6718,26 +6974,22 @@ function renderDashboardLembretes() {
   pendentes.sort((a, b) => (a.r.data || '').localeCompare(b.r.data || ''))
 
   if (pendentes.length === 0) {
-    el.innerHTML = `<p style="font-size:13px;color:var(--t3)">Nenhum lembrete para hoje ou atrasado — tudo em dia.</p>`
+    el.innerHTML = `<div class="dash-empty"><b>Nada vencendo hoje.</b> Seus lembretes de leads aparecem aqui no dia certo, pra você não deixar ninguém sem resposta.</div>`
     return
   }
 
-  el.innerHTML = pendentes.slice(0, 8).map(({ l, r, atrasado }) => `
-    <div class="dash-atencao-item">
-      <span class="lead-alert" data-nivel="${atrasado ? 'critico' : 'atencao'}" title="${atrasado ? 'Lembrete atrasado' : 'Lembrete de hoje'}">
-        <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
-        ${atrasado ? 'Atrasado' : 'Hoje'}
-      </span>
-      <div class="dash-atencao-info">
-        <div class="dash-atencao-cliente">${escH(l.cliente || '—')}</div>
-        <div class="dash-atencao-meta">${escH(r.texto)}</div>
+  el.innerHTML = pendentes.slice(0, 7).map(({ l, r, atrasado }) => `
+    <div class="dash-lead">
+      <div class="dash-lead-info">
+        <div class="dash-lead-nome">${escH(l.cliente || '—')}</div>
+        <div class="dash-lead-meta">${escH(r.texto)}</div>
       </div>
-      <button class="btn btn-green btn-sm" onclick="enviarWhatsappEtapa(${l.id})" title="Enviar mensagem da etapa atual no WhatsApp">
-        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 11.5a8.38 8.38 0 01-.9 3.8 8.5 8.5 0 01-7.6 4.7 8.38 8.38 0 01-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 01-.9-3.8 8.5 8.5 0 014.7-7.6 8.38 8.38 0 013.8-.9h.5a8.48 8.48 0 018 8v.5z"/></svg>
-      </button>
-      <button class="btn btn-ghost btn-sm" onclick="abrirLeadModal(${l.id});showView('funil')" title="Ver lead no Funil">
-        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
-      </button>
+      <span class="dash-lead-tag" data-nivel="${atrasado ? 'critico' : 'atencao'}">${atrasado ? 'Atrasado' : 'Hoje'}</span>
+      <div class="dash-lead-acts">
+        <button class="dash-ic wa" onclick="enviarWhatsappEtapa(${l.id})" title="Enviar mensagem no WhatsApp" aria-label="WhatsApp">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 11.5a8.38 8.38 0 01-.9 3.8 8.5 8.5 0 01-7.6 4.7 8.38 8.38 0 01-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 01-.9-3.8 8.5 8.5 0 014.7-7.6 8.38 8.38 0 013.8-.9h.5a8.48 8.48 0 018 8v.5z"/></svg>
+        </button>
+      </div>
     </div>`).join('')
 }
 
@@ -6751,35 +7003,19 @@ function renderDashboardFunilResumo() {
     return
   }
 
-  const total = leads.length
-  const R = 54, C = 2 * Math.PI * R
-  let acc = 0
-  const segs = FUNIL_ESTAGIOS.map(e => {
+  // Pipeline horizontal (esteira de negócios, como Pipedrive/FUB): cada
+  // etapa é uma coluna com barra + contagem. Rampa navy aprofundando até o
+  // âmbar da venda fechada — o único quente é a vitória.
+  const RAMPA = ['#AEBECE', '#8AA0B6', '#66849E', '#456781', '#294D6B', '#C9882A']
+  const cols = FUNIL_ESTAGIOS.map((e, i) => {
     const n = leads.filter(l => estagioFunilLead(l) === e.key).length
-    if (n === 0) return ''
-    const len = (n / total) * C
-    const seg = `<circle cx="70" cy="70" r="${R}" fill="none" stroke="${e.cor}" stroke-width="16" stroke-linecap="butt" stroke-dasharray="${len.toFixed(2)} ${(C - len).toFixed(2)}" stroke-dashoffset="${(-acc).toFixed(2)}" transform="rotate(-90 70 70)"></circle>`
-    acc += len
-    return seg
-  }).join('')
-  const legenda = FUNIL_ESTAGIOS.map(e => {
-    const n = leads.filter(l => estagioFunilLead(l) === e.key).length
-    return `<div class="dash-donut-leg">
-      <span class="dash-donut-dot" style="background:${e.cor}"></span>
-      <span class="dash-donut-leg-l">${escH(e.label)}</span>
-      <span class="dash-donut-leg-n">${n}</span>
+    return `<div class="dash-pipe-col">
+      <div class="dash-pipe-bar" style="background:${RAMPA[i]};opacity:${n > 0 ? 1 : 0.28}"></div>
+      <div class="dash-pipe-n"${n === 0 ? ' style="color:var(--t3)"' : ''}>${n}</div>
+      <div class="dash-pipe-l">${escH(e.label)}</div>
     </div>`
   }).join('')
-  el.innerHTML = `<div class="dash-donut-wrap">
-    <div class="dash-donut">
-      <svg viewBox="0 0 140 140" width="140" height="140">
-        <circle cx="70" cy="70" r="${R}" fill="none" stroke="var(--s2)" stroke-width="16"></circle>
-        ${segs}
-      </svg>
-      <div class="dash-donut-center"><span class="dash-donut-total">${total}</span><span class="dash-donut-cap">leads</span></div>
-    </div>
-    <div class="dash-donut-legenda">${legenda}</div>
-  </div>`
+  el.innerHTML = `<div class="dash-pipe">${cols}</div>`
 }
 
 // Top 5 leads com alerta (crítico primeiro), com atalho direto pro follow-up.
@@ -6791,29 +7027,33 @@ function renderDashboardAtencao() {
     .map(l => ({ l, alerta: alertaLead(l) }))
     .filter(x => x.alerta.nivel)
     .sort((a, b) => b.alerta.dias - a.alerta.dias)
-    .slice(0, 5)
+    .slice(0, 6)
+
+  const badge = document.getElementById('dash-atencao-n')
+  if (badge) badge.textContent = comAlerta.length ? String(comAlerta.length) : ''
 
   if (comAlerta.length === 0) {
-    el.innerHTML = `<p style="font-size:13px;color:var(--t3)">Nenhum lead pedindo atenção agora — tudo em dia.</p>`
+    el.innerHTML = `<div class="dash-empty"><b>Tudo em dia.</b> Nenhum lead esfriando agora — quando algum ficar dias sem contato, ele aparece aqui pra você agir na hora.</div>`
     return
   }
 
+  const inicial = (nome) => (String(nome || '?').trim()[0] || '?').toUpperCase()
   el.innerHTML = comAlerta.map(({ l, alerta }) => `
-    <div class="dash-atencao-item">
-      <button class="lead-alert" data-nivel="${alerta.nivel}" onclick="abrirFollowUpLead(${l.id})" title="Ver sugestão de mensagem de follow-up">
-        <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
-        ${alerta.dias}d
-      </button>
-      <div class="dash-atencao-info">
-        <div class="dash-atencao-cliente">${escH(l.cliente || '—')}</div>
-        <div class="dash-atencao-meta">${escH(l.imovel || 'Sem imóvel vinculado')}</div>
+    <div class="dash-lead">
+      <div class="dash-avatar">${escH(inicial(l.cliente))}</div>
+      <div class="dash-lead-info">
+        <div class="dash-lead-nome">${escH(l.cliente || '—')}</div>
+        <div class="dash-lead-meta">${escH(l.imovel || 'Sem imóvel vinculado')} · ${alerta.dias}d sem contato</div>
       </div>
-      <button class="btn btn-green btn-sm" onclick="enviarWhatsappEtapa(${l.id})" title="Enviar mensagem da etapa atual no WhatsApp">
-        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 11.5a8.38 8.38 0 01-.9 3.8 8.5 8.5 0 01-7.6 4.7 8.38 8.38 0 01-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 01-.9-3.8 8.5 8.5 0 014.7-7.6 8.38 8.38 0 013.8-.9h.5a8.48 8.48 0 018 8v.5z"/></svg>
-      </button>
-      <button class="btn btn-ghost btn-sm" onclick="showView('funil')" title="Ver no Funil">
-        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
-      </button>
+      <span class="dash-lead-tag" data-nivel="${alerta.nivel}">${alerta.nivel === 'critico' ? 'Esfriando' : 'Atenção'}</span>
+      <div class="dash-lead-acts">
+        <button class="dash-ic wa" onclick="enviarWhatsappEtapa(${l.id})" title="Enviar mensagem no WhatsApp" aria-label="WhatsApp">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 11.5a8.38 8.38 0 01-.9 3.8 8.5 8.5 0 01-7.6 4.7 8.38 8.38 0 01-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 01-.9-3.8 8.5 8.5 0 014.7-7.6 8.38 8.38 0 013.8-.9h.5a8.48 8.48 0 018 8v.5z"/></svg>
+        </button>
+        <button class="dash-ic" onclick="abrirLeadModal(${l.id});showView('funil')" title="Abrir lead no Funil" aria-label="Abrir">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
+        </button>
+      </div>
     </div>`).join('')
 }
 
@@ -6866,7 +7106,7 @@ function renderVendas() {
             <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 4H4a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2v-7"/><path d="M18.5 2.5a2.12 2.12 0 013 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
           </button>
           <button class="btn btn-ghost btn-sm" onclick="excluirVenda(${v.id})" aria-label="Excluir">
-            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 01-2 2H8a2 2 0 01-2-2L5 6"/><path d="M10 11v6M14 11v6"/><path d="M9 6V4h6v2"/></svg>
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 7h16"/><path d="M9 7V5a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2"/><path d="M6.6 7l.8 12.1a1.8 1.8 0 0 0 1.8 1.7h5.6a1.8 1.8 0 0 0 1.8-1.7L17.4 7"/><path d="M10 11.5v5M14 11.5v5"/></svg>
           </button>
         </div>
       </div>
@@ -6936,11 +7176,12 @@ async function salvarImovel(ev) {
   atualizarBadgeImoveis()
   renderImoveis()
   limparFormImovel()
+  fecharPainelNovo('painel-novo-imovel')
   try {
     await salvarRemoto()
     toast(idEdicao ? 'Imóvel atualizado!' : 'Imóvel cadastrado!')
-  } catch(_) {
-    toast('Salvo localmente — verifique sua conexão', true)
+  } catch(e) {
+    toastErroSave(e)
   }
   document.getElementById('imoveis-content').scrollIntoView({ behavior:'smooth', block:'start' })
 }
@@ -6968,11 +7209,13 @@ function editarImovel(id) {
   document.getElementById('imovel-form-titulo').textContent = 'Editar imóvel'
   document.getElementById('btn-imovel-txt').textContent = 'Salvar alterações'
   document.getElementById('btn-imovel-cancelar').style.display = ''
+  abrirPainelNovo('painel-novo-imovel')
   document.getElementById('form-imovel').scrollIntoView({ behavior:'smooth', block:'start' })
 }
 
 function cancelarEdicaoImovel() {
   limparFormImovel()
+  fecharPainelNovo('painel-novo-imovel')
 }
 
 async function excluirImovel(id) {
@@ -6984,7 +7227,7 @@ async function excluirImovel(id) {
   localStorage.setItem('cpr_imoveis', JSON.stringify(imoveis))
   atualizarBadgeImoveis()
   renderImoveis()
-  try { await salvarRemoto() } catch(_) {}
+  try { await salvarRemoto() } catch(e) { toastErroSave(e) }
   toast('Imóvel removido')
 }
 
@@ -6997,6 +7240,7 @@ function renderImoveis() {
       <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M3 9l9-7 9 7"/><path d="M9 22V12h6v10"/><path d="M5 10v10a1 1 0 001 1h12a1 1 0 001-1V10"/></svg>
       <h3>Nenhum imóvel cadastrado</h3>
       <p>Cadastre o primeiro imóvel da sua carteira para começar seu catálogo.</p>
+      <button class="btn btn-amber" style="margin-top:16px" onclick="abrirPainelNovo('painel-novo-imovel','im-tipo');window.scrollTo({top:0,behavior:'smooth'})">Cadastrar imóvel</button>
     </div>`
     return
   }
@@ -7027,7 +7271,7 @@ function renderImoveis() {
     if (im.dorms) metaParts.push(im.dorms + ' dorm.')
     if (im.vagas) metaParts.push(im.vagas + ' vaga' + (im.vagas === '1' ? '' : 's'))
     const fotoHtml = im.foto
-      ? `<img src="${im.foto}" alt="Foto do imóvel">`
+      ? `<img src="${safeSrc(im.foto)}" alt="Foto do imóvel">`
       : `<svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>`
     const nFotos = Array.isArray(im.fotos) ? im.fotos.length : (im.foto ? 1 : 0)
     const contadorHtml = nFotos > 1
@@ -7056,7 +7300,7 @@ function renderImoveis() {
             Editar
           </button>
           <button type="button" class="btn btn-ghost btn-sm" onclick="excluirImovel(${im.id})" aria-label="Excluir">
-            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 01-2 2H8a2 2 0 01-2-2L5 6"/><path d="M10 11v6M14 11v6"/><path d="M9 6V4h6v2"/></svg>
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 7h16"/><path d="M9 7V5a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2"/><path d="M6.6 7l.8 12.1a1.8 1.8 0 0 0 1.8 1.7h5.6a1.8 1.8 0 0 0 1.8-1.7L17.4 7"/><path d="M10 11.5v5M14 11.5v5"/></svg>
           </button>
         </div>
       </div>
@@ -7067,6 +7311,40 @@ function renderImoveis() {
 // Galeria de fotos do imóvel — mesma mecânica da galeria da proposta
 // (carregarFotoImovel/renderFotosForm): comprime em canvas para 800px e
 // guarda base64 JPEG, mantendo o jsonb leve. [0] é sempre a capa.
+/* M12 da auditoria: fotos em base64 dentro do jsonb estouravam o localStorage
+   (~5MB) com 2 propostas pesadas. A foto comprimida agora sobe para o
+   Supabase Storage (bucket cpr-fotos, pasta do dono) e o documento guarda só
+   a URL pública. Fallback: sem sessão (demo), sem rede ou bucket ausente, a
+   foto fica em base64 como sempre — nada quebra, só não ganha a migração.
+   Objetos não são apagados ao remover a foto do formulário: propostas já
+   salvas podem referenciar a mesma URL. */
+async function subirFotoStorage(dataUrl) {
+  if (!window._sb || !window._uid || window._DEMO) return null
+  try {
+    const m = /^data:image\/jpeg;base64,(.+)$/.exec(dataUrl)
+    if (!m) return null
+    const bin = atob(m[1])
+    const bytes = new Uint8Array(bin.length)
+    for (let i = 0; i < bin.length; i++) bytes[i] = bin.charCodeAt(i)
+    const nome = window._uid + '/' + Date.now() + '-' + Math.random().toString(36).slice(2, 8) + '.jpg'
+    const { error } = await window._sb.storage.from('cpr-fotos')
+      .upload(nome, new Blob([bytes], { type: 'image/jpeg' }), { contentType: 'image/jpeg', cacheControl: '31536000' })
+    if (error) return null
+    const { data } = window._sb.storage.from('cpr-fotos').getPublicUrl(nome)
+    return (data && data.publicUrl) || null
+  } catch(_) { return null }
+}
+
+// Troca o base64 pela URL do Storage quando o upload termina (busca por
+// valor: o índice pode ter mudado se o corretor reordenou/removeu no meio).
+function _migrarFotoPraUrl(lista, dataUrl, render) {
+  subirFotoStorage(dataUrl).then(url => {
+    if (!url) return
+    const k = lista.indexOf(dataUrl)
+    if (k !== -1) { lista[k] = url; render() }
+  })
+}
+
 function carregarFotosImovel(ev) {
   const files = Array.from(ev.target.files || [])
   ev.target.value = ''
@@ -7091,8 +7369,10 @@ function carregarFotosImovel(ev) {
         canvas.width = width; canvas.height = height
         canvas.getContext('2d').drawImage(img, 0, 0, width, height)
         if (fotosImovelAtuais.length < MAX_FOTOS) {
-          fotosImovelAtuais.push(canvas.toDataURL('image/jpeg', 0.72))
+          const dataUrl = canvas.toDataURL('image/jpeg', 0.72)
+          fotosImovelAtuais.push(dataUrl)
           renderFotosImovelForm()
+          _migrarFotoPraUrl(fotosImovelAtuais, dataUrl, renderFotosImovelForm)
         }
       }
       img.onerror = () => toast('Arquivo de imagem inválido', true)
@@ -7110,7 +7390,7 @@ function renderFotosImovelForm() {
     const t = document.createElement('div')
     t.className = 'foto-thumb'
     t.title = i === 0 ? 'Capa do imóvel' : 'Clique para tornar capa'
-    t.innerHTML = `<img src="${src}" alt="Foto ${i + 1}">` +
+    t.innerHTML = `<img src="${safeSrc(src)}" alt="Foto ${i + 1}">` +
       (i === 0 ? '<span class="capa-tag">Capa</span>' : '') +
       `<button type="button" class="x" aria-label="Remover foto">×</button>`
     t.onclick = () => {
@@ -7178,7 +7458,7 @@ function ofereceProposta(id, cliente) {
   box.id = 'jornada-proposta'
   box.style.cssText = 'margin:16px auto 0;max-width:680px;background:var(--gs);border:1px solid rgba(34,197,94,.42);border-radius:16px;padding:16px 18px;display:flex;align-items:center;gap:12px;flex-wrap:wrap;justify-content:center;text-align:center'
   box.innerHTML =
-    '<span style="font-size:14px;color:var(--t);font-weight:600">✅ Termo pronto! Gerar a proposta para <b style="color:var(--t)">' + escH(cliente || 'o cliente') + '</b> com os mesmos dados?</span>' +
+    '<span style="font-size:14px;color:var(--t);font-weight:600">Termo pronto. Gerar a proposta para <b style="color:var(--t)">' + escH(cliente || 'o cliente') + '</b> com os mesmos dados?</span>' +
     '<span style="display:flex;gap:8px">' +
       '<button class="btn btn-green btn-sm" onclick="(function(){usarLeadParaProposta(' + id + ');var e=document.getElementById(\'jornada-proposta\');if(e)e.remove()})()">Gerar proposta</button>' +
       '<button class="btn btn-ghost btn-sm" onclick="(function(){var e=document.getElementById(\'jornada-proposta\');if(e)e.remove()})()">Agora não</button>' +
@@ -7217,7 +7497,7 @@ function carregarFormConfig() {
   atualizarCor(perfil.cor || '#C9882A')
   if (perfil.logo) {
     const prev = document.getElementById('logo-prev')
-    prev.innerHTML = `<img src="${perfil.logo}" alt="Logo">`
+    prev.innerHTML = `<img src="${safeSrc(perfil.logo)}" alt="Logo">`
   }
   marcarModeloSelecionado(perfil.modelo || 'classico')
   const fonteSel = document.getElementById('c-fonte')
@@ -7296,8 +7576,8 @@ async function salvarConfig(ev) {
   try {
     await salvarRemoto()
     toast('Perfil salvo! Suas propostas terão sua marca.')
-  } catch(_) {
-    toast('Salvo localmente — verifique sua conexão', true)
+  } catch(e) {
+    toastErroSave(e)
   }
   showView('form')
 }
@@ -7385,9 +7665,9 @@ function carregarLogo(ev) {
 
 function aplicarLogoPreview() {
   const prev = document.getElementById('logo-prev')
-  prev.innerHTML = `<img src="${perfil.logo}" alt="Logo">`
+  prev.innerHTML = `<img src="${safeSrc(perfil.logo)}" alt="Logo">`
   const prevCfg = document.getElementById('cfg-prev-logo')
-  prevCfg.innerHTML = `<img src="${perfil.logo}" alt="Logo" style="width:100%;height:100%;object-fit:contain">`
+  prevCfg.innerHTML = `<img src="${safeSrc(perfil.logo)}" alt="Logo" style="width:100%;height:100%;object-fit:contain">`
   renderSidebarUser()
 }
 
@@ -7424,7 +7704,7 @@ function carregarLogoEmp(ev) {
       canvas.width = width; canvas.height = height
       canvas.getContext('2d').drawImage(img, 0, 0, width, height)
       _empLogoTemp = canvas.toDataURL('image/png')
-      document.getElementById('e-logo-prev').innerHTML = `<img src="${_empLogoTemp}" alt="Logo" style="width:100%;height:100%;object-fit:contain">`
+      document.getElementById('e-logo-prev').innerHTML = `<img src="${safeSrc(_empLogoTemp)}" alt="Logo" style="width:100%;height:100%;object-fit:contain">`
       toast('Logo carregado')
     }
     img.onerror = () => toast('Arquivo de imagem inválido', true)
@@ -7474,7 +7754,7 @@ function renderEmps() {
     const row = document.createElement('div')
     row.style.cssText = 'display:flex;align-items:center;gap:10px;padding:9px 12px;border:1px solid var(--b);border-radius:10px;background:var(--s2)'
     const logo = e.logo
-      ? `<img src="${e.logo}" alt="" style="width:30px;height:30px;object-fit:contain;border-radius:6px;flex-shrink:0">`
+      ? `<img src="${safeSrc(e.logo)}" alt="" style="width:30px;height:30px;object-fit:contain;border-radius:6px;flex-shrink:0">`
       : `<span style="width:30px;height:30px;border-radius:6px;background:${cor}22;color:${cor};display:inline-flex;align-items:center;justify-content:center;font-weight:800;flex-shrink:0">${escH((e.nome || 'E')[0].toUpperCase())}</span>`
     row.innerHTML = logo +
       `<div style="flex:1;min-width:0"><div style="font-size:13px;font-weight:600">${escH(e.nome)}</div>` +
@@ -7600,7 +7880,7 @@ function renderEquipe() {
     document.getElementById('mq-info').value = m.info || ''
     document.getElementById('mq-cor').value = m.cor || '#0F2D4A'
     document.getElementById('mq-obrigatoria').checked = !!m.obrigatoria
-    if (m.logo) document.getElementById('mq-logo-prev').innerHTML = `<img src="${m.logo}" alt="Logo" style="width:100%;height:100%;object-fit:contain">`
+    if (m.logo) document.getElementById('mq-logo-prev').innerHTML = `<img src="${safeSrc(m.logo)}" alt="Logo" style="width:100%;height:100%;object-fit:contain">`
   } else {
     marcaBox.style.display = 'none'
   }
@@ -7630,7 +7910,13 @@ async function convidarMembro() {
     const j = await r.json().catch(() => ({}))
     if (!r.ok) { toast(j.error || 'Falha ao convidar', true); return }
     inp.value = ''
-    toast('Convite enviado — o membro recebe o email para definir a senha')
+    // emailSent=false: convidado NOVO cujo email de senha falhou (M14) —
+    // avisar o admin em vez de prometer um email que não saiu.
+    if (j.emailSent === false) {
+      toast('Membro adicionado, mas o email de senha falhou — peça para ele usar "Esqueci minha senha" na tela de acesso', true)
+    } else {
+      toast('Convite enviado — o membro recebe o email para definir a senha')
+    }
     carregarConta()
   } catch(_) { toast('Falha de conexão ao convidar', true) }
 }
@@ -7672,7 +7958,7 @@ function carregarLogoMarcaEquipe(ev) {
       canvas.width = width; canvas.height = height
       canvas.getContext('2d').drawImage(img, 0, 0, width, height)
       _marcaLogoTemp = canvas.toDataURL('image/png')
-      document.getElementById('mq-logo-prev').innerHTML = `<img src="${_marcaLogoTemp}" alt="Logo" style="width:100%;height:100%;object-fit:contain">`
+      document.getElementById('mq-logo-prev').innerHTML = `<img src="${safeSrc(_marcaLogoTemp)}" alt="Logo" style="width:100%;height:100%;object-fit:contain">`
       toast('Logo carregado')
     }
     img.onerror = () => toast('Arquivo de imagem inválido', true)
@@ -7746,8 +8032,10 @@ function carregarFotoImovel(ev) {
         canvas.width = width; canvas.height = height
         canvas.getContext('2d').drawImage(img, 0, 0, width, height)
         if (fotosAtuais.length < MAX_FOTOS) {
-          fotosAtuais.push(canvas.toDataURL('image/jpeg', 0.68))
+          const dataUrl = canvas.toDataURL('image/jpeg', 0.68)
+          fotosAtuais.push(dataUrl)
           renderFotosForm()
+          _migrarFotoPraUrl(fotosAtuais, dataUrl, renderFotosForm)
         }
       }
       img.onerror = () => toast('Arquivo de imagem inválido', true)
@@ -7765,7 +8053,7 @@ function renderFotosForm() {
     const t = document.createElement('div')
     t.className = 'foto-thumb'
     t.title = i === 0 ? 'Capa da proposta' : 'Clique para tornar capa'
-    t.innerHTML = `<img src="${src}" alt="Foto ${i + 1}">` +
+    t.innerHTML = `<img src="${safeSrc(src)}" alt="Foto ${i + 1}">` +
       (i === 0 ? '<span class="capa-tag">Capa</span>' : '') +
       `<button type="button" class="x" aria-label="Remover foto">×</button>`
     t.onclick = () => {

@@ -411,3 +411,61 @@ do $$ begin
     check (papel in ('admin', 'corretor', 'consultor'));
 exception when duplicate_object then null;
 end $$;
+
+-- ============================================================
+-- Migração: retenção de dados / LGPD (M21 da auditoria, 2026-07-10)
+-- Leads públicos DESCARTADOS carregam nome/telefone de terceiros e não têm
+-- nenhuma utilidade após o descarte — expurgo automático em 90 dias via
+-- pg_cron (extensão nativa do Supabase; ativar em Database → Extensions).
+--
+-- NOTA — propostas públicas assinadas (cpr_public_proposals) ficam FORA
+-- deste expurgo de propósito: o documento assinado é a prova de
+-- intermediação que protege a comissão do corretor (a proposta de valor
+-- central do Selo). Definir prazo de retenção para elas é decisão de
+-- produto/jurídica pendente do fundador.
+--
+-- ROLLBACK: select cron.unschedule('expurgo-leads-descartados');
+-- ============================================================
+create extension if not exists pg_cron;
+
+select cron.schedule(
+  'expurgo-leads-descartados',
+  '30 3 * * *',   -- todo dia 03:30 UTC
+  $$ delete from public.cpr_public_leads
+     where status = 'descartado'
+       and created_at < now() - interval '90 days' $$
+);
+
+-- ============================================================
+-- Migração: fotos no Supabase Storage (M12 da auditoria, 2026-07-10)
+-- Fotos comprimidas saem do jsonb (base64 estourava o localStorage de ~5MB
+-- com 2 propostas pesadas) e vão para o bucket cpr-fotos. No documento fica
+-- só a URL pública. Leitura pública (as fotos aparecem na proposta pública
+-- /p/[id]); escrita apenas na pasta do próprio usuário ({uid}/...).
+-- Enquanto este SQL não rodar, o client cai sozinho no base64 legado.
+--
+-- ROLLBACK:
+--   drop policy if exists "cpr_fotos_upload_own" on storage.objects;
+--   drop policy if exists "cpr_fotos_read_public" on storage.objects;
+--   delete from storage.buckets where id = 'cpr-fotos';
+-- ============================================================
+insert into storage.buckets (id, name, public)
+values ('cpr-fotos', 'cpr-fotos', true)
+on conflict (id) do nothing;
+
+do $$ begin
+  create policy "cpr_fotos_upload_own" on storage.objects
+    for insert to authenticated
+    with check (
+      bucket_id = 'cpr-fotos'
+      and (storage.foldername(name))[1] = auth.uid()::text
+    );
+exception when duplicate_object then null;
+end $$;
+
+do $$ begin
+  create policy "cpr_fotos_read_public" on storage.objects
+    for select to public
+    using (bucket_id = 'cpr-fotos');
+exception when duplicate_object then null;
+end $$;

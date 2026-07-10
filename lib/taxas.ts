@@ -50,7 +50,8 @@ export async function getTaxas(): Promise<TaxasResult> {
       encodeURIComponent(`Modalidade eq '${modalidade}'`)
 
     // Cache diário (revalidate) — não bate no BC a cada acesso.
-    const r = await fetch(url, { next: { revalidate: 86400 } })
+    // M19: timeout de 8s — Olinda/BC fora do ar cai no FALLBACK em vez de pendurar.
+    const r = await fetch(url, { next: { revalidate: 86400 }, signal: AbortSignal.timeout(8000) })
     if (!r.ok) return FALLBACK
     const json = (await r.json()) as { value?: Array<Record<string, unknown>> }
     const rows = json.value ?? []
@@ -83,7 +84,10 @@ export async function getTaxas(): Promise<TaxasResult> {
   }
 }
 
-// ── Matemática idêntica à da ferramenta (tool.html: calcParcela/calcSAC) ──
+// ── Matemática espelhada da ferramenta (tool.html: calcParcela/calcSAC) ──
+// M1 da auditoria: o teste tests/financiamento.test.mjs extrai as duas
+// implementações dos arquivos reais e falha se divergirem — ao mudar aqui,
+// mude lá e rode `npm test`.
 export function parcelaPrice(pv: number, taxaAnual: number, meses: number): number {
   const i = Math.pow(1 + taxaAnual / 100, 1 / 12) - 1
   if (i <= 0) return pv / meses

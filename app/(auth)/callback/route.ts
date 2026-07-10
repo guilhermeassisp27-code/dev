@@ -2,6 +2,22 @@ import { createRouteHandlerClient } from '@supabase/auth-helpers-nextjs'
 import { cookies } from 'next/headers'
 import { NextResponse } from 'next/server'
 
+// Mesma allowlist do /acesso: sem ela, ?next=https://site-malicioso.com vira
+// open redirect autenticado (M11 da auditoria). Só a origem do app e a origem
+// da ferramenta (GitHub Pages) são destinos válidos.
+function destinoSeguro(raw: string | null, origemApp: string): string {
+  const toolUrl = process.env.NEXT_PUBLIC_TOOL_URL || 'https://app.selosales.com.br'
+  if (!raw) return new URL('/pipeline', origemApp).toString()
+  try {
+    const url = new URL(raw, origemApp)
+    const permitidos = new Set([origemApp, new URL(toolUrl).origin])
+    if (permitidos.has(url.origin)) return url.toString()
+  } catch {
+    /* URL inválida cai no fallback */
+  }
+  return new URL('/pipeline', origemApp).toString()
+}
+
 export async function GET(request: Request) {
   const requestUrl = new URL(request.url)
   const code = requestUrl.searchParams.get('code')
@@ -12,13 +28,5 @@ export async function GET(request: Request) {
     await supabase.auth.exchangeCodeForSession(code)
   }
 
-  // If next is an absolute URL (e.g. GitHub Pages tool URL), redirect there directly
-  if (next) {
-    if (next.startsWith('http://') || next.startsWith('https://')) {
-      return NextResponse.redirect(next)
-    }
-    return NextResponse.redirect(new URL(next, requestUrl.origin))
-  }
-
-  return NextResponse.redirect(new URL('/pipeline', requestUrl.origin))
+  return NextResponse.redirect(destinoSeguro(next, requestUrl.origin))
 }

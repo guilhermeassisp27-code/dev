@@ -1,8 +1,18 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { createClient } from '@supabase/supabase-js'
+import { timingSafeEqual } from 'crypto'
 
 // Hotmart envia o token neste header para validar o webhook
 const HOTTOK_HEADER = 'x-hotmart-hottok'
+
+// Comparação em tempo constante (M13): a comparação ingênua de string permite
+// timing attack para reconstruir o token byte a byte.
+function tokenIgual(a: string, b: string): boolean {
+  const ba = Buffer.from(a)
+  const bb = Buffer.from(b)
+  if (ba.length !== bb.length) return false
+  return timingSafeEqual(ba, bb)
+}
 
 // Mapeamento dos códigos de oferta (off=) dos links de pagamento -> plano
 //   Produto novo (Selo):
@@ -158,6 +168,9 @@ async function enviarEmailRecuperacao(destino: string, nome: string, plano: stri
   try {
     const resp = await fetch('https://api.brevo.com/v3/smtp/email', {
       method: 'POST',
+      // M19: sem timeout, um Brevo pendurado segura a função serverless até o
+      // limite do Vercel — e o webhook de PAGAMENTO não pode morrer por email.
+      signal: AbortSignal.timeout(8000),
       headers: {
         'api-key': process.env.BREVO_API_KEY,
         'content-type': 'application/json',
@@ -194,9 +207,8 @@ async function enviarEmailRecuperacao(destino: string, nome: string, plano: stri
 }
 
 export async function POST(req: NextRequest) {
-  const token =
-    req.headers.get(HOTTOK_HEADER) ||
-    req.nextUrl.searchParams.get('hottok')
+  // Só header (M13): token em query string fica em logs de acesso e histórico.
+  const token = req.headers.get(HOTTOK_HEADER)
 
   // Aceita uma lista separada por vírgula: durante a transição CorretorPRO -> Selo,
   // os dois produtos Hotmart (antigo, com assinantes ativos, e o novo) enviam hottoks
@@ -208,7 +220,7 @@ export async function POST(req: NextRequest) {
   if (tokensValidos.length === 0) {
     return NextResponse.json({ error: 'HOTMART_WEBHOOK_TOKEN not configured on server' }, { status: 500 })
   }
-  if (!token || !tokensValidos.includes(token)) {
+  if (!token || !tokensValidos.some((t) => tokenIgual(t, token))) {
     return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
   }
 
