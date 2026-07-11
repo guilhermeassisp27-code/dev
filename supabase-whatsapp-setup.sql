@@ -74,6 +74,13 @@ grant select on public.cpr_wa_numbers to authenticated;
 grant select on public.cpr_wa_conversations to authenticated;
 grant select on public.cpr_wa_messages to authenticated;
 
+-- O webhook usa a service role key (bypassa RLS, mas ainda precisa do GRANT
+-- de tabela — mesmo caso do cpr_user_data, ver CLAUDE.md). Sem isso, toda
+-- leitura/escrita do webhook retorna "permission denied for table".
+grant select, insert, update, delete on public.cpr_wa_numbers to service_role;
+grant select, insert, update, delete on public.cpr_wa_conversations to service_role;
+grant select, insert, update, delete on public.cpr_wa_messages to service_role;
+
 -- LGPD: conversas de leads são dados pessoais de terceiros. Expurgo
 -- automático de conversas paradas há mais de 180 dias (mesmo padrão do
 -- expurgo de fotos). Requer a extensão pg_cron já habilitada.
