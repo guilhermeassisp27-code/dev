@@ -5437,7 +5437,7 @@ function renderCapturasInbox() {
     <div class="hist-list">${capturasPend.map(c => `
       <div class="hist-card">
         <div class="hist-main-row">
-          <span class="lead-status" data-s="hoje">${c.origem === "simulacao" ? "Simulou" : "Novo"}</span>
+          <span class="lead-status" data-s="hoje">${c.origem === "simulacao" ? "Simulou" : c.origem === "whatsapp" ? "WhatsApp" : "Novo"}</span>
           <div class="hist-info">
             <div class="hist-cliente">${escH(c.nome||'—')}</div>
             <div class="hist-imovel">${c.origem === 'simulacao' ? 'Simulou financiamento pelo seu link' : escH(c.imovel||'')}</div>

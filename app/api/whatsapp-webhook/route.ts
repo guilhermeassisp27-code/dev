@@ -18,6 +18,60 @@ function adminClient() {
 }
 type AdminClient = ReturnType<typeof adminClient>
 
+// Resume os dados coletados pelo bot numa frase curta — vira o campo
+// "mensagem" do card no inbox de leads do Selo (mesmo componente usado pela
+// captura pública).
+function resumoLead(lead: LeadData): string {
+  const partes = [lead.intencao, lead.tipo_imovel, lead.regiao && `região: ${lead.regiao}`, lead.faixa_preco && `faixa: ${lead.faixa_preco}`, lead.prazo && `prazo: ${lead.prazo}`]
+    .filter((p): p is string => Boolean(p))
+  return partes.join(' · ')
+}
+
+// Registra o lead do WhatsApp no mesmo inbox (cpr_public_leads) que já
+// alimenta a tela "Leads recebidos" do Selo — o corretor vê e decide aceitar
+// ou descartar, igual à captação pública. Mesmo padrão de dedupe por
+// telefone usado em app/api/captura/route.ts: atualiza o card pendente já
+// existente em vez de duplicar a cada mensagem nova da mesma conversa.
+async function registrarLeadNoInbox(
+  supabase: AdminClient,
+  ownerId: string,
+  leadPhone: string,
+  leadName: string | null,
+  lead: LeadData,
+  textoBruto?: string
+): Promise<void> {
+  const telefone = `+${leadPhone}`
+  const nome = leadName || 'Lead do WhatsApp'
+  const mensagem = resumoLead(lead) || textoBruto || 'Conversa em andamento pelo WhatsApp.'
+  const imovel = lead.tipo_imovel ?? ''
+
+  const { data: existing } = await supabase
+    .from('cpr_public_leads')
+    .select('id')
+    .eq('owner_id', ownerId)
+    .eq('telefone', telefone)
+    .eq('status', 'pendente')
+    .maybeSingle()
+
+  if (existing) {
+    await supabase
+      .from('cpr_public_leads')
+      .update({ nome, imovel, mensagem, created_at: new Date().toISOString() })
+      .eq('id', existing.id)
+    return
+  }
+
+  await supabase.from('cpr_public_leads').insert({
+    owner_id: ownerId,
+    nome,
+    telefone,
+    imovel,
+    mensagem,
+    origem: 'whatsapp',
+    status: 'pendente',
+  })
+}
+
 export async function GET(req: NextRequest) {
   const params = req.nextUrl.searchParams
   const verifyToken = process.env.WHATSAPP_VERIFY_TOKEN
@@ -151,6 +205,19 @@ async function processarMensagens(
       history,
       (conv.lead_data ?? {}) as LeadData
     )
+
+    // Registra/atualiza o lead no inbox do Selo a cada turno — o corretor
+    // precisa ver o lead assim que ele manda mensagem, mesmo que a IA ou o
+    // envio da resposta falhem em seguida (por isso vem antes do `continue`).
+    await registrarLeadNoInbox(
+      supabase,
+      numero.user_id,
+      leadPhone,
+      leadName,
+      turn?.lead ?? ((conv.lead_data ?? {}) as LeadData),
+      turn?.lead ? undefined : msg.text.body
+    )
+
     if (!turn?.reply) continue
 
     const enviado = await sendWhatsAppText(phoneNumberId, leadPhone, turn.reply)
