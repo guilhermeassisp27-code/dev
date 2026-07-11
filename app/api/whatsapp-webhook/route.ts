@@ -56,11 +56,15 @@ async function processarMensagens(
   const phoneNumberId = value.metadata?.phone_number_id
   if (!phoneNumberId || !value.messages?.length) return
 
-  const { data: numero } = await supabase
+  const { data: numero, error: numeroErr } = await supabase
     .from('cpr_wa_numbers')
     .select('user_id, bot_enabled')
     .eq('phone_number_id', phoneNumberId)
     .maybeSingle()
+  if (numeroErr) {
+    console.error('[whatsapp-webhook] erro ao consultar cpr_wa_numbers:', phoneNumberId, numeroErr.message)
+    return
+  }
   if (!numero) {
     console.error('[whatsapp-webhook] phone_number_id sem corretor cadastrado:', phoneNumberId)
     return
