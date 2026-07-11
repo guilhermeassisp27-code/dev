@@ -144,7 +144,7 @@ async function processarMensagens(
 
     const { data: u } = await supabase.auth.admin.getUserById(numero.user_id)
     const corretorNome =
-      String((u?.user?.user_metadata as Record<string, unknown>)?.full_name ?? '') || 'o corretor'
+      String((u?.user?.user_metadata as Record<string, unknown>)?.full_name ?? '') || 'corretor'
 
     const turn = await generateBotTurn(
       corretorNome,
@@ -153,7 +153,6 @@ async function processarMensagens(
     )
     if (!turn?.reply) continue
 
-    console.log('[whatsapp-webhook] respondendo lead. leadPhone bruto:', leadPhone)
     const enviado = await sendWhatsAppText(phoneNumberId, leadPhone, turn.reply)
     if (!enviado) continue
 
