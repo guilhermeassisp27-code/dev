@@ -7,11 +7,14 @@ const GRAPH_VERSION = 'v21.0'
 export async function sendWhatsAppText(
   phoneNumberId: string,
   to: string,
-  body: string
+  body: string,
+  // Token do próprio corretor (multi-tenant, F1). Ausente → cai no token do
+  // ambiente, que é o número do piloto F0.
+  accessToken?: string | null
 ): Promise<boolean> {
-  const token = process.env.WHATSAPP_ACCESS_TOKEN
+  const token = accessToken || process.env.WHATSAPP_ACCESS_TOKEN
   if (!token) {
-    console.error('[whatsapp] WHATSAPP_ACCESS_TOKEN não configurado')
+    console.error('[whatsapp] nenhum token de acesso disponível (nem por número, nem no ambiente)')
     return false
   }
   try {

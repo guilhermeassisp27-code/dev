@@ -13,6 +13,17 @@ create table if not exists public.cpr_wa_numbers (
   created_at timestamptz not null default now()
 );
 
+-- Multi-tenant (F1): cada corretor conecta o próprio WhatsApp via Embedded
+-- Signup, então o token de envio passa a ser POR NÚMERO (não mais um único no
+-- ambiente). access_token null → cai no WHATSAPP_ACCESS_TOKEN do ambiente
+-- (mantém o número do piloto F0 funcionando sem migração). waba_id guarda a
+-- conta do WhatsApp Business do corretor (usada no subscribed_apps).
+-- Segurança: estas colunas NUNCA entram nas policies de SELECT do corretor
+-- (o token é segredo do servidor) — o grant de SELECT abaixo é revisado para
+-- não expor access_token.
+alter table public.cpr_wa_numbers add column if not exists access_token text;
+alter table public.cpr_wa_numbers add column if not exists waba_id text;
+
 create table if not exists public.cpr_wa_conversations (
   id uuid primary key default gen_random_uuid(),
   user_id uuid not null references auth.users (id) on delete cascade,
@@ -70,7 +81,10 @@ create policy "wa_messages_select_own" on public.cpr_wa_messages
     )
   );
 
-grant select on public.cpr_wa_numbers to authenticated;
+-- SELECT do corretor é COLUNA A COLUNA de propósito: access_token e waba_id
+-- ficam de fora (segredo do servidor). Nunca adicionar essas duas aqui.
+grant select (phone_number_id, user_id, display_number, bot_enabled, created_at)
+  on public.cpr_wa_numbers to authenticated;
 grant select on public.cpr_wa_conversations to authenticated;
 grant select on public.cpr_wa_messages to authenticated;
 

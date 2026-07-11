@@ -112,7 +112,7 @@ async function processarMensagens(
 
   const { data: numero, error: numeroErr } = await supabase
     .from('cpr_wa_numbers')
-    .select('user_id, bot_enabled')
+    .select('user_id, bot_enabled, access_token')
     .eq('phone_number_id', phoneNumberId)
     .maybeSingle()
   if (numeroErr) {
@@ -220,7 +220,12 @@ async function processarMensagens(
 
     if (!turn?.reply) continue
 
-    const enviado = await sendWhatsAppText(phoneNumberId, leadPhone, turn.reply)
+    const enviado = await sendWhatsAppText(
+      phoneNumberId,
+      leadPhone,
+      turn.reply,
+      (numero as { access_token?: string | null }).access_token
+    )
     if (!enviado) continue
 
     await supabase.from('cpr_wa_messages').insert({
