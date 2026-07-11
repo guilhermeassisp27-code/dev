@@ -1,7 +1,68 @@
 # Plano estratégico — Atendimento de leads por WhatsApp (feature de produto)
 
-Data: 2026-07-10
-Status: proposta para decisão do fundador. Nada aqui foi implementado.
+Data: 2026-07-10 (plano) · 2026-07-11 (F0 executado)
+Status: **F0 concluído e validado em produção** com um número real. Ver seção 0.
+
+## 0. Status do F0 (piloto) — concluído em 2026-07-11
+
+O piloto foi ao ar e validado ponta a ponta com um lead real: mensagem recebida →
+bot qualifica sozinho (intenção, tipo de imóvel, região, faixa) → conversa gravada →
+lead cai no inbox do Selo já com os dados → handoff para o corretor.
+
+**O que ficou pronto (em produção, `main`):**
+
+- `app/api/whatsapp-webhook/route.ts` — webhook da Meta Cloud API: verificação HMAC,
+  idempotência por `wa_message_id`, pausa de 24h quando o corretor responde manualmente
+  (eco `smb_message_echoes`), e registro do lead no inbox.
+- `lib/leadbot.ts` — motor de conversa (Claude Haiku). Só qualifica; nunca fala preço,
+  condição de imóvel ou comissão. Se apresenta como assistente virtual do corretor,
+  sem citar o Selo.
+- `lib/whatsapp.ts` — envio pela Graph API.
+- `supabase-whatsapp-setup.sql` — tabelas `cpr_wa_*`, RLS por corretor, expurgo LGPD
+  (180 dias), **GRANT para `service_role`** (sem isso o webhook toma "permission denied").
+- Integração com o inbox existente: o lead do WhatsApp entra em `cpr_public_leads`
+  (origem `whatsapp`), aparecendo na tela "Leads recebidos" junto com a captação pública;
+  "Aceitar" já joga na Agenda de Visitas.
+
+**Armadilhas reais da Meta que atravessamos (para o F1 não repetir):**
+
+1. **Token temporário expira rápido.** O token da "Etapa 1" do painel morre em poucas
+   horas (erros 190 / 131005 "Access denied"). Solução: gerar token de **System User**
+   (Business Settings → Usuários do sistema → Admin → permissões `whatsapp_business_messaging`
+   + `whatsapp_business_management`). Esse não expira.
+2. **App precisa estar inscrito no número.** Verificar a URL do webhook não basta — o número
+   fica inscrito no app interno "WA DevX Webhook Events 1P App" por padrão. Foi preciso
+   `POST /{waba_id}/subscribed_apps` (via Graph API Explorer, app selecionado) para o nosso
+   app receber os eventos de mensagem real. No fluxo de registro novo, o toggle
+   "Assinar webhooks" já faz isso.
+3. **Número de teste sandbox não entrega de verdade.** Ele aceita o envio (200/sucesso) mas
+   a mensagem nunca chega no aparelho — nem o template da própria Meta. Só um número real
+   entrega. Além disso, o sandbox só envia para números numa "lista de permitidos".
+4. **Nono dígito do Brasil.** O webhook manda o `from` **sem** o 9 depois do DDD
+   (`553598138726`), mas a lista de permitidos do sandbox guarda com o 9. No sandbox foi
+   preciso cadastrar as duas formas. (Em produção não há lista de permitidos, então some.)
+5. **Coexistência exige histórico.** Conectar um número que já tem WhatsApp em modo
+   coexistência (sem perder o app) só é liberado pela Meta para números com uso/atividade
+   real. Um chip novinho é rejeitado. Para um número dedicado só do bot (o caso do piloto),
+   o caminho é registrar **direto na Cloud API** (excluir a conta do WhatsApp Business do
+   número antes, se houver) — não precisa de coexistência.
+6. **Nunca usar o WhatsApp pessoal.** A Meta só oferece "migrar/desconectar", o que tira o
+   número do celular. Bot vive em número dedicado (chip reserva / eSIM pré-pago).
+7. **GRANT do Supabase.** Toda tabela nova que o webhook (service role) escreve precisa de
+   `grant ... to service_role`, senão retorna "permission denied for table" — mesmo caso
+   histórico do `cpr_user_data`.
+
+**Variáveis de ambiente (Vercel):** `WHATSAPP_VERIFY_TOKEN`, `WHATSAPP_APP_SECRET`,
+`WHATSAPP_ACCESS_TOKEN` (token de System User), `ANTHROPIC_API_KEY`.
+
+**Pendências conhecidas do F0 (não bloqueiam, ficam para o F1):**
+
+- Nome do lead depende do que o WhatsApp expõe; sem isso, cai em "Lead do WhatsApp".
+- Pergunta de "prazo" às vezes é pulada quando região + faixa já bastam para o handoff.
+- Notificação ao corretor no handoff ainda não existe (o lead aparece no inbox, mas não
+  há push/e-mail). Horário de silêncio configurável também é F1.
+- Multi-tenant: hoje um único `WHATSAPP_ACCESS_TOKEN` para um número. Vários corretores
+  exigem Embedded Signup (token por corretor) — é o coração do F1.
 
 ## 1. Por que isso muda o jogo
 
@@ -134,11 +195,12 @@ como diferencial incluso para o plano anual, empurrando upgrade.
 
 ## 7. Fases de execução
 
-- **F0 — Piloto interno (1–2 semanas de trabalho).** Registrar app na Meta, virar Tech
-  Provider, conectar UM número (do fundador ou de um corretor parceiro), bot de
-  qualificação funcionando ponta a ponta, conversas gravadas no Supabase. Sem UI nova —
-  leitura via Supabase mesmo. Objetivo: validar coexistência, latência e qualidade do
-  diálogo com leads reais.
+- **F0 — Piloto interno. ✅ CONCLUÍDO (2026-07-11).** App registrado na Meta, número real
+  dedicado conectado direto na Cloud API, bot de qualificação funcionando ponta a ponta,
+  conversas gravadas no Supabase e lead entrando no inbox do Selo. Detalhes e armadilhas
+  na seção 0. (Nota: a coexistência do plano original foi descartada no piloto — para
+  número dedicado, registro direto na Cloud API é mais simples; coexistência volta a
+  importar no F1, quando o corretor conecta o próprio número em uso.)
 - **F1 — Beta fechado (10 corretores).** Embedded Signup v4 no Selo, aba "Leads" na
   ferramenta, handoff com notificação, horário de silêncio. Cobrança ainda não — em troca,
   feedback semanal. Objetivo: medir leads atendidos, taxa de handoff, reclamações.
