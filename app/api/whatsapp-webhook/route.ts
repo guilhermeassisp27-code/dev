@@ -153,6 +153,7 @@ async function processarMensagens(
     )
     if (!turn?.reply) continue
 
+    console.log('[whatsapp-webhook] respondendo lead. leadPhone bruto:', leadPhone)
     const enviado = await sendWhatsAppText(phoneNumberId, leadPhone, turn.reply)
     if (!enviado) continue
 
