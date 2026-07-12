@@ -3,6 +3,7 @@ import { createClient } from '@supabase/supabase-js'
 import { createHmac, timingSafeEqual } from 'crypto'
 import { sendWhatsAppText, WaWebhookBody, WaChangeValue } from '@/lib/whatsapp'
 import { generateBotTurn, HistoryMessage, LeadData } from '@/lib/leadbot'
+import { notificarHandoffPorEmail } from '@/lib/notificacoes'
 
 // Webhook da WhatsApp Business Cloud API (Meta).
 // GET  = verificação do endpoint (hub.challenge) na configuração do app.
@@ -241,6 +242,21 @@ async function processarMensagens(
         updated_at: new Date().toISOString(),
       })
       .eq('id', conv.id)
+
+    // Notifica o corretor no handoff — o momento em que o lead está pronto
+    // e esfria rápido. Dispara só na TRANSIÇÃO: o guard de status handoff
+    // lá em cima impede que a conversa gere outro turno do bot depois, então
+    // este ponto roda uma única vez por conversa. Best-effort: falha de
+    // email não derruba o webhook (o lead já está no inbox de todo jeito).
+    if (turn.handoff && u?.user?.email) {
+      await notificarHandoffPorEmail({
+        para: u.user.email,
+        corretorNome,
+        leadNome: leadName || 'Lead do WhatsApp',
+        leadPhone,
+        resumo: resumoLead(turn.lead),
+      })
+    }
   }
 }
 

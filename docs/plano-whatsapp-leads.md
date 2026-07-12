@@ -67,8 +67,11 @@ Vercel — deixar a env de fora até a Verificação de Empresa + App Review ser
 
 - Nome do lead depende do que o WhatsApp expõe; sem isso, cai em "Lead do WhatsApp".
 - Pergunta de "prazo" às vezes é pulada quando região + faixa já bastam para o handoff.
-- Notificação ao corretor no handoff ainda não existe (o lead aparece no inbox, mas não
-  há push/e-mail). Horário de silêncio configurável também é F1.
+- ~~Notificação ao corretor no handoff ainda não existe.~~ Feito (2026-07-12): email
+  transacional via API da Brevo no momento do handoff (`lib/notificacoes.ts`), com link
+  wa.me direto pro lead. Requer `BREVO_API_KEY` + `BREVO_FROM_EMAIL` (remetente verificado
+  na Brevo) no Vercel; sem as envs o envio vira no-op logado. Horário de silêncio
+  configurável segue pendente (F1).
 - Multi-tenant: hoje um único `WHATSAPP_ACCESS_TOKEN` para um número. Vários corretores
   exigem Embedded Signup (token por corretor) — é o coração do F1.
 

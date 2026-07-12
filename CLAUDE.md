@@ -60,6 +60,7 @@ Next.js app (Vercel: https://selosales.com.br — domínio próprio)
 | `app/api/whatsapp-connect/route.ts` | Backend do Embedded Signup (F1) — troca code por token do corretor, inscreve app no WABA, grava em cpr_wa_numbers. Kill-switch: exige `WHATSAPP_APP_ID` no Vercel |
 | `lib/leadbot.ts` | Motor de conversa do bot (Claude) — só qualifica, nunca fala preço/comissão |
 | `lib/whatsapp.ts` | Cliente da Graph API do WhatsApp (envio de mensagens) |
+| `lib/notificacoes.ts` | Notificações ao corretor via API da Brevo (email de handoff de lead) |
 | `supabase-whatsapp-setup.sql` | Tabelas cpr_wa_* + RLS + expurgo LGPD do bot de WhatsApp |
 | `docs/plano-whatsapp-leads.md` | Plano estratégico do atendimento de leads por WhatsApp |
 | `docs/whatsapp-f0-setup.md` | Checklist manual (Meta/Vercel/Supabase) para ativar o piloto |
@@ -76,6 +77,13 @@ SUPABASE_SERVICE_ROLE_KEY=sb_secret_...       # NUNCA committar
 NEXT_PUBLIC_APP_URL=https://selosales.com.br
 NEXT_PUBLIC_TOOL_URL=https://app.selosales.com.br
 HOTMART_WEBHOOK_TOKEN=...                      # NUNCA committar
+WHATSAPP_VERIFY_TOKEN=...                      # webhook do WhatsApp (F0)
+WHATSAPP_APP_SECRET=...                        # NUNCA committar
+WHATSAPP_ACCESS_TOKEN=...                      # token System User do piloto — NUNCA committar
+ANTHROPIC_API_KEY=...                          # NUNCA committar
+WHATSAPP_APP_ID=...                            # SÓ setar após aprovação da Meta (kill-switch do /api/whatsapp-connect)
+BREVO_API_KEY=...                              # API da Brevo (notificações) — NUNCA committar
+BREVO_FROM_EMAIL=...                           # remetente VERIFICADO no painel da Brevo
 ```
 
 `.env.local` está no `.gitignore` — nunca commitar segredos.
@@ -119,7 +127,7 @@ Sem esse grant, todas as escritas retornam 403/42501.
 
 4. **Webhook**: não alterar a validação `x-hotmart-hottok` nem o retorno 200 — Hotmart retenta em falha, mas duplicações são tratadas pelo guard `welcome_sent`.
 
-5. **Brevo SMTP**: configurado no dashboard do Supabase, não via código. Não criar integrações com Resend, SendGrid ou similar.
+5. **Email é Brevo, e só Brevo**: os emails de auth saem pelo SMTP da Brevo configurado no dashboard do Supabase (não via código). Notificações transacionais (ex.: handoff de lead do WhatsApp) usam a API da Brevo via `lib/notificacoes.ts` (decisão do fundador, 2026-07-12). Não criar integrações com Resend, SendGrid ou similar.
 
 6. **Middleware**: só redireciona, não tem lógica de negócio. Cuidado para não quebrar `/api/*` (já excluído no matcher).
 
