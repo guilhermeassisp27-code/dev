@@ -14,9 +14,9 @@
 <meta property="og:image:height" content="630">
 <meta name="twitter:card" content="summary_large_image">
 <meta name="twitter:image" content="https://selosales.com.br/og-image.png">
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Geist:wght@300;400;500;600;700&family=Geist+Mono:wght@400;500&display=swap" rel="stylesheet">
+<!-- Geist é auto-hospedada via @font-face (/fonts/Geist-Variable.woff2).
+     O carregamento pelo Google Fonts era redundante (e Geist Mono não é usada) —
+     removido para eliminar CSS externo render-blocking numa página 100% mobile. -->
 <style>
   /* M24 da auditoria: a fonte Geist era declarada mas nunca carregada —
      todo mundo via fonte de sistema. Variável (100-900) auto-hospedada,
@@ -902,12 +902,12 @@ try { if (localStorage.getItem('selo_cookie_consent') === 'accepted') window.loa
     <div class="hcar" id="hcar">
       <div class="hcar-bar"><i></i><i></i><i></i><span class="hcar-url">app.selosales.com.br</span></div>
       <div class="hcar-stage">
-        <img class="hcar-img is-on" src="/screens/dashboard.webp" alt="Dashboard do Selo">
-        <img class="hcar-img" src="/screens/proposta.webp" alt="Proposta com a marca do corretor">
-        <img class="hcar-img" src="/screens/funil.webp" alt="Funil de vendas">
-        <img class="hcar-img" src="/screens/imoveis.webp" alt="Imóveis e site público">
-        <img class="hcar-img" src="/screens/vendas.webp" alt="Vendas e comissão">
-        <img class="hcar-img" src="/screens/agenda.webp" alt="Agenda de visitas">
+        <img class="hcar-img is-on" src="/screens/dashboard.webp" alt="Dashboard do Selo" fetchpriority="high" decoding="async">
+        <img class="hcar-img" src="/screens/proposta.webp" alt="Proposta com a marca do corretor" loading="lazy" decoding="async">
+        <img class="hcar-img" src="/screens/funil.webp" alt="Funil de vendas" loading="lazy" decoding="async">
+        <img class="hcar-img" src="/screens/imoveis.webp" alt="Imóveis e site público" loading="lazy" decoding="async">
+        <img class="hcar-img" src="/screens/vendas.webp" alt="Vendas e comissão" loading="lazy" decoding="async">
+        <img class="hcar-img" src="/screens/agenda.webp" alt="Agenda de visitas" loading="lazy" decoding="async">
       </div>
       <div class="hcar-cap">
         <b class="hcar-title">Dashboard</b>
