@@ -57,6 +57,7 @@ Next.js app (Vercel: https://selosales.com.br — domínio próprio)
 | `middleware.ts` | Redireciona sessão ativa para tool.html |
 | `supabase-setup.sql` | SQL para criar tabela cpr_user_data + RLS + GRANT |
 | `app/api/whatsapp-webhook/route.ts` | Webhook da WhatsApp Cloud API — bot de atendimento de leads (F0) |
+| `app/api/whatsapp-connect/route.ts` | Backend do Embedded Signup (F1) — troca code por token do corretor, inscreve app no WABA, grava em cpr_wa_numbers. Kill-switch: exige `WHATSAPP_APP_ID` no Vercel |
 | `lib/leadbot.ts` | Motor de conversa do bot (Claude) — só qualifica, nunca fala preço/comissão |
 | `lib/whatsapp.ts` | Cliente da Graph API do WhatsApp (envio de mensagens) |
 | `supabase-whatsapp-setup.sql` | Tabelas cpr_wa_* + RLS + expurgo LGPD do bot de WhatsApp |

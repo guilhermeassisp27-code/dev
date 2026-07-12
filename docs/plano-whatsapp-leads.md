@@ -55,6 +55,14 @@ lead cai no inbox do Selo já com os dados → handoff para o corretor.
 **Variáveis de ambiente (Vercel):** `WHATSAPP_VERIFY_TOKEN`, `WHATSAPP_APP_SECRET`,
 `WHATSAPP_ACCESS_TOKEN` (token de System User), `ANTHROPIC_API_KEY`.
 
+**F1 — Embedded Signup (backend pronto, aguardando a Meta):** o endpoint
+`POST /api/whatsapp-connect` recebe do tool.html o `code` do popup do FB SDK mais
+`phoneNumberId`/`wabaId`, valida JWT + assinatura server-side, troca o code pelo business
+token do corretor, confere que o token enxerga o número, inscreve o app no WABA
+(`subscribed_apps`), registra o número (best-effort — coexistência já vem registrada) e
+grava tudo em `cpr_wa_numbers`. Kill-switch: só funciona com `WHATSAPP_APP_ID` setada no
+Vercel — deixar a env de fora até a Verificação de Empresa + App Review serem aprovados.
+
 **Pendências conhecidas do F0 (não bloqueiam, ficam para o F1):**
 
 - Nome do lead depende do que o WhatsApp expõe; sem isso, cai em "Lead do WhatsApp".
