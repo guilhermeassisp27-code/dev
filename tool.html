@@ -2528,6 +2528,22 @@ input[type=color]{opacity:0;width:0;height:0;position:absolute}
         </div>
       </form>
 
+      <!-- ══ ATENDIMENTO AUTOMÁTICO: bot de WhatsApp que qualifica leads ══
+           Entrada gated por assinatura. A tela toda já exige assinatura
+           ativa (authGate barra 'inactive' antes de abrir o app), então o
+           único caminho sem assinatura até aqui é o modo demo — por isso o
+           corpo é renderizado em JS (renderConectarWhatsapp), que troca para
+           o estado "assine" quando window._DEMO/!_uid. O provisionamento real
+           (Meta Embedded Signup) entra quando a Verificação de Empresa + App
+           Review da Meta forem aprovados; até lá o botão fica "em liberação".
+           Fora do form de perfil de propósito: não entra no salvarConfig(). -->
+      <div class="cfg-sec">Atendimento automático</div>
+      <div class="card" id="card-wa-connect">
+        <div class="card-t">Conectar meu WhatsApp</div>
+        <p style="font-size:12px;color:var(--t2);margin-bottom:14px">Um assistente atende automaticamente quem chama no seu WhatsApp, entende o que a pessoa procura (tipo de imóvel, região, faixa e prazo) e entrega o lead já organizado na sua Agenda de Visitas. Ele só qualifica — nunca fala preço, condição ou comissão. Você assume a conversa quando quiser.</p>
+        <div id="wa-connect-body"></div>
+      </div>
+
       <!-- M10 da auditoria: sem isto, todo dispositivo novo obrigava o
            corretor a passar pelo "esqueci minha senha". Fora do form de
            perfil de propósito — senha não entra no salvarConfig(). -->
@@ -2730,6 +2746,43 @@ function demoBloqueio() {
   if (typeof toast === 'function') toast('Recurso disponível para assinantes — assine para liberar')
   _demoTrack('checkout_demo')
   window.open(_DEMO_CHECKOUT, '_blank', 'noopener')
+}
+
+/* ── CONECTAR WHATSAPP (bot de leads) — entrada gated por assinatura ──
+   Renderiza o corpo do card "Conectar meu WhatsApp" nas Configurações.
+   Gate: só assinante ativo vê a ação de conectar. O authGate já barra
+   assinatura inativa antes de abrir o app, então o único caminho sem
+   assinatura até aqui é o modo demo (window._DEMO, sem window._uid) — nele
+   mostramos a chamada de assinar. O provisionamento real (Meta Embedded
+   Signup) depende da aprovação da Meta; enquanto isso, estado "em liberação". */
+function renderConectarWhatsapp() {
+  const body = document.getElementById('wa-connect-body')
+  if (!body) return
+  if (window._DEMO || !window._uid) {
+    body.innerHTML =
+      '<div style="display:flex;align-items:center;gap:12px;flex-wrap:wrap">' +
+        '<button type="button" class="btn btn-primary btn-sm" onclick="demoBloqueio()">Assinar para liberar</button>' +
+        '<span style="font-size:12px;color:var(--t2)">Disponível para assinantes.</span>' +
+      '</div>'
+    return
+  }
+  body.innerHTML =
+    '<div style="display:flex;align-items:center;gap:12px;flex-wrap:wrap">' +
+      '<button type="button" class="btn btn-primary btn-sm" onclick="conectarWhatsapp()">' +
+        '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 11.5a8.38 8.38 0 01-.9 3.8 8.5 8.5 0 01-7.6 4.7 8.38 8.38 0 01-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 01-.9-3.8 8.5 8.5 0 014.7-7.6 8.38 8.38 0 013.8-.9h.5a8.48 8.48 0 018 8v.5z"/></svg>' +
+        'Conectar meu WhatsApp' +
+      '</button>' +
+      '<span style="font-size:12px;color:var(--t2)">Em liberação — avisamos assim que estiver no ar.</span>' +
+    '</div>'
+}
+
+/* Handler do botão de conectar. O fluxo de Embedded Signup (popup do FB SDK →
+   backend troca o código por token do corretor → registra o número → inscreve
+   o app no webhook) depende da Verificação de Empresa + App Review da Meta,
+   ainda em análise. Enquanto não libera, informa em vez de abrir um popup
+   que a Meta ainda rejeitaria. */
+function conectarWhatsapp() {
+  toast('Conexão do WhatsApp em liberação — avisamos assim que estiver no ar')
 }
 
 /* ── DADOS DE EXEMPLO (só no modo demo): a plataforma abre "cheia de vida" ── */
@@ -3081,6 +3134,7 @@ function initApp() {
   }
   aplicarSidebar()
   carregarFormConfig()
+  renderConectarWhatsapp()
   atualizarPreview()
   atualizarCor(perfil.cor || '#C9882A')
 }
