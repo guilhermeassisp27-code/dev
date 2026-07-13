@@ -64,6 +64,7 @@ Next.js app (Vercel: https://selosales.com.br — domínio próprio)
 | `supabase-whatsapp-setup.sql` | Tabelas cpr_wa_* + RLS + expurgo LGPD do bot de WhatsApp |
 | `docs/plano-whatsapp-leads.md` | Plano estratégico do atendimento de leads por WhatsApp |
 | `docs/whatsapp-f0-setup.md` | Checklist manual (Meta/Vercel/Supabase) para ativar o piloto |
+| `docs/whatsapp-f1-meta-setup.md` | Passo a passo na Meta (App Review, Access Verification, config do Embedded Signup) para ligar o "Conectar meu WhatsApp" do F1 |
 | `marketing/` | Materiais de marketing (imagens, plano de tráfego) |
 | `marketing/logo/selo/` | Kit de marca oficial do Selo (logos, cores, tipografia) — ver `brand-tokens.json` como fonte única de cor/tipografia e `LEIA-ME.md` para o mapa de arquivos |
 | `public/landing.html` | Landing page servida na raiz do app Vercel (via rewrite em `next.config.js`) |
