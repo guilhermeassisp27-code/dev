@@ -55,13 +55,27 @@ lead cai no inbox do Selo já com os dados → handoff para o corretor.
 **Variáveis de ambiente (Vercel):** `WHATSAPP_VERIFY_TOKEN`, `WHATSAPP_APP_SECRET`,
 `WHATSAPP_ACCESS_TOKEN` (token de System User), `ANTHROPIC_API_KEY`.
 
-**F1 — Embedded Signup (backend pronto, aguardando a Meta):** o endpoint
+**F1 — Embedded Signup (código pronto ponta a ponta, aguardando a Meta):** o endpoint
 `POST /api/whatsapp-connect` recebe do tool.html o `code` do popup do FB SDK mais
 `phoneNumberId`/`wabaId`, valida JWT + assinatura server-side, troca o code pelo business
 token do corretor, confere que o token enxerga o número, inscreve o app no WABA
 (`subscribed_apps`), registra o número (best-effort — coexistência já vem registrada) e
-grava tudo em `cpr_wa_numbers`. Kill-switch: só funciona com `WHATSAPP_APP_ID` setada no
-Vercel — deixar a env de fora até a Verificação de Empresa + App Review serem aprovados.
+grava tudo em `cpr_wa_numbers`. O `GET /api/whatsapp-connect` devolve a config pública
+(`appId` + `configId` do Embedded Signup v4) que o tool.html usa pra montar o popup do
+FB SDK — nunca o app secret. Front no tool.html: `conectarWhatsapp()` carrega o FB SDK,
+chama `FB.login` com o `config_id`, captura o `code` (callback) + `phone_number_id`/`waba_id`
+(postMessage do popup) e posta tudo no backend; `renderConectarWhatsapp()` mostra o estado
+"conectado" lendo `cpr_wa_numbers` (RLS deixa o corretor ler só display_number/bot_enabled,
+nunca o token). CSP do tool.html liberada pro FB SDK (`connect.facebook.net` + iframes
+`www.facebook.com`/`staticxx.facebook.com`).
+
+Kill-switch (fonte única): o front não tem app id hardcoded — ele pede a config ao GET, que
+só responde quando `WHATSAPP_APP_ID` **e** `WHATSAPP_ES_CONFIG_ID` estão no Vercel. Sem as
+duas, o GET dá 503 e o botão informa "em liberação". Ligar o F1 = setar essas duas envs no
+Vercel (pós Verificação de Empresa + App Review) — sem redeploy do tool.html, que sai por
+gh-pages separado. Falta na Meta: App Review / Advanced Access de `whatsapp_business_messaging`
++ `whatsapp_business_management` e gerar o configuration ID do Embedded Signup v4. A
+Verificação de Empresa (pré-requisito) foi aprovada em 2026-07-11.
 
 **Pendências conhecidas do F0 (não bloqueiam, ficam para o F1):**
 

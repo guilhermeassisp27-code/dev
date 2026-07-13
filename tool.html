@@ -25,7 +25,7 @@
      comprometido deixa de ser vetor. Para atualizar a versão: baixar o novo
      tarball do npm, trocar o arquivo em vendor/, atualizar este src, o
      PRECACHE do sw.js e bumpar o nome do cache do SW. -->
-<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline'; img-src 'self' data: blob: https:; font-src 'self' data:; connect-src 'self' https://kdudodqmijlzqwnkxpjo.supabase.co https://selosales.com.br; object-src 'none'; base-uri 'self'">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline' https://connect.facebook.net; style-src 'self' 'unsafe-inline'; img-src 'self' data: blob: https:; font-src 'self' data:; connect-src 'self' https://kdudodqmijlzqwnkxpjo.supabase.co https://selosales.com.br https://www.facebook.com; frame-src https://www.facebook.com https://staticxx.facebook.com; object-src 'none'; base-uri 'self'">
 <script src="vendor/supabase-js-2.105.4.js"></script>
 <script>
 /* Define o tema (claro/escuro) o mais cedo possível, antes do CSS pintar a
@@ -2533,9 +2533,12 @@ input[type=color]{opacity:0;width:0;height:0;position:absolute}
            ativa (authGate barra 'inactive' antes de abrir o app), então o
            único caminho sem assinatura até aqui é o modo demo — por isso o
            corpo é renderizado em JS (renderConectarWhatsapp), que troca para
-           o estado "assine" quando window._DEMO/!_uid. O provisionamento real
-           (Meta Embedded Signup) entra quando a Verificação de Empresa + App
-           Review da Meta forem aprovados; até lá o botão fica "em liberação".
+           o estado "assine" quando window._DEMO/!_uid e para "conectado"
+           quando já há número em cpr_wa_numbers. O provisionamento real (Meta
+           Embedded Signup) é gated pelo kill-switch do backend: /api/whatsapp-
+           connect só devolve a config quando WHATSAPP_APP_ID + WHATSAPP_ES_
+           CONFIG_ID estão no Vercel (pós App Review); sem elas o clique só
+           informa "em liberação".
            Fora do form de perfil de propósito: não entra no salvarConfig(). -->
       <div class="cfg-sec">Atendimento automático</div>
       <div class="card" id="card-wa-connect">
@@ -2755,7 +2758,10 @@ function demoBloqueio() {
    assinatura até aqui é o modo demo (window._DEMO, sem window._uid) — nele
    mostramos a chamada de assinar. O provisionamento real (Meta Embedded
    Signup) depende da aprovação da Meta; enquanto isso, estado "em liberação". */
-function renderConectarWhatsapp() {
+const _WA_ICON =
+  '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 11.5a8.38 8.38 0 01-.9 3.8 8.5 8.5 0 01-7.6 4.7 8.38 8.38 0 01-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 01-.9-3.8 8.5 8.5 0 014.7-7.6 8.38 8.38 0 013.8-.9h.5a8.48 8.48 0 018 8v.5z"/></svg>'
+
+async function renderConectarWhatsapp() {
   const body = document.getElementById('wa-connect-body')
   if (!body) return
   if (window._DEMO || !window._uid) {
@@ -2766,23 +2772,156 @@ function renderConectarWhatsapp() {
       '</div>'
     return
   }
+
+  // Já conectado? A RLS deixa o corretor ler o próprio número (menos o token).
+  // Se houver row, mostra o estado conectado em vez do botão.
+  try {
+    const { data } = await window._sb
+      .from('cpr_wa_numbers')
+      .select('display_number, bot_enabled')
+      .eq('user_id', window._uid)
+      .maybeSingle()
+    if (data) {
+      const num = data.display_number || 'seu número'
+      const on = data.bot_enabled !== false
+      body.innerHTML =
+        '<div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap">' +
+          '<span style="display:inline-flex;align-items:center;gap:6px;font-size:13px;color:var(--t1);font-weight:600">' +
+            '<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#15A37A" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>' +
+            'WhatsApp conectado' +
+          '</span>' +
+          '<span style="font-size:12px;color:var(--t2)">' + num + (on ? ' — o assistente está atendendo.' : ' — assistente pausado.') + '</span>' +
+        '</div>'
+      return
+    }
+  } catch (_) { /* falha de leitura não bloqueia o botão de conectar */ }
+
   body.innerHTML =
     '<div style="display:flex;align-items:center;gap:12px;flex-wrap:wrap">' +
-      '<button type="button" class="btn btn-primary btn-sm" onclick="conectarWhatsapp()">' +
-        '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 11.5a8.38 8.38 0 01-.9 3.8 8.5 8.5 0 01-7.6 4.7 8.38 8.38 0 01-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 01-.9-3.8 8.5 8.5 0 014.7-7.6 8.38 8.38 0 013.8-.9h.5a8.48 8.48 0 018 8v.5z"/></svg>' +
-        'Conectar meu WhatsApp' +
+      '<button type="button" class="btn btn-primary btn-sm" id="btn-wa-connect" onclick="conectarWhatsapp()">' +
+        _WA_ICON + 'Conectar meu WhatsApp' +
       '</button>' +
-      '<span style="font-size:12px;color:var(--t2)">Em liberação — avisamos assim que estiver no ar.</span>' +
     '</div>'
 }
 
-/* Handler do botão de conectar. O fluxo de Embedded Signup (popup do FB SDK →
-   backend troca o código por token do corretor → registra o número → inscreve
-   o app no webhook) depende da Verificação de Empresa + App Review da Meta,
-   ainda em análise. Enquanto não libera, informa em vez de abrir um popup
-   que a Meta ainda rejeitaria. */
-function conectarWhatsapp() {
-  toast('Conexão do WhatsApp em liberação — avisamos assim que estiver no ar')
+/* ── Embedded Signup do WhatsApp (F1) ────────────────────────────────────
+   Fluxo: busca a config pública no backend (kill-switch) → carrega o FB SDK →
+   FB.login com o config_id devolve um `code` e o popup posta phone_number_id +
+   waba_id → manda tudo pro POST /api/whatsapp-connect (com o JWT), que troca o
+   code pelo token do corretor, inscreve o app no WABA e grava o número.
+   Se a config não vier (Meta ainda não liberou / envs fora do Vercel), o botão
+   informa "em liberação" — nenhum popup que a Meta rejeitaria é aberto. */
+const _FB_SDK_SRC = 'https://connect.facebook.net/en_US/sdk.js'
+let _waCfg = null            // { appId, configId, graphVersion } — cache
+let _fbSdkPromise = null     // carrega o SDK uma vez só
+
+async function _fetchWaCfg() {
+  if (_waCfg) return _waCfg
+  try {
+    const r = await fetch(_APP_BASE + '/api/whatsapp-connect', { method: 'GET' })
+    if (!r.ok) return null   // 503 = kill-switch (Meta ainda não liberou)
+    const j = await r.json().catch(() => null)
+    if (j && j.appId && j.configId) { _waCfg = j; return j }
+    return null
+  } catch (_) { return null }
+}
+
+function _loadFbSdk(cfg) {
+  if (_fbSdkPromise) return _fbSdkPromise
+  _fbSdkPromise = new Promise((resolve, reject) => {
+    window.fbAsyncInit = function () {
+      try {
+        FB.init({ appId: cfg.appId, autoLogAppEvents: true, xfbml: false, version: cfg.graphVersion || 'v21.0' })
+        resolve()
+      } catch (e) { reject(e) }
+    }
+    const s = document.createElement('script')
+    s.src = _FB_SDK_SRC; s.async = true; s.defer = true; s.crossOrigin = 'anonymous'
+    s.onerror = () => reject(new Error('sdk_load'))
+    document.body.appendChild(s)
+  })
+  return _fbSdkPromise
+}
+
+async function conectarWhatsapp() {
+  if (window._DEMO) return demoBloqueio()
+
+  const cfg = await _fetchWaCfg()
+  if (!cfg) {
+    toast('Conexão do WhatsApp em liberação — avisamos assim que estiver no ar')
+    return
+  }
+
+  const btn = document.getElementById('btn-wa-connect')
+  if (btn) { btn.disabled = true; btn.innerHTML = _WA_ICON + 'Abrindo…' }
+  const resetBtn = () => { if (btn) { btn.disabled = false; btn.innerHTML = _WA_ICON + 'Conectar meu WhatsApp' } }
+
+  try {
+    await _loadFbSdk(cfg)
+  } catch (_) {
+    resetBtn()
+    toast('Não foi possível carregar o conector do WhatsApp — tente de novo', true)
+    return
+  }
+
+  // O popup do Embedded Signup posta o phone_number_id + waba_id por
+  // window.postMessage; o code chega no callback do FB.login. Precisamos dos
+  // dois, então capturamos a mensagem enquanto o popup está aberto.
+  let esData = null
+  const onMsg = (ev) => {
+    if (ev.origin !== 'https://www.facebook.com' && ev.origin !== 'https://web.facebook.com') return
+    try {
+      const d = JSON.parse(ev.data)
+      if (d.type === 'WA_EMBEDDED_SIGNUP' && d.event === 'FINISH' && d.data) {
+        esData = { phoneNumberId: d.data.phone_number_id, wabaId: d.data.waba_id }
+      }
+    } catch (_) { /* mensagens não-JSON do SDK — ignora */ }
+  }
+  window.addEventListener('message', onMsg)
+
+  FB.login((resp) => {
+    window.removeEventListener('message', onMsg)
+    resetBtn()
+    const code = resp && resp.authResponse && resp.authResponse.code
+    if (!code) { toast('Conexão cancelada', true); return }
+    if (!esData || !esData.phoneNumberId || !esData.wabaId) {
+      toast('Não recebemos os dados do número — refaça a conexão', true); return
+    }
+    _provisionarWhatsapp(code, esData)
+  }, {
+    config_id: cfg.configId,
+    response_type: 'code',
+    override_default_response_type: true,
+    extras: { setup: {}, featureType: '', sessionInfoVersion: '3' },
+  })
+}
+
+async function _provisionarWhatsapp(code, es) {
+  const token = await _tokenSessao()
+  if (!token) { toast('Sessão expirada — entre de novo', true); return }
+  toast('Conectando seu WhatsApp…')
+  try {
+    const r = await fetch(_APP_BASE + '/api/whatsapp-connect', {
+      method: 'POST',
+      headers: { 'content-type': 'application/json', authorization: 'Bearer ' + token },
+      body: JSON.stringify({ code, phoneNumberId: es.phoneNumberId, wabaId: es.wabaId }),
+    })
+    const j = await r.json().catch(() => ({}))
+    if (!r.ok) {
+      const msgs = {
+        number_taken: 'Esse número já está conectado em outra conta.',
+        subscription_inactive: 'Sua assinatura está inativa — reative para conectar.',
+        phone_not_accessible: 'Não conseguimos acessar esse número — refaça a conexão.',
+        not_available: 'Conexão do WhatsApp em liberação — avisamos assim que estiver no ar.',
+      }
+      toast(msgs[j.error] || 'Falha ao conectar o WhatsApp — tente de novo', true)
+      return
+    }
+    toast('WhatsApp conectado — o assistente já está atendendo seus leads')
+    renderConectarWhatsapp()
+  } catch (_) {
+    toast('Falha de conexão ao conectar o WhatsApp', true)
+  }
 }
 
 /* ── DADOS DE EXEMPLO (só no modo demo): a plataforma abre "cheia de vida" ── */

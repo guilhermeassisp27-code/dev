@@ -37,6 +37,22 @@ export async function OPTIONS() {
   return cors(new NextResponse(null, { status: 204 }))
 }
 
+// GET: config pública do Embedded Signup para o tool.html montar o popup do
+// FB SDK. Devolve só valores públicos (app id + configuration id do Embedded
+// Signup) — NUNCA o app secret. É a fonte única do kill-switch no front: sem
+// WHATSAPP_APP_ID / WHATSAPP_ES_CONFIG_ID no Vercel responde 503, e o botão
+// "Conectar meu WhatsApp" fica em "em liberação" sem precisar editar/redeployar
+// o tool.html (que sai por gh-pages, separado do Vercel). Ligar o F1 = setar
+// essas duas envs no Vercel, nada mais.
+export async function GET() {
+  const appId = process.env.WHATSAPP_APP_ID
+  const configId = process.env.WHATSAPP_ES_CONFIG_ID
+  if (!appId || !configId) {
+    return cors(NextResponse.json({ error: 'not_available' }, { status: 503 }))
+  }
+  return cors(NextResponse.json({ appId, configId, graphVersion: GRAPH_VERSION }))
+}
+
 function admin() {
   return createClient(
     process.env.NEXT_PUBLIC_SUPABASE_URL!,

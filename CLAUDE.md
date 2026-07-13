@@ -57,7 +57,7 @@ Next.js app (Vercel: https://selosales.com.br — domínio próprio)
 | `middleware.ts` | Redireciona sessão ativa para tool.html |
 | `supabase-setup.sql` | SQL para criar tabela cpr_user_data + RLS + GRANT |
 | `app/api/whatsapp-webhook/route.ts` | Webhook da WhatsApp Cloud API — bot de atendimento de leads (F0) |
-| `app/api/whatsapp-connect/route.ts` | Backend do Embedded Signup (F1) — troca code por token do corretor, inscreve app no WABA, grava em cpr_wa_numbers. Kill-switch: exige `WHATSAPP_APP_ID` no Vercel |
+| `app/api/whatsapp-connect/route.ts` | Backend do Embedded Signup (F1). POST: troca code por token do corretor, inscreve app no WABA, grava em cpr_wa_numbers. GET: devolve config pública (appId + configId) pro popup do tool.html. Kill-switch: exige `WHATSAPP_APP_ID` + `WHATSAPP_ES_CONFIG_ID` no Vercel |
 | `lib/leadbot.ts` | Motor de conversa do bot (Claude) — só qualifica, nunca fala preço/comissão |
 | `lib/whatsapp.ts` | Cliente da Graph API do WhatsApp (envio de mensagens) |
 | `lib/notificacoes.ts` | Notificações ao corretor via API da Brevo (email de handoff de lead) |
@@ -82,6 +82,7 @@ WHATSAPP_APP_SECRET=...                        # NUNCA committar
 WHATSAPP_ACCESS_TOKEN=...                      # token System User do piloto — NUNCA committar
 ANTHROPIC_API_KEY=...                          # NUNCA committar
 WHATSAPP_APP_ID=...                            # SÓ setar após aprovação da Meta (kill-switch do /api/whatsapp-connect)
+WHATSAPP_ES_CONFIG_ID=...                       # configuration ID do Embedded Signup v4 — par do APP_ID no kill-switch do F1
 BREVO_API_KEY=...                              # API da Brevo (notificações) — NUNCA committar
 BREVO_FROM_EMAIL=...                           # remetente VERIFICADO no painel da Brevo
 ```
