@@ -832,6 +832,8 @@
 <body>
 
 <!-- Meta Pixel — carregado SOMENTE após consentimento de cookies (LGPD) -->
+<!-- Dois pixels disparando em paralelo: 2015826029060952 (CorretorPRO, legado) e
+     1019294704290891 (Selo Sales, novo dataset) — migração em andamento, ver marketing/meta-ads-setup.md -->
 <script>
 window.loadMetaPixel = function(){
   if (window._pixelLoaded) return; window._pixelLoaded = true;
@@ -844,6 +846,7 @@ window.loadMetaPixel = function(){
   s.parentNode.insertBefore(t,s)}(window, document,'script',
   'https://connect.facebook.net/en_US/fbevents.js');
   fbq('init', '2015826029060952');
+  fbq('init', '1019294704290891');
   fbq('track', 'PageView');
 };
 /* Se o visitante já autorizou numa visita anterior, carrega na hora. */
@@ -1625,6 +1628,7 @@ try { if (localStorage.getItem('selo_cookie_consent') === 'accepted') window.loa
     if (d.seloDemo === 'checkout_demo') {
       fbq('track', 'InitiateCheckout', { content_name: 'demo-plataforma', currency: 'BRL' });
     } else if (d.seloDemo === 'demo_aberta') {
+      fbq('track', 'ViewContent', { content_name: 'demo-plataforma' });
       fbq('trackCustom', 'DemoPlataformaAberta');
     } else if (d.seloDemo === 'proposta_gerada') {
       fbq('trackCustom', 'DemoPlataformaProposta');
@@ -1635,18 +1639,22 @@ try { if (localStorage.getItem('selo_cookie_consent') === 'accepted') window.loa
 })();
 </script>
 
-<!-- Dispara InitiateCheckout no Pixel ao clicar para o checkout da Hotmart -->
+<!-- Dispara InitiateCheckout + Lead no Pixel ao clicar para o checkout da Hotmart
+     (não existe formulário de cadastro na página — este clique é a intenção de
+     trial mais próxima de um Lead que a landing tem hoje) -->
 <script>
 (function(){
   var links = document.querySelectorAll('a[href*="pay.hotmart.com"]');
   for (var i = 0; i < links.length; i++) {
     links[i].addEventListener('click', function(){
       if (typeof fbq === 'function') {
-        fbq('track', 'InitiateCheckout', {
+        var params = {
           content_name: this.getAttribute('data-plan') || 'plano',
           value: parseFloat(this.getAttribute('data-value')) || undefined,
           currency: 'BRL'
-        });
+        };
+        fbq('track', 'InitiateCheckout', params);
+        fbq('track', 'Lead', params);
       }
     });
   }
@@ -1666,6 +1674,7 @@ try { if (localStorage.getItem('selo_cookie_consent') === 'accepted') window.loa
   var fmt = function(n){ return 'R$ ' + Math.round(n).toLocaleString('pt-BR'); };
 
   window.gerarDemo = function(){
+    if (typeof fbq === 'function') fbq('track', 'ViewContent', { content_name: 'demo-proposta' });
     var corretor = (document.getElementById('dm-corretor').value || '').trim() || 'Carlos Andrade';
     var cliente  = (document.getElementById('dm-cliente').value || '').trim() || 'João Silva';
     var raw      = (document.getElementById('dm-valor').value || '').replace(/\D/g,'');
@@ -1702,6 +1711,7 @@ try { if (localStorage.getItem('selo_cookie_consent') === 'accepted') window.loa
   var esc = function(s){ return (s||'').replace(/[&<>]/g, function(c){ return {'&':'&amp;','<':'&lt;','>':'&gt;'}[c]; }); };
 
   window.gerarVisitaDemo = function(){
+    if (typeof fbq === 'function') fbq('track', 'ViewContent', { content_name: 'demo-registro-visita' });
     var corretor = (document.getElementById('rv-corretor').value || '').trim() || 'Carlos Andrade';
     var cliente  = (document.getElementById('rv-cliente').value || '').trim() || 'João Silva';
     var imovel   = (document.getElementById('rv-imovel').value || '').trim() || 'Rua das Acácias, 120 — São Paulo';
