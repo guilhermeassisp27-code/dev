@@ -1,0 +1,25 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* Layout de impressão do laudo. Só o conteúdo .laudo aparece no PDF. */
+@media print {
+  .no-print {
+    display: none !important;
+  }
+
+  body {
+    background: #ffffff !important;
+  }
+
+  .laudo {
+    margin: 0;
+    padding: 0;
+    box-shadow: none !important;
+    max-width: none !important;
+  }
+
+  @page {
+    margin: 18mm 16mm;
+  }
+}
